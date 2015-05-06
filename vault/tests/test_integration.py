@@ -20,6 +20,17 @@ def test_generic_secret_backend():
 
     client.delete('secret/foo')
 
+def test_auth_backend_manipulation():
+    client = create_client()
+
+    assert 'github/' not in client.list_auth_backends()
+
+    client.enable_auth_backend('github')
+    assert 'github/' in client.list_auth_backends()
+
+    client.disable_auth_backend('github')
+    assert 'github/' not in client.list_auth_backends()
+
 @raises(exceptions.InvalidPath)
 def test_invalid_path():
     client = create_client()

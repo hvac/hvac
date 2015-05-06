@@ -51,6 +51,32 @@ class Client(object):
         """
         self._delete('/v1/{}'.format(path))
 
+    def list_auth_backends(self):
+        """
+        GET /sys/auth
+        """
+        return self._get('/v1/sys/auth').json()
+
+    def enable_auth_backend(self, mount_point, auth_type=None, description=None):
+        """
+        POST /sys/auth/<mount point>
+        """
+        if not auth_type:
+            auth_type = mount_point
+
+        params = {
+            'type': auth_type,
+            'description': description,
+        }
+
+        self._post('/v1/sys/auth/{}'.format(mount_point), params)
+
+    def disable_auth_backend(self, mount_point):
+        """
+        DELETE /sys/auth/<mount point>
+        """
+        self._delete('/v1/sys/auth/{}'.format(mount_point))
+
     @raise_for_status
     def _get(self, url, **kwargs):
         return requests.get(self._url + url, cookies=self._cookies, **kwargs)
