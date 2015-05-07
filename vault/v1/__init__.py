@@ -51,6 +51,91 @@ class Client(object):
         """
         self._delete('/v1/{}'.format(path))
 
+    def create_token(self, id=None, policies=None, metadata=None,
+                     no_parent=False, lease=None, display_name=None,
+                     num_uses=None):
+        """
+        POST /auth/token/create
+        """
+        params = {
+            'id': id,
+            'policies': policies,
+            'metadata': metadata,
+            'no_parent': no_parent,
+            'lease': lease,
+            'display_name': display_name,
+            'num_uses': num_uses,
+        }
+
+        return self._post('/v1/auth/token/create', params).json()
+
+    def lookup_token(self, token=None):
+        """
+        GET /auth/token/lookup/<token>
+        GET /auth/token/lookup-self
+        """
+        if token:
+            return self._get('/v1/auth/token/lookup/{}'.format(token)).json()
+        else:
+            return self._get('/v1/auth/token/lookup-self').json()
+
+    def revoke_token(self, token, orphan=False):
+        """
+        POST /auth/token/revoke/<token>
+        POST /auth/token/revoke-orphan/<token>
+        """
+        if orphan:
+            self._post('/v1/auth/token/revoke-orphan/{}'.format(token))
+        else:
+            self._post('/v1/auth/token/revoke/{}'.format(token))
+
+    def revoke_token_prefix(self, prefix):
+        """
+        POST /auth/token/revoke-prefix/<prefix>
+        """
+        self._post('/v1/auth/token/revoke-prefix/{}'.format(prefix))
+
+    def renew_token(self, token, increment=None):
+        """
+        POST /auth/token/renew/<token>
+        """
+        params = {
+            'increment': increment,
+        }
+
+        return self._post('/v1/auth/token/renew/{}'.format(token), params).json()
+
+    def auth_app_id(self, app_id, user_id, change_to=True, mount_point='app-id'):
+        """
+        POST /auth/<mount point>/login
+        """
+        params = {
+            'app_id': app_id,
+            'user_id': user_id,
+        }
+
+        result = self._post('/v1/auth/{}/login'.format(mount_point), params).json()
+
+        if change_to:
+            self._token = result['auth']['client_token']
+
+        return result
+
+    def auth_userpass(self, username, password, change_to=True, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/login/<username>
+        """
+        params = {
+            'password': password,
+        }
+
+        result = self._post('/v1/auth/{}/login/{}'.format(mount_point, username), params).json()
+
+        if change_to:
+            self._token = result['auth']['client_token']
+
+        return result
+
     def list_auth_backends(self):
         """
         GET /sys/auth
@@ -82,11 +167,11 @@ class Client(object):
         return requests.get(self._url + url, cookies=self._cookies, **kwargs)
 
     @raise_for_status
-    def _post(self, url, data, **kwargs):
+    def _post(self, url, data=None, **kwargs):
         return requests.post(self._url + url, json=data, cookies=self._cookies, **kwargs)
 
     @raise_for_status
-    def _put(self, url, data, **kwargs):
+    def _put(self, url, data=None, **kwargs):
         return requests.put(self._url + url, json=data, cookies=self._cookies, **kwargs)
 
     @raise_for_status
