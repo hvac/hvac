@@ -6,3 +6,6 @@
 /dist
 /*.egg-info
 /.tox
+
+/.coverage
+/cover
