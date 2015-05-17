@@ -1,85 +1,112 @@
-import os
+import subprocess
+import time
+from unittest import TestCase
 
+import requests
 from nose.tools import *
 
 from vault import Client, exceptions
 
-def create_client():
-    return Client(
-        token=os.environ['VAULT_TOKEN'],
-        url='http://localhost:8200',
-    )
+class IntegrationTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.process = cls.start_background()
+        cls.initialize_vault()
 
-def test_generic_secret_backend():
-    client = create_client()
+    @classmethod
+    def start_background(cls):
+        command = ["vault", "server", "-config=vault.hcl"]
 
-    client.write('secret/foo', zap='zip')
-    result = client.read('secret/foo')
+        process = subprocess.Popen(command,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
 
-    assert result['data']['zap'] == 'zip'
+        while True:
+            try:
+                requests.get('http://localhost:8200/v1/sys/init').raise_for_status()
+                return process
+            except:
+                print("Waiting for Vault to start")
+                time.sleep(0.1)
 
-    client.delete('secret/foo')
+    @classmethod
+    def initialize_vault(cls):
+        client = Client()
 
-def test_auth_backend_manipulation():
-    client = create_client()
+        result = client.initialize()
 
-    assert 'github/' not in client.list_auth_backends()
+        token = result['root_token']
+        keys = result['keys']
 
-    client.enable_auth_backend('github')
-    assert 'github/' in client.list_auth_backends()
+        for key in keys[0:3]:
+            client.unseal(5, key)
 
-    client.disable_auth_backend('github')
-    assert 'github/' not in client.list_auth_backends()
+        cls.token = token
 
-def test_auth_token_manipulation():
-    client = create_client()
+    @classmethod
+    def tearDownClass(cls):
+        cls.process.kill()
 
-    result = client.create_token(lease='1h')
-    assert result['auth']['client_token']
+    def setUp(self):
+        cls = type(self)
 
-    lookup = client.lookup_token(result['auth']['client_token'])
-    assert result['auth']['client_token'] == lookup['data']['id']
+        self.client = Client()
+        self.client.auth_token(cls.token)
 
-    renew = client.renew_token(lookup['data']['id'])
-    assert result['auth']['client_token'] == renew['auth']['client_token']
+    def test_generic_secret_backend(self):
+        self.client.write('secret/foo', zap='zip')
+        result = self.client.read('secret/foo')
 
-    client.revoke_token(lookup['data']['id'])
+        assert result['data']['zap'] == 'zip'
 
-    try:
-        lookup = client.lookup_token(result['auth']['client_token'])
-        assert False
-    except exceptions.InvalidPath:
-        assert True
+        self.client.delete('secret/foo')
 
-def test_userpass_auth():
-    client = create_client()
+    def test_auth_backend_manipulation(self):
+        assert 'github/' not in self.client.list_auth_backends()
 
-    client.enable_auth_backend('userpass')
+        self.client.enable_auth_backend('github')
+        assert 'github/' in self.client.list_auth_backends()
 
-    client.write('auth/userpass/users/testuser', password='testpass', policies='root')
+        self.client.disable_auth_backend('github')
+        assert 'github/' not in self.client.list_auth_backends()
 
-    result = client.auth_userpass('testuser', 'testpass')
+    def test_auth_token_manipulation(self):
+        result = self.client.create_token(lease='1h')
+        assert result['auth']['client_token']
 
-    client.disable_auth_backend('userpass')
+        lookup = self.client.lookup_token(result['auth']['client_token'])
+        assert result['auth']['client_token'] == lookup['data']['id']
 
-def test_app_id_auth():
-    client = create_client()
+        renew = self.client.renew_token(lookup['data']['id'])
+        assert result['auth']['client_token'] == renew['auth']['client_token']
 
-    client.enable_auth_backend('app-id')
+        self.client.revoke_token(lookup['data']['id'])
 
-    client.write('auth/app-id/map/app-id/foo', value='root')
-    client.write('auth/app-id/map/user-id/bar', value='foo')
+        try:
+            lookup = self.client.lookup_token(result['auth']['client_token'])
+            assert False
+        except exceptions.InvalidPath:
+            assert True
 
-    result = client.auth_app_id('foo', 'bar')
+    def test_userpass_auth(self):
+        self.client.enable_auth_backend('userpass')
 
-    client.disable_auth_backend('app-id')
+        self.client.write('auth/userpass/users/testuser', password='testpass', policies='root')
 
-@raises(exceptions.InvalidPath)
-def test_invalid_path():
-    client = create_client()
-    client.read('secret/I/do/not/exist')
+        result = self.client.auth_userpass('testuser', 'testpass')
 
-@raises(exceptions.InternalServerError)
-def test_internal_server_error():
-    client = create_client()
-    client.read('handler/does/not/exist')
+    def test_app_id_auth(self):
+        self.client.enable_auth_backend('app-id')
+
+        self.client.write('auth/app-id/map/app-id/foo', value='root')
+        self.client.write('auth/app-id/map/user-id/bar', value='foo')
+
+        result = self.client.auth_app_id('foo', 'bar')
+
+    @raises(exceptions.InvalidPath)
+    def test_invalid_path(self):
+        self.client.read('secret/I/do/not/exist')
+
+    @raises(exceptions.InternalServerError)
+    def test_internal_server_error(self):
+        self.client.read('handler/does/not/exist')

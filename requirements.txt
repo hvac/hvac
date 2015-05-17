@@ -1,1 +1,2 @@
--e .
+requests
+six

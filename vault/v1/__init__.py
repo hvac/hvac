@@ -2,36 +2,17 @@ import requests
 
 from vault import exceptions
 
-def raise_for_status(func):
-    def decorator(*args, **kwargs):
-        response = func(*args, **kwargs)
-
-        if response.status_code >= 400 and response.status_code < 600:
-            errors = response.json().get('errors')
-
-            if response.status_code == 400:
-                raise exceptions.InvalidRequest(errors=errors)
-            elif response.status_code == 401:
-                raise exceptions.Unauthorized(errors=errors)
-            elif response.status_code == 404:
-                raise exceptions.InvalidPath(errors=errors)
-            elif response.status_code == 429:
-                raise exceptions.RateLimitExceeded(errors=errors)
-            elif response.status_code == 500:
-                raise exceptions.InternalServerError(errors=errors)
-            elif response.status_code == 503:
-                raise exceptions.VaultDown(errors=errors)
-            else:
-                raise exceptions.UnknownError()
-
-        return response
-
-    return decorator
-
 class Client(object):
-    def __init__(self, url, token):
+    def __init__(self, url='http://localhost:8200', token=None, cert=None,
+                 verify=True):
+        self._session = requests.Session()
+        self._session.cert = cert
+        self._session.verify = verify
+
         self._url = url
-        self._token = token
+
+        if token:
+            self.auth_token(token)
 
     def read(self, path):
         """
@@ -43,13 +24,165 @@ class Client(object):
         """
         PUT /<path>
         """
-        self._put('/v1/{}'.format(path), kwargs)
+        self._put('/v1/{}'.format(path), json=kwargs)
 
     def delete(self, path):
         """
         DELETE /<path>
         """
         self._delete('/v1/{}'.format(path))
+
+    def is_initialized(self):
+        """
+        GET /sys/init
+        """
+        return self._get('/v1/sys/init').json()['initialized']
+
+    def initialize(self, secret_shares=5, secret_threshold=3):
+        """
+        PUT /sys/init
+        """
+        params = {
+            'secret_shares': 5,
+            'secret_threshold': 3,
+        }
+
+        return self._put('/v1/sys/init', json=params).json()
+
+    @property
+    def seal_status(self):
+        """
+        GET /sys/seal-status
+        """
+        return self._get('/v1/sys/seal-status').json()
+
+    def seal(self):
+        """
+        PUT /sys/seal
+        """
+        self._put('/v1/sys/seal')
+
+    def unseal(self, secret_shares, key):
+        """
+        PUT /sys/unseal
+        """
+        params = {
+            'secret_shares': secret_shares,
+            'key': key,
+        }
+
+        return self._put('/v1/sys/unseal', json=params).json()
+
+    @property
+    def ha_status(self):
+        """
+        GET /sys/leader
+        """
+        return self._get('/v1/sys/leader').json()
+
+    def renew_secret(self, lease_id):
+        """
+        PUT /sys/renew/<lease id>
+        """
+        self._put('/v1/sys/renew/{}'.format(lease_id))
+
+    def revoke_secret(self, lease_id):
+        """
+        PUT /sys/revoke/<lease id>
+        """
+        self._put('/v1/sys/revoke/{}'.format(lease_id))
+
+    def revoke_secret_prefix(self, path_prefix):
+        """
+        PUT /sys/revoke-prefix/<path prefix>
+        """
+        self._put('/v1/sys/revoke-prefix/{}'.format(path_prefix))
+
+    def list_secret_backends(self):
+        """
+        GET /sys/mounts
+        """
+        return self._get('/v1/sys/mounts').json()
+
+    def enable_secret_backend(self, backend_type, description=None, mount_point=None):
+        """
+        POST /sys/auth/<mount point>
+        """
+        if not mount_point:
+            mount_point = backend_type
+
+        params = {
+            'type': backend_type,
+            'description': description,
+        }
+
+        self._post('/v1/sys/mounts/{}'.format(mount_point), json=params)
+
+    def disable_secret_backend(self, mount_point):
+        """
+        DELETE /sys/mounts/<mount point>
+        """
+        self._delete('/v1/sys/mounts/{}'.format(mount_point))
+
+    def remount_secret_backend(self, from_mount_point, to_mount_point):
+        """
+        POST /sys/remount
+        """
+        params = {
+            'from': from_mount_point,
+            'to': to_mount_point,
+        }
+
+        self._post('/v1/sys/remount', json=params)
+
+    def list_policies(self):
+        """
+        GET /sys/policy
+        """
+        return self._get('/v1/sys/policy').json()
+
+    def set_policy(self, name, rules):
+        """
+        PUT /sys/policy/<name>
+        """
+        params = {
+            'rules': rules,
+        }
+
+        self._put('/v1/sys/policy/{}'.format(name), json=params)
+
+    def delete_policy(self, name):
+        """
+        DELETE /sys/policy/<name>
+        """
+        self._delete('/v1/sys/policy/{}'.format(name))
+
+    def list_audit_backends(self):
+        """
+        GET /sys/audit
+        """
+        return self._get('/v1/sys/audit').json()
+
+    def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
+        """
+        POST /sys/audit/<name>
+        """
+        if not name:
+            name = backend_type
+
+        params = {
+            'type': backend_type,
+            'description': description,
+            'options': options,
+        }
+
+        self._post('/v1/sys/audit/{}'.format(name), json=params)
+
+    def disable_audit_backend(self, name):
+        """
+        DELETE /sys/audit/<name>
+        """
+        self._delete('/v1/sys/audit/{}'.format(name))
 
     def create_token(self, id=None, policies=None, metadata=None,
                      no_parent=False, lease=None, display_name=None,
@@ -67,7 +200,7 @@ class Client(object):
             'num_uses': num_uses,
         }
 
-        return self._post('/v1/auth/token/create', params).json()
+        return self._post('/v1/auth/token/create', json=params).json()
 
     def lookup_token(self, token=None):
         """
@@ -103,38 +236,74 @@ class Client(object):
             'increment': increment,
         }
 
-        return self._post('/v1/auth/token/renew/{}'.format(token), params).json()
+        return self._post('/v1/auth/token/renew/{}'.format(token), json=params).json()
 
-    def auth_app_id(self, app_id, user_id, change_to=True, mount_point='app-id'):
+    def logout(self):
+        self._session.cookies.clear()
+
+    def auth_app_id(self, app_id, user_id, mount_point='app-id'):
         """
         POST /auth/<mount point>/login
         """
+        self.logout()
+
         params = {
             'app_id': app_id,
             'user_id': user_id,
         }
 
-        result = self._post('/v1/auth/{}/login'.format(mount_point), params).json()
+        return self._post('/v1/auth/{}/login'.format(mount_point), json=params).json()
 
-        if change_to:
-            self._token = result['auth']['client_token']
+    def auth_tls(self, mount_point='cert'):
+        """
+        POST /auth/<mount point>/login
+        """
+        self.logout()
 
-        return result
+        return self._post('/v1/auth/{}/login'.format(mount_point)).json()
 
-    def auth_userpass(self, username, password, change_to=True, mount_point='userpass'):
+    def auth_token(self, token):
+        self.logout()
+
+        self._session.cookies['token'] = token
+
+        return self.lookup_token()
+
+    def auth_userpass(self, username, password, mount_point='userpass'):
         """
         POST /auth/<mount point>/login/<username>
         """
+        self.logout()
+
         params = {
             'password': password,
         }
 
-        result = self._post('/v1/auth/{}/login/{}'.format(mount_point, username), params).json()
+        return self._post('/v1/auth/{}/login/{}'.format(mount_point, username), json=params).json()
 
-        if change_to:
-            self._token = result['auth']['client_token']
+    def auth_ldap(self, username, password, mount_point='ldap'):
+        """
+        POST /auth/<mount point>/login/<username>
+        """
+        self.logout()
 
-        return result
+        params = {
+            'password': password,
+        }
+
+        return self._post('/v1/auth/{}/login/{}'.format(mount_point, username), json=params).json()
+
+    def auth_github(self, token, mount_point='github'):
+        """
+        POST /auth/<mount point>/login
+        """
+        self.logout()
+
+        params = {
+            'token': token,
+        }
+
+        return self._post('/v1/auth/{}/login'.format(mount_point), json=params).json()
 
     def list_auth_backends(self):
         """
@@ -142,19 +311,19 @@ class Client(object):
         """
         return self._get('/v1/sys/auth').json()
 
-    def enable_auth_backend(self, mount_point, auth_type=None, description=None):
+    def enable_auth_backend(self, backend_type, description=None, mount_point=None):
         """
         POST /sys/auth/<mount point>
         """
-        if not auth_type:
-            auth_type = mount_point
+        if not mount_point:
+            mount_point = backend_type
 
         params = {
-            'type': auth_type,
+            'type': backend_type,
             'description': description,
         }
 
-        self._post('/v1/sys/auth/{}'.format(mount_point), params)
+        self._post('/v1/sys/auth/{}'.format(mount_point), json=params)
 
     def disable_auth_backend(self, mount_point):
         """
@@ -162,22 +331,37 @@ class Client(object):
         """
         self._delete('/v1/sys/auth/{}'.format(mount_point))
 
-    @raise_for_status
     def _get(self, url, **kwargs):
-        return requests.get(self._url + url, cookies=self._cookies, **kwargs)
+        return self.__request('get', url, **kwargs)
 
-    @raise_for_status
-    def _post(self, url, data=None, **kwargs):
-        return requests.post(self._url + url, json=data, cookies=self._cookies, **kwargs)
+    def _post(self, url, **kwargs):
+        return self.__request('post', url, **kwargs)
 
-    @raise_for_status
-    def _put(self, url, data=None, **kwargs):
-        return requests.put(self._url + url, json=data, cookies=self._cookies, **kwargs)
+    def _put(self, url, **kwargs):
+        return self.__request('put', url, **kwargs)
 
-    @raise_for_status
     def _delete(self, url, **kwargs):
-        return requests.delete(self._url + url, cookies=self._cookies, **kwargs)
+        return self.__request('delete', url, **kwargs)
 
-    @property
-    def _cookies(self):
-        return {'token': self._token}
+    def __request(self, method, url, **kwargs):
+        response = self._session.request(method, self._url + url, **kwargs)
+
+        if response.status_code >= 400 and response.status_code < 600:
+            errors = response.json().get('errors')
+
+            if response.status_code == 400:
+                raise exceptions.InvalidRequest(errors=errors)
+            elif response.status_code == 401:
+                raise exceptions.Unauthorized(errors=errors)
+            elif response.status_code == 404:
+                raise exceptions.InvalidPath(errors=errors)
+            elif response.status_code == 429:
+                raise exceptions.RateLimitExceeded(errors=errors)
+            elif response.status_code == 500:
+                raise exceptions.InternalServerError(errors=errors)
+            elif response.status_code == 503:
+                raise exceptions.VaultDown(errors=errors)
+            else:
+                raise exceptions.UnknownError()
+
+        return response

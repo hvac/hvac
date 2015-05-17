@@ -1,9 +1,8 @@
 language: python
+sudo: required
 install:
-  - ci/start-vault-dev.sh
+  - bin/install-vault.sh
   - pip install tox
-script:
-  - VAULT_TOKEN=$(cat $HOME/.vault-token) tox
 env:
   - TOXENV=py27
   - TOXENV=py34
