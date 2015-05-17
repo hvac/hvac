@@ -1,6 +1,6 @@
-# python-vaultclient
+# HVAC
 
-Python 2/3 client for the [Hashicorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) secret management tool.
+[Hashicorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2/3
 
 [![Travis CI](https://travis-ci.org/ianunruh/python-vaultclient.svg?branch=master)](https://travis-ci.org/ianunruh/python-vaultclient)
 
