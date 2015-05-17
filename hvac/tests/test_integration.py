@@ -5,7 +5,7 @@ from unittest import TestCase
 import requests
 from nose.tools import *
 
-from vault import Client, exceptions
+from hvac import Client, exceptions
 
 class IntegrationTest(TestCase):
     @classmethod

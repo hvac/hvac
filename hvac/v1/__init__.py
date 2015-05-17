@@ -1,6 +1,6 @@
 import requests
 
-from vault import exceptions
+from hvac import exceptions
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None, cert=None,

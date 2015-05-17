@@ -11,9 +11,9 @@
 ```python
 import os
 
-import vault
+import hvac
 
-client = vault.Client(
+client = hvac.Client(
     url='https://localhost:8200',
     token=os.environ['VAULT_TOKEN'])
 ```
