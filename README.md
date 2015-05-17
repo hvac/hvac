@@ -55,6 +55,22 @@ client.auth_userpass('MY_USERNAME', 'MY_PASSWORD', mount_point='CUSTOM_MOUNT_POI
 client.logout()
 ```
 
+### Manage tokens
+
+```python
+token = client.create_token(policies=['root'], lease='1h')
+
+current_token = client.lookup_token()
+some_other_token = client.lookup_token('xxx')
+
+client.revoke_token('xxx')
+client.revoke_token('yyy', orphan=True)
+
+client.revoke_token_prefix('zzz')
+
+client.renew_token('aaa')
+```
+
 ### Manipulate auth backends
 
 ```python
@@ -78,7 +94,7 @@ client.remount_secret_backend('aws-us-east-1', 'aws-east')
 ### Manipulate policies
 
 ```python
-policies = client.list_policies()
+policies = client.list_policies() # => ['root']
 
 policy = """
 path "sys" {
