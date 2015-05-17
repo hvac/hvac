@@ -15,7 +15,7 @@ class IntegrationTest(TestCase):
 
     @classmethod
     def start_background(cls):
-        command = ["vault", "server", "-config=vault.hcl"]
+        command = ['vault', 'server', '-config=vault.hcl']
 
         process = subprocess.Popen(command,
                                    stdout=subprocess.PIPE,
@@ -26,12 +26,14 @@ class IntegrationTest(TestCase):
                 requests.get('http://localhost:8200/v1/sys/init').raise_for_status()
                 return process
             except:
-                print("Waiting for Vault to start")
+                print('Waiting for Vault to start')
                 time.sleep(0.1)
 
     @classmethod
     def initialize_vault(cls):
         client = Client()
+
+        assert not client.is_initialized()
 
         result = client.initialize()
 
@@ -42,6 +44,7 @@ class IntegrationTest(TestCase):
             client.unseal(5, key)
 
         cls.token = token
+        cls.keys = keys
 
     @classmethod
     def tearDownClass(cls):
@@ -52,6 +55,30 @@ class IntegrationTest(TestCase):
 
         self.client = Client()
         self.client.auth_token(cls.token)
+
+    def test_seal_unseal(self):
+        cls = type(self)
+
+        assert not self.client.seal_status['sealed']
+
+        self.client.seal()
+
+        assert self.client.seal_status['sealed']
+
+        try:
+            self.client.read('secret/foo')
+            assert False
+        except exceptions.InternalServerError:
+            # NOTE(ianunruh) https://github.com/hashicorp/vault/issues/213
+            assert True
+
+        for key in cls.keys[0:3]:
+            self.client.unseal(5, key)
+
+        assert not self.client.seal_status['sealed']
+
+    def test_ha_status(self):
+        assert 'ha_enabled' in self.client.ha_status
 
     def test_generic_secret_backend(self):
         self.client.write('secret/foo', zap='zip')
@@ -69,6 +96,51 @@ class IntegrationTest(TestCase):
 
         self.client.disable_auth_backend('github')
         assert 'github/' not in self.client.list_auth_backends()
+
+    def test_secret_backend_manipulation(self):
+        assert 'test/' not in self.client.list_secret_backends()
+
+        self.client.enable_secret_backend('generic', mount_point='test')
+        assert 'test/' in self.client.list_secret_backends()
+
+        self.client.remount_secret_backend('test', 'foobar')
+        assert 'test/' not in self.client.list_secret_backends()
+        assert 'foobar/' in self.client.list_secret_backends()
+
+        self.client.disable_secret_backend('foobar')
+        assert 'foobar/' not in self.client.list_secret_backends()
+
+    def test_audit_backend_manipulation(self):
+        assert 'tmpfile/' not in self.client.list_audit_backends()
+
+        options = {
+            'path': '/tmp/vault.audit.log'
+        }
+
+        self.client.enable_audit_backend('file', options=options, name='tmpfile')
+        assert 'tmpfile/' in self.client.list_audit_backends()
+
+        self.client.disable_audit_backend('tmpfile')
+        assert 'tmpfile/' not in self.client.list_audit_backends()
+
+    def test_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+
+        policy = """
+        path "sys" {
+          policy = "deny"
+        }
+
+        path "secret" {
+          policy = "write"
+        }
+        """
+
+        self.client.set_policy('test', policy)
+        assert 'test' in self.client.list_policies()
+
+        self.client.delete_policy('test')
+        assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
         result = self.client.create_token(lease='1h')

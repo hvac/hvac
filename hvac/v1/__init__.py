@@ -84,7 +84,7 @@ class Client(object):
         """
         PUT /sys/renew/<lease id>
         """
-        self._put('/v1/sys/renew/{}'.format(lease_id))
+        return self._put('/v1/sys/renew/{}'.format(lease_id)).json()
 
     def revoke_secret(self, lease_id):
         """
@@ -139,7 +139,7 @@ class Client(object):
         """
         GET /sys/policy
         """
-        return self._get('/v1/sys/policy').json()
+        return self._get('/v1/sys/policy').json()['policies']
 
     def set_policy(self, name, rules):
         """
