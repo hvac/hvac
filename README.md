@@ -2,7 +2,7 @@
 
 [Hashicorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2/3
 
-[![Travis CI](https://travis-ci.org/ianunruh/python-vaultclient.svg?branch=master)](https://travis-ci.org/ianunruh/python-vaultclient)
+[![Travis CI](https://travis-ci.org/ianunruh/hvac.svg?branch=master)](https://travis-ci.org/ianunruh/hvac)
 
 ## Usage
 
