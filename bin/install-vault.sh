@@ -10,4 +10,4 @@ cd /tmp
 
 curl -sOL https://dl.bintray.com/mitchellh/vault/vault_${VAULT_VERSION}_linux_amd64.zip
 unzip vault_${VAULT_VERSION}_linux_amd64.zip
-mv vault /usr/local/bin
+sudo mv vault /usr/local/bin
