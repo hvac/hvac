@@ -4,7 +4,7 @@ install:
   - bin/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
 script:
-  - tox
+  - tox -- -a !tls
 env:
   - TOXENV=py27 VAULT_BRANCH=release
   - TOXENV=py34 VAULT_BRANCH=release
