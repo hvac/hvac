@@ -155,17 +155,17 @@ result = client.initialize(shares, threshold)
 
 print(client.is_initialized()) # => True
 
-print(client.seal_status['sealed']) # => True
+print(client.is_sealed()) # => True
 
 client.unseal(result['keys'][0])
 client.unseal(result['keys'][1])
 client.unseal(result['keys'][2])
 
-print(client.seal_status['sealed']) # => False
+print(client.is_sealed()) # => False
 
 client.seal()
 
-print(client.seal_status['sealed']) # => True
+print(client.is_sealed()) # => True
 ```
 
 ## Testing

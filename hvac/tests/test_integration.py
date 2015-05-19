@@ -30,11 +30,11 @@ class IntegrationTest(TestCase):
     def test_seal_unseal(self):
         cls = type(self)
 
-        assert not self.client.seal_status['sealed']
+        assert not self.client.is_sealed()
 
         self.client.seal()
 
-        assert self.client.seal_status['sealed']
+        assert self.client.is_sealed()
 
         try:
             self.client.read('secret/foo')
@@ -45,7 +45,7 @@ class IntegrationTest(TestCase):
 
         cls.manager.unseal()
 
-        assert not self.client.seal_status['sealed']
+        assert not self.client.is_sealed()
 
     def test_ha_status(self):
         assert 'ha_enabled' in self.client.ha_status

@@ -56,6 +56,9 @@ class Client(object):
         """
         return self._get('/v1/sys/seal-status').json()
 
+    def is_sealed(self):
+        return self.seal_status['sealed']
+
     def seal(self):
         """
         PUT /sys/seal
