@@ -157,9 +157,9 @@ print(client.is_initialized()) # => True
 
 print(client.seal_status['sealed']) # => True
 
-client.unseal(shares, result['keys'][0])
-client.unseal(shares, result['keys'][1])
-client.unseal(shares, result['keys'][2])
+client.unseal(result['keys'][0])
+client.unseal(result['keys'][1])
+client.unseal(result['keys'][2])
 
 print(client.seal_status['sealed']) # => False
 

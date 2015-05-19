@@ -62,12 +62,11 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
-    def unseal(self, secret_shares, key):
+    def unseal(self, key):
         """
         PUT /sys/unseal
         """
         params = {
-            'secret_shares': secret_shares,
             'key': key,
         }
 

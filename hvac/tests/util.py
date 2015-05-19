@@ -47,4 +47,4 @@ class ServerManager(object):
 
     def unseal(self):
         for key in self.keys[0:3]:
-            self.client.unseal(5, key)
+            self.client.unseal(key)
