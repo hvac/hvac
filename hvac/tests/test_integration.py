@@ -1,60 +1,31 @@
-import subprocess
-import time
 from unittest import TestCase
 
-import requests
 from nose.tools import *
+import requests
 
 from hvac import Client, exceptions
+from hvac.tests import util
+
+def create_client():
+    return Client()
 
 class IntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.process = cls.start_background()
-        cls.initialize_vault()
-
-    @classmethod
-    def start_background(cls):
-        command = ['vault', 'server', '-config=vault.hcl']
-
-        process = subprocess.Popen(command,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-
-        while True:
-            try:
-                requests.get('http://localhost:8200/v1/sys/init').raise_for_status()
-                return process
-            except:
-                print('Waiting for Vault to start')
-                time.sleep(0.1)
-
-    @classmethod
-    def initialize_vault(cls):
-        client = Client()
-
-        assert not client.is_initialized()
-
-        result = client.initialize()
-
-        token = result['root_token']
-        keys = result['keys']
-
-        for key in keys[0:3]:
-            client.unseal(5, key)
-
-        cls.token = token
-        cls.keys = keys
+        cls.manager = util.ServerManager(config_path='test/vault.hcl', client=create_client())
+        cls.manager.start()
+        cls.manager.initialize()
+        cls.manager.unseal()
 
     @classmethod
     def tearDownClass(cls):
-        cls.process.kill()
+        cls.manager.stop()
 
     def setUp(self):
         cls = type(self)
 
-        self.client = Client()
-        self.client.auth_token(cls.token)
+        self.client = create_client()
+        self.client.auth_token(cls.manager.root_token)
 
     def test_seal_unseal(self):
         cls = type(self)
@@ -72,8 +43,7 @@ class IntegrationTest(TestCase):
             # NOTE(ianunruh) https://github.com/hashicorp/vault/issues/213
             assert True
 
-        for key in cls.keys[0:3]:
-            self.client.unseal(5, key)
+        cls.manager.unseal()
 
         assert not self.client.seal_status['sealed']
 
