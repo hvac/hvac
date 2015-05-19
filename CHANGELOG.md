@@ -3,6 +3,7 @@
 IMPROVEMENTS:
 
 * Add `is_sealed` convenience method
+* Add `unseal_multi` convenience method
 
 BUG FIXES:
 

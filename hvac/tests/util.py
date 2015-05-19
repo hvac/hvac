@@ -46,5 +46,4 @@ class ServerManager(object):
         self.keys = result['keys']
 
     def unseal(self):
-        for key in self.keys[0:3]:
-            self.client.unseal(key)
+        self.client.unseal_multi(self.keys)

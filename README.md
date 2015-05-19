@@ -153,13 +153,20 @@ threshold = 3
 
 result = client.initialize(shares, threshold)
 
+root_token = result['root_token']
+keys = result['keys']
+
 print(client.is_initialized()) # => True
 
 print(client.is_sealed()) # => True
 
-client.unseal(result['keys'][0])
-client.unseal(result['keys'][1])
-client.unseal(result['keys'][2])
+# unseal with individual keys
+client.unseal(keys[0])
+client.unseal(keys[1])
+client.unseal(keys[2])
+
+# unseal with multiple keys until threshold met
+client.unseal_multi(keys)
 
 print(client.is_sealed()) # => False
 

@@ -75,6 +75,12 @@ class Client(object):
 
         return self._put('/v1/sys/unseal', json=params).json()
 
+    def unseal_multi(self, keys):
+        for key in keys:
+            result = self.unseal(key)
+            if not result['sealed']:
+                return
+
     @property
     def ha_status(self):
         """
