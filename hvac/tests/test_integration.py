@@ -36,13 +36,6 @@ class IntegrationTest(TestCase):
 
         assert self.client.is_sealed()
 
-        try:
-            self.client.read('secret/foo')
-            assert False
-        except exceptions.InternalServerError:
-            # NOTE(ianunruh) https://github.com/hashicorp/vault/issues/213
-            assert True
-
         cls.manager.unseal()
 
         assert not self.client.is_sealed()
