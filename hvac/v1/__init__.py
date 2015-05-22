@@ -3,13 +3,15 @@ import requests
 from hvac import exceptions
 
 class Client(object):
-    def __init__(self, url='http://localhost:8200', token=None, cert=None,
-                 verify=True):
+    def __init__(self, url=None, token=None, cert=None, verify=True):
+        if not url:
+            url = 'http://localhost:8200'
+
+        self._url = url
+
         self._session = requests.Session()
         self._session.cert = cert
         self._session.verify = verify
-
-        self._url = url
 
         if token:
             self.auth_token(token)
