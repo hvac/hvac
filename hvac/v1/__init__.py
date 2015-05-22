@@ -9,12 +9,10 @@ class Client(object):
 
         self._url = url
 
-        self._session = requests.Session()
-        self._session.cert = cert
-        self._session.verify = verify
+        self._cert = cert
+        self._verify = verify
 
-        if token:
-            self.auth_token(token)
+        self.token = token
 
     def read(self, path):
         """
@@ -249,71 +247,65 @@ class Client(object):
         return self._post('/v1/auth/token/renew/{}'.format(token), json=params).json()
 
     def logout(self):
-        self._session.cookies.clear()
+        """
+        Clears the token used for authentication
+        """
+        self.token = None
 
-    def auth_app_id(self, app_id, user_id, mount_point='app-id'):
+    def auth_app_id(self, app_id, user_id, mount_point='app-id', use_token=True):
         """
         POST /auth/<mount point>/login
         """
-        self.logout()
-
         params = {
             'app_id': app_id,
             'user_id': user_id,
         }
 
-        return self._post('/v1/auth/{}/login'.format(mount_point), json=params).json()
+        return self.auth('/v1/auth/{}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def auth_tls(self, mount_point='cert'):
+    def auth_tls(self, mount_point='cert', use_token=True):
         """
         POST /auth/<mount point>/login
         """
-        self.logout()
+        return self.auth('/v1/auth/{}/login'.format(mount_point), use_token=use_token)
 
-        return self._post('/v1/auth/{}/login'.format(mount_point)).json()
-
-    def auth_token(self, token):
-        self.logout()
-
-        self._session.cookies['token'] = token
-
-        return self.lookup_token()
-
-    def auth_userpass(self, username, password, mount_point='userpass'):
+    def auth_userpass(self, username, password, mount_point='userpass', use_token=True):
         """
         POST /auth/<mount point>/login/<username>
         """
-        self.logout()
-
         params = {
             'password': password,
         }
 
-        return self._post('/v1/auth/{}/login/{}'.format(mount_point, username), json=params).json()
+        return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_ldap(self, username, password, mount_point='ldap'):
+    def auth_ldap(self, username, password, mount_point='ldap', use_token=True):
         """
         POST /auth/<mount point>/login/<username>
         """
-        self.logout()
-
         params = {
             'password': password,
         }
 
-        return self._post('/v1/auth/{}/login/{}'.format(mount_point, username), json=params).json()
+        return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_github(self, token, mount_point='github'):
+    def auth_github(self, token, mount_point='github', use_token=True):
         """
         POST /auth/<mount point>/login
         """
-        self.logout()
-
         params = {
             'token': token,
         }
 
-        return self._post('/v1/auth/{}/login'.format(mount_point), json=params).json()
+        return self.auth('/v1/auth/{}/login'.format(mount_point), json=params, use_token=use_token)
+
+    def auth(self, url, use_token=True, **kwargs):
+        response = self._post(url, **kwargs).json()
+
+        if use_token:
+            self.token = response['auth']['client_token']
+
+        return response
 
     def list_auth_backends(self):
         """
@@ -353,8 +345,21 @@ class Client(object):
     def _delete(self, url, **kwargs):
         return self.__request('delete', url, **kwargs)
 
-    def __request(self, method, url, **kwargs):
-        response = self._session.request(method, self._url + url, **kwargs)
+    def __request(self, method, url, headers=None, **kwargs):
+        url = self._url + url
+
+        if not headers:
+            headers = {}
+
+        if self.token:
+            headers['X-Vault-Token'] = self.token
+
+        response = requests.request(method,
+                                    url,
+                                    cert=self._cert,
+                                    verify=self._verify, 
+                                    headers=headers,
+                                    **kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')

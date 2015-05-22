@@ -6,8 +6,8 @@ import requests
 from hvac import Client, exceptions
 from hvac.tests import util
 
-def create_client():
-    return Client()
+def create_client(**kwargs):
+    return Client(**kwargs)
 
 class IntegrationTest(TestCase):
     @classmethod
@@ -24,8 +24,7 @@ class IntegrationTest(TestCase):
     def setUp(self):
         cls = type(self)
 
-        self.client = create_client()
-        self.client.auth_token(cls.manager.root_token)
+        self.client = create_client(token=cls.manager.root_token)
 
     def test_seal_unseal(self):
         cls = type(self)
@@ -130,6 +129,8 @@ class IntegrationTest(TestCase):
 
         result = self.client.auth_userpass('testuser', 'testpass')
 
+        assert self.client.token == result['auth']['client_token']
+
     def test_app_id_auth(self):
         self.client.enable_auth_backend('app-id')
 
@@ -137,6 +138,8 @@ class IntegrationTest(TestCase):
         self.client.write('auth/app-id/map/user-id/bar', value='foo')
 
         result = self.client.auth_app_id('foo', 'bar')
+
+        assert self.client.token == result['auth']['client_token']
 
     @raises(exceptions.InvalidPath)
     def test_invalid_path(self):
