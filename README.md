@@ -4,6 +4,8 @@
 
 [![Travis CI](https://travis-ci.org/ianunruh/hvac.svg?branch=master)](https://travis-ci.org/ianunruh/hvac) [![Latest Version](https://pypip.in/version/hvac/badge.svg)](https://pypi.python.org/pypi/hvac/)
 
+Tested against Vault v0.1.2 and HEAD. Requires v0.1.2 or later.
+
 ## Getting started
 
 ### Installation
