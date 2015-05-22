@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eux
 
+export GOPATH=$HOME/go
+mkdir $GOPATH
+
+export PATH=$GOPATH/bin:$PATH
+
 go get github.com/tools/godep
 go get github.com/mitchellh/gox
 
