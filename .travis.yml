@@ -1,10 +1,14 @@
 language: python
 sudo: required
 install:
-  - bin/install-vault.sh
+  - bin/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
 script:
   - tox
 env:
-  - TOXENV=py27
-  - TOXENV=py34
+  - TOXENV=py27 VAULT_BRANCH=release
+  - TOXENV=py34 VAULT_BRANCH=release
+  - TOXENV=py34 VAULT_BRANCH=head
+matrix:
+  allow_failures:
+    - env: TOXENV=py34 VAULT_BRANCH=head
