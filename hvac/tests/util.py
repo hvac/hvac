@@ -1,3 +1,4 @@
+import re
 import subprocess
 import time
 
@@ -47,3 +48,7 @@ class ServerManager(object):
 
     def unseal(self):
         self.client.unseal_multi(self.keys)
+
+def match_version(pattern):
+    version = subprocess.check_output(['vault', 'version']).decode('ascii')
+    return re.match(pattern, version)

@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from nose.plugins.attrib import attr
 from nose.tools import *
@@ -31,6 +31,7 @@ class TLSIntegrationTest(TestCase):
 
         self.client = create_client(token=cls.manager.root_token)
 
+    @skipIf(util.match_version('Vault v0.1.2$'), 'TLS auth broken in Vault v0.1.2')
     def test_tls_auth(self):
         self.client.enable_auth_backend('cert')
 
