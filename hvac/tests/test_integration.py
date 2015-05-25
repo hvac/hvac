@@ -49,6 +49,9 @@ class IntegrationTest(TestCase):
         assert result['data']['zap'] == 'zip'
 
         self.client.delete('secret/foo')
+        
+    def test_read_nonexistent_key(self):
+        assert not self.client.read('secret/I/dont/exist')
 
     def test_auth_backend_manipulation(self):
         assert 'github/' not in self.client.list_auth_backends()
@@ -142,10 +145,6 @@ class IntegrationTest(TestCase):
 
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
-
-    @raises(exceptions.InvalidPath)
-    def test_invalid_path(self):
-        self.client.read('secret/I/do/not/exist')
 
     @raises(exceptions.InternalServerError)
     def test_internal_server_error(self):

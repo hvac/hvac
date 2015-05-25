@@ -18,7 +18,10 @@ class Client(object):
         """
         GET /<path>
         """
-        return self._get('/v1/{}'.format(path)).json()
+        try:
+            return self._get('/v1/{}'.format(path)).json()
+        except exceptions.InvalidPath:
+            return None
 
     def write(self, path, **kwargs):
         """
