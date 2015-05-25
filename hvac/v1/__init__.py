@@ -252,6 +252,19 @@ class Client(object):
         """
         self.token = None
 
+    def is_authenticated(self):
+        """
+        Helper method which returns the authentication status of the client
+        """
+        if not self.token:
+            return False
+
+        try:
+            self.lookup_token()
+            return True
+        except exceptions.InvalidPath:
+            return False
+
     def auth_app_id(self, app_id, user_id, mount_point='app-id', use_token=True):
         """
         POST /auth/<mount point>/login

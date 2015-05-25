@@ -130,6 +130,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_userpass('testuser', 'testpass')
 
         assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
 
     def test_app_id_auth(self):
         self.client.enable_auth_backend('app-id')
@@ -140,6 +141,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_app_id('foo', 'bar')
 
         assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
 
     @raises(exceptions.InvalidPath)
     def test_invalid_path(self):
@@ -148,3 +150,14 @@ class IntegrationTest(TestCase):
     @raises(exceptions.InternalServerError)
     def test_internal_server_error(self):
         self.client.read('handler/does/not/exist')
+
+    def test_invalid_token(self):
+        client = create_client(token='not-a-real-token')
+        assert not client.is_authenticated()
+
+    def test_client_authenticated(self):
+        assert self.client.is_authenticated()
+
+    def test_client_logout(self):
+        self.client.logout()
+        assert not self.client.is_authenticated()
