@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='hvac',
-    version='0.1.1',
+    version='0.2.0',
     description='HashiCorp Vault API client',
     author='Ian Unruh',
     author_email='ianunruh@gmail.com',
