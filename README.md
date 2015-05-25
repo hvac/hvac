@@ -147,7 +147,7 @@ client.delete_policy('oldthing')
 
 ### Manipulate audit backends
 
-```
+```python
 backends = client.list_audit_backends()
 
 options = {
