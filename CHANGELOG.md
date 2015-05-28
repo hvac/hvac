@@ -1,3 +1,9 @@
+## 0.2.1 (unreleased)
+
+BUG FIXES:
+
+* Use arguments passed to `initialize` method
+
 ## 0.2.0 (May 25th, 2015)
 
 BACKWARDS COMPATIBILITY NOTICE:
