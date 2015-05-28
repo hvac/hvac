@@ -46,8 +46,8 @@ class Client(object):
         PUT /sys/init
         """
         params = {
-            'secret_shares': 5,
-            'secret_threshold': 3,
+            'secret_shares': secret_shares,
+            'secret_threshold': secret_threshold,
         }
 
         return self._put('/v1/sys/init', json=params).json()
@@ -373,7 +373,7 @@ class Client(object):
         response = requests.request(method,
                                     url,
                                     cert=self._cert,
-                                    verify=self._verify, 
+                                    verify=self._verify,
                                     headers=headers,
                                     **kwargs)
 
