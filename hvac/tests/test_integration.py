@@ -26,6 +26,22 @@ class IntegrationTest(TestCase):
 
         self.client = create_client(token=cls.manager.root_token)
 
+    def test_unseal_multi(self):
+        cls = type(self)
+
+        self.client.seal()
+
+        keys = cls.manager.keys
+
+        result = self.client.unseal_multi(keys[0:2])
+
+        assert result['sealed']
+        assert result['progress'] == 2
+
+        result = self.client.unseal_multi(keys[2:3])
+
+        assert not result['sealed']
+
     def test_seal_unseal(self):
         cls = type(self)
 
