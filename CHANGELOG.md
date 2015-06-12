@@ -1,3 +1,13 @@
+## 0.2.2 (June 12th, 2015)
+
+BUG FIXES:
+
+* Restrict `requests` dependency to 2.5.0 or later
+
+IMPROVEMENTS:
+
+* Return latest seal status from `unseal_multi`
+
 ## 0.2.1 (June 3rd, 2015)
 
 BUG FIXES:
