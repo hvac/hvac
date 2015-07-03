@@ -1,3 +1,9 @@
+## 0.2.3 (unreleased)
+
+BUG Fixes
+
+* Fix error handling for next Vault release
+
 ## 0.2.2 (June 12th, 2015)
 
 BUG FIXES:

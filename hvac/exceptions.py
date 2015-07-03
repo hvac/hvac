@@ -13,6 +13,9 @@ class InvalidRequest(VaultError):
 class Unauthorized(VaultError):
     pass
 
+class Forbidden(VaultError):
+    pass
+
 class InvalidPath(VaultError):
     pass
 

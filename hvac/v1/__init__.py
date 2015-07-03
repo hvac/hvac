@@ -388,6 +388,8 @@ class Client(object):
                 raise exceptions.InvalidRequest(errors=errors)
             elif response.status_code == 401:
                 raise exceptions.Unauthorized(errors=errors)
+            elif response.status_code == 403:
+                raise exceptions.Forbidden(errors=errors)
             elif response.status_code == 404:
                 raise exceptions.InvalidPath(errors=errors)
             elif response.status_code == 429:
@@ -397,6 +399,6 @@ class Client(object):
             elif response.status_code == 503:
                 raise exceptions.VaultDown(errors=errors)
             else:
-                raise exceptions.UnknownError()
+                raise exceptions.UnexpectedError()
 
         return response
