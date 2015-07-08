@@ -31,7 +31,7 @@ class TLSIntegrationTest(TestCase):
 
         self.client = create_client(token=cls.manager.root_token)
 
-    @skipIf(util.match_version('Vault v0.1.2$'), 'TLS auth broken in Vault v0.1.2')
+    @skipIf(util.match_version('<0.2.0'), 'TLS broken before 0.2.0')
     def test_tls_auth(self):
         self.client.enable_auth_backend('cert')
 

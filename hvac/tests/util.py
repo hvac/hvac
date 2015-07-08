@@ -2,6 +2,8 @@ import re
 import subprocess
 import time
 
+from semantic_version import Spec, Version
+
 class ServerManager(object):
     def __init__(self, config_path, client):
         self.config_path = config_path
@@ -49,6 +51,10 @@ class ServerManager(object):
     def unseal(self):
         self.client.unseal_multi(self.keys)
 
-def match_version(pattern):
-    version = subprocess.check_output(['vault', 'version']).decode('ascii')
-    return re.match(pattern, version)
+VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+
+def match_version(spec):
+    output = subprocess.check_output(['vault', 'version']).decode('ascii')
+    version = Version(VERSION_REGEX.match(output).group(1))
+
+    return Spec(spec).match(version)
