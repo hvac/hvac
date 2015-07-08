@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from nose.tools import *
 import requests
@@ -179,3 +179,34 @@ class IntegrationTest(TestCase):
     def test_client_logout(self):
         self.client.logout()
         assert not self.client.is_authenticated()
+
+    @skipIf(util.match_version('<0.2.0'), 'Rekey API added in 0.2.0')
+    def test_rekey(self):
+        cls = type(self)
+
+        assert not self.client.rekey_status['started']
+
+        self.client.start_rekey()
+        assert self.client.rekey_status['started']
+
+        self.client.cancel_rekey()
+        assert not self.client.rekey_status['started']
+
+        self.client.start_rekey()
+
+        for key in cls.manager.keys:
+            result = self.client.rekey(key)
+            if result['complete']:
+                cls.manager.keys = result['keys']
+                assert not self.client.rekey_status['started']
+                break
+
+        cls.manager.unseal()
+
+    @skipIf(util.match_version('<0.2.0'), 'Rotate API added in 0.2.0')
+    def test_rotate(self):
+        status = self.client.key_status
+
+        self.client.rotate()
+
+        assert self.client.key_status['term'] > status['term']

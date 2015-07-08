@@ -89,6 +89,53 @@ class Client(object):
         return result
 
     @property
+    def key_status(self):
+        """
+        GET /sys/key-status
+        """
+        return self._get('/v1/sys/key-status').json()
+
+    def rotate(self):
+        """
+        PUT /sys/rotate
+        """
+        self._put('/v1/sys/rotate')
+
+    @property
+    def rekey_status(self):
+        """
+        GET /sys/rekey/init
+        """
+        return self._get('/v1/sys/rekey/init').json()
+
+    def start_rekey(self, secret_shares=5, secret_threshold=3):
+        """
+        PUT /sys/rekey/init
+        """
+        params = {
+            'secret_shares': secret_shares,
+            'secret_threshold': secret_threshold,
+        }
+
+        self._put('/v1/sys/rekey/init', json=params)
+
+    def cancel_rekey(self):
+        """
+        DELETE /sys/rekey/init
+        """
+        self._delete('/v1/sys/rekey/init')
+
+    def rekey(self, key):
+        """
+        PUT /sys/rekey/update
+        """
+        params = {
+            'key': key,
+        }
+
+        return self._put('/v1/sys/rekey/update', json=params).json()
+
+    @property
     def ha_status(self):
         """
         GET /sys/leader
