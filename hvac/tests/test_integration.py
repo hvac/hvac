@@ -138,6 +138,8 @@ class IntegrationTest(TestCase):
         try:
             lookup = self.client.lookup_token(result['auth']['client_token'])
             assert False
+        except exceptions.Forbidden:
+            assert True
         except exceptions.InvalidPath:
             assert True
 
@@ -162,9 +164,6 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
-    @raises(exceptions.InternalServerError)
-    def test_internal_server_error(self):
-        self.client.read('handler/does/not/exist')
     def test_missing_token(self):
         client = create_client()
         assert not client.is_authenticated()
