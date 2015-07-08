@@ -269,6 +269,8 @@ class Client(object):
         try:
             self.lookup_token()
             return True
+        except exceptions.Forbidden:
+            return False
         except exceptions.InvalidPath:
             return False
 

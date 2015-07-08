@@ -165,6 +165,9 @@ class IntegrationTest(TestCase):
     @raises(exceptions.InternalServerError)
     def test_internal_server_error(self):
         self.client.read('handler/does/not/exist')
+    def test_missing_token(self):
+        client = create_client()
+        assert not client.is_authenticated()
 
     def test_invalid_token(self):
         client = create_client(token='not-a-real-token')
