@@ -1,8 +1,12 @@
-## 0.2.3 (unreleased)
+## 0.2.3 (July 18th, 2015)
 
 BUG Fixes
 
 * Fix error handling for next Vault release
+
+IMPROVEMENTS:
+
+* Add support for rekey/rotate APIs
 
 ## 0.2.2 (June 12th, 2015)
 
