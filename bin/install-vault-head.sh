@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eux
 
+mkdir -p $HOME/bin
+
 export GOPATH=$HOME/go
 mkdir $GOPATH
 
@@ -13,4 +15,4 @@ git clone https://github.com/hashicorp/vault.git $GOPATH/src/github.com/hashicor
 cd $GOPATH/src/github.com/hashicorp/vault
 make dev
 
-sudo mv bin/vault /usr/local/bin
+mv bin/vault $HOME/bin

@@ -1,9 +1,9 @@
 language: python
-sudo: required
 install:
   - bin/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
 script:
+  - export PATH=$HOME/bin:$PATH
   - tox -- -a !tls
 env:
   - TOXENV=py27 VAULT_BRANCH=release
