@@ -27,7 +27,10 @@ class Client(object):
         """
         PUT /<path>
         """
-        self._put('/v1/{}'.format(path), json=kwargs)
+        response = self._put('/v1/{}'.format(path), json=kwargs)
+
+        if response.status_code == 200:
+            return response.json()
 
     def delete(self, path):
         """

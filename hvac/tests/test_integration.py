@@ -65,7 +65,20 @@ class IntegrationTest(TestCase):
         assert result['data']['zap'] == 'zip'
 
         self.client.delete('secret/foo')
-        
+
+    def test_write_with_response(self):
+        self.client.enable_secret_backend('transit')
+
+        plaintext = 'test'
+
+        self.client.write('transit/keys/foo')
+
+        result = self.client.write('transit/encrypt/foo', plaintext=plaintext)
+        ciphertext = result['data']['ciphertext']
+
+        result = self.client.write('transit/decrypt/foo', ciphertext=ciphertext)
+        assert result['data']['plaintext'] == plaintext
+
     def test_read_nonexistent_key(self):
         assert not self.client.read('secret/I/dont/exist')
 
