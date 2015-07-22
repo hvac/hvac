@@ -1,6 +1,12 @@
+## 0.2.4 (unreleased)
+
+BUG FIXES
+
+* Fix write response handling [GH-19]
+
 ## 0.2.3 (July 18th, 2015)
 
-BUG Fixes
+BUG FIXES
 
 * Fix error handling for next Vault release
 
