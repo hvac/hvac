@@ -1,4 +1,4 @@
-## 0.2.4 (unreleased)
+## 0.2.4 (July 23rd, 2015)
 
 BUG FIXES
 
