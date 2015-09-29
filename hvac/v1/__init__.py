@@ -347,23 +347,27 @@ class Client(object):
         """
         return self.auth('/v1/auth/{}/login'.format(mount_point), use_token=use_token)
 
-    def auth_userpass(self, username, password, mount_point='userpass', use_token=True):
+    def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """
         POST /auth/<mount point>/login/<username>
         """
         params = {
             'password': password,
         }
+
+        params.update(kwargs)
 
         return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_ldap(self, username, password, mount_point='ldap', use_token=True):
+    def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
         POST /auth/<mount point>/login/<username>
         """
         params = {
             'password': password,
         }
+
+        params.update(kwargs)
 
         return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
