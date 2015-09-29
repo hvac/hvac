@@ -1,6 +1,16 @@
+## 0.2.5 (September 29, 2015)
+
+IMPROVEMENTS:
+
+* Add support for API changes/additions in Vault v0.3.0
+
+    * Tunable config on secret backends
+    * MFA on username/password and LDAP auth backends
+    * PGP encryption for unseal keys
+
 ## 0.2.4 (July 23rd, 2015)
 
-BUG FIXES
+BUG FIXES:
 
 * Fix write response handling [GH-19]
 
