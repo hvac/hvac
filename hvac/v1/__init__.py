@@ -175,7 +175,7 @@ class Client(object):
         """
         return self._get('/v1/sys/mounts').json()
 
-    def enable_secret_backend(self, backend_type, description=None, mount_point=None):
+    def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None):
         """
         POST /sys/auth/<mount point>
         """
@@ -185,6 +185,7 @@ class Client(object):
         params = {
             'type': backend_type,
             'description': description,
+            'config': config,
         }
 
         self._post('/v1/sys/mounts/{}'.format(mount_point), json=params)
