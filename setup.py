@@ -11,7 +11,7 @@ setup(
     keywords=['hashicorp', 'vault'],
     packages=find_packages(),
     install_requires=[
-        'requests',
+        'requests>=2.7.0',
         'six',
     ],
 )
