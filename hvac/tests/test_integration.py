@@ -202,6 +202,20 @@ class IntegrationTest(TestCase):
         self.client.logout()
         assert not self.client.is_authenticated()
 
+    @skipIf(util.match_version('<0.3.0'), 'Revoke self token added in 0.3.0')
+    def test_revoke_self_token(self):
+        if 'userpass/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('userpass')
+
+        self.client.enable_auth_backend('userpass')
+
+        self.client.write('auth/userpass/users/testuser', password='testpass', policies='root')
+
+        result = self.client.auth_userpass('testuser', 'testpass')
+
+        self.client.revoke_self_token()
+        assert not self.client.is_authenticated()
+
     @skipIf(util.match_version('<0.2.0'), 'Rekey API added in 0.2.0')
     def test_rekey(self):
         cls = type(self)

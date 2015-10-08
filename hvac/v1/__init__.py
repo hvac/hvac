@@ -169,6 +169,12 @@ class Client(object):
         """
         self._put('/v1/sys/revoke-prefix/{}'.format(path_prefix))
 
+    def revoke_self_token(self):
+        """
+        PUT /auth/token/revoke-self
+        """
+        self._put('/v1/auth/token/revoke-self')
+
     def list_secret_backends(self):
         """
         GET /sys/mounts
@@ -310,10 +316,13 @@ class Client(object):
 
         return self._post('/v1/auth/token/renew/{}'.format(token), json=params).json()
 
-    def logout(self):
+    def logout(self, revoke_token=False):
         """
-        Clears the token used for authentication
+        Clears the token used for authentication, optionally revoking it before doing so
         """
+        if revoke_token:
+            self.revoke_self_token()
+
         self.token = None
 
     def is_authenticated(self):
