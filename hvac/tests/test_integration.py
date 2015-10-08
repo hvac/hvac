@@ -157,6 +157,9 @@ class IntegrationTest(TestCase):
             assert True
 
     def test_userpass_auth(self):
+        if 'userpass/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('userpass')
+
         self.client.enable_auth_backend('userpass')
 
         self.client.write('auth/userpass/users/testuser', password='testpass', policies='root')
@@ -166,7 +169,12 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
+        self.client.disable_auth_backend('userpass')
+
     def test_app_id_auth(self):
+        if 'app-id/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('app-id')
+
         self.client.enable_auth_backend('app-id')
 
         self.client.write('auth/app-id/map/app-id/foo', value='root')
@@ -176,6 +184,8 @@ class IntegrationTest(TestCase):
 
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
+
+        self.client.disable_auth_backend('app-id')
 
     def test_missing_token(self):
         client = create_client()
