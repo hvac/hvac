@@ -31,12 +31,37 @@ class Client(object):
 
         if response.status_code == 200:
             return response.json()
+            
+    def update(self, path, **kwargs):
+        """
+        UPDATE /<path>
+        """
+        data = self._get('/v1/{}'.format(path)).json()['data']
+        for field in kwargs:
+            data[field] = kwargs[field]
+
+        response = self._put('/v1/{}'.format(path), json=data)
+
+        if response.status_code == 200:
+            return response.json()    
 
     def delete(self, path):
         """
         DELETE /<path>
         """
         self._delete('/v1/{}'.format(path))
+        
+    def delete_field(self, path, field):
+        """
+        DELETE FIELD /<path>
+        """
+        data = self._get('/v1/{}'.format(path)).json()['data']
+        del data[field]
+
+        response = self._put('/v1/{}'.format(path), json=data)
+
+        if response.status_code == 200:
+            return response.json()
 
     def is_initialized(self):
         """
