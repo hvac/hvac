@@ -1,11 +1,11 @@
-# 0.2.6 (unreleased)
+## 0.2.6 (October 30th, 2015)
 
 IMPROVEMENTS:
 
 * Add support for `revoke-self`
 * Restrict `requests` dependency to modern version
 
-# 0.2.5 (September 29, 2015)
+## 0.2.5 (September 29th, 2015)
 
 IMPROVEMENTS:
 
