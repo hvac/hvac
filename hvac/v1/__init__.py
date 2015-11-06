@@ -262,7 +262,7 @@ class Client(object):
         """
         self._delete('/v1/sys/audit/{}'.format(name))
 
-    def create_token(self, id=None, policies=None, metadata=None,
+    def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None):
         """
@@ -271,7 +271,7 @@ class Client(object):
         params = {
             'id': id,
             'policies': policies,
-            'metadata': metadata,
+            'meta': meta,
             'no_parent': no_parent,
             'lease': lease,
             'display_name': display_name,
