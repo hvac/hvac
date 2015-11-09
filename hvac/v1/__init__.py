@@ -117,7 +117,7 @@ class Client(object):
         """
         return self._get('/v1/sys/rekey/init').json()
 
-    def start_rekey(self, secret_shares=5, secret_threshold=3):
+    def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None):
         """
         PUT /sys/rekey/init
         """
@@ -125,6 +125,12 @@ class Client(object):
             'secret_shares': secret_shares,
             'secret_threshold': secret_threshold,
         }
+
+        if pgp_keys:
+            if len(pgp_keys) != secret_shares:
+                raise ValueError('Length of pgp_keys must equal secret shares')
+
+            params['pgp_keys'] = pgp_keys
 
         self._put('/v1/sys/rekey/init', json=params)
 
@@ -143,6 +149,16 @@ class Client(object):
         }
 
         return self._put('/v1/sys/rekey/update', json=params).json()
+
+    def rekey_multi(self, keys):
+        result = None
+
+        for key in keys:
+            result = self.rekey(key)
+            if result['complete']:
+                break
+
+        return result
 
     @property
     def ha_status(self):
