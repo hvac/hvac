@@ -1,3 +1,9 @@
+## 0.2.7 (unreleased)
+
+IMPROVEMENTS:
+
+* Add support for PGP keys when rekeying [GH-28]
+
 ## 0.2.6 (October 30th, 2015)
 
 IMPROVEMENTS:
