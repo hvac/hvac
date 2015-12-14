@@ -1,9 +1,17 @@
+from datetime import datetime
+from datetime import timedelta
+from collections import namedtuple
+import threading
+
 import requests
 
 from hvac import exceptions
 
+CachedData = namedtuple('CachedData', 'content', 'expiry')
+
+
 class Client(object):
-    def __init__(self, url=None, token=None, cert=None, verify=True):
+    def __init__(self, url=None, token=None, cert=None, verify=True, cache=False):
         if not url:
             url = 'http://localhost:8200'
 
@@ -13,13 +21,40 @@ class Client(object):
         self._verify = verify
 
         self.token = token
+        self.cache = cache
+        self._secret_cache = dict()
 
-    def read(self, path):
+    def _read_cache(self, path):
+        cached_result = self._secret_cache.get(path)
+        if path is None:
+            return None
+        if datetime.now() > cached_result.expiry:
+            del self._secret_cache[path]
+            return None
+
+        return cached_result.content
+
+    def _write_cache(self, path, data):
+        with threading.RLock():
+            self._secret_cache[path] = data
+
+    def read(self, path, use_cache=True):
         """
         GET /<path>
         """
+        secret_path = '/v1/{}'.format(path)
+        if self.cache and use_cache:
+            cached_data = self._read_cache(secret_path)
+            if cached_data is not None:
+                return cached_data
         try:
-            return self._get('/v1/{}'.format(path)).json()
+            secret = self._get(secret_path).json()
+            if self.cache and use_cache:
+                expiry = datetime.utcnow() + timedelta(
+                    seconds=secret.get('lease_duration', 2592000))
+                cached_secret = CachedData(secret, expiry)
+                self._write_cache(secret_path, cached_secret)
+            return secret
         except exceptions.InvalidPath:
             return None
 
@@ -27,7 +62,9 @@ class Client(object):
         """
         PUT /<path>
         """
-        response = self._put('/v1/{}'.format(path), json=kwargs)
+        secret_path = '/v1/{}'.format(path)
+        self._write_cache(secret_path, None)
+        response = self._put(secret_path, json=kwargs)
 
         if response.status_code == 200:
             return response.json()
@@ -36,7 +73,9 @@ class Client(object):
         """
         DELETE /<path>
         """
-        self._delete('/v1/{}'.format(path))
+        secret_path = '/v1/{}'.format(path)
+        self._write_cache(secret_path, None)
+        self._delete(secret_path)
 
     def is_initialized(self):
         """
@@ -469,7 +508,7 @@ class Client(object):
                                     headers=headers,
                                     **kwargs)
 
-        if response.status_code >= 400 and response.status_code < 600:
+        if 400 <= response.status_code < 600:
             errors = response.json().get('errors')
 
             if response.status_code == 400:
