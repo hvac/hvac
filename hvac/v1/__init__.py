@@ -7,7 +7,7 @@ import requests
 
 from hvac import exceptions
 
-CachedData = namedtuple('CachedData', 'content', 'expiry')
+CachedData = namedtuple('CachedData', ['content', 'expiry'])
 
 
 class Client(object):
@@ -26,9 +26,9 @@ class Client(object):
 
     def _read_cache(self, path):
         cached_result = self._secret_cache.get(path)
-        if path is None:
+        if None in (cached_result, path):
             return None
-        if datetime.now() > cached_result.expiry:
+        if datetime.utcnow() > cached_result.expiry:
             del self._secret_cache[path]
             return None
 

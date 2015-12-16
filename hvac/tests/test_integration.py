@@ -1,13 +1,14 @@
 from unittest import TestCase, skipIf
 
 from nose.tools import *
-import requests
 
 from hvac import Client, exceptions
 from hvac.tests import util
 
+
 def create_client(**kwargs):
     return Client(**kwargs)
+
 
 class IntegrationTest(TestCase):
     @classmethod
@@ -25,6 +26,9 @@ class IntegrationTest(TestCase):
         cls = type(self)
 
         self.client = create_client(token=cls.manager.root_token)
+        self.caching_client = create_client(
+            token=cls.manager.root_token,
+            cache=True)
 
     def test_unseal_multi(self):
         cls = type(self)
@@ -269,3 +273,28 @@ class IntegrationTest(TestCase):
         self.client.rotate()
 
         assert self.client.key_status['term'] > status['term']
+
+    def test_cache(self):
+        secret_data = 'my_data'
+        expected_secret_data = {'data': secret_data}
+        secret_path = 'secret/cache_test'
+        self.caching_client.write(secret_path, data=secret_data)
+        self.assertEqual(
+            self.caching_client.read(secret_path).get('data'),
+            expected_secret_data)
+
+        # Exercise the cache hit code path
+        self.assertEqual(
+            self.caching_client.read(secret_path).get('data'),
+            expected_secret_data)
+
+        # Invalidate
+        self.caching_client.write(
+            secret_path, data=secret_data + '2.0', ttl='1s')
+        self.assertNotEqual(
+            self.caching_client.read(secret_path).get('data'),
+            expected_secret_data)
+
+
+
+
