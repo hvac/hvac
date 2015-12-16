@@ -1,8 +1,12 @@
-## 0.2.7 (unreleased)
+## 0.2.7 (December 16th, 2015)
 
 IMPROVEMENTS:
 
 * Add support for PGP keys when rekeying [GH-28]
+
+BUG FIXES:
+
+* Fixed token metadata parameter [GH-27]
 
 ## 0.2.6 (October 30th, 2015)
 
