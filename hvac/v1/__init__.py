@@ -3,16 +3,18 @@ import requests
 from hvac import exceptions
 
 class Client(object):
-    def __init__(self, url=None, token=None, cert=None, verify=True):
-        if not url:
-            url = 'http://localhost:8200'
-
-        self._url = url
-
-        self._cert = cert
-        self._verify = verify
+    def __init__(self, url='http://localhost:8200', token=None,
+                 cert=None, verify=True, timeout=30, proxies=None):
 
         self.token = token
+
+        self._url = url
+        self._kwargs = {
+            'cert': cert,
+            'verify': verify,
+            'timeout': timeout,
+            'proxies': proxies,
+        }
 
     def read(self, path):
         """
@@ -462,12 +464,13 @@ class Client(object):
         if self.token:
             headers['X-Vault-Token'] = self.token
 
+        _kwargs = self._kwargs.copy()
+        _kwargs.update(kwargs)
+
         response = requests.request(method,
                                     url,
-                                    cert=self._cert,
-                                    verify=self._verify,
                                     headers=headers,
-                                    **kwargs)
+                                    **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')
