@@ -204,7 +204,7 @@ class IntegrationTest(TestCase):
         if 'app-id/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('app-id')
 
-        self.client.create_app_id('testappid', 'displayname', policies='root')
+        self.client.create_app_id('testappid', policies='root', display_name='displayname')
 
         result = self.client.read('auth/app-id/map/app-id/testappid')
 
@@ -218,7 +218,7 @@ class IntegrationTest(TestCase):
         if 'app-id/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('app-id')
 
-        self.client.create_app_id('testappid', 'displayname', policies='root')
+        self.client.create_app_id('testappid', policies='root', display_name='displayname')
         self.client.create_user_id('testuserid', app_id='testappid')
 
         result = self.client.read('auth/app-id/map/user-id/testuserid')
