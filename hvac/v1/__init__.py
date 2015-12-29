@@ -385,6 +385,51 @@ class Client(object):
 
         return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
+    def create_userpass(self, username, password, policies, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>
+        """
+        if type(policies) == list:
+            policies = ','.join(policies)
+
+        params = {
+            'password': password,
+            'policies': policies
+        }
+
+        return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
+
+    def create_app_id(self, app_id, display_name='', policies, mount_point='app-id', **kwargs):
+        """
+        POST /auth/<mount point>/map/app-id/<app_id>
+        """
+
+        if type(policies) == list:
+            policies = ','.join(policies)
+
+        params = {
+            'value': policies,
+            'display_name': display_name
+        }
+        params.update(kwargs)
+
+        return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
+
+    def create_user_id(self, user_id, app_id, mount_point='app-id', **kwargs):
+        """
+        POST /auth/<mount point>/map/user-id/<user_id>
+        """
+
+        if type(app_id) == list:
+            app_id = ','.join(app_id)
+
+        params = {
+            'value': app_id
+        }
+        params.update(kwargs)
+
+        return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
+
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
         POST /auth/<mount point>/login/<username>

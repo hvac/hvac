@@ -171,6 +171,19 @@ class IntegrationTest(TestCase):
 
         self.client.disable_auth_backend('userpass')
 
+    def test_create_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='root')
+
+        result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
+
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        self.client.disable_auth_backend('userpass')
+
     def test_app_id_auth(self):
         if 'app-id/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('app-id')
@@ -181,6 +194,39 @@ class IntegrationTest(TestCase):
         self.client.write('auth/app-id/map/user-id/bar', value='foo')
 
         result = self.client.auth_app_id('foo', 'bar')
+
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        self.client.disable_auth_backend('app-id')
+
+    def test_create_app_id(self):
+        if 'app-id/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('app-id')
+
+        self.client.create_app_id('testappid', 'displayname', policies='root')
+
+        result = self.client.read('auth/app-id/map/app-id/testappid')
+
+        assert result['data']['key'] == 'testappid'
+        assert result['data']['display_name'] == 'displayname'
+        assert result['data']['value'] == 'root'
+
+        self.client.disable_auth_backend('app-id')
+
+    def test_create_user_id(self):
+        if 'app-id/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('app-id')
+
+        self.client.create_app_id('testappid', 'displayname', policies='root')
+        self.client.create_user_id('testuserid', app_id='testappid')
+
+        result = self.client.read('auth/app-id/map/user-id/testuserid')
+
+        assert result['data']['key'] == 'testuserid'
+        assert result['data']['value'] == 'testappid'
+
+        result = self.client.auth_app_id('testappid', 'testuserid')
 
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
