@@ -399,7 +399,7 @@ class Client(object):
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
-    def create_app_id(self, app_id, display_name='', policies, mount_point='app-id', **kwargs):
+    def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
         """
         POST /auth/<mount point>/map/app-id/<app_id>
         """
@@ -408,14 +408,19 @@ class Client(object):
             policies = ','.join(policies)
 
         params = {
-            'value': policies,
-            'display_name': display_name
+            'value': policies
         }
+
+        # Only use the display_name if it has a value. Made it a named param for user
+        # convienence instead of leaving it as part of the kwargs
+        if display_name:
+            params['display_name'] = display_name
+
         params.update(kwargs)
 
         return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
-    def create_user_id(self, user_id, app_id, mount_point='app-id', **kwargs):
+    def create_user_id(self, user_id, app_id, cidr_block=None, mount_point='app-id', **kwargs):
         """
         POST /auth/<mount point>/map/user-id/<user_id>
         """
@@ -426,6 +431,12 @@ class Client(object):
         params = {
             'value': app_id
         }
+
+        # Only use the cidr_block if it has a value. Made it a named param for user
+        # convienence instead of leaving it as part of the kwargs
+        if cidr_block:
+            params['cidr_block'] = cidr_block
+
         params.update(kwargs)
 
         return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
