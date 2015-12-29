@@ -389,6 +389,9 @@ class Client(object):
         """
         POST /auth/<mount point>/users/<username>
         """
+
+        # Users can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
         if type(policies) == list:
             policies = ','.join(policies)
 
@@ -404,6 +407,8 @@ class Client(object):
         POST /auth/<mount point>/map/app-id/<app_id>
         """
 
+        # app-id can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
         if type(policies) == list:
             policies = ','.join(policies)
 
@@ -425,6 +430,8 @@ class Client(object):
         POST /auth/<mount point>/map/user-id/<user_id>
         """
 
+        # user-id can be associated to more than 1 app-id (aka policy). It is easier for the user to
+        # pass in the policies as a list so if they do, we need to convert to a , delimited string.
         if type(app_id) == list:
             app_id = ','.join(app_id)
 
