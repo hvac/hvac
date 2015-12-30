@@ -282,21 +282,30 @@ class Client(object):
 
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
-                     num_uses=None):
+                     num_uses=None, no_default_profile=False,
+                     ttl=None, orphan=False):
         """
         POST /auth/token/create
+        POST /auth/token/create-orphan
         """
         params = {
             'id': id,
             'policies': policies,
             'meta': meta,
             'no_parent': no_parent,
-            'lease': lease,
             'display_name': display_name,
             'num_uses': num_uses,
         }
 
-        return self._post('/v1/auth/token/create', json=params).json()
+        if lease:
+            params['lease'] = lease
+        else:
+            params['ttl'] = ttl
+
+        if orphan:
+            return self._post('/v1/auth/token/create-orphan', json=params).json()
+        else:
+            return self._post('/v1/auth/token/create', json=params).json()
 
     def lookup_token(self, token=None):
         """
