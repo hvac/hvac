@@ -1,3 +1,4 @@
+import json
 import requests
 
 from hvac import exceptions
@@ -241,6 +242,10 @@ class Client(object):
         """
         PUT /sys/policy/<name>
         """
+
+        if isinstance(rules, dict):
+            rules = json.dumps(rules)
+
         params = {
             'rules': rules,
         }
