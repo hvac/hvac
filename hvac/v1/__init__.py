@@ -280,6 +280,15 @@ class Client(object):
         """
         self._delete('/v1/sys/audit/{0}'.format(name))
 
+    def audit_hash(self, name, input):
+        """
+        POST /sys/audit-hash
+        """
+        params = {
+            'input': input,
+        }
+        return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_profile=False,
