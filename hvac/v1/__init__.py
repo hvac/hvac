@@ -392,7 +392,7 @@ class Client(object):
 
         # Users can have more than 1 policy. It is easier for the user to pass in the
         # policies as a list so if they do, we need to convert to a , delimited string.
-        if type(policies) == list:
+        if isinstance(policies, (list, set, tuple)):
             policies = ','.join(policies)
 
         params = {
@@ -409,7 +409,7 @@ class Client(object):
 
         # app-id can have more than 1 policy. It is easier for the user to pass in the
         # policies as a list so if they do, we need to convert to a , delimited string.
-        if type(policies) == list:
+        if isinstance(policies, (list, set, tuple)):
             policies = ','.join(policies)
 
         params = {
@@ -432,7 +432,7 @@ class Client(object):
 
         # user-id can be associated to more than 1 app-id (aka policy). It is easier for the user to
         # pass in the policies as a list so if they do, we need to convert to a , delimited string.
-        if type(app_id) == list:
+        if isinstance(app_id, (list, set, tuple)):
             app_id = ','.join(app_id)
 
         params = {
