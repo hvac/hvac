@@ -324,15 +324,19 @@ class Client(object):
         """
         self._post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
-    def renew_token(self, token, increment=None):
+    def renew_token(self, token=None, increment=None):
         """
         POST /auth/token/renew/<token>
+        POST /auth/token/renew-self
         """
         params = {
             'increment': increment,
         }
 
-        return self._post('/v1/auth/token/renew/{0}'.format(token), json=params).json()
+        if token:
+            return self._post('/v1/auth/token/renew/{0}'.format(token), json=params).json()
+        else:
+            return self._post('/v1/auth/token/renew-self', json=params).json()
 
     def logout(self, revoke_token=False):
         """
