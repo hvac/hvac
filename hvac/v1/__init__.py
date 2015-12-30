@@ -304,6 +304,7 @@ class Client(object):
             'no_parent': no_parent,
             'display_name': display_name,
             'num_uses': num_uses,
+            'no_default_profile': no_default_profile,
         }
 
         if lease:
