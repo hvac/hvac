@@ -35,7 +35,7 @@ class ServerManager(object):
                 attempts_left -= 1
                 last_exception = ex
 
-        raise Exception('Unable to start Vault in background: {}'.format(last_exception))
+        raise Exception('Unable to start Vault in background: {0}'.format(last_exception))
 
     def stop(self):
         self._process.kill()
