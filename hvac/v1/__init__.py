@@ -1,25 +1,28 @@
+import json
 import requests
 
 from hvac import exceptions
 
 class Client(object):
-    def __init__(self, url=None, token=None, cert=None, verify=True):
-        if not url:
-            url = 'http://localhost:8200'
-
-        self._url = url
-
-        self._cert = cert
-        self._verify = verify
+    def __init__(self, url='http://localhost:8200', token=None,
+                 cert=None, verify=True, timeout=30, proxies=None):
 
         self.token = token
+
+        self._url = url
+        self._kwargs = {
+            'cert': cert,
+            'verify': verify,
+            'timeout': timeout,
+            'proxies': proxies,
+        }
 
     def read(self, path):
         """
         GET /<path>
         """
         try:
-            return self._get('/v1/{}'.format(path)).json()
+            return self._get('/v1/{0}'.format(path)).json()
         except exceptions.InvalidPath:
             return None
 
@@ -27,7 +30,7 @@ class Client(object):
         """
         PUT /<path>
         """
-        response = self._put('/v1/{}'.format(path), json=kwargs)
+        response = self._put('/v1/{0}'.format(path), json=kwargs)
 
         if response.status_code == 200:
             return response.json()
@@ -36,7 +39,7 @@ class Client(object):
         """
         DELETE /<path>
         """
-        self._delete('/v1/{}'.format(path))
+        self._delete('/v1/{0}'.format(path))
 
     def is_initialized(self):
         """
@@ -171,19 +174,19 @@ class Client(object):
         """
         PUT /sys/renew/<lease id>
         """
-        return self._put('/v1/sys/renew/{}'.format(lease_id)).json()
+        return self._put('/v1/sys/renew/{0}'.format(lease_id)).json()
 
     def revoke_secret(self, lease_id):
         """
         PUT /sys/revoke/<lease id>
         """
-        self._put('/v1/sys/revoke/{}'.format(lease_id))
+        self._put('/v1/sys/revoke/{0}'.format(lease_id))
 
     def revoke_secret_prefix(self, path_prefix):
         """
         PUT /sys/revoke-prefix/<path prefix>
         """
-        self._put('/v1/sys/revoke-prefix/{}'.format(path_prefix))
+        self._put('/v1/sys/revoke-prefix/{0}'.format(path_prefix))
 
     def revoke_self_token(self):
         """
@@ -210,13 +213,13 @@ class Client(object):
             'config': config,
         }
 
-        self._post('/v1/sys/mounts/{}'.format(mount_point), json=params)
+        self._post('/v1/sys/mounts/{0}'.format(mount_point), json=params)
 
     def disable_secret_backend(self, mount_point):
         """
         DELETE /sys/mounts/<mount point>
         """
-        self._delete('/v1/sys/mounts/{}'.format(mount_point))
+        self._delete('/v1/sys/mounts/{0}'.format(mount_point))
 
     def remount_secret_backend(self, from_mount_point, to_mount_point):
         """
@@ -239,17 +242,21 @@ class Client(object):
         """
         PUT /sys/policy/<name>
         """
+
+        if isinstance(rules, dict):
+            rules = json.dumps(rules)
+
         params = {
             'rules': rules,
         }
 
-        self._put('/v1/sys/policy/{}'.format(name), json=params)
+        self._put('/v1/sys/policy/{0}'.format(name), json=params)
 
     def delete_policy(self, name):
         """
         DELETE /sys/policy/<name>
         """
-        self._delete('/v1/sys/policy/{}'.format(name))
+        self._delete('/v1/sys/policy/{0}'.format(name))
 
     def list_audit_backends(self):
         """
@@ -270,31 +277,50 @@ class Client(object):
             'options': options,
         }
 
-        self._post('/v1/sys/audit/{}'.format(name), json=params)
+        self._post('/v1/sys/audit/{0}'.format(name), json=params)
 
     def disable_audit_backend(self, name):
         """
         DELETE /sys/audit/<name>
         """
-        self._delete('/v1/sys/audit/{}'.format(name))
+        self._delete('/v1/sys/audit/{0}'.format(name))
+
+    def audit_hash(self, name, input):
+        """
+        POST /sys/audit-hash
+        """
+        params = {
+            'input': input,
+        }
+        return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
 
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
-                     num_uses=None):
+                     num_uses=None, no_default_profile=False,
+                     ttl=None, orphan=False):
         """
         POST /auth/token/create
+        POST /auth/token/create-orphan
         """
         params = {
             'id': id,
             'policies': policies,
             'meta': meta,
             'no_parent': no_parent,
-            'lease': lease,
             'display_name': display_name,
             'num_uses': num_uses,
+            'no_default_profile': no_default_profile,
         }
 
-        return self._post('/v1/auth/token/create', json=params).json()
+        if lease:
+            params['lease'] = lease
+        else:
+            params['ttl'] = ttl
+
+        if orphan:
+            return self._post('/v1/auth/token/create-orphan', json=params).json()
+        else:
+            return self._post('/v1/auth/token/create', json=params).json()
 
     def lookup_token(self, token=None):
         """
@@ -302,7 +328,7 @@ class Client(object):
         GET /auth/token/lookup-self
         """
         if token:
-            return self._get('/v1/auth/token/lookup/{}'.format(token)).json()
+            return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
         else:
             return self._get('/v1/auth/token/lookup-self').json()
 
@@ -312,25 +338,29 @@ class Client(object):
         POST /auth/token/revoke-orphan/<token>
         """
         if orphan:
-            self._post('/v1/auth/token/revoke-orphan/{}'.format(token))
+            self._post('/v1/auth/token/revoke-orphan/{0}'.format(token))
         else:
-            self._post('/v1/auth/token/revoke/{}'.format(token))
+            self._post('/v1/auth/token/revoke/{0}'.format(token))
 
     def revoke_token_prefix(self, prefix):
         """
         POST /auth/token/revoke-prefix/<prefix>
         """
-        self._post('/v1/auth/token/revoke-prefix/{}'.format(prefix))
+        self._post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
-    def renew_token(self, token, increment=None):
+    def renew_token(self, token=None, increment=None):
         """
         POST /auth/token/renew/<token>
+        POST /auth/token/renew-self
         """
         params = {
             'increment': increment,
         }
 
-        return self._post('/v1/auth/token/renew/{}'.format(token), json=params).json()
+        if token:
+            return self._post('/v1/auth/token/renew/{0}'.format(token), json=params).json()
+        else:
+            return self._post('/v1/auth/token/renew-self', json=params).json()
 
     def logout(self, revoke_token=False):
         """
@@ -365,13 +395,13 @@ class Client(object):
             'user_id': user_id,
         }
 
-        return self.auth('/v1/auth/{}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_tls(self, mount_point='cert', use_token=True):
         """
         POST /auth/<mount point>/login
         """
-        return self.auth('/v1/auth/{}/login'.format(mount_point), use_token=use_token)
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """
@@ -383,7 +413,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass'):
         """
@@ -458,7 +488,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_github(self, token, mount_point='github', use_token=True):
         """
@@ -468,7 +498,7 @@ class Client(object):
             'token': token,
         }
 
-        return self.auth('/v1/auth/{}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth(self, url, use_token=True, **kwargs):
         response = self._post(url, **kwargs).json()
@@ -496,13 +526,13 @@ class Client(object):
             'description': description,
         }
 
-        self._post('/v1/sys/auth/{}'.format(mount_point), json=params)
+        self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
     def disable_auth_backend(self, mount_point):
         """
         DELETE /sys/auth/<mount point>
         """
-        self._delete('/v1/sys/auth/{}'.format(mount_point))
+        self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
     def _get(self, url, **kwargs):
         return self.__request('get', url, **kwargs)
@@ -525,12 +555,13 @@ class Client(object):
         if self.token:
             headers['X-Vault-Token'] = self.token
 
+        _kwargs = self._kwargs.copy()
+        _kwargs.update(kwargs)
+
         response = requests.request(method,
                                     url,
-                                    cert=self._cert,
-                                    verify=self._verify,
                                     headers=headers,
-                                    **kwargs)
+                                    **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')
