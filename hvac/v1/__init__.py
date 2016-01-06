@@ -385,6 +385,69 @@ class Client(object):
 
         return self.auth('/v1/auth/{}/login/{}'.format(mount_point, username), json=params, use_token=use_token)
 
+    def create_userpass(self, username, password, policies, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>
+        """
+
+        # Users can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(policies, (list, set, tuple)):
+            policies = ','.join(policies)
+
+        params = {
+            'password': password,
+            'policies': policies
+        }
+
+        return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
+
+    def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
+        """
+        POST /auth/<mount point>/map/app-id/<app_id>
+        """
+
+        # app-id can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(policies, (list, set, tuple)):
+            policies = ','.join(policies)
+
+        params = {
+            'value': policies
+        }
+
+        # Only use the display_name if it has a value. Made it a named param for user
+        # convienence instead of leaving it as part of the kwargs
+        if display_name:
+            params['display_name'] = display_name
+
+        params.update(kwargs)
+
+        return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
+
+    def create_user_id(self, user_id, app_id, cidr_block=None, mount_point='app-id', **kwargs):
+        """
+        POST /auth/<mount point>/map/user-id/<user_id>
+        """
+
+        # user-id can be associated to more than 1 app-id (aka policy). It is easier for the user to
+        # pass in the policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(app_id, (list, set, tuple)):
+            app_id = ','.join(app_id)
+
+        params = {
+            'value': app_id
+        }
+
+        # Only use the cidr_block if it has a value. Made it a named param for user
+        # convienence instead of leaving it as part of the kwargs
+        if cidr_block:
+            params['cidr_block'] = cidr_block
+
+        params.update(kwargs)
+
+        return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
+
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
         POST /auth/<mount point>/login/<username>
