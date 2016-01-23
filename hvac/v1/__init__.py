@@ -32,8 +32,12 @@ class Client(object):
         """
         response = self._put('/v1/{0}'.format(path), json=kwargs)
 
-        if response.status_code in [200, 204]:
+        # works with older vault versions
+        if response.status_code == 200:
             return response.json()
+        # works with >= 0.4.0
+        if response.status_code == 204:
+            return '{"response": "success!"}'
 
     def delete(self, path):
         """
