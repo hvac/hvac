@@ -1,3 +1,10 @@
+## 0.2.8 (February 2nd, 2016)
+
+IMPROVEMENTS:
+
+* Convenience methods for managing userpass and app-id entries
+* Support for new API changes in Vault v0.4.0
+
 ## 0.2.7 (December 16th, 2015)
 
 IMPROVEMENTS:
