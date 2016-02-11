@@ -136,6 +136,26 @@ class IntegrationTest(TestCase):
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()
 
+    def test_json_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+
+        policy = {
+            "path": {
+                "sys": {
+                    "policy": "deny"
+                },
+                "secret": {
+                    "policy": "write"
+                }
+            }
+        }
+
+        self.client.set_policy('test', policy)
+        assert 'test' in self.client.list_policies()
+
+        self.client.delete_policy('test')
+        assert 'test' not in self.client.list_policies()
+
     def test_auth_token_manipulation(self):
         result = self.client.create_token(lease='1h')
         assert result['auth']['client_token']
