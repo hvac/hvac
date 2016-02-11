@@ -143,7 +143,7 @@ class Client(object):
         """
         self._delete('/v1/sys/rekey/init')
 
-    def rekey(self, key):
+    def rekey(self, key, nonce=None):
         """
         PUT /sys/rekey/update
         """
@@ -151,13 +151,16 @@ class Client(object):
             'key': key,
         }
 
+        if nonce:
+            params['nonce'] = nonce
+
         return self._put('/v1/sys/rekey/update', json=params).json()
 
-    def rekey_multi(self, keys):
+    def rekey_multi(self, keys, nonce=None):
         result = None
 
         for key in keys:
-            result = self.rekey(key)
+            result = self.rekey(key, nonce=nonce)
             if result['complete']:
                 break
 
