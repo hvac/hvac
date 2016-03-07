@@ -9,6 +9,7 @@ setup(
     author_email='ianunruh@gmail.com',
     url='https://github.com/ianunruh/hvac',
     keywords=['hashicorp', 'vault'],
+    classifiers=['License :: OSI Approved :: Apache Software License'],
     packages=find_packages(),
     install_requires=[
         'requests>=2.7.0',
