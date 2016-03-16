@@ -206,6 +206,20 @@ class IntegrationTest(TestCase):
 
         self.client.disable_auth_backend('userpass')
 
+    def test_delete_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='root')
+
+        result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
+
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        self.client.delete_userpass('testcreateuser')
+        assert_raises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
+
     def test_app_id_auth(self):
         if 'app-id/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('app-id')
