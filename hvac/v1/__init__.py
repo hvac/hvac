@@ -435,6 +435,12 @@ class Client(object):
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
+    def delete_userpass(self, username, mount_point='userpass'):
+        """
+        DELETE /auth/<mount point>/users/<username>
+        """
+        return self._delete('/v1/auth/{}/users/{}'.format(mount_point, username))
+
     def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
         """
         POST /auth/<mount point>/map/app-id/<app_id>
