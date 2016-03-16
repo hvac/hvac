@@ -294,10 +294,13 @@ class IntegrationTest(TestCase):
         self.client.cancel_rekey()
         assert not self.client.rekey_status['started']
 
-        self.client.start_rekey()
+        rekey_info = self.client.start_rekey()
 
+        nonce = None
+        if util.match_version('>0.5.0'):
+            nonce = rekey_info['nonce']
         for key in cls.manager.keys:
-            result = self.client.rekey(key)
+            result = self.client.rekey(key, nonce=nonce)
             if result['complete']:
                 cls.manager.keys = result['keys']
                 assert not self.client.rekey_status['started']
@@ -317,14 +320,16 @@ class IntegrationTest(TestCase):
         self.client.cancel_rekey()
         assert not self.client.rekey_status['started']
 
-        self.client.start_rekey()
-
+        rekey_info = self.client.start_rekey()
+        nonce = None
+        if util.match_version('>0.5.0'):
+            nonce = rekey_info['nonce']
         keys = cls.manager.keys
 
-        result = self.client.rekey_multi(keys[0:2])
+        result = self.client.rekey_multi(keys[0:2], nonce=nonce)
         assert not result['complete']
 
-        result = self.client.rekey_multi(keys[2:3])
+        result = self.client.rekey_multi(keys[2:3], nonce=nonce)
         assert result['complete']
         cls.manager.keys = result['keys']
 
