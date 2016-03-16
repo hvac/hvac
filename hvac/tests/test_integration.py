@@ -119,6 +119,7 @@ class IntegrationTest(TestCase):
 
     def test_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
+        assert self.client.get_policy('test') is None
 
         policy = """
         path "sys" {
@@ -132,6 +133,7 @@ class IntegrationTest(TestCase):
 
         self.client.set_policy('test', policy)
         assert 'test' in self.client.list_policies()
+        assert policy == self.client.get_policy('test')
 
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()

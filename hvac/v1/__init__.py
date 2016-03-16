@@ -241,6 +241,15 @@ class Client(object):
         """
         return self._get('/v1/sys/policy').json()['policies']
 
+    def get_policy(self, name):
+        """
+        GET /sys/policy/<name>
+        """
+        try:
+            return self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
+        except exceptions.InvalidPath:
+            return None
+
     def set_policy(self, name, rules):
         """
         PUT /sys/policy/<name>
