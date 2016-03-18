@@ -298,30 +298,6 @@ class IntegrationTest(TestCase):
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
 
-    @skipIf(util.match_version('<0.2.0'), 'Rekey API added in 0.2.0')
-    def test_rekey(self):
-        cls = type(self)
-
-        assert not self.client.rekey_status['started']
-
-        self.client.start_rekey()
-        assert self.client.rekey_status['started']
-
-        self.client.cancel_rekey()
-        assert not self.client.rekey_status['started']
-
-        self.client.start_rekey()
-
-        for key in cls.manager.keys:
-            result = self.client.rekey(key)
-            if result['complete']:
-                cls.manager.keys = result['keys']
-                assert not self.client.rekey_status['started']
-                break
-
-        cls.manager.unseal()
-
-    @skipIf(util.match_version('<0.2.0'), 'Rekey API added in 0.2.0')
     def test_rekey_multi(self):
         cls = type(self)
 
@@ -333,16 +309,15 @@ class IntegrationTest(TestCase):
         self.client.cancel_rekey()
         assert not self.client.rekey_status['started']
 
-        self.client.start_rekey()
+        result = self.client.start_rekey()
 
         keys = cls.manager.keys
 
-        result = self.client.rekey_multi(keys[0:2])
-        assert not result['complete']
-
-        result = self.client.rekey_multi(keys[2:3])
+        result = self.client.rekey_multi(keys, nonce=result['nonce'])
         assert result['complete']
+
         cls.manager.keys = result['keys']
+        cls.manager.unseal()
 
     @skipIf(util.match_version('<0.2.0'), 'Rotate API added in 0.2.0')
     def test_rotate(self):

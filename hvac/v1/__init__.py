@@ -135,7 +135,9 @@ class Client(object):
 
             params['pgp_keys'] = pgp_keys
 
-        self._put('/v1/sys/rekey/init', json=params)
+        resp = self._put('/v1/sys/rekey/init', json=params)
+        if resp.text:
+            return resp.json()
 
     def cancel_rekey(self):
         """
