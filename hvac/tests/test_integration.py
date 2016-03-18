@@ -7,12 +7,15 @@ from hvac import Client, exceptions
 from hvac.tests import util
 
 def create_client(**kwargs):
-    return Client(**kwargs)
+    return Client(url='https://localhost:8200',
+                  cert=('test/client-cert.pem', 'test/client-key.pem'),
+                  verify='test/server-cert.pem',
+                  **kwargs)
 
 class IntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manager = util.ServerManager(config_path='test/vault.hcl', client=create_client())
+        cls.manager = util.ServerManager(config_path='test/vault-tls.hcl', client=create_client())
         cls.manager.start()
         cls.manager.initialize()
         cls.manager.unseal()
@@ -284,7 +287,6 @@ class IntegrationTest(TestCase):
         self.client.logout()
         assert not self.client.is_authenticated()
 
-    @skipIf(util.match_version('<0.3.0'), 'Revoke self token added in 0.3.0')
     def test_revoke_self_token(self):
         if 'userpass/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('userpass')
@@ -319,10 +321,20 @@ class IntegrationTest(TestCase):
         cls.manager.keys = result['keys']
         cls.manager.unseal()
 
-    @skipIf(util.match_version('<0.2.0'), 'Rotate API added in 0.2.0')
     def test_rotate(self):
         status = self.client.key_status
 
         self.client.rotate()
 
         assert self.client.key_status['term'] > status['term']
+
+    def test_tls_auth(self):
+        self.client.enable_auth_backend('cert')
+
+        with open('test/client-cert.pem') as fp:
+            certificate = fp.read()
+
+        self.client.write('auth/cert/certs/test', display_name='test',
+                          policies='root', certificate=certificate)
+
+        result = self.client.auth_tls()
