@@ -1,10 +1,12 @@
+dist: trusty
+sudo: required
 language: python
 install:
-  - bin/install-vault-${VAULT_BRANCH}.sh
+  - scripts/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
 script:
   - export PATH=$HOME/bin:$PATH
-  - tox -- -a !tls
+  - tox
 env:
   - TOXENV=py27 VAULT_BRANCH=release
   - TOXENV=py34 VAULT_BRANCH=release

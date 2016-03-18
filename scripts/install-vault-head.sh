@@ -3,6 +3,8 @@ set -eux
 
 mkdir -p $HOME/bin
 
+eval "$(GIMME_GO_VERSION=1.6 gimme)"
+
 export GOPATH=$HOME/go
 mkdir $GOPATH
 
