@@ -1,3 +1,12 @@
+## 0.2.9 (March 18th, 2016)
+
+IMPROVEMENTS:
+
+* Add support for nonce during rekey operation [GH-42]
+* Add get method for policies [GH-43]
+* Add delete method for userpass auth backend [GH-45]
+* Add support for response to rekey init
+
 ## 0.2.8 (February 2nd, 2016)
 
 IMPROVEMENTS:
