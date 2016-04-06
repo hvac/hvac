@@ -26,6 +26,18 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
+    def list(self, path):
+        """
+        GET /<path>?list=true
+        """
+        try:
+            payload = {
+                'list': True
+            }
+            return self._get('/v1/{}'.format(path), params=payload).json()
+        except exceptions.InvalidPath:
+            return None
+
     def write(self, path, **kwargs):
         """
         PUT /<path>

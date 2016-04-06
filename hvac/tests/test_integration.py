@@ -69,6 +69,16 @@ class IntegrationTest(TestCase):
 
         self.client.delete('secret/foo')
 
+    def test_list_directory(self):
+        self.client.write('secret/test-list/bar/foo', value='bar')
+        self.client.write('secret/test-list/foo', value='bar')
+        result = self.client.list('secret/test-list')
+
+        assert result['data']['keys'] == ['bar/', 'foo']
+
+        self.client.delete('secret/test-list/bar/foo')
+        self.client.delete('secret/test-list/foo')
+
     def test_write_with_response(self):
         self.client.enable_secret_backend('transit')
 
