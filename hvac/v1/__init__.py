@@ -31,7 +31,10 @@ class Client(object):
         GET /<path>?list=true
         """
         try:
-            return self._get('/v1/{}?list=true'.format(path)).json()
+            payload = {
+                'list': True
+            }
+            return self._get('/v1/{}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
