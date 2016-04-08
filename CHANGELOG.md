@@ -1,3 +1,9 @@
+## 0.2.10 (April 8th, 2016)
+
+IMPROVEMENTS:
+
+* Add support for list operation [GH-47]
+
 ## 0.2.9 (March 18th, 2016)
 
 IMPROVEMENTS:
