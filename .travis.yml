@@ -9,8 +9,8 @@ script:
   - tox
 env:
   - TOXENV=py27 VAULT_BRANCH=release
-  - TOXENV=py34 VAULT_BRANCH=release
-  - TOXENV=py34 VAULT_BRANCH=head
+  - TOXENV=py35 VAULT_BRANCH=release
+  - TOXENV=py35 VAULT_BRANCH=head
 matrix:
   allow_failures:
-    - env: TOXENV=py34 VAULT_BRANCH=head
+    - env: TOXENV=py35 VAULT_BRANCH=head
