@@ -187,11 +187,14 @@ class Client(object):
         """
         return self._get('/v1/sys/leader').json()
 
-    def renew_secret(self, lease_id):
+    def renew_secret(self, lease_id, increment=None):
         """
         PUT /sys/renew/<lease id>
         """
-        return self._put('/v1/sys/renew/{0}'.format(lease_id)).json()
+        params = {
+            'increment': increment,
+        }
+        return self._post('/v1/sys/renew/{0}'.format(lease_id), json=params).json()
 
     def revoke_secret(self, lease_id):
         """
