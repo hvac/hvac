@@ -1,4 +1,4 @@
-## 0.2.11 (May 12th, 2016)
+## 0.2.12 (May 12th, 2016)
 
 IMPROVEMENTS:
 
