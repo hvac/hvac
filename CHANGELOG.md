@@ -1,3 +1,13 @@
+## 0.2.11 (May 12th, 2016)
+
+IMPROVEMENTS:
+
+* Add support for `increment` in renewel of secret [GH-48]
+
+BUG FIXES:
+
+* Use unicode literals when constructing URLs [GH-50]
+
 ## 0.2.10 (April 8th, 2016)
 
 IMPROVEMENTS:
