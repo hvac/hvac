@@ -6,7 +6,8 @@ from hvac import exceptions
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
-                 cert=None, verify=True, timeout=30, proxies=None):
+                 cert=None, verify=True, timeout=30, proxies=None,
+                 session=None):
 
         self.token = token
 
@@ -17,6 +18,11 @@ class Client(object):
             'timeout': timeout,
             'proxies': proxies,
         }
+
+        self.session = session or requests.Session()
+
+    def close(self):
+        self.session.close()
 
     def read(self, path):
         """
@@ -594,10 +600,10 @@ class Client(object):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        response = requests.request(method,
-                                    url,
-                                    headers=headers,
-                                    **_kwargs)
+        response = self.session.request(method,
+                                        url,
+                                        headers=headers,
+                                        **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')
