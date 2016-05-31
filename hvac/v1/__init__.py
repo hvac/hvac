@@ -6,9 +6,11 @@ from hvac import exceptions
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
-                 cert=None, verify=True, timeout=30, proxies=None):
+                 cert=None, verify=True, timeout=30, proxies=None,
+                 allow_redirects=True):
 
         self.token = token
+        self.allow_redirects = allow_redirects
 
         self._url = url
         self._kwargs = {
@@ -597,7 +599,17 @@ class Client(object):
         response = requests.request(method,
                                     url,
                                     headers=headers,
+                                    allow_redirects=False,
                                     **_kwargs)
+
+        # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
+        while response.is_redirect and self.allow_redirects:
+            url = self._url + response.headers['Location']
+            response = requests.request(method,
+                                        url,
+                                        headers=headers,
+                                        allow_redirects=False,
+                                        **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')

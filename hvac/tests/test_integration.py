@@ -348,3 +348,12 @@ class IntegrationTest(TestCase):
                           policies='root', certificate=certificate)
 
         result = self.client.auth_tls()
+
+    def test_gh51(self):
+        key = 'secret/http://test.com'
+
+        self.client.write(key, foo='bar')
+
+        result = self.client.read(key)
+
+        assert result['data']['foo'] == 'bar'
