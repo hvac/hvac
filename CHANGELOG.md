@@ -1,3 +1,13 @@
+## 0.2.13 (May 31st, 2016)
+
+IMPROVEMENTS:
+
+* Add support for Requests sessions [GH-53]
+
+BUG FIXES:
+
+* Properly handle redirects from Vault server [GH-51]
+
 ## 0.2.12 (May 12th, 2016)
 
 IMPROVEMENTS:
