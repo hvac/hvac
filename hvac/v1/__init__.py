@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import json
+
 import requests
 
 from hvac import exceptions
@@ -7,10 +8,14 @@ from hvac import exceptions
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True):
+                 allow_redirects=True, session=None):
 
-        self.token = token
+        if not session:
+            session = requests.Session()
+
         self.allow_redirects = allow_redirects
+        self.session = session
+        self.token = token
 
         self._url = url
         self._kwargs = {
@@ -572,6 +577,12 @@ class Client(object):
         """
         self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
+    def close(self):
+        """
+        Close the underlying Requests session
+        """
+        self.session.close()
+
     def _get(self, url, **kwargs):
         return self.__request('get', url, **kwargs)
 
@@ -596,20 +607,14 @@ class Client(object):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        response = requests.request(method,
-                                    url,
-                                    headers=headers,
-                                    allow_redirects=False,
-                                    **_kwargs)
+        response = self.session.request(method, url, headers=headers,
+                                        allow_redirects=False, **_kwargs)
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
             url = self._url + response.headers['Location']
-            response = requests.request(method,
-                                        url,
-                                        headers=headers,
-                                        allow_redirects=False,
-                                        **_kwargs)
+            response = self.session.request(method, url, headers=headers,
+                                            allow_redirects=False, **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
             errors = response.json().get('errors')
