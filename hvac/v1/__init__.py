@@ -1,10 +1,14 @@
 from __future__ import unicode_literals
 import json
-import urlparse
 
 import requests
 
 from hvac import exceptions
+
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
@@ -597,7 +601,7 @@ class Client(object):
         return self.__request('delete', url, **kwargs)
 
     def __request(self, method, url, headers=None, **kwargs):
-        url = urlparse.urljoin(self._url, url)
+        url = urljoin(self._url, url)
 
         if not headers:
             headers = {}
@@ -613,7 +617,7 @@ class Client(object):
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
-            url = urlparse.urljoin(self._url, response.headers['Location'])
+            url = urljoin(self._url, response.headers['Location'])
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
 
