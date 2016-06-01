@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import json
+import urlparse
 
 import requests
 
@@ -596,7 +597,7 @@ class Client(object):
         return self.__request('delete', url, **kwargs)
 
     def __request(self, method, url, headers=None, **kwargs):
-        url = self._url + url
+        url = urlparse.urljoin(self._url, url)
 
         if not headers:
             headers = {}
@@ -612,7 +613,7 @@ class Client(object):
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
-            url = self._url + response.headers['Location']
+            url = urlparse.urljoin(self._url, response.headers['Location'])
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
 
