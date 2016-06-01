@@ -612,7 +612,7 @@ class Client(object):
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
-            url = self._url + response.headers['Location']
+            url = response.headers['Location']
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
 
