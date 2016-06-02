@@ -1,3 +1,9 @@
+## 0.2.14 (June 2nd, 2016)
+
+BUG FIXES:
+
+* Fix improper URL being used when leader redirection occurs [GH-56]
+
 ## 0.2.13 (May 31st, 2016)
 
 IMPROVEMENTS:
