@@ -622,11 +622,12 @@ class Client(object):
                                             allow_redirects=False, **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
+            text = errors = None
             if response.headers.get('Content-Type') == 'application/json':
                 errors = response.json().get('errors')
-                self.__raise_error(response.status_code, errors=errors)
-            else:
-                self.__raise_error(response.status_code, response.text)
+            if errors is None:
+                text = response.text
+            self.__raise_error(response.status_code, text, errors=errors)
 
         return response
 
