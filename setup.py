@@ -14,4 +14,7 @@ setup(
     install_requires=[
         'requests>=2.7.0',
     ],
+    extras_require = {
+        'parser': ['pyhcl>=0.2.1,<0.3.0']
+    }
 )
