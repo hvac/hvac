@@ -630,23 +630,29 @@ class Client(object):
                                             allow_redirects=False, **_kwargs)
 
         if response.status_code >= 400 and response.status_code < 600:
-            errors = response.json().get('errors')
-
-            if response.status_code == 400:
-                raise exceptions.InvalidRequest(errors=errors)
-            elif response.status_code == 401:
-                raise exceptions.Unauthorized(errors=errors)
-            elif response.status_code == 403:
-                raise exceptions.Forbidden(errors=errors)
-            elif response.status_code == 404:
-                raise exceptions.InvalidPath(errors=errors)
-            elif response.status_code == 429:
-                raise exceptions.RateLimitExceeded(errors=errors)
-            elif response.status_code == 500:
-                raise exceptions.InternalServerError(errors=errors)
-            elif response.status_code == 503:
-                raise exceptions.VaultDown(errors=errors)
-            else:
-                raise exceptions.UnexpectedError()
+            text = errors = None
+            if response.headers.get('Content-Type') == 'application/json':
+                errors = response.json().get('errors')
+            if errors is None:
+                text = response.text
+            self.__raise_error(response.status_code, text, errors=errors)
 
         return response
+
+    def __raise_error(self, status_code, message=None, errors=None):
+        if status_code == 400:
+            raise exceptions.InvalidRequest(message, errors=errors)
+        elif status_code == 401:
+            raise exceptions.Unauthorized(message, errors=errors)
+        elif status_code == 403:
+            raise exceptions.Forbidden(message, errors=errors)
+        elif status_code == 404:
+            raise exceptions.InvalidPath(message, errors=errors)
+        elif status_code == 429:
+            raise exceptions.RateLimitExceeded(message, errors=errors)
+        elif status_code == 500:
+            raise exceptions.InternalServerError(message, errors=errors)
+        elif status_code == 503:
+            raise exceptions.VaultDown(message, errors=errors)
+        else:
+            raise exceptions.UnexpectedError(message)

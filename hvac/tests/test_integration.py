@@ -290,6 +290,20 @@ class IntegrationTest(TestCase):
         client = create_client(token='not-a-real-token')
         assert not client.is_authenticated()
 
+    def test_illegal_token(self):
+        client = create_client(token='token-with-new-line\n')
+        try:
+            client.is_authenticated()
+        except ValueError as e:
+            assert 'Invalid header value' in str(e)
+
+    def test_broken_token(self):
+        client = create_client(token='\x1b')
+        try:
+            client.is_authenticated()
+        except exceptions.InvalidRequest as e:
+            assert "invalid header value" in str(e)
+
     def test_client_authenticated(self):
         assert self.client.is_authenticated()
 
