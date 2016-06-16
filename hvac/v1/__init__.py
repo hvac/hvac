@@ -465,7 +465,7 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def create_userpass(self, username, password, policies, mount_point='userpass'):
+    def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
         POST /auth/<mount point>/users/<username>
         """
@@ -479,6 +479,7 @@ class Client(object):
             'password': password,
             'policies': policies
         }
+        params.update(kwargs)
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
