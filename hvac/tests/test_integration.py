@@ -256,10 +256,13 @@ class IntegrationTest(TestCase):
         self.client.create_app_id('testappid', policies='root', display_name='displayname')
 
         result = self.client.read('auth/app-id/map/app-id/testappid')
+        assert result == self.client.get_app_id('testappid')
 
         assert result['data']['key'] == 'testappid'
         assert result['data']['display_name'] == 'displayname'
         assert result['data']['value'] == 'root'
+        self.client.delete_app_id('testappid')
+        assert self.client.get_app_id('testappid')['data'] is None
 
         self.client.disable_auth_backend('app-id')
 
@@ -271,6 +274,7 @@ class IntegrationTest(TestCase):
         self.client.create_user_id('testuserid', app_id='testappid')
 
         result = self.client.read('auth/app-id/map/user-id/testuserid')
+        assert result == self.client.get_user_id('testuserid')
 
         assert result['data']['key'] == 'testuserid'
         assert result['data']['value'] == 'testappid'
@@ -279,6 +283,8 @@ class IntegrationTest(TestCase):
 
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
+        self.client.delete_user_id('testuserid')
+        assert self.client.get_user_id('testuserid')['data'] is None
 
         self.client.disable_auth_backend('app-id')
 
