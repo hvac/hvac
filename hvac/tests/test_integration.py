@@ -201,7 +201,7 @@ class IntegrationTest(TestCase):
         assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease='1h')
+        result = self.client.create_token(lease='1h', renewable=True)
         assert result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
