@@ -1,10 +1,12 @@
 from unittest import TestCase, skipIf
 
-from nose.tools import *
+import hcl
 import requests
+from nose.tools import *
 
 from hvac import Client, exceptions
 from hvac.tests import util
+
 
 def create_client(**kwargs):
     return Client(url='https://localhost:8200',
@@ -143,10 +145,19 @@ class IntegrationTest(TestCase):
           policy = "write"
         }
         """
+        parsed_policy = {
+            'path': {
+                'sys': {
+                    'policy': 'deny'},
+                'secret': {
+                    'policy': 'write'}
+            }
+        }
 
         self.client.set_policy('test', policy)
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
+        assert parsed_policy == self.client.get_policy('test', parse=True)
 
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()

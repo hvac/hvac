@@ -1,6 +1,12 @@
 from __future__ import unicode_literals
+
 import json
 
+try:
+    import hcl
+    has_parser = True
+except ImportError:
+    has_parser = False
 import requests
 
 from hvac import exceptions
@@ -279,12 +285,20 @@ class Client(object):
         """
         return self._get('/v1/sys/policy').json()['policies']
 
-    def get_policy(self, name):
+    def get_policy(self, name, parse=False):
         """
         GET /sys/policy/<name>
         """
         try:
-            return self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
+            policy = self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
+            if parse:
+                try:
+                    policy = hcl.loads(policy)
+                except NameError:
+                    raise ImportError(
+                        'Parsing the {0} policy failed because the pyhcl '
+                        'library is not installed.'.format(name))
+            return policy
         except exceptions.InvalidPath:
             return None
 

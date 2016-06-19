@@ -13,6 +13,11 @@ Tested against Vault v0.1.2 and HEAD. Requires v0.1.2 or later.
 ```bash
 pip install hvac
 ```
+or
+```bash
+pip install hvac[parser]
+```
+if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
 ### Initialize the client
 
