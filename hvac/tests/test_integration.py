@@ -217,6 +217,13 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
+        # Test ttl:
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='root', ttl='10s')
+        
+        result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
+
+        assert result['auth']['lease_duration'] == 10
+
         self.client.disable_auth_backend('userpass')
 
     def test_delete_userpass(self):
