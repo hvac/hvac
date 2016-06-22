@@ -449,6 +449,8 @@ class Client(object):
             return False
         except exceptions.InvalidPath:
             return False
+        except exceptions.InvalidRequest:
+            return False
 
     def auth_app_id(self, app_id, user_id, mount_point='app-id', use_token=True):
         """

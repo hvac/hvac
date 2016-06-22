@@ -201,6 +201,8 @@ class IntegrationTest(TestCase):
             assert True
         except exceptions.InvalidPath:
             assert True
+        except exceptions.InvalidRequest:
+            assert True
 
     def test_userpass_auth(self):
         if 'userpass/' in self.client.list_auth_backends():
@@ -230,7 +232,7 @@ class IntegrationTest(TestCase):
 
         # Test ttl:
         self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='root', ttl='10s')
-        
+
         result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
 
         assert result['auth']['lease_duration'] == 10
