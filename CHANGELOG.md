@@ -1,3 +1,19 @@
+## 0.2.15 (June 22nd, 2016)
+
+Thanks to @blarghmatey, @stevenmanton, and @ahlinc for their contributions!
+
+IMPROVEMENTS:
+
+* Add methods for manipulating app/user IDs [GH-62]
+* Add ability to automatically parse policies with pyhcl [GH-58]
+* Add TTL option to `create_userpass` [GH-60]
+* Add support for backing up keys on rekey [GH-57]
+* Handle non-JSON error responses correctly [GH-46]
+
+BUG FIXES:
+
+* `is_authenticated` now handles new error type for Vault 0.6.0
+
 ## 0.2.14 (June 2nd, 2016)
 
 BUG FIXES:

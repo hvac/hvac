@@ -148,6 +148,11 @@ path "secret/foo" {
 client.set_policy('myapp', policy)
 
 client.delete_policy('oldthing')
+
+policy = client.get_policy('mypolicy')
+
+# Requires pyhcl to automatically parse HCL into a Python dictionary
+policy = client.get_policy('mypolicy', parse=True)
 ```
 
 ### Manipulate audit backends
