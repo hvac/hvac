@@ -526,6 +526,18 @@ class Client(object):
 
         return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
+    def get_app_id(self, app_id, mount_point='app-id'):
+        """
+        GET /auth/<mount_point>/map/app-id/<app_id>
+        """
+        return self._get('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)).json()
+
+    def delete_app_id(self, app_id, mount_point='app-id'):
+        """
+        DELETE /auth/<mount_point>/map/app-id/<app_id>
+        """
+        return self._delete('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id))
+
     def create_user_id(self, user_id, app_id, cidr_block=None, mount_point='app-id', **kwargs):
         """
         POST /auth/<mount point>/map/user-id/<user_id>
@@ -548,6 +560,18 @@ class Client(object):
         params.update(kwargs)
 
         return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
+
+    def get_user_id(self, user_id, mount_point='app-id'):
+        """
+        GET /auth/<mount_point>/map/user-id/<user_id>
+        """
+        return self._get('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)).json()
+
+    def delete_user_id(self, user_id, mount_point='app-id'):
+        """
+        DELETE /auth/<mount_point>/map/user-id/<user_id>
+        """
+        return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
