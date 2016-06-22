@@ -4,9 +4,9 @@ import json
 
 try:
     import hcl
-    has_parser = True
+    has_hcl_parser = True
 except ImportError:
-    has_parser = False
+    has_hcl_parser = False
 import requests
 
 from hvac import exceptions
@@ -292,12 +292,11 @@ class Client(object):
         try:
             policy = self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
             if parse:
-                try:
-                    policy = hcl.loads(policy)
-                except NameError:
-                    raise ImportError(
-                        'Parsing the {0} policy failed because the pyhcl '
-                        'library is not installed.'.format(name))
+                if not has_hcl_parser:
+                    raise ImportError('pyhcl is required for policy parsing')
+
+                policy = hcl.loads(policy)
+
             return policy
         except exceptions.InvalidPath:
             return None
