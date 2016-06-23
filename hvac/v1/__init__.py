@@ -357,12 +357,14 @@ class Client(object):
         }
         return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
 
-    def create_token(self, id=None, policies=None, meta=None,
+    def create_token(self, role=None, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_profile=False,
-                     ttl=None, orphan=False):
+                     ttl=None, orphan=False, renewable=None,
+                     explicit_max_ttl=None):
         """
         POST /auth/token/create
+        POST /auth/token/create/<role>
         POST /auth/token/create-orphan
         """
         params = {
@@ -373,15 +375,19 @@ class Client(object):
             'display_name': display_name,
             'num_uses': num_uses,
             'no_default_profile': no_default_profile,
+            'renewable': renewable
         }
 
         if lease:
             params['lease'] = lease
         else:
             params['ttl'] = ttl
+            params['explicit_max_ttl'] = explicit_max_ttl
 
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params).json()
+        elif role:
+            return self._post('/v1/auth/token/create/{}'.format(role), json=params).json()
         else:
             return self._post('/v1/auth/token/create', json=params).json()
 
@@ -424,6 +430,41 @@ class Client(object):
             return self._post('/v1/auth/token/renew/{0}'.format(token), json=params).json()
         else:
             return self._post('/v1/auth/token/renew-self', json=params).json()
+
+    def create_token_role(self, role,
+                          allowed_policies=None, orphan=None, period=None,
+                          renewable=None, path_suffix=None, explicit_max_ttl=None):
+        """
+        POST /auth/token/roles/<role>
+        """
+        params = {
+            'allowed_policies': allowed_policies,
+            'orphan': orphan,
+            'period': period,
+            'renewable': renewable,
+            'path_suffix': path_suffix,
+            'explicit_max_ttl': explicit_max_ttl
+        }
+        return self._post('/v1/auth/token/roles/{}'.format(role), json=params).json()
+
+    def token_role(self, role):
+        """
+        Returns the named token role.
+        """
+        return self.read('auth/token/roles/{}'.format(role))
+
+    def delete_token_role(self, role):
+        """
+        Deletes the named token role.
+        """
+        return self.delete('auth/token/roles/{}'.format(role))
+
+    def list_token_roles(self):
+        """
+        GET /auth/token/roles?list=true
+        """
+        return self.list('auth/token/roles')
+
 
     def logout(self, revoke_token=False):
         """
