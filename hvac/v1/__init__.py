@@ -359,7 +359,7 @@ class Client(object):
 
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
-                     num_uses=None, no_default_profile=False,
+                     num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False):
         """
         POST /auth/token/create
@@ -372,7 +372,7 @@ class Client(object):
             'no_parent': no_parent,
             'display_name': display_name,
             'num_uses': num_uses,
-            'no_default_profile': no_default_profile,
+            'no_default_policy': no_default_policy,
         }
 
         if lease:
