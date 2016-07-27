@@ -397,3 +397,25 @@ class IntegrationTest(TestCase):
         result = self.client.read(key)
 
         assert result['data']['foo'] == 'bar'
+
+    def test_token_accessor(self):
+        # Create token, check accessor is provided
+        result = self.client.create_token(lease='1h')
+        token_accessor = result['auth'].get('accessor', None)
+        assert token_accessor
+
+        # Look up token by accessor, make sure token is excluded from results
+        lookup = self.client.lookup_token(token_accessor, accessor=True)
+        assert lookup['data']['accessor'] == token_accessor
+        assert not lookup['data']['id']
+
+        # Revoke token using the accessor
+        self.client.revoke_token(token_accessor, accessor=True)
+
+        # Look up by accessor should fail
+        with self.assertRaises(exceptions.InvalidRequest):
+            lookup = self.client.lookup_token(token_accessor, accessor=True)
+
+        # As should regular lookup
+        with self.assertRaises(exceptions.InvalidRequest):
+            lookup = self.client.lookup_token(result['auth']['client_token'])
