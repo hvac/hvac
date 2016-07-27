@@ -106,6 +106,16 @@ client.revoke_token_prefix('zzz')
 client.renew_token('aaa')
 ```
 
+### Managing tokens using accessors
+
+```python
+token = client.create_token(policies=['root'], lease='1h')
+token_accessor = token['auth']['accessor']
+
+same_token = client.lookup_token(token_accessor, accessor=True)
+client.revoke_token(token_accessor, accessor=True)
+```
+
 ### Manipulate auth backends
 
 ```python
