@@ -36,12 +36,12 @@ class Client(object):
             'proxies': proxies,
         }
 
-    def read(self, path):
+    def read(self, path, wrap_ttl=None):
         """
         GET /<path>
         """
         try:
-            return self._get('/v1/{0}'.format(path)).json()
+            return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
         except exceptions.InvalidPath:
             return None
 
@@ -71,6 +71,19 @@ class Client(object):
         DELETE /<path>
         """
         self._delete('/v1/{0}'.format(path))
+
+    def unwrap(self, token):
+        """
+        GET /cubbyhole/response
+        X-Vault-Token: <token>
+        """
+        path = "cubbyhole/response"
+        _token = self.token
+        try:
+            self.token = token
+            return json.loads(self.read(path)['data']['response'])
+        finally:
+            self.token = _token
 
     def is_initialized(self):
         """
@@ -360,7 +373,7 @@ class Client(object):
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
-                     ttl=None, orphan=False):
+                     ttl=None, orphan=False, wrap_ttl=None):
         """
         POST /auth/token/create
         POST /auth/token/create-orphan
@@ -381,11 +394,11 @@ class Client(object):
             params['ttl'] = ttl
 
         if orphan:
-            return self._post('/v1/auth/token/create-orphan', json=params).json()
+            return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
         else:
-            return self._post('/v1/auth/token/create', json=params).json()
+            return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
-    def lookup_token(self, token=None, accessor=False):
+    def lookup_token(self, token=None, accessor=False, wrap_ttl=None):
         """
         GET /auth/token/lookup/<token>
         GET /auth/token/lookup-accessor/<token-accessor>
@@ -393,11 +406,12 @@ class Client(object):
         """
         if token:
             if accessor:
-                return self._post('/v1/auth/token/lookup-accessor/{0}'.format(token)).json()
+                path = '/v1/auth/token/lookup-accessor/{0}'.format(token)
+                return self._post(path, wrap_ttl=wrap_ttl).json()
             else:
                 return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
         else:
-            return self._get('/v1/auth/token/lookup-self').json()
+            return self._get('/v1/auth/token/lookup-self', wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
         """
@@ -406,7 +420,8 @@ class Client(object):
         POST /auth/token/revoke-accessor/<token-accessor>
         """
         if accessor and orphan:
-            raise exceptions.InvalidRequest("token-revoke cannot be run for 'orphan' mode when 'accessor' flag is set")
+            msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
+            raise exceptions.InvalidRequest(msg)
         elif accessor:
             self._post('/v1/auth/token/revoke-accessor/{0}'.format(token))
         elif orphan:
@@ -420,7 +435,7 @@ class Client(object):
         """
         self._post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
-    def renew_token(self, token=None, increment=None):
+    def renew_token(self, token=None, increment=None, wrap_ttl=None):
         """
         POST /auth/token/renew/<token>
         POST /auth/token/renew-self
@@ -430,9 +445,10 @@ class Client(object):
         }
 
         if token:
-            return self._post('/v1/auth/token/renew/{0}'.format(token), json=params).json()
+            path = '/v1/auth/token/renew/{0}'.format(token)
+            return self._post(path, json=params, wrap_ttl=wrap_ttl).json()
         else:
-            return self._post('/v1/auth/token/renew-self', json=params).json()
+            return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
 
     def logout(self, revoke_token=False):
         """
@@ -536,11 +552,12 @@ class Client(object):
 
         return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
-    def get_app_id(self, app_id, mount_point='app-id'):
+    def get_app_id(self, app_id, mount_point='app-id', wrap_ttl=None):
         """
         GET /auth/<mount_point>/map/app-id/<app_id>
         """
-        return self._get('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)).json()
+        path = '/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)
+        return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_app_id(self, app_id, mount_point='app-id'):
         """
@@ -571,11 +588,12 @@ class Client(object):
 
         return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
 
-    def get_user_id(self, user_id, mount_point='app-id'):
+    def get_user_id(self, user_id, mount_point='app-id', wrap_ttl=None):
         """
         GET /auth/<mount_point>/map/user-id/<user_id>
         """
-        return self._get('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)).json()
+        path = '/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)
+        return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_user_id(self, user_id, mount_point='app-id'):
         """
@@ -665,6 +683,10 @@ class Client(object):
 
         if self.token:
             headers['X-Vault-Token'] = self.token
+
+        wrap_ttl = kwargs.pop('wrap_ttl', None)
+        if wrap_ttl:
+            headers['X-Vault-Wrap-TTL'] = str(wrap_ttl)
 
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
