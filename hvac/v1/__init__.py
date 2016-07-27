@@ -385,22 +385,31 @@ class Client(object):
         else:
             return self._post('/v1/auth/token/create', json=params).json()
 
-    def lookup_token(self, token=None):
+    def lookup_token(self, token=None, accessor=False):
         """
         GET /auth/token/lookup/<token>
+        GET /auth/token/lookup-accessor/<token-accessor>
         GET /auth/token/lookup-self
         """
         if token:
-            return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
+            if accessor:
+                return self._post('/v1/auth/token/lookup-accessor/{0}'.format(token)).json()
+            else:
+                return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
         else:
             return self._get('/v1/auth/token/lookup-self').json()
 
-    def revoke_token(self, token, orphan=False):
+    def revoke_token(self, token, orphan=False, accessor=False):
         """
         POST /auth/token/revoke/<token>
         POST /auth/token/revoke-orphan/<token>
+        POST /auth/token/revoke-accessor/<token-accessor>
         """
-        if orphan:
+        if accessor and orphan:
+            raise exceptions.InvalidRequest("token-revoke cannot be run for 'orphan' mode when 'accessor' flag is set")
+        elif accessor:
+            self._post('/v1/auth/token/revoke-accessor/{0}'.format(token))
+        elif orphan:
             self._post('/v1/auth/token/revoke-orphan/{0}'.format(token))
         else:
             self._post('/v1/auth/token/revoke/{0}'.format(token))
