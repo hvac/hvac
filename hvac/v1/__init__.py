@@ -489,6 +489,18 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
+    def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True):
+        """
+        POST /auth/aws-ec2/login
+        """
+        params = {'pkcs7': pkcs7}
+        if nonce:
+            params['nonce'] = nonce
+        if role:
+            params['role'] = role
+
+        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
+
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
         POST /auth/<mount point>/users/<username>
@@ -582,6 +594,110 @@ class Client(object):
         DELETE /auth/<mount_point>/map/user-id/<user_id>
         """
         return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
+        
+    def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None):
+        """
+        POST /auth/aws-ec2/config/client
+        """
+        params = {
+            'access_key': access_key,
+            'secret_key': secret_key
+        }
+        if endpoint is not None:
+            params['endpoint'] = endpoint
+
+        return self._post('/v1/auth/aws-ec2/config/client', json=params)
+
+    def get_vault_ec2_client_configuration(self):
+        """
+        GET /auth/aws-ec2/config/client
+        """
+        return self._get('/v1/auth/aws-ec2/config/client').json()
+
+    def delete_vault_ec2_client_configuration(self):
+        """
+        DELETE /auth/aws-ec2/config/client
+        """
+        return self._delete('/v1/auth/aws-ec2/config/client')
+
+    def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert):
+        """
+        POST /auth/aws-ec2/config/certificate/<cert_name>
+        """
+        params = {
+            'cert_name': cert_name,
+            'aws_public_cert': aws_public_cert
+        }
+        return self._post('/v1/auth/aws-ec2/config/certificate/{0}'.format(cert_name), json=params)
+
+    def get_vault_ec2_certificate_configuration(self, cert_name):
+        """
+        GET /auth/aws-ec2/config/certificate/<cert_name>
+        """
+        return self._get('/v1/auth/aws-ec2/config/certificate/{0}'.format(cert_name)).json()
+
+    def list_vault_ec2_certificate_configurations(self):
+        """
+        GET /auth/aws-ec2/config/certificates?list=true
+        """
+        params = {'list': True}
+        return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
+
+    def create_ec2_role(self, role, bound_ami_id, role_tag=None, max_ttl=None, policies=None,
+                          allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+        """
+        POST /auth/aws-ec2/role/<role>
+        """
+        params = {
+            'role': role,
+            'bound_ami_id': bound_ami_id,
+            'disallow_reauthentication': disallow_reauthentication,
+            'allow_instance_migration': allow_instance_migration
+        }
+        if role_tag is not None:
+            params['role_tag'] = role_tag
+        if max_ttl is not None:
+            params['max_ttl'] = max_ttl
+        if policies is not None:
+            params['policies'] = policies
+        params.update(**kwargs)
+        return self._post('/v1/auth/aws-ec2/role/{0}'.format(role), json=params)
+
+    def get_ec2_role(self, role):
+        """
+        GET /auth/aws-ec2/role/<role>
+        """
+        return self._get('/v1/auth/aws-ec2/role/{0}'.format(role)).json()
+
+    def delete_ec2_role(self, role):
+        """
+        DELETE /auth/aws-ec2/role/<role>
+        """
+        return self._delete('/v1/auth/aws-ec2/role/{0}'.format(role))
+
+    def list_ec2_roles(self):
+        """
+        GET /auth/aws-ec2/roles?list=true
+        """
+        return self._get('/v1/auth/aws-ec2/roles', params={'list': True})
+
+    def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
+                            disallow_reauthentication=False, allow_instance_migration=False):
+        """
+        POST /auth/aws-ec2/role/<role>/tag
+        """
+        params = {
+            'role': role,
+            'disallow_reauthentication': disallow_reauthentication,
+            'allow_instance_migration': allow_instance_migration
+        }
+        if max_ttl is not None:
+            params['max_ttl'] = max_ttl
+        if policies is not None:
+            params['policies'] = policies
+        if instance_id is not None:
+            params['instance_id'] = instance_id
+        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params).json()
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
