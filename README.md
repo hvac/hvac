@@ -116,6 +116,13 @@ same_token = client.lookup_token(token_accessor, accessor=True)
 client.revoke_token(token_accessor, accessor=True)
 ```
 
+### Wrapping/unwrapping a token
+
+```python
+wrap = client.create_token(policies=['root'], lease='1h', wrap_ttl='1m')
+result = self.client.unwrap(wrap['wrap_info']['token'])
+```
+
 ### Manipulate auth backends
 
 ```python

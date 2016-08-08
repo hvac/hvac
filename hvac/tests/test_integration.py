@@ -3,6 +3,7 @@ from unittest import TestCase, skipIf
 import hcl
 import requests
 from nose.tools import *
+from time import sleep
 
 from hvac import Client, exceptions
 from hvac.tests import util
@@ -417,5 +418,58 @@ class IntegrationTest(TestCase):
             lookup = self.client.lookup_token(token_accessor, accessor=True)
 
         # As should regular lookup
+        with self.assertRaises(exceptions.InvalidRequest):
+            lookup = self.client.lookup_token(result['auth']['client_token'])
+
+    def test_wrapped_token_success(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        # Unwrap token
+        result = self.client.unwrap(wrap['wrap_info']['token'])
+        assert result['auth']['client_token']
+
+        # Validate token
+        lookup = self.client.lookup_token(result['auth']['client_token'])
+        assert result['auth']['client_token'] == lookup['data']['id']
+
+    def test_wrapped_token_intercept(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        # Intercept wrapped token
+        _ = self.client.unwrap(wrap['wrap_info']['token'])
+
+        # Attempt to retrieve the token after it's been intercepted
+        with self.assertRaises(exceptions.InvalidRequest):
+            result = self.client.unwrap(wrap['wrap_info']['token'])
+
+    def test_wrapped_token_cleanup(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        _token = self.client.token
+        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        assert self.client.token == _token
+
+    def test_wrapped_token_intercept(self):
+        # Wrap a new token with a very short TTL
+        wrap = self.client.create_token(wrap_ttl='1s')
+
+        # Make sure the TTL has passed
+        sleep(2)
+
+        # Attempt to retrieve the token
+        with self.assertRaises(exceptions.InvalidRequest):
+            result = self.client.unwrap(wrap['wrap_info']['token'])
+
+    def test_wrapped_token_revoke(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        # Revoke token before it's unwrapped
+        self.client.revoke_token(wrap['wrap_info']['wrapped_accessor'], accessor=True)
+
+        # Unwrap token anyway
+        result = self.client.unwrap(wrap['wrap_info']['token'])
+        assert result['auth']['client_token']
+
+        # Attempt to validate token
         with self.assertRaises(exceptions.InvalidRequest):
             lookup = self.client.lookup_token(result['auth']['client_token'])
