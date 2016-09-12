@@ -1,3 +1,20 @@
+## 0.2.16 (September 12, 2016)
+
+Thanks to @otakup0pe, @nicr9, @marcoslopes, @caiotomazelli,
+and @blarghmatey for their contributions!
+
+IMPROVEMENTS:
+
+* Add EC2 auth support [GH-61]
+* Add support for token accessors [GH-69]
+* Add support for response wrapping [GH-70]
+* Add AppRole auth support [GH-77]
+
+BUG FIXES:
+
+* Fix `no_default_policy` parameter in `create_token` [GH-65]
+* Fix EC2 auth double JSON parsing [GH-76]
+
 ## 0.2.15 (June 22nd, 2016)
 
 Thanks to @blarghmatey, @stevenmanton, and @ahlinc for their contributions!
