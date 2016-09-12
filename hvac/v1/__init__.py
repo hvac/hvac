@@ -773,6 +773,117 @@ class Client(object):
         """
         self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
+    def create_role(self, role_name, **kwargs):
+        """
+        POST /auth/approle/role/<role name>
+        """
+
+        self._post('/v1/auth/approle/role/{0}'.format(role_name), json=kwargs)
+
+    def list_roles(self):
+        """
+        GET /auth/approle/role
+        """
+
+        return self._get('/v1/auth/approle/role?list=true').json()
+
+    def get_role_id(self, role_name):
+        """
+        GET /auth/approle/role/<role name>/role-id
+        """
+
+        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        return self._get(url).json()['data']['role_id']
+
+    def set_role_id(self, role_name, role_id):
+        """
+        POST /auth/approle/role/<role name>/role-id
+        """
+
+        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        params = {
+            'role_id': role_id
+        }
+        self._post(url, json=params)
+
+
+    def get_role(self, role_name):
+        """
+        GET /auth/approle/role/<role name>
+        """
+        return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
+
+    def create_role_secret_id(self, role_name, meta=None):
+        """
+        POST /auth/approle/role/<role name>/secret-id
+        """
+
+        url = '/v1/auth/approle/role/{0}/secret-id'.format(role_name)
+        params = {}
+        if meta is not None:
+            params['metadata'] = json.dumps(meta)
+
+        return self._post(url, json=params).json()
+
+    def get_role_secret_id(self, role_name, secret_id):
+        """
+        GET /auth/approle/role/<role name>/secret-id/<secret_id>
+        """
+        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
+        return self._get(url).json()
+
+    def list_role_secrets(self, role_name):
+        """
+        GET /auth/approle/role/<role name>/secret-id?list=true
+        """
+        url = '/v1/auth/approle/role/{0}/secret-id?list=true'.format(role_name)
+        return self._get(url).json()
+
+    def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
+        """
+        GET /auth/approle/role/<role name>/secret-id-accessor/<secret_id_accessor>
+        """
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
+        return self._get(url).json()
+
+    def delete_role_secret_id(self, role_name, secret_id):
+        """
+        DELETE /auth/approle/role/<role name>/secret-id/<secret_id>
+        """
+        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
+        self._delete(url)
+
+    def delete_role_secret_id_accessor(self, role_name, secret_id_accessor):
+        """
+        DELETE /auth/approle/role/<role name>/secret-id/<secret_id_accessor>
+        """
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
+        self._delete(url)
+
+    def create_role_custom_secret_id(self, role_name, secret_id, meta=None):
+        """
+        POST /auth/approle/role/<role name>/custom-secret-id
+        """
+        url = '/v1/auth/approle/role/{0}/custom-secret-id'.format(role_name)
+        params = {
+            'secret_id': secret_id
+        }
+        if meta is not None:
+            params['meta'] = meta
+        return self._post(url, json=params).json()
+
+    def auth_approle(self, role_id, secret_id=None):
+        """
+        POST /auth/approle/login
+        """
+        params = {
+            'role_id': role_id
+        }
+        if secret_id is not None:
+            params['secret_id'] = secret_id
+
+        return self._post('/v1/auth/approle/login', json=params).json()
+
     def close(self):
         """
         Close the underlying Requests session
