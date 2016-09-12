@@ -59,6 +59,9 @@ assert client.is_authenticated() # => True
 # App ID
 client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
+# App Role
+client.auth_approle('MY_ROLE_ID', 'MY_ROLE_ID')
+
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
 
