@@ -950,6 +950,8 @@ class Client(object):
             raise exceptions.RateLimitExceeded(message, errors=errors)
         elif status_code == 500:
             raise exceptions.InternalServerError(message, errors=errors)
+        elif status_code == 501:
+            raise exceptions.VaultNotInitialized(message, errors=errors)
         elif status_code == 503:
             raise exceptions.VaultDown(message, errors=errors)
         else:

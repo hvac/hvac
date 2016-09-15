@@ -25,6 +25,9 @@ class RateLimitExceeded(VaultError):
 class InternalServerError(VaultError):
     pass
 
+class VaultNotInitialized(VaultError):
+    pass
+
 class VaultDown(VaultError):
     pass
 
