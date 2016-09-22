@@ -531,3 +531,39 @@ class IntegrationTest(TestCase):
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
             lookup = self.client.lookup_token(result['auth']['client_token'])
+
+    def test_create_token_explicit_max_ttl(self):
+
+        token = self.client.create_token(ttl='30m', explicit_max_ttl='5m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 300
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_max_ttl(self):
+
+        token = self.client.create_token(ttl='5m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 300
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_explicit_max_ttl(self):
+
+        token = self.client.create_token(ttl='30m', explicit_max_ttl='5m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 300
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
