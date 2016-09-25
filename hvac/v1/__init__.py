@@ -373,7 +373,7 @@ class Client(object):
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
-                     ttl=None, orphan=False, wrap_ttl=None):
+                     ttl=None, orphan=False, wrap_ttl=None, explicit_max_ttl=None):
         """
         POST /auth/token/create
         POST /auth/token/create-orphan
@@ -392,6 +392,9 @@ class Client(object):
             params['lease'] = lease
         else:
             params['ttl'] = ttl
+
+        if explicit_max_ttl:
+            params['explicit_max_ttl'] = explicit_max_ttl
 
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
