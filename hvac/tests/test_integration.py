@@ -555,3 +555,28 @@ class IntegrationTest(TestCase):
         # Validate token
         lookup = self.client.lookup_token(token['auth']['client_token'])
         assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_role(self):
+        policy = """
+        path "sys" {
+          policy = "deny"
+        }
+
+        path "secret" {
+          policy = "write"
+        }
+        """
+
+        self.client.set_policy('test', policy)
+        self.client.set_policy('test2', policy)
+
+        self.client.write('auth/token/roles/test_role', allowed_policies="test, test2")
+
+        token = self.client.create_token(role='test_role')
+
+        assert 'test' in token['auth']['policies']
+        assert 'test2' in token['auth']['policies']
+
+        self.client.delete('auth/token/roles/test_role')
+        self.client.delete_policy('test')
+        self.client.delete_policy('test2')

@@ -373,7 +373,7 @@ class Client(object):
     def create_token(self, id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
-                     ttl=None, orphan=False, wrap_ttl=None, explicit_max_ttl=None):
+                     ttl=None, orphan=False, wrap_ttl=None, explicit_max_ttl=None, role=None):
         """
         POST /auth/token/create
         POST /auth/token/create-orphan
@@ -398,6 +398,8 @@ class Client(object):
 
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
+        elif role:
+            return self._post('/v1/auth/token/create/{}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
