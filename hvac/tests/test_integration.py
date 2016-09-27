@@ -97,6 +97,18 @@ class IntegrationTest(TestCase):
         result = self.client.write('transit/decrypt/foo', ciphertext=ciphertext)
         assert result['data']['plaintext'] == plaintext
 
+    def test_wrap_write(self):
+        if 'approle/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend("approle")
+        self.client.write("auth/approle/role/testrole")
+
+        result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
+
+        assert 'token' in result['wrap_info']
+
+        self.client.unwrap(result['wrap_info']['token'])
+        self.client.disable_auth_backend("approle")
+
     def test_read_nonexistent_key(self):
         assert not self.client.read('secret/I/dont/exist')
 
