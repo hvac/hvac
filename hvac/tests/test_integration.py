@@ -116,6 +116,10 @@ class IntegrationTest(TestCase):
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
 
+        self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
+        assert '3600s' in self.client.get_secret_backend_tuning()
+        assert '8600s' in self.client.get_secret_backend_tuning()
+
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
         assert 'foobar/' in self.client.list_secret_backends()
@@ -340,7 +344,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-        
+
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -362,7 +366,7 @@ class IntegrationTest(TestCase):
         except exceptions.InvalidPath:
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -376,7 +380,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_missing_token(self):
         client = create_client()
