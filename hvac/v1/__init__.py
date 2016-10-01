@@ -279,7 +279,7 @@ class Client(object):
         """
         POST /sys/mounts/<mount point>/tune
         """
-        print ("test")
+
         if not mount_point:
             mount_point = backend_type
 
