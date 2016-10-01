@@ -279,6 +279,7 @@ class Client(object):
         """
         POST /sys/mounts/<mount point>/tune
         """
+        print ("test")
         if not mount_point:
             mount_point = backend_type
 
@@ -289,7 +290,7 @@ class Client(object):
 
         self._post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
 
-    def get_secret_backend_tuning(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None):
+    def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """
         GET /sys/mounts/<mount point>/tune
         """
