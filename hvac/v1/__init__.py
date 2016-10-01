@@ -57,11 +57,11 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
-    def write(self, path, **kwargs):
+    def write(self, path, wrap_ttl=None, **kwargs):
         """
         PUT /<path>
         """
-        response = self._put('/v1/{0}'.format(path), json=kwargs)
+        response = self._put('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
             return response.json()
