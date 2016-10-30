@@ -830,10 +830,13 @@ class Client(object):
 
     def get_role_secret_id(self, role_name, secret_id):
         """
-        GET /auth/approle/role/<role name>/secret-id/<secret_id>
+        POST /auth/approle/role/<role name>/secret-id/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id/lookup'.format(role_name)
+        params = {
+            'secret_id': secret_id
+        }
+        return self._post(url, json=params).json()
 
     def list_role_secrets(self, role_name):
         """
@@ -851,10 +854,13 @@ class Client(object):
 
     def delete_role_secret_id(self, role_name, secret_id):
         """
-        DELETE /auth/approle/role/<role name>/secret-id/<secret_id>
+        POST /auth/approle/role/<role name>/secret-id/destroy
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
-        self._delete(url)
+        url = '/v1/auth/approle/role/{0}/secret-id/destroy'.format(role_name)
+        params = {
+            'secret_id': secret_id
+        }
+        self._post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
