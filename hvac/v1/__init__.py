@@ -473,7 +473,7 @@ class Client(object):
             'path_suffix': path_suffix,
             'explicit_max_ttl': explicit_max_ttl
         }
-        return self._post('/v1/auth/token/roles/{}'.format(role), json=params).json()
+        return self._post('/v1/auth/token/roles/{}'.format(role), json=params)
 
     def token_role(self, role):
         """
