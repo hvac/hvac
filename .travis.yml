@@ -8,9 +8,11 @@ script:
   - export PATH=$HOME/bin:$PATH
   - tox
 env:
+  - TOXENV=py26 VAULT_BRANCH=release
   - TOXENV=py27 VAULT_BRANCH=release
   - TOXENV=py35 VAULT_BRANCH=release
   - TOXENV=py35 VAULT_BRANCH=head
 matrix:
   allow_failures:
+    - env: TOXENV=py26 VAULT_BRANCH=release
     - env: TOXENV=py35 VAULT_BRANCH=head

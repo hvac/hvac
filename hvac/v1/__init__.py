@@ -403,7 +403,7 @@ class Client(object):
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
         elif role:
-            return self._post('/v1/auth/token/create/{}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
+            return self._post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
@@ -473,19 +473,19 @@ class Client(object):
             'path_suffix': path_suffix,
             'explicit_max_ttl': explicit_max_ttl
         }
-        return self._post('/v1/auth/token/roles/{}'.format(role), json=params)
+        return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
 
     def token_role(self, role):
         """
         Returns the named token role.
         """
-        return self.read('auth/token/roles/{}'.format(role))
+        return self.read('auth/token/roles/{0}'.format(role))
 
     def delete_token_role(self, role):
         """
         Deletes the named token role.
         """
-        return self.delete('auth/token/roles/{}'.format(role))
+        return self.delete('auth/token/roles/{0}'.format(role))
 
     def list_token_roles(self):
         """

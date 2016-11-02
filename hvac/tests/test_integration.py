@@ -1,4 +1,4 @@
-from unittest import TestCase, skipIf
+from unittest import TestCase
 
 import hcl
 import requests
@@ -346,7 +346,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-        
+
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
