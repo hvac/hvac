@@ -365,10 +365,10 @@ class IntegrationTest(TestCase):
         try:
             self.client.get_role_secret_id('testrole', secret_id)
             assert False
-        except exceptions.InvalidPath:
+        except ValueError:
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -382,7 +382,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_missing_token(self):
         client = create_client()
