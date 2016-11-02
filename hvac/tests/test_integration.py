@@ -563,23 +563,23 @@ class IntegrationTest(TestCase):
         assert token['auth']['client_token'] == lookup['data']['id']
 
     def test_token_roles(self):
-        # No roles, list_token_roles == None
-        before = self.client.list_token_roles()
+        # No roles at beginning
+        before = self.client.token_roles.list()
         assert not before
 
         # Create token role
-        assert self.client.create_token_role('testrole').status_code == 204
+        assert self.client.token_roles.write('testrole').status_code == 204
 
         # List token roles
-        during = self.client.list_token_roles()['data']['keys']
+        during = self.client.token_roles.list()['data']['keys']
         assert len(during) == 1
         assert during[0] == 'testrole'
 
         # Delete token role
-        self.client.delete_token_role('testrole')
+        self.client.token_roles.delete('testrole')
 
         # No roles, list_token_roles == None
-        after = self.client.list_token_roles()
+        after = self.client.token_roles.list()
         assert not after
 
     def test_create_token_w_role(self):
@@ -587,8 +587,13 @@ class IntegrationTest(TestCase):
         self.prep_policy('testpolicy')
 
         # Create token role w/ policy
-        assert self.client.create_token_role('testrole',
+        assert self.client.token_roles.write('testrole',
                 allowed_policies='testpolicy').status_code == 204
+
+        # Can we lookup that role?
+        role = self.client.token_roles.read('testrole')
+        assert role['data']['name'] == 'testrole'
+        assert 'testpolicy' in role['data']['allowed_policies']
 
         # Create token against role
         token = self.client.create_token(lease='1h', role='testrole')
@@ -596,5 +601,5 @@ class IntegrationTest(TestCase):
         assert token['auth']['policies'] == ['default', 'testpolicy']
 
         # Cleanup
-        self.client.delete_token_role('testrole')
+        self.client.token_roles.delete('testrole')
         self.client.delete_policy('testpolicy')
