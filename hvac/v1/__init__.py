@@ -875,7 +875,7 @@ class Client(object):
             params['meta'] = meta
         return self._post(url, json=params).json()
 
-    def auth_approle(self, role_id, secret_id=None, use_token=False):
+    def auth_approle(self, role_id, secret_id=None, use_token=True):
         """
         POST /auth/approle/login
         """

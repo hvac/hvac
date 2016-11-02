@@ -387,11 +387,11 @@ class IntegrationTest(TestCase):
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
-        assert self.client.token != result['auth']['client_token']
+        assert self.client.token == result['auth']['client_token']
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
-    def test_auth_approle_use_token(self):
+    def test_auth_approle_dont_use_token(self):
         if 'approle/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('approle')
         self.client.enable_auth_backend('approle')
@@ -400,9 +400,9 @@ class IntegrationTest(TestCase):
         create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
-        result = self.client.auth_approle(role_id, secret_id, use_token=True)
+        result = self.client.auth_approle(role_id, secret_id, use_token=False)
         assert result['auth']['metadata']['foo'] == 'bar'
-        assert self.client.token == result['auth']['client_token']
+        assert self.client.token != result['auth']['client_token']
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')        
 
