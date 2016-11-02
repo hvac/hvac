@@ -150,11 +150,8 @@ class IntegrationTest(TestCase):
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
-    def test_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
-        assert self.client.get_policy('test') is None
-
-        policy = """
+    def prep_policy(self, name):
+        text = """
         path "sys" {
           policy = "deny"
         }
@@ -163,7 +160,7 @@ class IntegrationTest(TestCase):
           policy = "write"
         }
         """
-        parsed_policy = {
+        obj = {
             'path': {
                 'sys': {
                     'policy': 'deny'},
@@ -172,7 +169,15 @@ class IntegrationTest(TestCase):
             }
         }
 
-        self.client.set_policy('test', policy)
+        self.client.set_policy(name, text)
+
+        return text, obj
+
+    def test_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+        assert self.client.get_policy('test') is None
+
+        policy, parsed_policy = self.prep_policy('test')
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
         assert parsed_policy == self.client.get_policy('test', parse=True)
@@ -183,25 +188,14 @@ class IntegrationTest(TestCase):
     def test_json_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
 
-        policy = {
-            "path": {
-                "sys": {
-                    "policy": "deny"
-                },
-                "secret": {
-                    "policy": "write"
-                }
-            }
-        }
-
-        self.client.set_policy('test', policy)
+        self.prep_policy('test')
         assert 'test' in self.client.list_policies()
 
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease='1h')
+        result = self.client.create_token(lease='1h', renewable=True)
         assert result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
@@ -567,3 +561,40 @@ class IntegrationTest(TestCase):
         # Validate token
         lookup = self.client.lookup_token(token['auth']['client_token'])
         assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_token_roles(self):
+        # No roles, list_token_roles == None
+        before = self.client.list_token_roles()
+        assert not before
+
+        # Create token role
+        assert self.client.create_token_role('testrole').status_code == 204
+
+        # List token roles
+        during = self.client.list_token_roles()['data']['keys']
+        assert len(during) == 1
+        assert during[0] == 'testrole'
+
+        # Delete token role
+        self.client.delete_token_role('testrole')
+
+        # No roles, list_token_roles == None
+        after = self.client.list_token_roles()
+        assert not after
+
+    def test_create_token_w_role(self):
+        # Create policy
+        self.prep_policy('testpolicy')
+
+        # Create token role w/ policy
+        assert self.client.create_token_role('testrole',
+                allowed_policies='testpolicy').status_code == 204
+
+        # Create token against role
+        token = self.client.create_token(lease='1h', role='testrole')
+        assert token['auth']['client_token']
+        assert token['auth']['policies'] == ['default', 'testpolicy']
+
+        # Cleanup
+        self.client.delete_token_role('testrole')
+        self.client.delete_policy('testpolicy')
