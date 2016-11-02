@@ -53,7 +53,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._get('/v1/{}'.format(path), params=payload).json()
+            return self._get('/v1/{0}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -577,13 +577,13 @@ class Client(object):
         }
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
+        return self._post('/v1/auth/{0}/users/{1}'.format(mount_point, username), json=params)
 
     def delete_userpass(self, username, mount_point='userpass'):
         """
         DELETE /auth/<mount point>/users/<username>
         """
-        return self._delete('/v1/auth/{}/users/{}'.format(mount_point, username))
+        return self._delete('/v1/auth/{0}/users/{1}'.format(mount_point, username))
 
     def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
         """
@@ -606,7 +606,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
+        return self._post('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id), json=params)
 
     def get_app_id(self, app_id, mount_point='app-id', wrap_ttl=None):
         """
@@ -642,7 +642,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
+        return self._post('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id), json=params)
 
     def get_user_id(self, user_id, mount_point='app-id', wrap_ttl=None):
         """
