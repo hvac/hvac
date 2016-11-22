@@ -123,7 +123,7 @@ client.revoke_token(token_accessor, accessor=True)
 
 ```python
 wrap = client.create_token(policies=['root'], lease='1h', wrap_ttl='1m')
-result = self.client.unwrap(wrap['wrap_info']['token'])
+result = client.unwrap(wrap['wrap_info']['token'])
 ```
 
 ### Manipulate auth backends
