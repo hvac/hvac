@@ -1,3 +1,16 @@
+## 0.2.17 (December 15, 2016)
+
+IMPROVEMENTS:
+
+* Add token role support [GH-94]
+* Add support for Python 2.6 [GH-92]
+* Allow setting the explicit_max_ttl when creating a token [GH-81]
+* Add support for write response wrapping [GH-85]
+
+BUG FIXES:
+
+* Fix app role endpoints for newer versions of Vault [GH-93]
+
 ## 0.2.16 (September 12, 2016)
 
 Thanks to @otakup0pe, @nicr9, @marcoslopes, @caiotomazelli,
