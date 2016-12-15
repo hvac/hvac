@@ -74,14 +74,13 @@ class Client(object):
 
     def unwrap(self, token):
         """
-        GET /cubbyhole/response
+        POST /sys/wrapping/unwrap
         X-Vault-Token: <token>
         """
-        path = "cubbyhole/response"
         _token = self.token
         try:
             self.token = token
-            return json.loads(self.read(path)['data']['response'])
+            return self._post('/v1/sys/wrapping/unwrap').json()
         finally:
             self.token = _token
 
