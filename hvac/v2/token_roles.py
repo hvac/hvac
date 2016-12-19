@@ -1,7 +1,7 @@
 from .client import ClientFeature
 
 class TokenRoles(ClientFeature):
-    def write(self, role, allowed_policies=None, orphan=None, period=None,
+    def create(self, role, allowed_policies=None, orphan=None, period=None,
                           renewable=None, path_suffix=None, explicit_max_ttl=None):
         """
         POST /auth/token/roles/<role>
@@ -17,7 +17,7 @@ class TokenRoles(ClientFeature):
 
         return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
 
-    def read(self, role):
+    def get(self, role):
         """
         Returns the named token role.
         """

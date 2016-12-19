@@ -568,7 +568,7 @@ class IntegrationTest(TestCase):
         assert not before
 
         # Create token role
-        assert self.client.token_roles.write('testrole').status_code == 204
+        assert self.client.token_roles.create('testrole').status_code == 204
 
         # List token roles
         during = self.client.token_roles.list()['data']['keys']
@@ -587,11 +587,11 @@ class IntegrationTest(TestCase):
         self.prep_policy('testpolicy')
 
         # Create token role w/ policy
-        assert self.client.token_roles.write('testrole',
+        assert self.client.token_roles.create('testrole',
                 allowed_policies='testpolicy').status_code == 204
 
         # Can we lookup that role?
-        role = self.client.token_roles.read('testrole')
+        role = self.client.token_roles.get('testrole')
         assert role['data']['name'] == 'testrole'
         assert 'testpolicy' in role['data']['allowed_policies']
 
