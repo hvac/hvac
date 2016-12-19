@@ -10,6 +10,7 @@ except ImportError:
 import requests
 
 from hvac import exceptions
+from .token_roles import TokenRoles
 
 try:
     from urlparse import urljoin
@@ -27,6 +28,8 @@ class Client(object):
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
+
+        self.token_roles = TokenRoles(self)
 
         self._url = url
         self._kwargs = {
@@ -458,41 +461,6 @@ class Client(object):
             return self._post(path, json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
-
-    def create_token_role(self, role,
-                          allowed_policies=None, orphan=None, period=None,
-                          renewable=None, path_suffix=None, explicit_max_ttl=None):
-        """
-        POST /auth/token/roles/<role>
-        """
-        params = {
-            'allowed_policies': allowed_policies,
-            'orphan': orphan,
-            'period': period,
-            'renewable': renewable,
-            'path_suffix': path_suffix,
-            'explicit_max_ttl': explicit_max_ttl
-        }
-        return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
-
-    def token_role(self, role):
-        """
-        Returns the named token role.
-        """
-        return self.read('auth/token/roles/{0}'.format(role))
-
-    def delete_token_role(self, role):
-        """
-        Deletes the named token role.
-        """
-        return self.delete('auth/token/roles/{0}'.format(role))
-
-    def list_token_roles(self):
-        """
-        GET /auth/token/roles?list=true
-        """
-        return self.list('auth/token/roles')
-
 
     def logout(self, revoke_token=False):
         """
