@@ -11,6 +11,7 @@ setup(
     keywords=['hashicorp', 'vault'],
     classifiers=['License :: OSI Approved :: Apache Software License'],
     packages=find_packages(),
+    entry_points=dict(console_scripts=['hvac=hvac.cli:main']),
     install_requires=[
         'requests>=2.7.0',
     ],
