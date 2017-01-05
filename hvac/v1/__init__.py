@@ -740,7 +740,7 @@ class Client(object):
         """
         GET /auth/aws-ec2/roles?list=true
         """
-        return self._get('/v1/auth/aws-ec2/roles', params={'list': True})
+        return self._get('/v1/auth/aws-ec2/roles', params={'list': True}).json()
 
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
                             disallow_reauthentication=False, allow_instance_migration=False):
