@@ -598,3 +598,28 @@ class IntegrationTest(TestCase):
         # Cleanup
         self.client.delete_token_role('testrole')
         self.client.delete_policy('testpolicy')
+
+    def test_ec2_role_crud(self):
+        if 'aws-ec2/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('aws-ec2')
+        self.client.enable_auth_backend('aws-ec2')
+
+        # create a policy to associate with the role
+        self.prep_policy('ec2rolepolicy')
+
+        # TODO test parameters of role creation more thoroughly
+        self.client.create_ec2_role('foo', 'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        roles = self.client.list_ec2_roles()
+
+        assert('foo' in roles['data']['keys'])
+
+        role = self.client.get_ec2_role('foo')
+
+        assert('ec2rolepolicy' in role['data']['policies'])
+
+        self.client.delete_ec2_role('foo')
+        self.client.delete_policy('ec2rolepolicy')
+
+        self.client.disable_auth_backend('aws-ec2')
