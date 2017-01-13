@@ -607,19 +607,56 @@ class IntegrationTest(TestCase):
         # create a policy to associate with the role
         self.prep_policy('ec2rolepolicy')
 
-        # TODO test parameters of role creation more thoroughly
-        self.client.create_ec2_role('foo', 'ami-notarealami',
+        # test binding by AMI ID (the old way, to ensure backward compatibility)
+        self.client.create_ec2_role('foo',
+                                    'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        # test binding by Account ID
+        self.client.create_ec2_role('bar',
+                                    bound_account_id='123456789012',
+                                    policies='ec2rolepolicy')
+
+        # test binding by IAM Role ARN
+        self.client.create_ec2_role('baz',
+                                    bound_iam_role_arn='arn:aws:iam::123456789012:role/mockec2role',
+                                    policies='ec2rolepolicy')
+
+        # test binding by instance profile ARN
+        self.client.create_ec2_role('qux',
+                                    bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
                                     policies='ec2rolepolicy')
 
         roles = self.client.list_ec2_roles()
 
         assert('foo' in roles['data']['keys'])
+        assert('bar' in roles['data']['keys'])
+        assert('baz' in roles['data']['keys'])
+        assert('qux' in roles['data']['keys'])
 
-        role = self.client.get_ec2_role('foo')
+        foo_role = self.client.get_ec2_role('foo')
+        assert(foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert('ec2rolepolicy' in foo_role['data']['policies'])
 
-        assert('ec2rolepolicy' in role['data']['policies'])
+        bar_role = self.client.get_ec2_role('bar')
+        assert(bar_role['data']['bound_account_id'] == '123456789012')
+        assert('ec2rolepolicy' in bar_role['data']['policies'])
 
+        baz_role = self.client.get_ec2_role('baz')
+        assert(baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert('ec2rolepolicy' in baz_role['data']['policies'])
+
+        qux_role = self.client.get_ec2_role('qux')
+
+        assert(qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert('ec2rolepolicy' in qux_role['data']['policies'])
+
+        # teardown
         self.client.delete_ec2_role('foo')
+        self.client.delete_ec2_role('bar')
+        self.client.delete_ec2_role('baz')
+        self.client.delete_ec2_role('qux')
+
         self.client.delete_policy('ec2rolepolicy')
 
         self.client.disable_auth_backend('aws-ec2')

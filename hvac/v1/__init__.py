@@ -704,17 +704,25 @@ class Client(object):
         params = {'list': True}
         return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
 
-    def create_ec2_role(self, role, bound_ami_id, role_tag=None, max_ttl=None, policies=None,
-                          allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+    def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
+                        bound_iam_instance_profile_arn=None, role_tag=None, max_ttl=None, policies=None,
+                        allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
         """
         POST /auth/aws-ec2/role/<role>
         """
         params = {
             'role': role,
-            'bound_ami_id': bound_ami_id,
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+        if bound_ami_id is not None:
+            params['bound_ami_id'] = bound_ami_id
+        if bound_account_id is not None:
+            params['bound_account_id'] = bound_account_id
+        if bound_iam_role_arn is not None:
+            params['bound_iam_role_arn'] = bound_iam_role_arn
+        if bound_iam_instance_profile_arn is not None:
+            params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
         if role_tag is not None:
             params['role_tag'] = role_tag
         if max_ttl is not None:
