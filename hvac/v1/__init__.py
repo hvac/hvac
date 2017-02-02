@@ -823,6 +823,13 @@ class Client(object):
 
         self._post('/v1/auth/approle/role/{0}'.format(role_name), json=kwargs)
 
+    def delete_role(self, role_name):
+        """
+        DELETE /auth/approle/role/<role name>
+        """
+
+        self._delete('/v1/auth/approle/role/{0}'.format(role_name))
+
     def list_roles(self):
         """
         GET /auth/approle/role
