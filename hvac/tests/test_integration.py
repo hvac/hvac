@@ -607,6 +607,11 @@ class IntegrationTest(TestCase):
         # create a policy to associate with the role
         self.prep_policy('ec2rolepolicy')
 
+        # attempt to get a list of roles before any exist
+        no_roles = self.client.list_ec2_roles()
+        # doing so should succeed and return None
+        assert (no_roles is None)
+
         # TODO test parameters of role creation more thoroughly
         self.client.create_ec2_role('foo', 'ami-notarealami',
                                     policies='ec2rolepolicy')
