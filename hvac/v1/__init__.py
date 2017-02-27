@@ -66,6 +66,15 @@ class Client(object):
         if response.status_code == 200:
             return response.json()
 
+    def post(self, path, **kwargs):
+        """
+        POST /<path>
+        """
+        response = self._post('/v1/{0}'.format(path), json=kwargs)
+
+        if response.status_code == 200:
+            return response.json()
+
     def delete(self, path):
         """
         DELETE /<path>
