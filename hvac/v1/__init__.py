@@ -921,7 +921,7 @@ class Client(object):
             params['meta'] = meta
         return self._post(url, json=params).json()
 
-    def auth_approle(self, role_id, secret_id=None):
+    def auth_approle(self, role_id, secret_id=None, use_token=True):
         """
         POST /auth/approle/login
         """
@@ -931,7 +931,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self._post('/v1/auth/approle/login', json=params).json()
+        return self.auth('/v1/auth/approle/login', json=params, use_token=use_token)
 
     def close(self):
         """
