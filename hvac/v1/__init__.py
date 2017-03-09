@@ -931,7 +931,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self.auth('/v1/auth/approle/login', json=params, use_token=use_token).json()
+        return self.auth('/v1/auth/approle/login', json=params, use_token=use_token)
 
     def close(self):
         """
