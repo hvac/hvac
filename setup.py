@@ -2,12 +2,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='hvac',
-    version='0.2.17.1',
+    name='alooma-hvac',
+    version='0.2.18',
     description='HashiCorp Vault API client',
-    author='Ian Unruh',
-    author_email='ianunruh@gmail.com',
-    url='https://github.com/ianunruh/hvac',
+    author='Ram Amar',
+    author_email='rami@alooma.com',
+    url='https://github.com/Aloomaio/alooma-hvac',
     keywords=['hashicorp', 'vault'],
     classifiers=['License :: OSI Approved :: Apache Software License'],
     packages=find_packages(),
