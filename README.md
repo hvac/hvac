@@ -2,7 +2,7 @@
 
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2/3
 
-[![Travis CI](https://travis-ci.org/ianunruh/hvac.svg?branch=master)](https://travis-ci.org/ianunruh/hvac) [![Latest Version](https://img.shields.io/pypi/v/hvac.svg)](https://pypi.python.org/pypi/hvac/)
+[![Travis CI](https://travis-ci.org/ianunruh/hvac.svg?branch=master)](https://travis-ci.org/jkdihenkar/hvac)
 
 Tested against Vault v0.1.2 and HEAD. Requires v0.1.2 or later.
 
