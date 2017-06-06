@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='hvac',
-    version='0.2.17',
+    version='0.2.18',
     description='HashiCorp Vault API client',
-    author='Ian Unruh',
-    author_email='ianunruh@gmail.com',
-    url='https://github.com/ianunruh/hvac',
+    author='Jay Dihenkar',
+    author_email='jkdihenkar@gmail.com',
+    url='https://github.com/jkdihenkar/hvac',
     keywords=['hashicorp', 'vault'],
     classifiers=['License :: OSI Approved :: Apache Software License'],
     packages=find_packages(),
