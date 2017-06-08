@@ -46,7 +46,16 @@ class IntegrationTest(TestCase):
         assert result['sealed']
         assert result['progress'] == 2
 
-        result = self.client.unseal_multi(keys[2:3])
+        result = self.client.unseal_reset()
+
+        assert result['progress'] == 0
+
+        result = self.client.unseal_multi(keys[1:3])
+
+        assert result['sealed']
+        assert result['progress'] == 2
+
+        result = self.client.unseal_multi(keys[0:1])
 
         assert not result['sealed']
 
