@@ -124,24 +124,16 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
-    def unseal_reset(self):
+    def unseal(self, key, reset=False):
         """
         PUT /sys/unseal
         """
         params = {
-            'reset': True,
+            'key': key,
+            'reset': reset
         }
+
         return self._put('/v1/sys/unseal', json=params).json()
-
-    def unseal(self, key):
-       """
-        PUT /sys/unseal
-        """
-       params = {
-           'key': key,
-       }
-
-       return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
