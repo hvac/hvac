@@ -123,6 +123,15 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
+    def unseal_reset(self):
+        """
+        PUT /sys/unseal
+        """
+        params = {
+            'reset': True,
+        }
+        return self._put('/v1/sys/unseal', json=params).json()
+
     def unseal(self, key):
         """
         PUT /sys/unseal
