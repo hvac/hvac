@@ -868,7 +868,7 @@ class Client(object):
         """
         return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
 
-    def create_role_secret_id(self, role_name, meta=None):
+    def create_role_secret_id(self, role_name, meta=None, wrap_ttl=None):
         """
         POST /auth/approle/role/<role name>/secret-id
         """
@@ -878,7 +878,7 @@ class Client(object):
         if meta is not None:
             params['metadata'] = json.dumps(meta)
 
-        return self._post(url, json=params).json()
+        return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id):
         """
@@ -933,7 +933,7 @@ class Client(object):
             params['meta'] = meta
         return self._post(url, json=params).json()
 
-    def auth_approle(self, role_id, secret_id=None):
+    def auth_approle(self, role_id, secret_id=None, use_token=True):
         """
         POST /auth/approle/login
         """
@@ -943,7 +943,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self._post('/v1/auth/approle/login', json=params).json()
+        return self.auth('/v1/auth/approle/login', json=params, use_token=use_token)
 
     def close(self):
         """
