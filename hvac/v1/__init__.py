@@ -237,7 +237,7 @@ class Client(object):
 
     def renew_secret(self, lease_id, increment=None):
         """
-        PUT /sys/renew/
+        PUT /sys/leases/renew
         """
         params = {
             'lease_id': lease_id,
