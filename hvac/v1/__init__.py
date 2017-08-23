@@ -243,7 +243,7 @@ class Client(object):
             'lease_id': lease_id,
             'increment': increment,
         }
-        return self._put('/v1/sys/leases/renew').json()
+        return self._put('/v1/sys/leases/renew', json=params).json()
 
     def revoke_secret(self, lease_id):
         """
