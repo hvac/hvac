@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
 import json
+import base64
+from urllib.parse import urlparse
+import boto3
 
 try:
     import hcl
@@ -15,6 +18,7 @@ try:
     from urlparse import urljoin
 except ImportError:
     from urllib.parse import urljoin
+
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
@@ -944,6 +948,81 @@ class Client(object):
             params['secret_id'] = secret_id
 
         return self._post('/v1/auth/approle/login', json=params).json()
+
+    def auth_iam(self, iam_role):
+        """
+        Authenticate to Vault per https://www.vaultproject.io/docs/auth/aws.htm.
+
+        :param iam_role: IAM role
+        :return:
+        """
+        parsed = urlparse(self._url)
+        self.token = self._authenticate_to_vault(parsed.hostname,
+                                                 parsed.port,
+                                                 iam_role,
+                                                 self._kwargs['verify'])
+        return self.token
+
+    def _authenticate_to_vault(self, vault_host, vault_port, role, verify):
+        payload = self._generate_vault_request(role, vault_host)
+
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain'  # ,
+        }
+
+        response = requests.post('https://{}:{}/v1/auth/aws/login'.format(vault_host, vault_port),
+                                 data=json.dumps(payload),
+                                 headers=headers,
+                                 verify=verify)
+        if response.status_code != 200:
+            raise Exception(
+                "Failed to login to Vault due to error {} with body {}".format(response.status_code, response.text))
+
+        body = response.json()
+        return body['auth']['client_token']
+
+    def _generate_vault_request(self, role, vault_host):
+        """
+        Generate a signed sts:GetCallerIdentity request to validate identify of the client.
+        The Vault server reconstructs the query and forwards it to STS service to authenticate
+        the client. See https://www.vaultproject.io/docs/auth/aws.html for more.
+
+        :param role: Role of this lambda
+        :return: Request body
+        """
+
+        client = boto3.client('sts')
+        operation_model = client._service_model.operation_model('GetCallerIdentity')
+        request_dict = client._convert_to_request_dict({}, operation_model)
+        request_dict['headers']['X-Vault-AWS-IAM-Server-ID'] = vault_host
+        request = client._endpoint.create_request(request_dict, operation_model)
+
+        return {
+            'iam_http_request_method': request.method,
+            'iam_request_url': str(base64.b64encode(request.url.encode('ascii')), 'ascii'),
+            'iam_request_body': str(base64.b64encode(request.body.encode('ascii')), 'ascii'),
+            'iam_request_headers': str(
+                base64.b64encode(bytes(json.dumps(self._prep_for_serialization(dict(request.headers))), 'ascii')),
+                'ascii'),
+            'role': role,
+        }
+
+    @staticmethod
+    def _prep_for_serialization(headers):
+        """
+        ASCII encode each header value before serializing to JSON
+        :param headers: headers
+        :return: encoded headers
+        """
+
+        ret = {}
+        for k, v in headers.items():
+            if isinstance(v, bytes):
+                ret[k] = [str(v, 'ascii')]
+            else:
+                ret[k] = [v]
+        return ret
 
     def close(self):
         """
