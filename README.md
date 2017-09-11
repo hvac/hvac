@@ -232,3 +232,16 @@ the latest `vault` binary is available in your `PATH`.
 ## Contributing
 
 Feel free to open pull requests with additional features or improvements!
+
+## IAM role auth
+
+If you're using an IAM role to authenticate:
+
+```
+import hvac
+vault_client = hvac.Client(url=VAULT_URL[, verify=somecert.pem])
+vault_client.auth_iam(role)
+vault_client.logout(revoke_token=True)
+```
+Add git+git://github.com/ExpediaDotCom/hvac.git@iam to your requirements.txt to use the fork.
+
