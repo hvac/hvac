@@ -2,7 +2,10 @@ from __future__ import unicode_literals
 
 import json
 import base64
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 import boto3
 
 try:
@@ -1000,11 +1003,11 @@ class Client(object):
 
         return {
             'iam_http_request_method': request.method,
-            'iam_request_url': str(base64.b64encode(request.url.encode('ascii')), 'ascii'),
-            'iam_request_body': str(base64.b64encode(request.body.encode('ascii')), 'ascii'),
-            'iam_request_headers': str(
-                base64.b64encode(bytes(json.dumps(self._prep_for_serialization(dict(request.headers))), 'ascii')),
-                'ascii'),
+            'iam_request_url': bytes(base64.b64encode(request.url.encode('ascii'))).decode('ascii'),
+            'iam_request_body': bytes(base64.b64encode(request.body.encode('ascii'))).decode('ascii'),
+            'iam_request_headers': bytes(
+                base64.b64encode(json.dumps(self._prep_for_serialization(dict(request.headers))).encode()))
+                .decode('ascii'),
             'role': role,
         }
 
@@ -1019,7 +1022,7 @@ class Client(object):
         ret = {}
         for k, v in headers.items():
             if isinstance(v, bytes):
-                ret[k] = [str(v, 'ascii')]
+                ret[k] = [bytes(v).decode('ascii')]
             else:
                 ret[k] = [v]
         return ret
