@@ -344,7 +344,7 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('app-id')
 
-    def test_create_role(self):
+    def test_create_delete_role(self):
         if 'approle/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('approle')
         self.client.enable_auth_backend('approle')
@@ -357,6 +357,14 @@ class IntegrationTest(TestCase):
         del lib_result['request_id']
 
         assert result == lib_result
+
+        self.client.delete_role('testrole')
+        try:
+            self.client.get_role('testrole')
+            assert False
+        except exceptions.InvalidPath:
+            assert True
+
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
