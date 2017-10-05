@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 import hcl
 import requests
@@ -46,16 +46,7 @@ class IntegrationTest(TestCase):
         assert result['sealed']
         assert result['progress'] == 2
 
-        result = self.client.unseal_reset()
-
-        assert result['progress'] == 0
-
-        result = self.client.unseal_multi(keys[1:3])
-
-        assert result['sealed']
-        assert result['progress'] == 2
-
-        result = self.client.unseal_multi(keys[0:1])
+        result = self.client.unseal_multi(keys[2:3])
 
         assert not result['sealed']
 
@@ -106,18 +97,6 @@ class IntegrationTest(TestCase):
         result = self.client.write('transit/decrypt/foo', ciphertext=ciphertext)
         assert result['data']['plaintext'] == plaintext
 
-    def test_wrap_write(self):
-        if 'approle/' not in self.client.list_auth_backends():
-            self.client.enable_auth_backend("approle")
-        self.client.write("auth/approle/role/testrole")
-
-        result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
-
-        assert 'token' in result['wrap_info']
-
-        self.client.unwrap(result['wrap_info']['token'])
-        self.client.disable_auth_backend("approle")
-
     def test_read_nonexistent_key(self):
         assert not self.client.read('secret/I/dont/exist')
 
@@ -159,8 +138,11 @@ class IntegrationTest(TestCase):
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
-    def prep_policy(self, name):
-        text = """
+    def test_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+        assert self.client.get_policy('test') is None
+
+        policy = """
         path "sys" {
           policy = "deny"
         }
@@ -169,7 +151,7 @@ class IntegrationTest(TestCase):
           policy = "write"
         }
         """
-        obj = {
+        parsed_policy = {
             'path': {
                 'sys': {
                     'policy': 'deny'},
@@ -178,15 +160,7 @@ class IntegrationTest(TestCase):
             }
         }
 
-        self.client.set_policy(name, text)
-
-        return text, obj
-
-    def test_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
-        assert self.client.get_policy('test') is None
-
-        policy, parsed_policy = self.prep_policy('test')
+        self.client.set_policy('test', policy)
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
         assert parsed_policy == self.client.get_policy('test', parse=True)
@@ -197,14 +171,25 @@ class IntegrationTest(TestCase):
     def test_json_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
 
-        self.prep_policy('test')
+        policy = {
+            "path": {
+                "sys": {
+                    "policy": "deny"
+                },
+                "secret": {
+                    "policy": "write"
+                }
+            }
+        }
+
+        self.client.set_policy('test', policy)
         assert 'test' in self.client.list_policies()
 
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease='1h', renewable=True)
+        result = self.client.create_token(lease='1h')
         assert result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
@@ -355,7 +340,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-
+        
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -374,10 +359,10 @@ class IntegrationTest(TestCase):
         try:
             self.client.get_role_secret_id('testrole', secret_id)
             assert False
-        except ValueError:
+        except exceptions.InvalidPath:
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')
+        self.client.disable_auth_backend('approle')        
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -390,11 +375,8 @@ class IntegrationTest(TestCase):
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
-        assert self.client.token == result['auth']['client_token']
-        assert self.client.is_authenticated()
-
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')
+        self.client.disable_auth_backend('approle')        
 
     def test_missing_token(self):
         client = create_client()
@@ -526,7 +508,7 @@ class IntegrationTest(TestCase):
         _ = self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
-        with self.assertRaises(exceptions.InvalidRequest):
+        with self.assertRaises(exceptions.Forbidden):
             result = self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
@@ -549,94 +531,3 @@ class IntegrationTest(TestCase):
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
             lookup = self.client.lookup_token(result['auth']['client_token'])
-
-    def test_create_token_explicit_max_ttl(self):
-
-        token = self.client.create_token(ttl='30m', explicit_max_ttl='5m')
-
-        assert token['auth']['client_token']
-
-        assert token['auth']['lease_duration'] == 300
-
-        # Validate token
-        lookup = self.client.lookup_token(token['auth']['client_token'])
-        assert token['auth']['client_token'] == lookup['data']['id']
-
-    def test_create_token_max_ttl(self):
-
-        token = self.client.create_token(ttl='5m')
-
-        assert token['auth']['client_token']
-
-        assert token['auth']['lease_duration'] == 300
-
-        # Validate token
-        lookup = self.client.lookup_token(token['auth']['client_token'])
-        assert token['auth']['client_token'] == lookup['data']['id']
-
-    def test_token_roles(self):
-        # No roles, list_token_roles == None
-        before = self.client.list_token_roles()
-        assert not before
-
-        # Create token role
-        assert self.client.create_token_role('testrole').status_code == 204
-
-        # List token roles
-        during = self.client.list_token_roles()['data']['keys']
-        assert len(during) == 1
-        assert during[0] == 'testrole'
-
-        # Delete token role
-        self.client.delete_token_role('testrole')
-
-        # No roles, list_token_roles == None
-        after = self.client.list_token_roles()
-        assert not after
-
-    def test_create_token_w_role(self):
-        # Create policy
-        self.prep_policy('testpolicy')
-
-        # Create token role w/ policy
-        assert self.client.create_token_role('testrole',
-                allowed_policies='testpolicy').status_code == 204
-
-        # Create token against role
-        token = self.client.create_token(lease='1h', role='testrole')
-        assert token['auth']['client_token']
-        assert token['auth']['policies'] == ['default', 'testpolicy']
-
-        # Cleanup
-        self.client.delete_token_role('testrole')
-        self.client.delete_policy('testpolicy')
-
-    def test_ec2_role_crud(self):
-        if 'aws-ec2/' in self.client.list_auth_backends():
-            self.client.disable_auth_backend('aws-ec2')
-        self.client.enable_auth_backend('aws-ec2')
-
-        # create a policy to associate with the role
-        self.prep_policy('ec2rolepolicy')
-
-        # attempt to get a list of roles before any exist
-        no_roles = self.client.list_ec2_roles()
-        # doing so should succeed and return None
-        assert (no_roles is None)
-
-        # TODO test parameters of role creation more thoroughly
-        self.client.create_ec2_role('foo', 'ami-notarealami',
-                                    policies='ec2rolepolicy')
-
-        roles = self.client.list_ec2_roles()
-
-        assert('foo' in roles['data']['keys'])
-
-        role = self.client.get_ec2_role('foo')
-
-        assert('ec2rolepolicy' in role['data']['policies'])
-
-        self.client.delete_ec2_role('foo')
-        self.client.delete_policy('ec2rolepolicy')
-
-        self.client.disable_auth_backend('aws-ec2')
