@@ -283,6 +283,30 @@ class Client(object):
 
         self._post('/v1/sys/mounts/{0}'.format(mount_point), json=params)
 
+    def tune_secret_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None):
+        """
+        POST /sys/mounts/<mount point>/tune
+        """
+
+        if not mount_point:
+            mount_point = backend_type
+
+        params = {
+            'default_lease_ttl': default_lease_ttl,
+            'max_lease_ttl': max_lease_ttl
+        }
+
+        self._post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
+
+    def get_secret_backend_tuning(self, backend_type, mount_point=None):
+        """
+        GET /sys/mounts/<mount point>/tune
+        """
+        if not mount_point:
+            mount_point = backend_type
+
+        return self._get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+
     def disable_secret_backend(self, mount_point):
         """
         DELETE /sys/mounts/<mount point>

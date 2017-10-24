@@ -137,6 +137,10 @@ class IntegrationTest(TestCase):
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
 
+        self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
+        assert 'max_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+        assert 'default_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
         assert 'foobar/' in self.client.list_secret_backends()
