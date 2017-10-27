@@ -772,7 +772,7 @@ class Client(object):
             params['instance_id'] = instance_id
         return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params).json()
 
-    def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
+    def auth_ldap(self, username, password, mount_point='ldap', use_token=True, verify=True, **kwargs):
         """
         POST /auth/<mount point>/login/<username>
         """
@@ -782,7 +782,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token, verify=verify)
 
     def auth_github(self, token, mount_point='github', use_token=True):
         """
