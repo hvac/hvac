@@ -8,7 +8,6 @@ python:
 install:
   - scripts/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
-env:  # https://docs.travis-ci.com/user/customizing-the-build/#Matching-Jobs-with-allow_failures
 matrix:
   include:
     - python: '2.7'
