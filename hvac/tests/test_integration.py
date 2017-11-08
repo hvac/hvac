@@ -302,6 +302,21 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('app-id')
 
+    def test_cubbyhole_auth(self):
+        og_token = self.client.token
+
+        resp = self.client.create_token(lease='6h', wrap_ttl='1h')
+        assert resp['wrap_info']['ttl'] == 3600
+
+        wrapped_token = resp['wrap_info']['token']
+        self.client.auth_cubbyhole(wrapped_token)
+        assert self.client.token != og_token
+        assert self.client.token != wrapped_token
+        assert self.client.is_authenticated()
+
+        self.client.token = og_token
+        assert self.client.is_authenticated()
+
     def test_create_user_id(self):
         if 'app-id/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('app-id')
