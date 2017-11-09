@@ -1,5 +1,5 @@
+tox
 coverage
 nose
-tox
-
 semantic_version
+avakas
