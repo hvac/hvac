@@ -57,11 +57,11 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
-    def write(self, path, **kwargs):
+    def write(self, path, wrap_ttl=None, **kwargs):
         """
         PUT /<path>
         """
-        response = self._put('/v1/{0}'.format(path), json=kwargs)
+        response = self._put('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
             return response.json()
@@ -124,15 +124,24 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
-    def unseal(self, key):
+    def unseal_reset(self):
         """
         PUT /sys/unseal
         """
         params = {
-            'key': key,
+            'reset': True,
         }
-
         return self._put('/v1/sys/unseal', json=params).json()
+
+    def unseal(self, key):
+       """
+        PUT /sys/unseal
+        """
+       params = {
+           'key': key,
+       }
+
+       return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -395,31 +404,40 @@ class Client(object):
         }
         return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
 
-    def create_token(self, id=None, policies=None, meta=None,
+    def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
-                     ttl=None, orphan=False, wrap_ttl=None):
+                     ttl=None, orphan=False, wrap_ttl=None, renewable=None,
+                     explicit_max_ttl=None):
         """
         POST /auth/token/create
+        POST /auth/token/create/<role>
         POST /auth/token/create-orphan
         """
         params = {
-            'id': id,
+            'id': token_id,
             'policies': policies,
             'meta': meta,
             'no_parent': no_parent,
             'display_name': display_name,
             'num_uses': num_uses,
             'no_default_policy': no_default_policy,
+            'renewable': renewable
         }
 
         if lease:
             params['lease'] = lease
         else:
             params['ttl'] = ttl
+            params['explicit_max_ttl'] = explicit_max_ttl
+
+        if explicit_max_ttl:
+            params['explicit_max_ttl'] = explicit_max_ttl
 
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
+        elif role:
+            return self._post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
@@ -474,6 +492,40 @@ class Client(object):
             return self._post(path, json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
+
+    def create_token_role(self, role,
+                          allowed_policies=None, orphan=None, period=None,
+                          renewable=None, path_suffix=None, explicit_max_ttl=None):
+        """
+        POST /auth/token/roles/<role>
+        """
+        params = {
+            'allowed_policies': allowed_policies,
+            'orphan': orphan,
+            'period': period,
+            'renewable': renewable,
+            'path_suffix': path_suffix,
+            'explicit_max_ttl': explicit_max_ttl
+        }
+        return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
+
+    def token_role(self, role):
+        """
+        Returns the named token role.
+        """
+        return self.read('auth/token/roles/{0}'.format(role))
+
+    def delete_token_role(self, role):
+        """
+        Deletes the named token role.
+        """
+        return self.delete('auth/token/roles/{0}'.format(role))
+
+    def list_token_roles(self):
+        """
+        GET /auth/token/roles?list=true
+        """
+        return self.list('auth/token/roles')
 
     def logout(self, revoke_token=False):
         """
@@ -730,7 +782,10 @@ class Client(object):
         """
         GET /auth/aws-ec2/roles?list=true
         """
-        return self._get('/v1/auth/aws-ec2/roles', params={'list': True})
+        try:
+            return self._get('/v1/auth/aws-ec2/roles', params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
 
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
                             disallow_reauthentication=False, allow_instance_migration=False):
@@ -860,10 +915,13 @@ class Client(object):
 
     def get_role_secret_id(self, role_name, secret_id):
         """
-        GET /auth/approle/role/<role name>/secret-id/<secret_id>
+        POST /auth/approle/role/<role name>/secret-id/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id/lookup'.format(role_name)
+        params = {
+            'secret_id': secret_id
+        }
+        return self._post(url, json=params).json()
 
     def list_role_secrets(self, role_name):
         """
@@ -881,10 +939,13 @@ class Client(object):
 
     def delete_role_secret_id(self, role_name, secret_id):
         """
-        DELETE /auth/approle/role/<role name>/secret-id/<secret_id>
+        POST /auth/approle/role/<role name>/secret-id/destroy
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/{1}'.format(role_name, secret_id)
-        self._delete(url)
+        url = '/v1/auth/approle/role/{0}/secret-id/destroy'.format(role_name)
+        params = {
+            'secret_id': secret_id
+        }
+        self._post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
@@ -905,7 +966,7 @@ class Client(object):
             params['meta'] = meta
         return self._post(url, json=params).json()
 
-    def auth_approle(self, role_id, secret_id=None, use_token=True):
+    def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """
         POST /auth/approle/login
         """
@@ -915,11 +976,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        response = self._post('/v1/auth/approle/login', json=params).json()
-        if use_token:
-            self.token = response['auth']['client_token']
-
-        return response
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def close(self):
         """
@@ -987,6 +1044,8 @@ class Client(object):
             raise exceptions.RateLimitExceeded(message, errors=errors)
         elif status_code == 500:
             raise exceptions.InternalServerError(message, errors=errors)
+        elif status_code == 501:
+            raise exceptions.VaultNotInitialized(message, errors=errors)
         elif status_code == 503:
             raise exceptions.VaultDown(message, errors=errors)
         else:

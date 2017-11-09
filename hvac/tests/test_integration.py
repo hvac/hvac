@@ -46,8 +46,13 @@ class IntegrationTest(TestCase):
         assert result['sealed']
         assert result['progress'] == 2
 
+        result = self.client.unseal_reset()
+        assert result['progress'] == 0
+        result = self.client.unseal_multi(keys[1:3])
+        assert result['sealed']
+        assert result['progress'] == 2
+        result = self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
-
         assert not result['sealed']
 
     def test_seal_unseal(self):
@@ -97,6 +102,16 @@ class IntegrationTest(TestCase):
         result = self.client.write('transit/decrypt/foo', ciphertext=ciphertext)
         assert result['data']['plaintext'] == plaintext
 
+    def test_wrap_write(self):
+        if 'approle/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend("approle")
+ 
+        self.client.write("auth/approle/role/testrole")
+        result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
+        assert 'token' in result['wrap_info']
+        self.client.unwrap(result['wrap_info']['token'])
+        self.client.disable_auth_backend("approle")
+
     def test_read_nonexistent_key(self):
         assert not self.client.read('secret/I/dont/exist')
 
@@ -142,20 +157,16 @@ class IntegrationTest(TestCase):
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
-    def test_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
-        assert self.client.get_policy('test') is None
-
-        policy = """
+    def prep_policy(self, name):
+        text = """
         path "sys" {
-          policy = "deny"
+            policy = "deny"
         }
-
-        path "secret" {
-          policy = "write"
+            path "secret" {
+        policy = "write"
         }
         """
-        parsed_policy = {
+        obj = {
             'path': {
                 'sys': {
                     'policy': 'deny'},
@@ -163,8 +174,13 @@ class IntegrationTest(TestCase):
                     'policy': 'write'}
             }
         }
+        self.client.set_policy(name, text)
+        return text, obj
 
-        self.client.set_policy('test', policy)
+    def test_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+        assert self.client.get_policy('test') is None
+        policy, parsed_policy = self.prep_policy('test')
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
         assert parsed_policy == self.client.get_policy('test', parse=True)
@@ -193,7 +209,7 @@ class IntegrationTest(TestCase):
         assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease='1h')
+        result = self.client.create_token(lease='1h', renewable=True)
         assert result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
@@ -363,7 +379,7 @@ class IntegrationTest(TestCase):
         try:
             self.client.get_role_secret_id('testrole', secret_id)
             assert False
-        except exceptions.InvalidPath:
+        except (exceptions.InvalidPath, ValueError):
             assert True
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -380,6 +396,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
         assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
