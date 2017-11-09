@@ -1,18 +1,28 @@
 dist: trusty
 sudo: required
 language: python
+# Explicitly declare which builds should run, otherwise Travis CI
+# will attempt to build every env against every Python version.
+matrix:
+  include:
+    - python: '2.6'
+      env: TOXENV=py26 VAULT_BRANCH=release
+    - python: '2.7'
+      env: TOXENV=py27 VAULT_BRANCH=release
+    - python: '3.5'
+      env: TOXENV=py35 VAULT_BRANCH=release
+    - python: '3.5'
+      env: TOXENV=py35 VAULT_BRANCH=head
+  # To mark some of the builds above as optional, we have to
+  # define them a second time in the allow_failures section below.
+  allow_failures:
+    - python: '2.6'
+      env: TOXENV=py26 VAULT_BRANCH=release
+    - python: '3.5'
+      env: TOXENV=py35 VAULT_BRANCH=head
 install:
   - scripts/install-vault-${VAULT_BRANCH}.sh
   - pip install tox
 script:
   - export PATH=$HOME/bin:$PATH
   - tox
-env:
-  - TOXENV=py26 VAULT_BRANCH=release
-  - TOXENV=py27 VAULT_BRANCH=release
-  - TOXENV=py35 VAULT_BRANCH=release
-  - TOXENV=py35 VAULT_BRANCH=head
-matrix:
-  allow_failures:
-    - env: TOXENV=py26 VAULT_BRANCH=release
-    - env: TOXENV=py35 VAULT_BRANCH=head
