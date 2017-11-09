@@ -10,12 +10,7 @@ clean:
 distclean: clean
 	rm -rf build hvac/version .tox
 
-package: clean version
-	pip install wheel
-	python setup.py sdist bdist_wheel
-
-publish: package
-	pip install twine
-	twine upload dist/*
+package: version
+	python setup.py sdist
 
 .PHONY: clean package publish test version
