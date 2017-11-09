@@ -1,4 +1,4 @@
-## 0.2.18 (November 9, 2017)
+## 0.3.0 (November 9, 2017)
 
 This is just the highlights, there have been a bunch of changes!
 
