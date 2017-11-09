@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+SCRIPTDIR=$( cd "${0%/*}" && pwd)
+ROOTDIR="${SCRIPTDIR%/*}"
+
+usage() {
+    echo "${0} <patch|minor|major>"
+    exit 1
+}
+
+if ! which avakas &> /dev/null ; then
+    echo "avakas not found"
+    exit 1
+fi
+
+if [ $# != 1 ] ; then
+    usage
+fi
+
+ACTION="$1"
+if [ "$ACTION" != "patch" ] && \
+       [ "$ACTION" != "minor" ] && \
+       [ "$ACTION" != "major" ] ; then
+    usage
+fi
+
+avakas bump "$ROOTDIR" "$1" --tag-prefix v --remote upstream
