@@ -303,18 +303,18 @@ class IntegrationTest(TestCase):
         self.client.disable_auth_backend('app-id')
 
     def test_cubbyhole_auth(self):
-        og_token = self.client.token
+        orig_token = self.client.token
 
         resp = self.client.create_token(lease='6h', wrap_ttl='1h')
         assert resp['wrap_info']['ttl'] == 3600
 
         wrapped_token = resp['wrap_info']['token']
         self.client.auth_cubbyhole(wrapped_token)
-        assert self.client.token != og_token
+        assert self.client.token != orig_token
         assert self.client.token != wrapped_token
         assert self.client.is_authenticated()
 
-        self.client.token = og_token
+        self.client.token = orig_token
         assert self.client.is_authenticated()
 
     def test_create_user_id(self):
@@ -355,7 +355,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-        
+
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -377,7 +377,7 @@ class IntegrationTest(TestCase):
         except exceptions.InvalidPath:
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -391,7 +391,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_missing_token(self):
         client = create_client()
