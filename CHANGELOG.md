@@ -1,3 +1,21 @@
+## 0.2.18 (November 9, 2017)
+
+This is just the highlights, there have been a bunch of changes!
+
+IMPROVEVEMENTS:
+
+* Some AppRole support [GH-77]
+* Response Wrapping [GH-85]
+* AWS EC2 stuff [GH-107], [GH-109]
+
+BUG FIXES
+
+* Better handling of various error states [GH-79], [GH-125]
+
+Thanks to @ianwestcott, @s3u, @mracter, @intgr, @jkdihenkar, @gaelL,
+@henriquegemignani, @bfeeser, @nicr9, @mwielgoszewski, @mtougeron
+for their contributions!
+
 ## 0.2.17 (December 15, 2016)
 
 IMPROVEMENTS:
