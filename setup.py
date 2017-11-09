@@ -26,6 +26,7 @@ setup(
     install_requires=[
         'requests>=2.7.0',
     ],
+    include_package_data=True,
     package_data={'hvac':['version']},
     extras_require={
         'parser': ['pyhcl>=0.2.1,<0.3.0']
