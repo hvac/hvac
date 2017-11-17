@@ -545,7 +545,7 @@ class IntegrationTest(TestCase):
         _ = self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
-        with self.assertRaises(exceptions.Forbidden):
+        with self.assertRaises(exceptions.InvalidRequest):
             result = self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
