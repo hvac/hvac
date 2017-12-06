@@ -16,6 +16,7 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
+
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
@@ -23,7 +24,6 @@ class Client(object):
 
         if not session:
             session = requests.Session()
-
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
@@ -977,6 +977,248 @@ class Client(object):
             params['secret_id'] = secret_id
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+
+    def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
+                           key_type=None, mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        params = {}
+        if convergent_encryption is not None:
+            params['convergent_encryption'] = convergent_encryption
+        if derived is not None:
+            params['derived'] = derived
+        if exportable is not None:
+            params['exportable'] = exportable
+        if key_type is not None:
+            params['type'] = key_type
+
+        return self._post(url, json=params)
+
+    def transit_read_key(self, name, mount_point='transit'):
+        """
+        GET /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        return self._get(url).json()
+
+    def transit_list_keys(self, mount_point='transit'):
+        """
+        GET /<mount_point>/keys?list=true
+        """
+        url = '/v1/{0}/keys?list=true'.format(mount_point)
+        return self._get(url).json()
+
+    def transit_delete_key(self, name, mount_point='transit'):
+        """
+        DELETE /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        return self._delete(url)
+
+    def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
+                           mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>/config
+        """
+        url = '/v1/{0}/keys/{1}/config'.format(mount_point, name)
+        params = {}
+        if min_decryption_version is not None:
+            params['min_decryption_version'] = min_decryption_version
+        if min_encryption_version is not None:
+            params['min_encryption_version'] = min_encryption_version
+        if deletion_allowed is not None:
+            params['deletion_allowed'] = deletion_allowed
+
+        return self._post(url, json=params)
+
+    def transit_rotate_key(self, name, mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>/rotate
+        """
+        url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
+        return self._post(url)
+
+    def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
+        """
+        GET /<mount_point>/export/<key_type>/<name>(/<version>)
+        """
+        if version is not None:
+            url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
+        else:
+            url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
+        return self._get(url).json()
+
+    def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
+                             key_type=None, convergent_encryption=None, mount_point='transit'):
+        """
+        POST /<mount_point>/encrypt/<name>
+        """
+        url = '/v1/{0}/encrypt/{1}'.format(mount_point, name)
+        params = {
+            'plaintext': plaintext
+        }
+        if context is not None:
+            params['context'] = context
+        if key_version is not None:
+            params['key_version'] = key_version
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+        if key_type is not None:
+            params['type'] = key_type
+        if convergent_encryption is not None:
+            params['convergent_encryption'] = convergent_encryption
+
+        return self._post(url, json=params).json()
+
+    def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
+        """
+        POST /<mount_point>/decrypt/<name>
+        """
+        url = '/v1/{0}/decrypt/{1}'.format(mount_point, name)
+        params = {
+            'ciphertext': ciphertext
+        }
+        if context is not None:
+            params['context'] = context
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+
+        return self._post(url, json=params).json()
+
+    def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
+                            mount_point='transit'):
+        """
+        POST /<mount_point>/rewrap/<name>
+        """
+        url = '/v1/{0}/rewrap/{1}'.format(mount_point, name)
+        params = {
+            'ciphertext': ciphertext
+        }
+        if context is not None:
+            params['context'] = context
+        if key_version is not None:
+            params['key_version'] = key_version
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
+        """
+        POST /<mount_point>/datakey/<type>/<name>
+        """
+        url = '/v1/{0}/datakey/{1}/{2}'.format(mount_point, key_type, name)
+        params = {}
+        if context is not None:
+            params['context'] = context
+        if nonce is not None:
+            params['nonce'] = nonce
+        if bits is not None:
+            params['bits'] = bits
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
+        """
+        POST /<mount_point>/random(/<data_bytes>)
+        """
+        if data_bytes is not None:
+            url = '/v1/{0}/random/{1}'.format(mount_point, data_bytes)
+        else:
+            url = '/v1/{0}/random'.format(mount_point)
+
+        params = {}
+        if output_format is not None:
+            params["format"] = output_format
+
+        return self._post(url, json=params).json()
+
+    def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
+        """
+        POST /<mount_point>/hash(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/hash/{1}'.format(mount_point, algorithm)
+        else:
+            url = '/v1/{0}/hash'.format(mount_point)
+
+        params = {
+            'input': hash_input
+        }
+        if output_format is not None:
+            params['format'] = output_format
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
+        """
+        POST /<mount_point>/hmac/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/hmac/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/hmac/{1}'.format(mount_point, name)
+        params = {
+            'input': hmac_input
+        }
+        if key_version is not None:
+            params['key_version'] = key_version
+
+        return self._post(url, json=params).json()
+
+    def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
+                          mount_point='transit'):
+        """
+        POST /<mount_point>/sign/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/sign/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/sign/{1}'.format(mount_point, name)
+
+        params = {
+            'input': input_data
+        }
+        if key_version is not None:
+            params['key_version'] = key_version
+        if context is not None:
+            params['context'] = context
+        if prehashed is not None:
+            params['prehashed'] = prehashed
+
+        return self._post(url, json=params).json()
+
+    def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
+                                   prehashed=None, mount_point='transit'):
+        """
+        POST /<mount_point>/verify/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/verify/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/verify/{1}'.format(mount_point, name)
+
+        params = {
+            'input': input_data
+        }
+        if signature is not None:
+            params['signature'] = signature
+        if hmac is not None:
+            params['hmac'] = hmac
+        if context is not None:
+            params['context'] = context
+        if prehashed is not None:
+            params['prehashed'] = prehashed
+
+        return self._post(url, json=params).json()
 
     def close(self):
         """
