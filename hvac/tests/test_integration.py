@@ -91,6 +91,8 @@ class IntegrationTest(TestCase):
         self.client.delete('secret/test-list/foo')
 
     def test_write_with_response(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
         plaintext = 'test'
