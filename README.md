@@ -15,7 +15,7 @@ pip install hvac
 ```
 or
 ```bash
-pip install hvac[parser]
+pip install "hvac[parser]"
 ```
 if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
