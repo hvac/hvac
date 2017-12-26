@@ -852,7 +852,6 @@ class Client(object):
             'type': backend_type,
             'description': description,
         }
-
         self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
     def disable_auth_backend(self, mount_point):
@@ -977,6 +976,80 @@ class Client(object):
             params['secret_id'] = secret_id
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+
+    def create_kubernetes_configuration(self, host="", cert=None, jwt_token=None, pem_keys=[], mountpoint='kubernetes'):
+        """
+        POST /auth/kubernetes/config
+        """
+
+        url = 'v1/auth/{0}/config'.format(mount_point)
+        params = {
+            'host': host,
+            'kubernetes_ca_cert': cert,
+        }
+        if jwt_token is not None: params['token_reviewer_jwt'] = jwt_token
+        if len(pem_keys) > 0: params['pem_keys'] = pem_keys
+        return self._post(url, json=params).json()
+
+    def get_kubernetes_configuration(self, mount_point='kubernetes'):
+        """
+        GET /auth/kubernetes/login
+        """
+
+        url = '/v1/auth/{0}/config'.format(mount_point)
+        return self._get(url).json()
+
+    def auth_kubernetes(self, host, role, jwt, mount_point='kubernetes'):
+        """
+        POST /auth/kubernetes/login
+        """
+        params = {
+            'role': role,
+            'jwt': jwt
+        }
+        url = 'v1/auth/{0}/login'.format(mount_point)
+        return self._post(url, json=params).json()
+
+    def create_kubernetes_role(self, mount_point='kubernetes', name=None, bound_service_accounts=[],
+                            bound_namespaces=[], ttl="", max_ttl="", period="", policies=[]):
+        """
+        POST /auth/kubernetes/role/:name
+        """
+
+        params = {
+            'bound_service_account_names': bound_service_accounts,
+            'bound_service_account_namespaces': bound_namespaces,
+            'ttl': ttl,
+            'max_ttl': max_ttl,
+            'period': period,
+            'policies': policies,
+        }
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        return self._post(url, json=params).json()
+
+    def read_kubernetes_role(self, mount_point='kubernetes', name=''):
+        """
+        GET /auth/kubernetes/role/:name
+        """
+
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        return self._get(url).json()
+
+    def list_kubernetes_role(self, mount_point='kubernetes'):
+        """
+        GET /auth/kubernetes/role?list=true
+        """
+
+        url = 'v1/auth/{0}/role?list=true'.format(mountpoint)
+        return self._get(url)
+
+    def delete_kubernetes_role(self, mount_point='kubernetes', role=''):
+        """
+        DELETE /auth/kubernetes/role/:role
+        """
+
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        return self._delete(url)
 
     def close(self):
         """
