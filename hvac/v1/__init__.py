@@ -999,7 +999,7 @@ class Client(object):
         url = '/v1/auth/{0}/config'.format(mount_point)
         return self._get(url).json()
 
-    def auth_kubernetes(self, host, role, jwt, mount_point='kubernetes'):
+    def auth_kubernetes(self, role, jwt, mount_point='kubernetes'):
         """
         POST /auth/kubernetes/login
         """
