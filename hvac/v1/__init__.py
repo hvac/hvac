@@ -932,10 +932,11 @@ class Client(object):
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
-        GET /auth/approle/role/<role name>/secret-id-accessor/<secret_id_accessor>
+        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        params = {'secret_id_accessor': secret_id_accessor}
+        return self._post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id):
         """
