@@ -53,7 +53,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._get('/v1/{0}'.format(path), params=payload).json()
+            return self._get('/v1/{}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -74,13 +74,14 @@ class Client(object):
 
     def unwrap(self, token):
         """
-        POST /sys/wrapping/unwrap
+        GET /cubbyhole/response
         X-Vault-Token: <token>
         """
+        path = "cubbyhole/response"
         _token = self.token
         try:
             self.token = token
-            return self._post('/v1/sys/wrapping/unwrap').json()
+            return json.loads(self.read(path)['data']['response'])
         finally:
             self.token = _token
 
@@ -123,15 +124,24 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
-    def unseal(self, key):
+    def unseal_reset(self):
         """
         PUT /sys/unseal
         """
         params = {
-            'key': key,
+            'reset': True,
         }
-
         return self._put('/v1/sys/unseal', json=params).json()
+
+    def unseal(self, key):
+       """
+        PUT /sys/unseal
+        """
+       params = {
+           'key': key,
+       }
+
+       return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -208,7 +218,7 @@ class Client(object):
 
         for key in keys:
             result = self.rekey(key, nonce=nonce)
-            if result['complete']:
+            if 'complete' in result and result['complete']:
                 break
 
         return result
@@ -228,12 +238,13 @@ class Client(object):
 
     def renew_secret(self, lease_id, increment=None):
         """
-        PUT /sys/renew/<lease id>
+        PUT /sys/leases/renew
         """
         params = {
+            'lease_id': lease_id,
             'increment': increment,
         }
-        return self._post('/v1/sys/renew/{0}'.format(lease_id), json=params).json()
+        return self._put('/v1/sys/leases/renew', json=params).json()
 
     def revoke_secret(self, lease_id):
         """
@@ -273,6 +284,30 @@ class Client(object):
         }
 
         self._post('/v1/sys/mounts/{0}'.format(mount_point), json=params)
+
+    def tune_secret_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None):
+        """
+        POST /sys/mounts/<mount point>/tune
+        """
+
+        if not mount_point:
+            mount_point = backend_type
+
+        params = {
+            'default_lease_ttl': default_lease_ttl,
+            'max_lease_ttl': max_lease_ttl
+        }
+
+        self._post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
+
+    def get_secret_backend_tuning(self, backend_type, mount_point=None):
+        """
+        GET /sys/mounts/<mount point>/tune
+        """
+        if not mount_point:
+            mount_point = backend_type
+
+        return self._get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
 
     def disable_secret_backend(self, mount_point):
         """
@@ -369,7 +404,7 @@ class Client(object):
         }
         return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
 
-    def create_token(self, role=None, id=None, policies=None, meta=None,
+    def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False, wrap_ttl=None, renewable=None,
@@ -380,7 +415,7 @@ class Client(object):
         POST /auth/token/create-orphan
         """
         params = {
-            'id': id,
+            'id': token_id,
             'policies': policies,
             'meta': meta,
             'no_parent': no_parent,
@@ -492,7 +527,6 @@ class Client(object):
         """
         return self.list('auth/token/roles')
 
-
     def logout(self, revoke_token=False):
         """
         Clears the token used for authentication, optionally revoking it before doing so
@@ -558,7 +592,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token)
+        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
@@ -576,13 +610,13 @@ class Client(object):
         }
         params.update(kwargs)
 
-        return self._post('/v1/auth/{0}/users/{1}'.format(mount_point, username), json=params)
+        return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
     def delete_userpass(self, username, mount_point='userpass'):
         """
         DELETE /auth/<mount point>/users/<username>
         """
-        return self._delete('/v1/auth/{0}/users/{1}'.format(mount_point, username))
+        return self._delete('/v1/auth/{}/users/{}'.format(mount_point, username))
 
     def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
         """
@@ -605,7 +639,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id), json=params)
+        return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
     def get_app_id(self, app_id, mount_point='app-id', wrap_ttl=None):
         """
@@ -641,7 +675,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id), json=params)
+        return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
 
     def get_user_id(self, user_id, mount_point='app-id', wrap_ttl=None):
         """
@@ -704,17 +738,25 @@ class Client(object):
         params = {'list': True}
         return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
 
-    def create_ec2_role(self, role, bound_ami_id, role_tag=None, max_ttl=None, policies=None,
-                          allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+    def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
+                        bound_iam_instance_profile_arn=None, role_tag=None, max_ttl=None, policies=None,
+                        allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
         """
         POST /auth/aws-ec2/role/<role>
         """
         params = {
             'role': role,
-            'bound_ami_id': bound_ami_id,
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+        if bound_ami_id is not None:
+            params['bound_ami_id'] = bound_ami_id
+        if bound_account_id is not None:
+            params['bound_account_id'] = bound_account_id
+        if bound_iam_role_arn is not None:
+            params['bound_iam_role_arn'] = bound_iam_role_arn
+        if bound_iam_instance_profile_arn is not None:
+            params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
         if role_tag is not None:
             params['role_tag'] = role_tag
         if max_ttl is not None:
@@ -740,7 +782,10 @@ class Client(object):
         """
         GET /auth/aws-ec2/roles?list=true
         """
-        return self._get('/v1/auth/aws-ec2/roles', params={'list': True})
+        try:
+            return self._get('/v1/auth/aws-ec2/roles', params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
 
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
                             disallow_reauthentication=False, allow_instance_migration=False):
@@ -921,7 +966,7 @@ class Client(object):
             params['meta'] = meta
         return self._post(url, json=params).json()
 
-    def auth_approle(self, role_id, secret_id=None, use_token=True):
+    def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """
         POST /auth/approle/login
         """
@@ -931,7 +976,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self.auth('/v1/auth/approle/login', json=params, use_token=use_token)
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def close(self):
         """

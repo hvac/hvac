@@ -60,7 +60,7 @@ assert client.is_authenticated() # => True
 client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
 # App Role
-client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
+client.auth_approle('MY_ROLE_ID', 'MY_ROLE_ID')
 
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
@@ -123,7 +123,7 @@ client.revoke_token(token_accessor, accessor=True)
 
 ```python
 wrap = client.create_token(policies=['root'], lease='1h', wrap_ttl='1m')
-result = client.unwrap(wrap['wrap_info']['token'])
+result = self.client.unwrap(wrap['wrap_info']['token'])
 ```
 
 ### Manipulate auth backends
@@ -142,6 +142,9 @@ backends = client.list_secret_backends()
 
 client.enable_secret_backend('aws', mount_point='aws-us-east-1')
 client.disable_secret_backend('mysql')
+
+client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
+client.get_secret_backend_tuning('generic', mount_point='test')
 
 client.remount_secret_backend('aws-us-east-1', 'aws-east')
 ```

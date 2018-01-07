@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 import hcl
 import requests
@@ -46,8 +46,13 @@ class IntegrationTest(TestCase):
         assert result['sealed']
         assert result['progress'] == 2
 
+        result = self.client.unseal_reset()
+        assert result['progress'] == 0
+        result = self.client.unseal_multi(keys[1:3])
+        assert result['sealed']
+        assert result['progress'] == 2
+        result = self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
-
         assert not result['sealed']
 
     def test_seal_unseal(self):
@@ -100,12 +105,10 @@ class IntegrationTest(TestCase):
     def test_wrap_write(self):
         if 'approle/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend("approle")
+ 
         self.client.write("auth/approle/role/testrole")
-
         result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
-
         assert 'token' in result['wrap_info']
-
         self.client.unwrap(result['wrap_info']['token'])
         self.client.disable_auth_backend("approle")
 
@@ -127,6 +130,10 @@ class IntegrationTest(TestCase):
 
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
+
+        self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
+        assert 'max_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+        assert 'default_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -153,11 +160,10 @@ class IntegrationTest(TestCase):
     def prep_policy(self, name):
         text = """
         path "sys" {
-          policy = "deny"
+            policy = "deny"
         }
-
-        path "secret" {
-          policy = "write"
+            path "secret" {
+        policy = "write"
         }
         """
         obj = {
@@ -168,15 +174,12 @@ class IntegrationTest(TestCase):
                     'policy': 'write'}
             }
         }
-
         self.client.set_policy(name, text)
-
         return text, obj
 
     def test_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
         assert self.client.get_policy('test') is None
-
         policy, parsed_policy = self.prep_policy('test')
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
@@ -188,7 +191,18 @@ class IntegrationTest(TestCase):
     def test_json_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
 
-        self.prep_policy('test')
+        policy = {
+            "path": {
+                "sys": {
+                    "policy": "deny"
+                },
+                "secret": {
+                    "policy": "write"
+                }
+            }
+        }
+
+        self.client.set_policy('test', policy)
         assert 'test' in self.client.list_policies()
 
         self.client.delete_policy('test')
@@ -365,7 +379,7 @@ class IntegrationTest(TestCase):
         try:
             self.client.get_role_secret_id('testrole', secret_id)
             assert False
-        except ValueError:
+        except (exceptions.InvalidPath, ValueError):
             assert True
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -381,6 +395,23 @@ class IntegrationTest(TestCase):
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('approle')
+
+    def test_auth_approle_dont_use_token(self):
+        if 'approle/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('approle')
+        self.client.enable_auth_backend('approle')
+
+        self.client.create_role('testrole')
+        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        secret_id = create_result['data']['secret_id']
+        role_id = self.client.get_role_id('testrole')
+        result = self.client.auth_approle(role_id, secret_id, use_token=False)
+        assert result['auth']['metadata']['foo'] == 'bar'
+        assert self.client.token != result['auth']['client_token']
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
@@ -514,7 +545,7 @@ class IntegrationTest(TestCase):
         _ = self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
-        with self.assertRaises(exceptions.InvalidRequest):
+        with self.assertRaises(exceptions.Forbidden):
             result = self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
@@ -598,3 +629,70 @@ class IntegrationTest(TestCase):
         # Cleanup
         self.client.delete_token_role('testrole')
         self.client.delete_policy('testpolicy')
+
+    def test_ec2_role_crud(self):
+        if 'aws-ec2/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('aws-ec2')
+        self.client.enable_auth_backend('aws-ec2')
+
+        # create a policy to associate with the role
+        self.prep_policy('ec2rolepolicy')
+
+        # attempt to get a list of roles before any exist
+        no_roles = self.client.list_ec2_roles()
+        # doing so should succeed and return None
+        assert (no_roles is None)
+
+        # test binding by AMI ID (the old way, to ensure backward compatibility)
+        self.client.create_ec2_role('foo',
+                                    'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        # test binding by Account ID
+        self.client.create_ec2_role('bar',
+                                    bound_account_id='123456789012',
+                                    policies='ec2rolepolicy')
+
+        # test binding by IAM Role ARN
+        self.client.create_ec2_role('baz',
+                                    bound_iam_role_arn='arn:aws:iam::123456789012:role/mockec2role',
+                                    policies='ec2rolepolicy')
+
+        # test binding by instance profile ARN
+        self.client.create_ec2_role('qux',
+                                    bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
+                                    policies='ec2rolepolicy')
+
+        roles = self.client.list_ec2_roles()
+
+        assert('foo' in roles['data']['keys'])
+        assert('bar' in roles['data']['keys'])
+        assert('baz' in roles['data']['keys'])
+        assert('qux' in roles['data']['keys'])
+
+        foo_role = self.client.get_ec2_role('foo')
+        assert(foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert('ec2rolepolicy' in foo_role['data']['policies'])
+
+        bar_role = self.client.get_ec2_role('bar')
+        assert(bar_role['data']['bound_account_id'] == '123456789012')
+        assert('ec2rolepolicy' in bar_role['data']['policies'])
+
+        baz_role = self.client.get_ec2_role('baz')
+        assert(baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert('ec2rolepolicy' in baz_role['data']['policies'])
+
+        qux_role = self.client.get_ec2_role('qux')
+
+        assert(qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert('ec2rolepolicy' in qux_role['data']['policies'])
+
+        # teardown
+        self.client.delete_ec2_role('foo')
+        self.client.delete_ec2_role('bar')
+        self.client.delete_ec2_role('baz')
+        self.client.delete_ec2_role('qux')
+
+        self.client.delete_policy('ec2rolepolicy')
+
+        self.client.disable_auth_backend('aws-ec2')
