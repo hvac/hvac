@@ -105,7 +105,7 @@ class IntegrationTest(TestCase):
     def test_wrap_write(self):
         if 'approle/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend("approle")
- 
+
         self.client.write("auth/approle/role/testrole")
         result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
         assert 'token' in result['wrap_info']
@@ -592,6 +592,19 @@ class IntegrationTest(TestCase):
         # Validate token
         lookup = self.client.lookup_token(token['auth']['client_token'])
         assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_periodic(self):
+
+        token = self.client.create_token(period='30m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 1800
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+        assert lookup['data']['period'] == 1800
 
     def test_token_roles(self):
         # No roles, list_token_roles == None
