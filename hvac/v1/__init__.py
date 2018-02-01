@@ -16,7 +16,9 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
+
 class Client(object):
+
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None):
@@ -134,14 +136,14 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
-       """
+        """
         PUT /sys/unseal
         """
-       params = {
-           'key': key,
-       }
+        params = {
+            'key': key,
+        }
 
-       return self._put('/v1/sys/unseal', json=params).json()
+        return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -584,7 +586,7 @@ class Client(object):
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True):
         """
-        POST /auth/aws-ec2/login
+        POST /auth/aws/login
         """
         params = {'pkcs7': pkcs7}
         if nonce:
@@ -592,7 +594,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
+        return self.auth('/v1/auth/aws/login', json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
@@ -893,7 +895,6 @@ class Client(object):
             'role_id': role_id
         }
         self._post(url, json=params)
-
 
     def get_role(self, role_name):
         """
