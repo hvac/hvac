@@ -904,7 +904,7 @@ class Client(object):
         """
         return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
 
-    def create_role_secret_id(self, role_name, meta=None):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None):
         """
         POST /auth/approle/role/<role name>/secret-id
         """
@@ -913,7 +913,8 @@ class Client(object):
         params = {}
         if meta is not None:
             params['metadata'] = json.dumps(meta)
-
+        if cidr_list is not None:
+            params['cidr_list'] = cidr_list
         return self._post(url, json=params).json()
 
     def get_role_secret_id(self, role_name, secret_id):
