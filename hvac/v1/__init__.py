@@ -408,7 +408,7 @@ class Client(object):
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False, wrap_ttl=None, renewable=None,
-                     explicit_max_ttl=None):
+                     explicit_max_ttl=None, period=None):
         """
         POST /auth/token/create
         POST /auth/token/create/<role>
@@ -433,6 +433,9 @@ class Client(object):
 
         if explicit_max_ttl:
             params['explicit_max_ttl'] = explicit_max_ttl
+
+        if period:
+            params['period'] = period
 
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
