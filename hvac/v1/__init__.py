@@ -497,13 +497,15 @@ class Client(object):
             return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
 
     def create_token_role(self, role,
-                          allowed_policies=None, orphan=None, period=None,
-                          renewable=None, path_suffix=None, explicit_max_ttl=None):
+                          allowed_policies=None, disallowed_policies=None,
+                          orphan=None, period=None, renewable=None,
+                          path_suffix=None, explicit_max_ttl=None):
         """
         POST /auth/token/roles/<role>
         """
         params = {
             'allowed_policies': allowed_policies,
+            'disallowed_policies': disallowed_policies,
             'orphan': orphan,
             'period': period,
             'renewable': renewable,
