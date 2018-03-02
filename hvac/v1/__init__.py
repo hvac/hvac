@@ -1,6 +1,10 @@
 from __future__ import unicode_literals
 
+import hmac
 import json
+from base64 import b64encode
+from datetime import datetime
+from hashlib import sha256
 
 try:
     import hcl
@@ -597,6 +601,63 @@ class Client(object):
         params.update(kwargs)
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+        """
+        POST /auth/<mount point>/login
+        """
+        timestamp = datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+
+        method = 'POST'
+        url = 'https://sts.amazonaws.com/'
+        body = 'Action=GetCallerIdentity&Version=2011-06-15'
+        headers = {
+            'Content-Length': [str(len(body))],
+            'Content-Type': ['application/x-www-form-urlencoded; charset=utf-8'],
+            'Host': ['sts.amazonaws.com'],
+            'X-Amz-Date': [timestamp]
+        }
+
+        if session_token:
+            headers['X-Amz-Security-Token'] = [session_token]
+        if header_value:
+            headers['X-Vault-AWS-IAM-Server-ID'] = [header_value]
+
+        # https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+        canonical_headers = ''.join('{0}:{1}\n'.format(k.lower(), headers[k][0]) for k in sorted(headers))
+        signed_headers = ';'.join(k.lower() for k in sorted(headers))
+        payload_hash = sha256(body.encode('utf-8')).hexdigest()
+        canonical_request = '\n'.join([method, '/', '', canonical_headers, signed_headers, payload_hash])
+
+        # https://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
+        algorithm = 'AWS4-HMAC-SHA256'
+        credential_scope = '/'.join([timestamp[0:8], 'us-east-1', 'sts', 'aws4_request'])
+        canonical_request_hash = sha256(canonical_request.encode('utf-8')).hexdigest()
+        string_to_sign = '\n'.join([algorithm, timestamp, credential_scope, canonical_request_hash])
+
+        # https://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html
+        key = 'AWS4{0}'.format(secret_key).encode('utf-8')
+        key = hmac.new(key, timestamp[0:8].encode('utf-8'), sha256).digest()
+        key = hmac.new(key, 'us-east-1'.encode('utf-8'), sha256).digest()
+        key = hmac.new(key, 'sts'.encode('utf-8'), sha256).digest()
+        key = hmac.new(key, 'aws4_request'.encode('utf-8'), sha256).digest()
+        signature = hmac.new(key, string_to_sign.encode('utf-8'), sha256).hexdigest()
+
+        # https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+        authorization = '{0} Credential={1}/{2}, SignedHeaders={3}, Signature={4}'.format(
+            algorithm, access_key, credential_scope, signed_headers, signature)
+        headers['Authorization'] = [authorization]
+
+        # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
+        params = {
+            'iam_http_request_method': method,
+            'iam_request_url': b64encode(url.encode('utf-8')).decode('utf-8'),
+            'iam_request_headers': b64encode(json.dumps(headers).encode('utf-8')).decode('utf-8'),
+            'iam_request_body': b64encode(body.encode('utf-8')).decode('utf-8'),
+            'role': role,
+        }
+
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """

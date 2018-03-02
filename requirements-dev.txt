@@ -1,5 +1,6 @@
 avakas
 coverage
+mock
 nose
 requests_mock
 semantic_version
