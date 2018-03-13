@@ -1,12 +1,16 @@
+test: version
+	tox
+
+version:
+	cp version hvac/version
+
 clean:
-	rm -rf dist/ build/
+	rm -rf dist hvac.egg-info
 
-package: clean
-	pip install wheel
-	python setup.py sdist bdist_wheel
+distclean: clean
+	rm -rf build hvac/version .tox
 
-publish: package
-	pip install twine
-	twine upload dist/*
+package: version
+	python setup.py sdist
 
-.PHONY: clean package publish
+.PHONY: clean package publish test version
