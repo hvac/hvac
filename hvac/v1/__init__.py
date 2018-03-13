@@ -598,6 +598,61 @@ class Client(object):
             params['role'] = role
 
         return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
+    
+    def auth_kubernetes(self, role, jwt, use_token=True):
+        """
+        POST /auth/kubernetes/login
+        """
+        params = {
+            'role': role,
+            'jwt': jwt
+            }
+        return self.auth('/v1/auth/kubernetes/login', json=params, use_token=use_token).json()
+
+    def list_kubernetes_roles():
+        """
+        GET /auth/kubernetes/role?list=true
+        """
+        params = {'list': True}
+        return self._get('/auth/kubernetes/role', params=params).json()
+
+    def read_kubernetes_role(role_name):
+        """
+        GET /auth/kubernetes/role/:name
+        """
+        return self._get('/auth/kubernetes/role/{}'.format(role_name)).json()
+    
+    def create_kubernetes_role(name, 
+                                bound_service_account_names,
+                                bound_service_account_namespaces,
+                                ttl,
+                                max_ttl,
+                                period,
+                                policies):
+        """
+        POST /auth/kubernetes/role/:name
+        """
+        params = {
+            'bound_service_account_names': bound_service_account_names,
+            'bound_service_account_namespaces':bound_service_account_namespaces
+        }
+        if ttl:
+            params['ttl'] = ttl
+        if max_ttl:
+            params['max_ttl'] = max_ttl
+        if period:
+            params['period'] = period
+        if policies:
+            params['policies'] = policies
+
+        return self._post('/auth/kubernetes/role/{}'.format(name), json=params)
+
+    def delete_kubernetes_role(role_name):
+        """
+        DELETE /auth/kubernetes/role/:role
+        """
+        return self._delete('/v1/auth/kubernetes/role/{}'.format(role_name))
+    
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
