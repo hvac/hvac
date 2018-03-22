@@ -1,28 +1,31 @@
 dist: trusty
-sudo: required
+sudo: false
 language: python
-# Explicitly declare which builds should run, otherwise Travis CI
-# will attempt to build every env against every Python version.
 matrix:
   include:
-    - python: '2.6'
-      env: TOXENV=py26 VAULT_BRANCH=release
-    - python: '2.7'
-      env: TOXENV=py27 VAULT_BRANCH=release
-    - python: '3.5'
-      env: TOXENV=py35 VAULT_BRANCH=release
-    - python: '3.5'
-      env: TOXENV=py35 VAULT_BRANCH=head
-  # To mark some of the builds above as optional, we have to
-  # define them a second time in the allow_failures section below.
+  - python: '2.7'
+    env: TOXENV=py27 VAULT_BRANCH=release
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=release RELEASE=yes
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=head
   allow_failures:
-    - python: '2.6'
-      env: TOXENV=py26 VAULT_BRANCH=release
-    - python: '3.5'
-      env: TOXENV=py35 VAULT_BRANCH=head
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=head
 install:
-  - scripts/install-vault-${VAULT_BRANCH}.sh
-  - pip install tox
+- scripts/install-vault-${VAULT_BRANCH}.sh
+- pip install tox
 script:
-  - export PATH=$HOME/bin:$PATH
-  - tox
+- export PATH=$HOME/bin:$PATH
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then make package ; else make test ; fi
+deploy:
+  skip_cleanup: true
+  provider: pypi
+  user: otakup0pe
+  on:
+    tags: true
+    all_branches: true
+    repo: ianunruh/hvac
+    condition: $RELEASE == "yes"
+  password:
+    secure: MDKviWOPUrxuBAClPjh1WH/FtBj9PIDBZ1LLQFWgBsvQaauCpqN6p9M6ysWT/20Ou3AePjFJJ2KA0oYU7UW+qmXqCGyvYBiIzMXvDcjhBK60UOhFtzMDq3rEwVDCIWRfk1zCxpQYiw2Eq2T/E/wdtfUqwVVWRCL4tdCTXv48EuA=
