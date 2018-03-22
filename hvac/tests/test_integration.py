@@ -272,6 +272,25 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('userpass')
 
+    def test_list_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # add some users and confirm that they show up in the list
+        self.client.create_userpass('testuserone', 'testuseronepass', policies='not_root')
+        self.client.create_userpass('testusertwo', 'testusertwopass', policies='not_root')
+
+        user_list = self.client.list_userpass()
+        assert 'testuserone' in user_list['data']['keys']
+        assert 'testusertwo' in user_list['data']['keys']
+
+        # delete all the users and confirm that list_userpass() doesn't fail
+        for user in user_list['data']['keys']:
+            self.client.delete_userpass(user)
+
+        no_users_list = self.client.list_userpass()
+        assert no_users_list is None
+
     def test_delete_userpass(self):
         if 'userpass/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('userpass')

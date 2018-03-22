@@ -617,6 +617,15 @@ class Client(object):
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
+    def list_userpass(self, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users?list=true
+        """
+        try:
+            return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
+
     def delete_userpass(self, username, mount_point='userpass'):
         """
         DELETE /auth/<mount point>/users/<username>
