@@ -621,7 +621,10 @@ class Client(object):
         """
         GET /auth/<mount point>/users?list=true
         """
-        return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+        try:
+            return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
 
     def delete_userpass(self, username, mount_point='userpass'):
         """
