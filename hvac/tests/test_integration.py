@@ -300,7 +300,7 @@ class IntegrationTest(TestCase):
 
         # test that user can be read
         read_user = self.client.read_userpass('readme')
-        assert read_user['data']['policies'] == ['not_root']
+        assert 'not_root' in read_user['data']['policies']
 
         # teardown
         self.client.disable_auth_backend('userpass')
@@ -315,7 +315,7 @@ class IntegrationTest(TestCase):
 
         # test that policies have changed
         updated_user = self.client.read_userpass('updatemypolicies')
-        assert updated_user['data']['policies'] == ['somethingelse']
+        assert 'somethingelse' in updated_user['data']['policies']
 
         # teardown
         self.client.disable_auth_backend('userpass')
