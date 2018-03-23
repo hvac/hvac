@@ -626,6 +626,36 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
+    def read_userpass(self, username, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users/<username>
+        """
+        return self._get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
+
+    def update_userpass_policies(self, username, policies, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/policies
+        """
+        # userpass can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(policies, (list, set, tuple)):
+            policies = ','.join(policies)
+
+        params = {
+            'policies': policies
+        }
+
+        return self._post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
+
+    def update_userpass_password(self, username, password, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/password
+        """
+        params = {
+            'password': password
+        }
+        return self._post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
+
     def delete_userpass(self, username, mount_point='userpass'):
         """
         DELETE /auth/<mount point>/users/<username>

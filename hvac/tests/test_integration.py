@@ -291,6 +291,52 @@ class IntegrationTest(TestCase):
         no_users_list = self.client.list_userpass()
         assert no_users_list is None
 
+    def test_read_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user to read
+        self.client.create_userpass('readme', 'mypassword', policies='not_root')
+
+        # test that user can be read
+        read_user = self.client.read_userpass('readme')
+        assert read_user['data']['policies'] == ['not_root']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_policies(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then update its policies
+        self.client.create_userpass('updatemypolicies', 'mypassword', policies='not_root')
+        self.client.update_userpass_policies('updatemypolicies', policies='somethingelse')
+
+        # test that policies have changed
+        updated_user = self.client.read_userpass('updatemypolicies')
+        assert updated_user['data']['policies'] == ['somethingelse']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_password(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then change its password
+        self.client.create_userpass('changeme', 'mypassword', policies='not_root')
+        self.client.update_userpass_password('changeme', 'mynewpassword')
+
+        # test that new password authenticates user
+        result = self.client.auth_userpass('changeme', 'mynewpassword')
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        # teardown
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('userpass')
+
     def test_delete_userpass(self):
         if 'userpass/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('userpass')
