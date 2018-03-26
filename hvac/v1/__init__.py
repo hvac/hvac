@@ -137,14 +137,14 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
-       """
+        """
         PUT /sys/unseal
         """
-       params = {
-           'key': key,
-       }
+        params = {
+            'key': key,
+        }
 
-       return self._put('/v1/sys/unseal', json=params).json()
+        return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -1255,8 +1255,11 @@ class Client(object):
         url = urljoin(self._url, url)
 
         # NOTE(rswedenburg): assuming that the user wants to retain the headers on the session passed in, this grabs and uses them
-        headers = self.session.headers
-        if not headers:
+        if self.session:
+            headers = self.session.headers
+            if not headers:
+                headers = {}
+        else:
             headers = {}
 
         if self.token:
