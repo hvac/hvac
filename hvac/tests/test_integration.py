@@ -880,3 +880,31 @@ class IntegrationTest(TestCase):
         self.client.delete_policy('ec2rolepolicy')
 
         self.client.disable_auth_backend('aws-ec2')
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token_exception(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
+        # generic 'missing client token' response from Vault.
+        with self.assertRaises(exceptions.InvalidRequest) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7)
+
+        expected_exception_message = 'missing client token'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
