@@ -606,7 +606,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token).json()
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
