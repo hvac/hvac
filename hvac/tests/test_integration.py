@@ -854,21 +854,21 @@ class IntegrationTest(TestCase):
         assert ('qux' in roles['data']['keys'])
 
         foo_role = self.client.get_ec2_role('foo')
-        assert (foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert (foo_role['data']['bound_ami_id'] == ['ami-notarealami'])
         assert ('ec2rolepolicy' in foo_role['data']['policies'])
 
         bar_role = self.client.get_ec2_role('bar')
-        assert (bar_role['data']['bound_account_id'] == '123456789012')
+        assert (bar_role['data']['bound_account_id'] == ['123456789012'])
         assert ('ec2rolepolicy' in bar_role['data']['policies'])
 
         baz_role = self.client.get_ec2_role('baz')
-        assert (baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert (baz_role['data']['bound_iam_role_arn'] == ['arn:aws:iam::123456789012:role/mockec2role'])
         assert ('ec2rolepolicy' in baz_role['data']['policies'])
 
         qux_role = self.client.get_ec2_role('qux')
 
         assert (
-        qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        qux_role['data']['bound_iam_instance_profile_arn'] == ['arn:aws:iam::123456789012:instance-profile/mockprofile'])
         assert ('ec2rolepolicy' in qux_role['data']['policies'])
 
         # teardown
