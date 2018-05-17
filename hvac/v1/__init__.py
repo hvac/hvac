@@ -587,9 +587,18 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True):
+    def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """
-        POST /auth/aws-ec2/login
+        POST /auth/<mount point>/login
+        :param pkcs7: str, PKCS#7 version of an AWS Instance Identity Document from the EC2 Metadata Service.
+        :param nonce: str, optional nonce returned as part of the original authentication request. Not required if the
+         backend has "allow_instance_migration" or "disallow_reauthentication" options turned on.
+        :param role: str, identifier for the AWS auth backend role being requested
+        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
+         attribute on the current Client class instance.
+        :param mount_point: str, The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws".
+         "aws-ec2" is the default argument for backwards comparability within this module.
+        :return: dict, parsed JSON response from the auth POST request
         """
         params = {'pkcs7': pkcs7}
         if nonce:
@@ -597,7 +606,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token).json()
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """

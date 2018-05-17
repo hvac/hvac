@@ -908,3 +908,31 @@ class IntegrationTest(TestCase):
         # Reset test state.
         self.client.token = self.root_token()
         self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # If our custom path is respected, we'll still end up with Vault's inability to decrypt our dummy PKCS7 string.
+        # However this exception indicates we're correctly hitting the expected auth endpoint.
+        with self.assertRaises(exceptions.InternalServerError) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7, mount_point=test_mount_point)
+
+        expected_exception_message = 'failed to decode the PEM encoded PKCS#7 signature'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
