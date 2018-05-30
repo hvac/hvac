@@ -5,6 +5,7 @@ from base64 import b64encode
 
 try:
     import hcl
+
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
@@ -136,14 +137,14 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
-       """
-        PUT /sys/unseal
         """
-       params = {
-           'key': key,
-       }
+         PUT /sys/unseal
+         """
+        params = {
+            'key': key,
+        }
 
-       return self._put('/v1/sys/unseal', json=params).json()
+        return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
