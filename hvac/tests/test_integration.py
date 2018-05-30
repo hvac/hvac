@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-from nose.tools import *
 
 from hvac import Client, exceptions
 from hvac.tests import util
@@ -132,16 +131,16 @@ class IntegrationTest(TestCase):
         assert 'test/' in self.client.list_secret_backends()
 
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
-        assert_equal(secret_backend_tuning['max_lease_ttl'], 2764800)
-        assert_equal(secret_backend_tuning['default_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 2764800)
 
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
 
         assert 'max_lease_ttl' in secret_backend_tuning
-        assert_equal(secret_backend_tuning['max_lease_ttl'], 8600)
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 8600)
         assert 'default_lease_ttl' in secret_backend_tuning
-        assert_equal(secret_backend_tuning['default_lease_ttl'], 3600)
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -355,7 +354,7 @@ class IntegrationTest(TestCase):
 
         self.client.token = self.root_token()
         self.client.delete_userpass('testcreateuser')
-        assert_raises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
+        self.assertRaises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
 
     def test_app_id_auth(self):
         if 'app-id/' in self.client.list_auth_backends():
