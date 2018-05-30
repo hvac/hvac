@@ -493,7 +493,7 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('approle')
 
         self.client.create_role('testrole')
-        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id, use_token=False)
