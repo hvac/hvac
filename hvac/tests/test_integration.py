@@ -52,7 +52,7 @@ class IntegrationTest(TestCase):
         result = self.client.unseal_multi(keys[1:3])
         assert result['sealed']
         assert result['progress'] == 2
-        result = self.client.unseal_multi(keys[0:1])
+        self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
         assert not result['sealed']
 
@@ -710,7 +710,7 @@ class IntegrationTest(TestCase):
 
         self.client.write('auth/userpass/users/testuser', password='testpass', policies='not_root')
 
-        result = self.client.auth_userpass('testuser', 'testpass')
+        self.client.auth_userpass('testuser', 'testpass')
 
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
@@ -752,7 +752,7 @@ class IntegrationTest(TestCase):
         self.client.write('auth/cert/certs/test', display_name='test',
                           policies='not_root', certificate=certificate)
 
-        result = self.client.auth_tls()
+        self.client.auth_tls()
 
     def test_gh51(self):
         key = 'secret/http://test.com'
@@ -800,17 +800,17 @@ class IntegrationTest(TestCase):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         # Intercept wrapped token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
         with self.assertRaises(exceptions.Forbidden):
-            result = self.client.unwrap(wrap['wrap_info']['token'])
+            self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         _token = self.client.token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
         assert self.client.token == _token
 
     def test_wrapped_token_revoke(self):
@@ -825,7 +825,7 @@ class IntegrationTest(TestCase):
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
-            lookup = self.client.lookup_token(result['auth']['client_token'])
+            self.client.lookup_token(result['auth']['client_token'])
 
     def test_create_token_explicit_max_ttl(self):
 
