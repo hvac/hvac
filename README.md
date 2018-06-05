@@ -15,7 +15,7 @@ pip install hvac
 ```
 or
 ```bash
-pip install hvac[parser]
+pip install "hvac[parser]"
 ```
 if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
@@ -60,7 +60,7 @@ assert client.is_authenticated() # => True
 client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
 # App Role
-client.auth_approle('MY_ROLE_ID', 'MY_ROLE_ID')
+client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
 
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
