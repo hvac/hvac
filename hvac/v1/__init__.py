@@ -124,24 +124,16 @@ class Client(object):
         """
         self._put('/v1/sys/seal')
 
-    def unseal_reset(self):
+    def unseal(self, key, reset=False):
         """
         PUT /sys/unseal
         """
         params = {
-            'reset': True,
+            'key': key,
+            'reset': reset
         }
+
         return self._put('/v1/sys/unseal', json=params).json()
-
-    def unseal(self, key):
-       """
-        PUT /sys/unseal
-        """
-       params = {
-           'key': key,
-       }
-
-       return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -734,14 +726,16 @@ class Client(object):
         """
         return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
-    def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None):
+    def create_vault_ec2_client_configuration(self, access_key=None,
+                                              secret_key=None, endpoint=None):
         """
         POST /auth/aws-ec2/config/client
         """
-        params = {
-            'access_key': access_key,
-            'secret_key': secret_key
-        }
+        params = {}
+        if access_key:
+            params['access_key'] = access_key
+        if secret_key:
+            params['secret_key'] = secret_key
         if endpoint is not None:
             params['endpoint'] = endpoint
 
