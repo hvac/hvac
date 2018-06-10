@@ -600,7 +600,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token).json()
+        return self.auth('/v1/auth/aws-ec2/login', json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
@@ -786,8 +786,9 @@ class Client(object):
         return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
-                        bound_iam_instance_profile_arn=None, role_tag=None, max_ttl=None, policies=None,
-                        allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+                        bound_iam_instance_profile_arn=None, bound_region=None, bound_vpc_id=None, bound_subnet_id=None,
+                        role_tag=None, max_ttl=None, policies=None, allow_instance_migration=False,
+                        disallow_reauthentication=False, **kwargs):
         """
         POST /auth/aws-ec2/role/<role>
         """
@@ -796,6 +797,7 @@ class Client(object):
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+
         if bound_ami_id is not None:
             params['bound_ami_id'] = bound_ami_id
         if bound_account_id is not None:
@@ -804,12 +806,19 @@ class Client(object):
             params['bound_iam_role_arn'] = bound_iam_role_arn
         if bound_iam_instance_profile_arn is not None:
             params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
+        if bound_region is not None:
+            params['bound_region'] = bound_region
+        if bound_vpc_id is not None:
+            params['bound_vpc_id'] = bound_vpc_id
+        if bound_subnet_id is not None:
+            params['bound_subnet_id'] = bound_subnet_id
         if role_tag is not None:
             params['role_tag'] = role_tag
         if max_ttl is not None:
             params['max_ttl'] = max_ttl
         if policies is not None:
             params['policies'] = policies
+
         params.update(**kwargs)
         return self._post('/v1/auth/aws-ec2/role/{0}'.format(role), json=params)
 
@@ -844,13 +853,14 @@ class Client(object):
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+
         if max_ttl is not None:
             params['max_ttl'] = max_ttl
         if policies is not None:
             params['policies'] = policies
         if instance_id is not None:
             params['instance_id'] = instance_id
-        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params).json()
+        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params)
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
