@@ -1,9 +1,6 @@
-from unittest import TestCase, skipIf
+from unittest import TestCase
 
-import hcl
-import requests
 from nose.tools import *
-from time import sleep
 
 from hvac import Client, exceptions
 from hvac.tests import util
