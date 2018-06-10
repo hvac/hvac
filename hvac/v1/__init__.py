@@ -218,7 +218,7 @@ class Client(object):
 
         for key in keys:
             result = self.rekey(key, nonce=nonce)
-            if 'complete' in result and result['complete']:
+            if result.get('complete'):
                 break
 
         return result

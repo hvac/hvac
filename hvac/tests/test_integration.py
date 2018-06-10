@@ -134,9 +134,17 @@ class IntegrationTest(TestCase):
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
 
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+        assert_equal(secret_backend_tuning['max_lease_ttl'], 2764800)
+        assert_equal(secret_backend_tuning['default_lease_ttl'], 2764800)
+                    
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
-        assert 'max_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
-        assert 'default_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+        
+        assert 'max_lease_ttl' in secret_backend_tuning
+        assert_equal(secret_backend_tuning['max_lease_ttl'], 8600)
+        assert 'default_lease_ttl' in secret_backend_tuning
+        assert_equal(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -443,7 +451,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-
+        
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -465,7 +473,7 @@ class IntegrationTest(TestCase):
         except (exceptions.InvalidPath, ValueError):
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')
+        self.client.disable_auth_backend('approle')        
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -496,7 +504,7 @@ class IntegrationTest(TestCase):
         assert result['auth']['metadata']['foo'] == 'bar'
         assert self.client.token != result['auth']['client_token']
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')
+        self.client.disable_auth_backend('approle')        
 
     def test_transit_read_write(self):
         if 'transit/' in self.client.list_secret_backends():
