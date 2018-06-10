@@ -942,52 +942,51 @@ class Client(object):
         """
         self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
-    def create_role(self, role_name, **kwargs):
+    def create_role(self, role_name, mount_point='approle', **kwargs):
         """
-        POST /auth/approle/role/<role name>
-        """
-
-        self._post('/v1/auth/approle/role/{0}'.format(role_name), json=kwargs)
-
-    def list_roles(self):
-        """
-        GET /auth/approle/role
+        POST /auth/<mount_point>/role/<role name>
         """
 
-        return self._get('/v1/auth/approle/role?list=true').json()
+        self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
-    def get_role_id(self, role_name):
+    def list_roles(self, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>/role-id
+        GET /auth/<mount_point>/role
         """
 
-        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        return self._get('/v1/auth/{0}/role?list=true').format(mount_point).json()
+
+    def get_role_id(self, role_name, mount_point='approle'):
+        """
+        GET /auth/<mount_point>/role/<role name>/role-id
+        """
+
+        url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         return self._get(url).json()['data']['role_id']
 
-    def set_role_id(self, role_name, role_id):
+    def set_role_id(self, role_name, role_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/role-id
+        POST /auth/<mount_point>/role/<role name>/role-id
         """
 
-        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         params = {
             'role_id': role_id
         }
         self._post(url, json=params)
 
+    def get_role(self, role_name, mount_point='approle'):
+        """
+        GET /auth/<mount_point>/role/<role name>
+        """
+        return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
 
-    def get_role(self, role_name):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>
-        """
-        return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
-
-    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None):
-        """
-        POST /auth/approle/role/<role name>/secret-id
+        POST /auth/<mount_point>/role/<role name>/secret-id
         """
 
-        url = '/v1/auth/approle/role/{0}/secret-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id'.format(mount_point, role_name)
         params = {}
         if meta is not None:
             params['metadata'] = json.dumps(meta)
@@ -995,53 +994,53 @@ class Client(object):
             params['cidr_list'] = cidr_list
         return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
-    def get_role_secret_id(self, role_name, secret_id):
+    def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id/lookup
+        POST /auth/<mount_point>/role/<role name>/secret-id/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/lookup'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id/lookup'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
         return self._post(url, json=params).json()
 
-    def list_role_secrets(self, role_name):
+    def list_role_secrets(self, role_name, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>/secret-id?list=true
+        GET /auth/<mount_point>/role/<role name>/secret-id?list=true
         """
-        url = '/v1/auth/approle/role/{0}/secret-id?list=true'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
         return self._get(url).json()
 
-    def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
+    def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
+        POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/lookup'.format(mount_point, role_name)
         params = {'secret_id_accessor': secret_id_accessor}
         return self._post(url, json=params).json()
 
-    def delete_role_secret_id(self, role_name, secret_id):
+    def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id/destroy
+        POST /auth/<mount_point>/role/<role name>/secret-id/destroy
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/destroy'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id/destroy'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
         self._post(url, json=params)
 
-    def delete_role_secret_id_accessor(self, role_name, secret_id_accessor):
+    def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """
-        DELETE /auth/approle/role/<role name>/secret-id/<secret_id_accessor>
+        DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
+        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
         self._delete(url)
 
-    def create_role_custom_secret_id(self, role_name, secret_id, meta=None):
+    def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/custom-secret-id
+        POST /auth/<mount_point>/role/<role name>/custom-secret-id
         """
-        url = '/v1/auth/approle/role/{0}/custom-secret-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/custom-secret-id'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
@@ -1051,7 +1050,7 @@ class Client(object):
 
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """
-        POST /auth/approle/login
+        POST /auth/<mount_point>/login
         """
         params = {
             'role_id': role_id
