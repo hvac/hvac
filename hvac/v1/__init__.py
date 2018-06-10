@@ -874,6 +874,13 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    def auth_cubbyhole(self, token):
+        """
+        POST /v1/sys/wrapping/unwrap
+        """
+        self.token = token
+        return self.auth('/v1/sys/wrapping/unwrap')
+
     def auth(self, url, use_token=True, **kwargs):
         response = self._post(url, **kwargs).json()
 
