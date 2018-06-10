@@ -15,6 +15,7 @@ def create_client(**kwargs):
                   verify='test/server-cert.pem',
                   **kwargs)
 
+
 class IntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -46,8 +47,13 @@ class IntegrationTest(TestCase):
         assert result['sealed']
         assert result['progress'] == 2
 
+        result = self.client.unseal_reset()
+        assert result['progress'] == 0
+        result = self.client.unseal_multi(keys[1:3])
+        assert result['sealed']
+        assert result['progress'] == 2
+        result = self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
-
         assert not result['sealed']
 
     def test_seal_unseal(self):
@@ -85,6 +91,8 @@ class IntegrationTest(TestCase):
         self.client.delete('secret/test-list/foo')
 
     def test_write_with_response(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
         plaintext = 'test'
@@ -96,6 +104,16 @@ class IntegrationTest(TestCase):
 
         result = self.client.write('transit/decrypt/foo', ciphertext=ciphertext)
         assert result['data']['plaintext'] == plaintext
+
+    def test_wrap_write(self):
+        if 'approle/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend("approle")
+
+        self.client.write("auth/approle/role/testrole")
+        result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
+        assert 'token' in result['wrap_info']
+        self.client.unwrap(result['wrap_info']['token'])
+        self.client.disable_auth_backend("approle")
 
     def test_read_nonexistent_key(self):
         assert not self.client.read('secret/I/dont/exist')
@@ -150,20 +168,16 @@ class IntegrationTest(TestCase):
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
-    def test_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
-        assert self.client.get_policy('test') is None
-
-        policy = """
+    def prep_policy(self, name):
+        text = """
         path "sys" {
-          policy = "deny"
+            policy = "deny"
         }
-
-        path "secret" {
-          policy = "write"
+            path "secret" {
+        policy = "write"
         }
         """
-        parsed_policy = {
+        obj = {
             'path': {
                 'sys': {
                     'policy': 'deny'},
@@ -171,8 +185,13 @@ class IntegrationTest(TestCase):
                     'policy': 'write'}
             }
         }
+        self.client.set_policy(name, text)
+        return text, obj
 
-        self.client.set_policy('test', policy)
+    def test_policy_manipulation(self):
+        assert 'root' in self.client.list_policies()
+        assert self.client.get_policy('test') is None
+        policy, parsed_policy = self.prep_policy('test')
         assert 'test' in self.client.list_policies()
         assert policy == self.client.get_policy('test')
         assert parsed_policy == self.client.get_policy('test', parse=True)
@@ -201,7 +220,7 @@ class IntegrationTest(TestCase):
         assert 'test' not in self.client.list_policies()
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease='1h')
+        result = self.client.create_token(lease='1h', renewable=True)
         assert result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
@@ -261,6 +280,71 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('userpass')
 
+    def test_list_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # add some users and confirm that they show up in the list
+        self.client.create_userpass('testuserone', 'testuseronepass', policies='not_root')
+        self.client.create_userpass('testusertwo', 'testusertwopass', policies='not_root')
+
+        user_list = self.client.list_userpass()
+        assert 'testuserone' in user_list['data']['keys']
+        assert 'testusertwo' in user_list['data']['keys']
+
+        # delete all the users and confirm that list_userpass() doesn't fail
+        for user in user_list['data']['keys']:
+            self.client.delete_userpass(user)
+
+        no_users_list = self.client.list_userpass()
+        assert no_users_list is None
+
+    def test_read_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user to read
+        self.client.create_userpass('readme', 'mypassword', policies='not_root')
+
+        # test that user can be read
+        read_user = self.client.read_userpass('readme')
+        assert 'not_root' in read_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_policies(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then update its policies
+        self.client.create_userpass('updatemypolicies', 'mypassword', policies='not_root')
+        self.client.update_userpass_policies('updatemypolicies', policies='somethingelse')
+
+        # test that policies have changed
+        updated_user = self.client.read_userpass('updatemypolicies')
+        assert 'somethingelse' in updated_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_password(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then change its password
+        self.client.create_userpass('changeme', 'mypassword', policies='not_root')
+        self.client.update_userpass_password('changeme', 'mynewpassword')
+
+        # test that new password authenticates user
+        result = self.client.auth_userpass('changeme', 'mynewpassword')
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        # teardown
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('userpass')
+
     def test_delete_userpass(self):
         if 'userpass/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('userpass')
@@ -314,6 +398,21 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('app-id')
 
+    def test_cubbyhole_auth(self):
+        orig_token = self.client.token
+
+        resp = self.client.create_token(lease='6h', wrap_ttl='1h')
+        assert resp['wrap_info']['ttl'] == 3600
+
+        wrapped_token = resp['wrap_info']['token']
+        self.client.auth_cubbyhole(wrapped_token)
+        assert self.client.token != orig_token
+        assert self.client.token != wrapped_token
+        assert self.client.is_authenticated()
+
+        self.client.token = orig_token
+        assert self.client.is_authenticated()
+
     def test_create_user_id(self):
         if 'app-id/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('app-id')
@@ -363,7 +462,7 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('approle')
 
         self.client.create_role('testrole')
-        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         result = self.client.get_role_secret_id('testrole', secret_id)
         assert result['data']['metadata']['foo'] == 'bar'
@@ -371,7 +470,7 @@ class IntegrationTest(TestCase):
         try:
             self.client.get_role_secret_id('testrole', secret_id)
             assert False
-        except exceptions.InvalidPath:
+        except (exceptions.InvalidPath, ValueError):
             assert True
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')        
@@ -382,13 +481,197 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('approle')
 
         self.client.create_role('testrole')
-        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id)
         assert result['auth']['metadata']['foo'] == 'bar'
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('approle')
+
+    def test_auth_approle_dont_use_token(self):
+        if 'approle/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('approle')
+        self.client.enable_auth_backend('approle')
+
+        self.client.create_role('testrole')
+        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        secret_id = create_result['data']['secret_id']
+        role_id = self.client.get_role_id('testrole')
+        result = self.client.auth_approle(role_id, secret_id, use_token=False)
+        assert result['auth']['metadata']['foo'] == 'bar'
+        assert self.client.token != result['auth']['client_token']
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')        
+
+    def test_transit_read_write(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+        result = self.client.transit_read_key('foo')
+        assert not result['data']['exportable']
+
+        self.client.transit_create_key('foo_export', exportable=True, key_type="ed25519")
+        result = self.client.transit_read_key('foo_export')
+        assert result['data']['exportable']
+        assert result['data']['type'] == 'ed25519'
+
+        self.client.enable_secret_backend('transit', mount_point='bar')
+        self.client.transit_create_key('foo', mount_point='bar')
+        result = self.client.transit_read_key('foo', mount_point='bar')
+        assert not result['data']['exportable']
+
+    def test_transit_list_keys(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo1')
+        self.client.transit_create_key('foo2')
+        self.client.transit_create_key('foo3')
+
+        result = self.client.transit_list_keys()
+        assert result['data']['keys'] == ["foo1", "foo2", "foo3"]
+
+    def test_transit_update_delete_keys(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+        self.client.transit_update_key('foo', deletion_allowed=True)
+        result = self.client.transit_read_key('foo')
+        assert result['data']['deletion_allowed']
+
+        self.client.transit_delete_key('foo')
+
+        try:
+            self.client.transit_read_key('foo')
+        except exceptions.InvalidPath:
+            assert True
+        else:
+            assert False
+
+    def test_transit_rotate_key(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+
+        self.client.transit_rotate_key('foo')
+        response = self.client.transit_read_key('foo')
+        assert '2' in response['data']['keys']
+
+        self.client.transit_rotate_key('foo')
+        response = self.client.transit_read_key('foo')
+        assert '3' in response['data']['keys']
+
+    def test_transit_export_key(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo', exportable=True)
+        response = self.client.transit_export_key('foo', key_type='encryption-key')
+        assert response is not None
+
+    def test_transit_encrypt_data(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+        ciphertext_resp = self.client.transit_encrypt_data('foo', 'abbaabba')['data']['ciphertext']
+        plaintext_resp = self.client.transit_decrypt_data('foo', ciphertext_resp)['data']['plaintext']
+        assert plaintext_resp == 'abbaabba'
+
+    def test_transit_rewrap_data(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+        ciphertext_resp = self.client.transit_encrypt_data('foo', 'abbaabba')['data']['ciphertext']
+
+        self.client.transit_rotate_key('foo')
+        response_wrap = self.client.transit_rewrap_data('foo', ciphertext=ciphertext_resp)['data']['ciphertext']
+        plaintext_resp = self.client.transit_decrypt_data('foo', response_wrap)['data']['plaintext']
+        assert plaintext_resp == 'abbaabba'
+
+    def test_transit_generate_data_key(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+
+        response_plaintext = self.client.transit_generate_data_key('foo', key_type='plaintext')['data']['plaintext']
+        assert response_plaintext
+
+        response_ciphertext = self.client.transit_generate_data_key('foo', key_type='wrapped')['data']
+        assert 'ciphertext' in response_ciphertext
+        assert 'plaintext' not in response_ciphertext
+
+    def test_transit_generate_rand_bytes(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        response_data = self.client.transit_generate_rand_bytes(data_bytes=4)['data']['random_bytes']
+        assert response_data
+
+    def test_transit_hash_data(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        response_hash = self.client.transit_hash_data('abbaabba')['data']['sum']
+        assert len(response_hash) == 64
+
+        response_hash = self.client.transit_hash_data('abbaabba', algorithm="sha2-512")['data']['sum']
+        assert len(response_hash) == 128
+
+    def test_transit_generate_verify_hmac(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo')
+
+        response_hmac = self.client.transit_generate_hmac('foo', 'abbaabba')['data']['hmac']
+        assert response_hmac
+        verify_resp = self.client.transit_verify_signed_data('foo', 'abbaabba', hmac=response_hmac)['data']['valid']
+        assert verify_resp
+
+        response_hmac = self.client.transit_generate_hmac('foo', 'abbaabba', algorithm='sha2-512')['data']['hmac']
+        assert response_hmac
+        verify_resp = self.client.transit_verify_signed_data('foo', 'abbaabba',
+                                                             algorithm='sha2-512', hmac=response_hmac)['data']['valid']
+        assert verify_resp
+
+    def test_transit_sign_verify_signature_data(self):
+        if 'transit/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('transit')
+        self.client.enable_secret_backend('transit')
+
+        self.client.transit_create_key('foo', key_type='ed25519')
+
+        signed_resp = self.client.transit_sign_data('foo', 'abbaabba')['data']['signature']
+        assert signed_resp
+        verify_resp = self.client.transit_verify_signed_data('foo', 'abbaabba', signature=signed_resp)['data']['valid']
+        assert verify_resp
+
+        signed_resp = self.client.transit_sign_data('foo', 'abbaabba', algorithm='sha2-512')['data']['signature']
+        assert signed_resp
+        verify_resp = self.client.transit_verify_signed_data('foo', 'abbaabba',
+                                                             algorithm='sha2-512',
+                                                             signature=signed_resp)['data']['valid']
+        assert verify_resp
 
     def test_missing_token(self):
         client = create_client()
@@ -543,3 +826,145 @@ class IntegrationTest(TestCase):
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
             lookup = self.client.lookup_token(result['auth']['client_token'])
+
+    def test_create_token_explicit_max_ttl(self):
+
+        token = self.client.create_token(ttl='30m', explicit_max_ttl='5m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 300
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_max_ttl(self):
+
+        token = self.client.create_token(ttl='5m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 300
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+
+    def test_create_token_periodic(self):
+
+        token = self.client.create_token(period='30m')
+
+        assert token['auth']['client_token']
+
+        assert token['auth']['lease_duration'] == 1800
+
+        # Validate token
+        lookup = self.client.lookup_token(token['auth']['client_token'])
+        assert token['auth']['client_token'] == lookup['data']['id']
+        assert lookup['data']['period'] == 1800
+
+    def test_token_roles(self):
+        # No roles, list_token_roles == None
+        before = self.client.list_token_roles()
+        assert not before
+
+        # Create token role
+        assert self.client.create_token_role('testrole').status_code == 204
+
+        # List token roles
+        during = self.client.list_token_roles()['data']['keys']
+        assert len(during) == 1
+        assert during[0] == 'testrole'
+
+        # Delete token role
+        self.client.delete_token_role('testrole')
+
+        # No roles, list_token_roles == None
+        after = self.client.list_token_roles()
+        assert not after
+
+    def test_create_token_w_role(self):
+        # Create policy
+        self.prep_policy('testpolicy')
+
+        # Create token role w/ policy
+        assert self.client.create_token_role('testrole',
+                                             allowed_policies='testpolicy').status_code == 204
+
+        # Create token against role
+        token = self.client.create_token(lease='1h', role='testrole')
+        assert token['auth']['client_token']
+        assert token['auth']['policies'] == ['default', 'testpolicy']
+
+        # Cleanup
+        self.client.delete_token_role('testrole')
+        self.client.delete_policy('testpolicy')
+
+    def test_ec2_role_crud(self):
+        if 'aws-ec2/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('aws-ec2')
+        self.client.enable_auth_backend('aws-ec2')
+
+        # create a policy to associate with the role
+        self.prep_policy('ec2rolepolicy')
+
+        # attempt to get a list of roles before any exist
+        no_roles = self.client.list_ec2_roles()
+        # doing so should succeed and return None
+        assert (no_roles is None)
+
+        # test binding by AMI ID (the old way, to ensure backward compatibility)
+        self.client.create_ec2_role('foo',
+                                    'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        # test binding by Account ID
+        self.client.create_ec2_role('bar',
+                                    bound_account_id='123456789012',
+                                    policies='ec2rolepolicy')
+
+        # test binding by IAM Role ARN
+        self.client.create_ec2_role('baz',
+                                    bound_iam_role_arn='arn:aws:iam::123456789012:role/mockec2role',
+                                    policies='ec2rolepolicy')
+
+        # test binding by instance profile ARN
+        self.client.create_ec2_role('qux',
+                                    bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
+                                    policies='ec2rolepolicy')
+
+        roles = self.client.list_ec2_roles()
+
+        assert ('foo' in roles['data']['keys'])
+        assert ('bar' in roles['data']['keys'])
+        assert ('baz' in roles['data']['keys'])
+        assert ('qux' in roles['data']['keys'])
+
+        foo_role = self.client.get_ec2_role('foo')
+        assert (foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert ('ec2rolepolicy' in foo_role['data']['policies'])
+
+        bar_role = self.client.get_ec2_role('bar')
+        assert (bar_role['data']['bound_account_id'] == '123456789012')
+        assert ('ec2rolepolicy' in bar_role['data']['policies'])
+
+        baz_role = self.client.get_ec2_role('baz')
+        assert (baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert ('ec2rolepolicy' in baz_role['data']['policies'])
+
+        qux_role = self.client.get_ec2_role('qux')
+
+        assert (
+        qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert ('ec2rolepolicy' in qux_role['data']['policies'])
+
+        # teardown
+        self.client.delete_ec2_role('foo')
+        self.client.delete_ec2_role('bar')
+        self.client.delete_ec2_role('baz')
+        self.client.delete_ec2_role('qux')
+
+        self.client.delete_policy('ec2rolepolicy')
+
+        self.client.disable_auth_backend('aws-ec2')

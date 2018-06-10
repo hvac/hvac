@@ -3,8 +3,6 @@ sudo: false
 language: python
 matrix:
   include:
-  - python: '2.6'
-    env: TOXENV=py26 VAULT_BRANCH=release
   - python: '2.7'
     env: TOXENV=py27 VAULT_BRANCH=release
   - python: '3.6'
@@ -12,8 +10,6 @@ matrix:
   - python: '3.6'
     env: TOXENV=py36 VAULT_BRANCH=head
   allow_failures:
-  - python: '2.6'
-    env: TOXENV=py26 VAULT_BRANCH=release
   - python: '3.6'
     env: TOXENV=py36 VAULT_BRANCH=head
 install:

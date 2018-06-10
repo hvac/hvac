@@ -15,7 +15,7 @@ pip install hvac
 ```
 or
 ```bash
-pip install hvac[parser]
+pip install "hvac[parser]"
 ```
 if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
@@ -60,7 +60,7 @@ assert client.is_authenticated() # => True
 client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
 # App Role
-client.auth_approle('MY_ROLE_ID', 'MY_ROLE_ID')
+client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
 
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
@@ -142,6 +142,9 @@ backends = client.list_secret_backends()
 
 client.enable_secret_backend('aws', mount_point='aws-us-east-1')
 client.disable_secret_backend('mysql')
+
+client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
+client.get_secret_backend_tuning('generic', mount_point='test')
 
 client.remount_secret_backend('aws-us-east-1', 'aws-east')
 ```
@@ -226,8 +229,9 @@ print(client.is_sealed()) # => True
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
-1. [Install Vault](https://vaultproject.io/docs/install/index.html)
+1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `VAULT_BRANCH=release scripts/install-vault-release.sh`
 2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
+3. Run tests: `make test`
 
 ## Contributing
 
