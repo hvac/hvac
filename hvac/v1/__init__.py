@@ -218,7 +218,7 @@ class Client(object):
 
         for key in keys:
             result = self.rekey(key, nonce=nonce)
-            if 'complete' in result and result['complete']:
+            if result.get('complete'):
                 break
 
         return result
@@ -450,30 +450,41 @@ class Client(object):
         GET /auth/token/lookup-accessor/<token-accessor>
         GET /auth/token/lookup-self
         """
+        token_param = {
+            'token': token,
+        }
+        accessor_param = {
+            'accessor': token,
+        }
         if token:
             if accessor:
-                path = '/v1/auth/token/lookup-accessor/{0}'.format(token)
-                return self._post(path, wrap_ttl=wrap_ttl).json()
+                path = '/v1/auth/token/lookup-accessor'
+                return self._post(path, json=accessor_param, wrap_ttl=wrap_ttl).json()
             else:
-                return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
+                path = '/v1/auth/token/lookup'
+                return self._post(path, json=token_param).json()
         else:
-            return self._get('/v1/auth/token/lookup-self', wrap_ttl=wrap_ttl).json()
+            path = '/v1/auth/token/lookup-self'
+            return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
-        """
-        POST /auth/token/revoke/<token>
-        POST /auth/token/revoke-orphan/<token>
-        POST /auth/token/revoke-accessor/<token-accessor>
-        """
-        if accessor and orphan:
-            msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
-            raise exceptions.InvalidRequest(msg)
-        elif accessor:
-            self._post('/v1/auth/token/revoke-accessor/{0}'.format(token))
-        elif orphan:
-            self._post('/v1/auth/token/revoke-orphan/{0}'.format(token))
-        else:
-            self._post('/v1/auth/token/revoke/{0}'.format(token))
+         """
+         POST /auth/token/revoke
+         POST /auth/token/revoke-orphan
+         POST /auth/token/revoke-accessor
+         """
+         if accessor and orphan:
+             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
+             raise exceptions.InvalidRequest(msg)
+         elif accessor:
+             params = { 'accessor': token }
+             self._post('/v1/auth/token/revoke-accessor', json=params)
+         elif orphan:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke-orphan', json=params)
+         else:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
         """
@@ -626,6 +637,45 @@ class Client(object):
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
+    def list_userpass(self, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users?list=true
+        """
+        try:
+            return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
+
+    def read_userpass(self, username, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users/<username>
+        """
+        return self._get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
+
+    def update_userpass_policies(self, username, policies, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/policies
+        """
+        # userpass can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(policies, (list, set, tuple)):
+            policies = ','.join(policies)
+
+        params = {
+            'policies': policies
+        }
+
+        return self._post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
+
+    def update_userpass_password(self, username, password, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/password
+        """
+        params = {
+            'password': password
+        }
+        return self._post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
+
     def delete_userpass(self, username, mount_point='userpass'):
         """
         DELETE /auth/<mount point>/users/<username>
@@ -753,8 +803,9 @@ class Client(object):
         return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
-                        bound_iam_instance_profile_arn=None, role_tag=None, max_ttl=None, policies=None,
-                        allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+                        bound_iam_instance_profile_arn=None, bound_region=None, bound_vpc_id=None, bound_subnet_id=None,
+                        role_tag=None, max_ttl=None, policies=None, allow_instance_migration=False,
+                        disallow_reauthentication=False, **kwargs):
         """
         POST /auth/aws-ec2/role/<role>
         """
@@ -763,6 +814,7 @@ class Client(object):
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+
         if bound_ami_id is not None:
             params['bound_ami_id'] = bound_ami_id
         if bound_account_id is not None:
@@ -771,12 +823,19 @@ class Client(object):
             params['bound_iam_role_arn'] = bound_iam_role_arn
         if bound_iam_instance_profile_arn is not None:
             params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
+        if bound_region is not None:
+            params['bound_region'] = bound_region
+        if bound_vpc_id is not None:
+            params['bound_vpc_id'] = bound_vpc_id
+        if bound_subnet_id is not None:
+            params['bound_subnet_id'] = bound_subnet_id
         if role_tag is not None:
             params['role_tag'] = role_tag
         if max_ttl is not None:
             params['max_ttl'] = max_ttl
         if policies is not None:
             params['policies'] = policies
+
         params.update(**kwargs)
         return self._post('/v1/auth/aws-ec2/role/{0}'.format(role), json=params)
 
@@ -811,13 +870,14 @@ class Client(object):
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
+
         if max_ttl is not None:
             params['max_ttl'] = max_ttl
         if policies is not None:
             params['policies'] = policies
         if instance_id is not None:
             params['instance_id'] = instance_id
-        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params).json()
+        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params)
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
@@ -840,6 +900,13 @@ class Client(object):
         }
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+
+    def auth_cubbyhole(self, token):
+        """
+        POST /v1/sys/wrapping/unwrap
+        """
+        self.token = token
+        return self.auth('/v1/sys/wrapping/unwrap')
 
     def auth(self, url, use_token=True, **kwargs):
         response = self._post(url, **kwargs).json()
@@ -915,7 +982,7 @@ class Client(object):
         """
         return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
 
-    def create_role_secret_id(self, role_name, meta=None, cidr_list=None):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None):
         """
         POST /auth/approle/role/<role name>/secret-id
         """
@@ -926,7 +993,7 @@ class Client(object):
             params['metadata'] = json.dumps(meta)
         if cidr_list is not None:
             params['cidr_list'] = cidr_list
-        return self._post(url, json=params).json()
+        return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id):
         """
@@ -947,10 +1014,11 @@ class Client(object):
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
-        GET /auth/approle/role/<role name>/secret-id-accessor/<secret_id_accessor>
+        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        params = {'secret_id_accessor': secret_id_accessor}
+        return self._post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id):
         """

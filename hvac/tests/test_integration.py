@@ -134,9 +134,17 @@ class IntegrationTest(TestCase):
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
 
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+        assert_equal(secret_backend_tuning['max_lease_ttl'], 2764800)
+        assert_equal(secret_backend_tuning['default_lease_ttl'], 2764800)
+
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
-        assert 'max_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
-        assert 'default_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+
+        assert 'max_lease_ttl' in secret_backend_tuning
+        assert_equal(secret_backend_tuning['max_lease_ttl'], 8600)
+        assert 'default_lease_ttl' in secret_backend_tuning
+        assert_equal(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -272,6 +280,71 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('userpass')
 
+    def test_list_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # add some users and confirm that they show up in the list
+        self.client.create_userpass('testuserone', 'testuseronepass', policies='not_root')
+        self.client.create_userpass('testusertwo', 'testusertwopass', policies='not_root')
+
+        user_list = self.client.list_userpass()
+        assert 'testuserone' in user_list['data']['keys']
+        assert 'testusertwo' in user_list['data']['keys']
+
+        # delete all the users and confirm that list_userpass() doesn't fail
+        for user in user_list['data']['keys']:
+            self.client.delete_userpass(user)
+
+        no_users_list = self.client.list_userpass()
+        assert no_users_list is None
+
+    def test_read_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user to read
+        self.client.create_userpass('readme', 'mypassword', policies='not_root')
+
+        # test that user can be read
+        read_user = self.client.read_userpass('readme')
+        assert 'not_root' in read_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_policies(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then update its policies
+        self.client.create_userpass('updatemypolicies', 'mypassword', policies='not_root')
+        self.client.update_userpass_policies('updatemypolicies', policies='somethingelse')
+
+        # test that policies have changed
+        updated_user = self.client.read_userpass('updatemypolicies')
+        assert 'somethingelse' in updated_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_password(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then change its password
+        self.client.create_userpass('changeme', 'mypassword', policies='not_root')
+        self.client.update_userpass_password('changeme', 'mynewpassword')
+
+        # test that new password authenticates user
+        result = self.client.auth_userpass('changeme', 'mynewpassword')
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        # teardown
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('userpass')
+
     def test_delete_userpass(self):
         if 'userpass/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('userpass')
@@ -324,6 +397,21 @@ class IntegrationTest(TestCase):
 
         self.client.token = self.root_token()
         self.client.disable_auth_backend('app-id')
+
+    def test_cubbyhole_auth(self):
+        orig_token = self.client.token
+
+        resp = self.client.create_token(lease='6h', wrap_ttl='1h')
+        assert resp['wrap_info']['ttl'] == 3600
+
+        wrapped_token = resp['wrap_info']['token']
+        self.client.auth_cubbyhole(wrapped_token)
+        assert self.client.token != orig_token
+        assert self.client.token != wrapped_token
+        assert self.client.is_authenticated()
+
+        self.client.token = orig_token
+        assert self.client.is_authenticated()
 
     def test_create_user_id(self):
         if 'app-id/' not in self.client.list_auth_backends():
@@ -846,12 +934,30 @@ class IntegrationTest(TestCase):
                                     bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
                                     policies='ec2rolepolicy')
 
+        # test binding by bound region
+        self.client.create_ec2_role('quux',
+                                    bound_region='ap-northeast-2',
+                                    policies='ec2rolepolicy')
+
+        # test binding by bound vpc id
+        self.client.create_ec2_role('corge',
+                                    bound_vpc_id='vpc-1a123456',
+                                    policies='ec2rolepolicy')
+
+        # test binding by bound subnet id
+        self.client.create_ec2_role('grault',
+                                    bound_subnet_id='subnet-123a456',
+                                    policies='ec2rolepolicy')
+
         roles = self.client.list_ec2_roles()
 
-        assert ('foo' in roles['data']['keys'])
-        assert ('bar' in roles['data']['keys'])
-        assert ('baz' in roles['data']['keys'])
-        assert ('qux' in roles['data']['keys'])
+        assert('foo' in roles['data']['keys'])
+        assert('bar' in roles['data']['keys'])
+        assert('baz' in roles['data']['keys'])
+        assert('qux' in roles['data']['keys'])
+        assert('quux' in roles['data']['keys'])
+        assert('corge' in roles['data']['keys'])
+        assert('grault' in roles['data']['keys'])
 
         foo_role = self.client.get_ec2_role('foo')
         assert (foo_role['data']['bound_ami_id'] == ['ami-notarealami'])
@@ -866,16 +972,29 @@ class IntegrationTest(TestCase):
         assert ('ec2rolepolicy' in baz_role['data']['policies'])
 
         qux_role = self.client.get_ec2_role('qux')
+        assert(qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert('ec2rolepolicy' in qux_role['data']['policies'])
 
-        assert (
-        qux_role['data']['bound_iam_instance_profile_arn'] == ['arn:aws:iam::123456789012:instance-profile/mockprofile'])
-        assert ('ec2rolepolicy' in qux_role['data']['policies'])
+        quux_role = self.client.get_ec2_role('quux')
+        assert(quux_role['data']['bound_region'] == 'ap-northeast-2')
+        assert('ec2rolepolicy' in quux_role['data']['policies'])
+
+        corge_role = self.client.get_ec2_role('corge')
+        assert(corge_role['data']['bound_vpc_id'] == 'vpc-1a123456')
+        assert('ec2rolepolicy' in corge_role['data']['policies'])
+
+        grault_role = self.client.get_ec2_role('grault')
+        assert(grault_role['data']['bound_subnet_id'] == 'subnet-123a456')
+        assert('ec2rolepolicy' in grault_role['data']['policies'])
 
         # teardown
         self.client.delete_ec2_role('foo')
         self.client.delete_ec2_role('bar')
         self.client.delete_ec2_role('baz')
         self.client.delete_ec2_role('qux')
+        self.client.delete_ec2_role('quux')
+        self.client.delete_ec2_role('corge')
+        self.client.delete_ec2_role('grault')
 
         self.client.delete_policy('ec2rolepolicy')
 
