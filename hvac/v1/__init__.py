@@ -165,9 +165,9 @@ class Client(object):
         PUT /sys/generate-root/attempt
         """
         params = {}
-        if otp == True: 
+        if otp:
           params['otp'] = key
-        else: 
+        else:
           params['pgp_key'] = key
 
         return self._put('/v1/sys/generate-root/attempt', json=params).json()
