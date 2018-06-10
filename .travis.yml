@@ -1,18 +1,31 @@
 dist: trusty
-sudo: required
+sudo: false
 language: python
-install:
-  - scripts/install-vault-${VAULT_BRANCH}.sh
-  - pip install tox
-script:
-  - export PATH=$HOME/bin:$PATH
-  - tox
-env:
-  - TOXENV=py26 VAULT_BRANCH=release
-  - TOXENV=py27 VAULT_BRANCH=release
-  - TOXENV=py35 VAULT_BRANCH=release
-  - TOXENV=py35 VAULT_BRANCH=head
 matrix:
+  include:
+  - python: '2.7'
+    env: TOXENV=py27 VAULT_BRANCH=release
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=release RELEASE=yes
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=head
   allow_failures:
-    - env: TOXENV=py26 VAULT_BRANCH=release
-    - env: TOXENV=py35 VAULT_BRANCH=head
+  - python: '3.6'
+    env: TOXENV=py36 VAULT_BRANCH=head
+install:
+- scripts/install-vault-${VAULT_BRANCH}.sh
+- pip install tox
+script:
+- export PATH=$HOME/bin:$PATH
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then make package ; else make test ; fi
+deploy:
+  skip_cleanup: true
+  provider: pypi
+  user: otakup0pe
+  on:
+    tags: true
+    all_branches: true
+    repo: ianunruh/hvac
+    condition: $RELEASE == "yes"
+  password:
+    secure: MDKviWOPUrxuBAClPjh1WH/FtBj9PIDBZ1LLQFWgBsvQaauCpqN6p9M6ysWT/20Ou3AePjFJJ2KA0oYU7UW+qmXqCGyvYBiIzMXvDcjhBK60UOhFtzMDq3rEwVDCIWRfk1zCxpQYiw2Eq2T/E/wdtfUqwVVWRCL4tdCTXv48EuA=
