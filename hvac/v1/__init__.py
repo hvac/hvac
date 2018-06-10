@@ -460,20 +460,23 @@ class Client(object):
             return self._get('/v1/auth/token/lookup-self', wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
-        """
-        POST /auth/token/revoke/<token>
-        POST /auth/token/revoke-orphan/<token>
-        POST /auth/token/revoke-accessor/<token-accessor>
-        """
-        if accessor and orphan:
-            msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
-            raise exceptions.InvalidRequest(msg)
-        elif accessor:
-            self._post('/v1/auth/token/revoke-accessor/{0}'.format(token))
-        elif orphan:
-            self._post('/v1/auth/token/revoke-orphan/{0}'.format(token))
-        else:
-            self._post('/v1/auth/token/revoke/{0}'.format(token))
+         """
+         POST /auth/token/revoke
+         POST /auth/token/revoke-orphan
+         POST /auth/token/revoke-accessor
+         """
+         if accessor and orphan:
+             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
+             raise exceptions.InvalidRequest(msg)
+         elif accessor:
+             params = { 'accessor': token }
+             self._post('/v1/auth/token/revoke-accessor', json=params)
+         elif orphan:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke-orphan', json=params)
+         else:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
         """
