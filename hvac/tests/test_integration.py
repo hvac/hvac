@@ -1,4 +1,8 @@
+import sys
+import binascii
+from base64 import b64decode
 from unittest import TestCase
+from uuid import UUID
 
 from nose.tools import *
 
@@ -877,3 +881,59 @@ class IntegrationTest(TestCase):
         self.client.delete_policy('ec2rolepolicy')
 
         self.client.disable_auth_backend('aws-ec2')
+
+    def test_start_generate_root_with_completion(self):
+        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+
+        self.assertFalse(self.client.generate_root_status['started'])
+        response = self.client.start_generate_root(
+            key=test_otp,
+            otp=True,
+        )
+        self.assertTrue(self.client.generate_root_status['started'])
+
+        nonce = response['nonce']
+        for key in self.manager.keys[0:3]:
+            response = self.client.generate_root(
+                key=key,
+                nonce=nonce,
+            )
+        self.assertFalse(self.client.generate_root_status['started'])
+
+        # Decode the token provided in the last response
+        b64decoded_root_token = b64decode(response['encoded_root_token'])
+        if sys.version_info > (3, 0):
+            # b64decoding + bytes XOR'ing to decode the new root token in python 3.x
+            int_encoded_token = int.from_bytes(b64decoded_root_token, sys.byteorder)
+            int_otp = int.from_bytes(b64decode(test_otp), sys.byteorder)
+            xord_otp_and_token = int_otp ^ int_encoded_token
+            token_hex_string = xord_otp_and_token.to_bytes(len(b64decoded_root_token), sys.byteorder).hex()
+        else:
+            # b64decoding + bytes XOR'ing to decode the new root token in python 2.7
+            otp_and_token = zip(b64decode(test_otp), b64decoded_root_token)
+            xord_otp_and_token = ''.join(chr(ord(y) ^ ord(x)) for (x, y) in otp_and_token)
+            token_hex_string = binascii.hexlify(xord_otp_and_token)
+
+        new_root_token = str(UUID(token_hex_string))
+
+        # Assert our new root token is properly formed and authenticated
+        self.client.token = new_root_token
+        if self.client.is_authenticated():
+            self.root_token = new_root_token
+        else:
+            # If our new token was unable to authenticate, set the test client's token back to the original value
+            self.client.token = self.root_token
+            self.fail('Unable to authenticate with the newly generated root token.')
+
+    def test_start_generate_root_then_cancel(self):
+        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+
+        self.assertFalse(self.client.generate_root_status['started'])
+        self.client.start_generate_root(
+            key=test_otp,
+            otp=True,
+        )
+        self.assertTrue(self.client.generate_root_status['started'])
+
+        self.client.cancel_generate_root()
+        self.assertFalse(self.client.generate_root_status['started'])
