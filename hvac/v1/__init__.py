@@ -945,7 +945,7 @@ class Client(object):
         """
         return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
 
-    def create_role_secret_id(self, role_name, meta=None, cidr_list=None):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None):
         """
         POST /auth/approle/role/<role name>/secret-id
         """
@@ -956,7 +956,7 @@ class Client(object):
             params['metadata'] = json.dumps(meta)
         if cidr_list is not None:
             params['cidr_list'] = cidr_list
-        return self._post(url, json=params).json()
+        return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id):
         """
@@ -977,10 +977,11 @@ class Client(object):
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
-        GET /auth/approle/role/<role name>/secret-id-accessor/<secret_id_accessor>
+        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        params = {'secret_id_accessor': secret_id_accessor}
+        return self._post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id):
         """
