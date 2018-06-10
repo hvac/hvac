@@ -16,6 +16,7 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
+
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
@@ -23,7 +24,6 @@ class Client(object):
 
         if not session:
             session = requests.Session()
-
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
@@ -218,7 +218,7 @@ class Client(object):
 
         for key in keys:
             result = self.rekey(key, nonce=nonce)
-            if 'complete' in result and result['complete']:
+            if result.get('complete'):
                 break
 
         return result
@@ -408,7 +408,7 @@ class Client(object):
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False, wrap_ttl=None, renewable=None,
-                     explicit_max_ttl=None):
+                     explicit_max_ttl=None, period=None):
         """
         POST /auth/token/create
         POST /auth/token/create/<role>
@@ -434,6 +434,9 @@ class Client(object):
         if explicit_max_ttl:
             params['explicit_max_ttl'] = explicit_max_ttl
 
+        if period:
+            params['period'] = period
+
         if orphan:
             return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
         elif role:
@@ -457,20 +460,23 @@ class Client(object):
             return self._get('/v1/auth/token/lookup-self', wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
-        """
-        POST /auth/token/revoke/<token>
-        POST /auth/token/revoke-orphan/<token>
-        POST /auth/token/revoke-accessor/<token-accessor>
-        """
-        if accessor and orphan:
-            msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
-            raise exceptions.InvalidRequest(msg)
-        elif accessor:
-            self._post('/v1/auth/token/revoke-accessor/{0}'.format(token))
-        elif orphan:
-            self._post('/v1/auth/token/revoke-orphan/{0}'.format(token))
-        else:
-            self._post('/v1/auth/token/revoke/{0}'.format(token))
+         """
+         POST /auth/token/revoke
+         POST /auth/token/revoke-orphan
+         POST /auth/token/revoke-accessor
+         """
+         if accessor and orphan:
+             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
+             raise exceptions.InvalidRequest(msg)
+         elif accessor:
+             params = { 'accessor': token }
+             self._post('/v1/auth/token/revoke-accessor', json=params)
+         elif orphan:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke-orphan', json=params)
+         else:
+             params = { 'token': token }
+             self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
         """
@@ -494,13 +500,15 @@ class Client(object):
             return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
 
     def create_token_role(self, role,
-                          allowed_policies=None, orphan=None, period=None,
-                          renewable=None, path_suffix=None, explicit_max_ttl=None):
+                          allowed_policies=None, disallowed_policies=None,
+                          orphan=None, period=None, renewable=None,
+                          path_suffix=None, explicit_max_ttl=None):
         """
         POST /auth/token/roles/<role>
         """
         params = {
             'allowed_policies': allowed_policies,
+            'disallowed_policies': disallowed_policies,
             'orphan': orphan,
             'period': period,
             'renewable': renewable,
@@ -611,6 +619,45 @@ class Client(object):
         params.update(kwargs)
 
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
+
+    def list_userpass(self, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users?list=true
+        """
+        try:
+            return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+        except exceptions.InvalidPath:
+            return None
+
+    def read_userpass(self, username, mount_point='userpass'):
+        """
+        GET /auth/<mount point>/users/<username>
+        """
+        return self._get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
+
+    def update_userpass_policies(self, username, policies, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/policies
+        """
+        # userpass can have more than 1 policy. It is easier for the user to pass in the
+        # policies as a list so if they do, we need to convert to a , delimited string.
+        if isinstance(policies, (list, set, tuple)):
+            policies = ','.join(policies)
+
+        params = {
+            'policies': policies
+        }
+
+        return self._post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
+
+    def update_userpass_password(self, username, password, mount_point='userpass'):
+        """
+        POST /auth/<mount point>/users/<username>/password
+        """
+        params = {
+            'password': password
+        }
+        return self._post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
 
     def delete_userpass(self, username, mount_point='userpass'):
         """
@@ -837,6 +884,13 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    def auth_cubbyhole(self, token):
+        """
+        POST /v1/sys/wrapping/unwrap
+        """
+        self.token = token
+        return self.auth('/v1/sys/wrapping/unwrap')
+
     def auth(self, url, use_token=True, **kwargs):
         response = self._post(url, **kwargs).json()
 
@@ -911,7 +965,7 @@ class Client(object):
         """
         return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
 
-    def create_role_secret_id(self, role_name, meta=None):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None):
         """
         POST /auth/approle/role/<role name>/secret-id
         """
@@ -920,8 +974,9 @@ class Client(object):
         params = {}
         if meta is not None:
             params['metadata'] = json.dumps(meta)
-
-        return self._post(url, json=params).json()
+        if cidr_list is not None:
+            params['cidr_list'] = cidr_list
+        return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id):
         """
@@ -942,10 +997,11 @@ class Client(object):
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
         """
-        GET /auth/approle/role/<role name>/secret-id-accessor/<secret_id_accessor>
+        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
-        return self._get(url).json()
+        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        params = {'secret_id_accessor': secret_id_accessor}
+        return self._post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id):
         """
@@ -987,6 +1043,248 @@ class Client(object):
             params['secret_id'] = secret_id
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+
+    def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
+                           key_type=None, mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        params = {}
+        if convergent_encryption is not None:
+            params['convergent_encryption'] = convergent_encryption
+        if derived is not None:
+            params['derived'] = derived
+        if exportable is not None:
+            params['exportable'] = exportable
+        if key_type is not None:
+            params['type'] = key_type
+
+        return self._post(url, json=params)
+
+    def transit_read_key(self, name, mount_point='transit'):
+        """
+        GET /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        return self._get(url).json()
+
+    def transit_list_keys(self, mount_point='transit'):
+        """
+        GET /<mount_point>/keys?list=true
+        """
+        url = '/v1/{0}/keys?list=true'.format(mount_point)
+        return self._get(url).json()
+
+    def transit_delete_key(self, name, mount_point='transit'):
+        """
+        DELETE /<mount_point>/keys/<name>
+        """
+        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
+        return self._delete(url)
+
+    def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
+                           mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>/config
+        """
+        url = '/v1/{0}/keys/{1}/config'.format(mount_point, name)
+        params = {}
+        if min_decryption_version is not None:
+            params['min_decryption_version'] = min_decryption_version
+        if min_encryption_version is not None:
+            params['min_encryption_version'] = min_encryption_version
+        if deletion_allowed is not None:
+            params['deletion_allowed'] = deletion_allowed
+
+        return self._post(url, json=params)
+
+    def transit_rotate_key(self, name, mount_point='transit'):
+        """
+        POST /<mount_point>/keys/<name>/rotate
+        """
+        url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
+        return self._post(url)
+
+    def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
+        """
+        GET /<mount_point>/export/<key_type>/<name>(/<version>)
+        """
+        if version is not None:
+            url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
+        else:
+            url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
+        return self._get(url).json()
+
+    def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
+                             key_type=None, convergent_encryption=None, mount_point='transit'):
+        """
+        POST /<mount_point>/encrypt/<name>
+        """
+        url = '/v1/{0}/encrypt/{1}'.format(mount_point, name)
+        params = {
+            'plaintext': plaintext
+        }
+        if context is not None:
+            params['context'] = context
+        if key_version is not None:
+            params['key_version'] = key_version
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+        if key_type is not None:
+            params['type'] = key_type
+        if convergent_encryption is not None:
+            params['convergent_encryption'] = convergent_encryption
+
+        return self._post(url, json=params).json()
+
+    def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
+        """
+        POST /<mount_point>/decrypt/<name>
+        """
+        url = '/v1/{0}/decrypt/{1}'.format(mount_point, name)
+        params = {
+            'ciphertext': ciphertext
+        }
+        if context is not None:
+            params['context'] = context
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+
+        return self._post(url, json=params).json()
+
+    def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
+                            mount_point='transit'):
+        """
+        POST /<mount_point>/rewrap/<name>
+        """
+        url = '/v1/{0}/rewrap/{1}'.format(mount_point, name)
+        params = {
+            'ciphertext': ciphertext
+        }
+        if context is not None:
+            params['context'] = context
+        if key_version is not None:
+            params['key_version'] = key_version
+        if nonce is not None:
+            params['nonce'] = nonce
+        if batch_input is not None:
+            params['batch_input'] = batch_input
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
+        """
+        POST /<mount_point>/datakey/<type>/<name>
+        """
+        url = '/v1/{0}/datakey/{1}/{2}'.format(mount_point, key_type, name)
+        params = {}
+        if context is not None:
+            params['context'] = context
+        if nonce is not None:
+            params['nonce'] = nonce
+        if bits is not None:
+            params['bits'] = bits
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
+        """
+        POST /<mount_point>/random(/<data_bytes>)
+        """
+        if data_bytes is not None:
+            url = '/v1/{0}/random/{1}'.format(mount_point, data_bytes)
+        else:
+            url = '/v1/{0}/random'.format(mount_point)
+
+        params = {}
+        if output_format is not None:
+            params["format"] = output_format
+
+        return self._post(url, json=params).json()
+
+    def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
+        """
+        POST /<mount_point>/hash(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/hash/{1}'.format(mount_point, algorithm)
+        else:
+            url = '/v1/{0}/hash'.format(mount_point)
+
+        params = {
+            'input': hash_input
+        }
+        if output_format is not None:
+            params['format'] = output_format
+
+        return self._post(url, json=params).json()
+
+    def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
+        """
+        POST /<mount_point>/hmac/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/hmac/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/hmac/{1}'.format(mount_point, name)
+        params = {
+            'input': hmac_input
+        }
+        if key_version is not None:
+            params['key_version'] = key_version
+
+        return self._post(url, json=params).json()
+
+    def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
+                          mount_point='transit'):
+        """
+        POST /<mount_point>/sign/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/sign/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/sign/{1}'.format(mount_point, name)
+
+        params = {
+            'input': input_data
+        }
+        if key_version is not None:
+            params['key_version'] = key_version
+        if context is not None:
+            params['context'] = context
+        if prehashed is not None:
+            params['prehashed'] = prehashed
+
+        return self._post(url, json=params).json()
+
+    def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
+                                   prehashed=None, mount_point='transit'):
+        """
+        POST /<mount_point>/verify/<name>(/<algorithm>)
+        """
+        if algorithm is not None:
+            url = '/v1/{0}/verify/{1}/{2}'.format(mount_point, name, algorithm)
+        else:
+            url = '/v1/{0}/verify/{1}'.format(mount_point, name)
+
+        params = {
+            'input': input_data
+        }
+        if signature is not None:
+            params['signature'] = signature
+        if hmac is not None:
+            params['hmac'] = hmac
+        if context is not None:
+            params['context'] = context
+        if prehashed is not None:
+            params['prehashed'] = prehashed
+
+        return self._post(url, json=params).json()
 
     def close(self):
         """
