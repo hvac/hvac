@@ -917,7 +917,7 @@ class Client(object):
         DELETE /auth/approle/role/<role name>
         """
 
-        self._delete('/v1/auth/approle/role/{0}'.format(role_name))
+        return self._delete('/v1/auth/approle/role/{0}'.format(role_name))
 
     def list_roles(self):
         """
