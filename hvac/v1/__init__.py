@@ -450,14 +450,22 @@ class Client(object):
         GET /auth/token/lookup-accessor/<token-accessor>
         GET /auth/token/lookup-self
         """
+        token_param = {
+            'token': token,
+        }
+        accessor_param = {
+            'accessor': token,
+        }
         if token:
             if accessor:
-                path = '/v1/auth/token/lookup-accessor/{0}'.format(token)
-                return self._post(path, wrap_ttl=wrap_ttl).json()
+                path = '/v1/auth/token/lookup-accessor'
+                return self._post(path, json=accessor_param, wrap_ttl=wrap_ttl).json()
             else:
-                return self._get('/v1/auth/token/lookup/{0}'.format(token)).json()
+                path = '/v1/auth/token/lookup'
+                return self._post(path, json=token_param).json()
         else:
-            return self._get('/v1/auth/token/lookup-self', wrap_ttl=wrap_ttl).json()
+            path = '/v1/auth/token/lookup-self'
+            return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
          """
