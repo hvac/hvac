@@ -1,5 +1,6 @@
-tox
+avakas
 coverage
 nose
+requests_mock
 semantic_version
-avakas
+tox

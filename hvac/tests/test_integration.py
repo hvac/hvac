@@ -137,10 +137,10 @@ class IntegrationTest(TestCase):
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
         assert_equal(secret_backend_tuning['max_lease_ttl'], 2764800)
         assert_equal(secret_backend_tuning['default_lease_ttl'], 2764800)
-                    
+
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
-        
+
         assert 'max_lease_ttl' in secret_backend_tuning
         assert_equal(secret_backend_tuning['max_lease_ttl'], 8600)
         assert 'default_lease_ttl' in secret_backend_tuning
@@ -451,7 +451,7 @@ class IntegrationTest(TestCase):
         lib_result = self.client.get_role('testrole')
         del result['request_id']
         del lib_result['request_id']
-        
+
         assert result == lib_result
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
@@ -473,7 +473,7 @@ class IntegrationTest(TestCase):
         except (exceptions.InvalidPath, ValueError):
             assert True
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_auth_approle(self):
         if 'approle/' in self.client.list_auth_backends():
@@ -504,7 +504,7 @@ class IntegrationTest(TestCase):
         assert result['auth']['metadata']['foo'] == 'bar'
         assert self.client.token != result['auth']['client_token']
         self.client.token = self.root_token()
-        self.client.disable_auth_backend('approle')        
+        self.client.disable_auth_backend('approle')
 
     def test_transit_read_write(self):
         if 'transit/' in self.client.list_secret_backends():
@@ -960,15 +960,15 @@ class IntegrationTest(TestCase):
         assert('grault' in roles['data']['keys'])
 
         foo_role = self.client.get_ec2_role('foo')
-        assert (foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert ('ami-notarealami' in foo_role['data']['bound_ami_id'])
         assert ('ec2rolepolicy' in foo_role['data']['policies'])
 
         bar_role = self.client.get_ec2_role('bar')
-        assert (bar_role['data']['bound_account_id'] == '123456789012')
+        assert ('123456789012' in bar_role['data']['bound_account_id'])
         assert ('ec2rolepolicy' in bar_role['data']['policies'])
 
         baz_role = self.client.get_ec2_role('baz')
-        assert (baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert ('arn:aws:iam::123456789012:role/mockec2role' in baz_role['data']['bound_iam_role_arn'])
         assert ('ec2rolepolicy' in baz_role['data']['policies'])
 
         qux_role = self.client.get_ec2_role('qux')
@@ -999,3 +999,59 @@ class IntegrationTest(TestCase):
         self.client.delete_policy('ec2rolepolicy')
 
         self.client.disable_auth_backend('aws-ec2')
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token_exception(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
+        # generic 'missing client token' response from Vault.
+        with self.assertRaises(exceptions.InvalidRequest) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7)
+
+        expected_exception_message = 'missing client token'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # If our custom path is respected, we'll still end up with Vault's inability to decrypt our dummy PKCS7 string.
+        # However this exception indicates we're correctly hitting the expected auth endpoint.
+        with self.assertRaises(exceptions.InternalServerError) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7, mount_point=test_mount_point)
+
+        expected_exception_message = 'failed to decode the PEM encoded PKCS#7 signature'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
