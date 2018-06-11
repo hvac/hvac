@@ -936,11 +936,12 @@ class Client(object):
 
         self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
-    def tune_auth_backend(self, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
+    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
                           audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
                           passthrough_request_headers=None):
         """
         POST /sys/auth/<mount point>/tune
+        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
         :param mount_point: str, The path the associated auth backend is mounted under.
         :param description: str, Specifies the description of the mount. This overrides the current stored value, if any.
         :param default_lease_ttl: int,
@@ -955,6 +956,8 @@ class Client(object):
         to the backend.
         :return: dict, The JSON response from Vault
         """
+        if not mount_point:
+            mount_point = backend_type
         # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
         # parameters and add which parameters are set.
         optional_parameters = [
@@ -972,12 +975,15 @@ class Client(object):
                 params[optional_parameter] = locals().get(optional_parameter)
         return self._post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
 
-    def get_auth_backend_tuning(self, mount_point=None):
+    def get_auth_backend_tuning(self, backend_type, mount_point=None):
         """
         GET /sys/auth/<mount point>/tune
+        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
         :param mount_point: str, The path the associated auth backend is mounted under.
         :return: dict, The JSON response from Vault
         """
+        if not mount_point:
+            mount_point = backend_type
 
         return self._get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
 

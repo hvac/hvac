@@ -1057,6 +1057,7 @@ class IntegrationTest(TestCase):
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
     def test_tune_auth_backend(self):
+        test_backend_type = 'approle'
         test_mount_point = 'tune-approle'
         test_description = 'this is a test auth backend'
         test_max_lease_ttl = 12345678
@@ -1069,6 +1070,7 @@ class IntegrationTest(TestCase):
 
         expected_status_code = 204
         response = self.client.tune_auth_backend(
+            backend_type=test_backend_type,
             mount_point=test_mount_point,
             description=test_description,
             max_lease_ttl=test_max_lease_ttl,
@@ -1079,6 +1081,7 @@ class IntegrationTest(TestCase):
         )
 
         response = self.client.get_auth_backend_tuning(
+            backend_type=test_backend_type,
             mount_point=test_mount_point
         )
 
