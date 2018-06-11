@@ -947,14 +947,14 @@ class Client(object):
         POST /auth/<mount_point>/role/<role name>
         """
 
-        self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
+        return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
     def list_roles(self, mount_point='approle'):
         """
         GET /auth/<mount_point>/role
         """
 
-        self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
+        return self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
 
     def get_role_id(self, role_name, mount_point='approle'):
         """
@@ -973,7 +973,7 @@ class Client(object):
         params = {
             'role_id': role_id
         }
-        self._post(url, json=params)
+        return self._post(url, json=params)
 
     def get_role(self, role_name, mount_point='approle'):
         """
@@ -1027,14 +1027,14 @@ class Client(object):
         params = {
             'secret_id': secret_id
         }
-        self._post(url, json=params)
+        return self._post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """
         DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
-        self._delete(url)
+        return self._delete(url)
 
     def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """
