@@ -1181,7 +1181,7 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
-                          mount_point='transit', sign_algorithm = None):
+                          mount_point='transit', sign_algorithm='pss'):
         """
         POST /<mount_point>/sign/<name>(/<algorithm>)
         """
@@ -1201,13 +1201,11 @@ class Client(object):
             params['prehashed'] = prehashed
         if sign_algorithm is not None:
             params['signature_algorithm'] = sign_algorithm
-        else:
-            params['signature_algorithm'] = "pss"
 
         return self._post(url, json=params).json()
 
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
-                                   prehashed=None, mount_point='transit', sign_algorithm = None):
+                                   prehashed=None, mount_point='transit', sign_algorithm='pss'):
         """
         POST /<mount_point>/verify/<name>(/<algorithm>)
         """
@@ -1229,8 +1227,6 @@ class Client(object):
             params['prehashed'] = prehashed
         if sign_algorithm is not None:
             params['signature_algorithm'] = sign_algorithm
-        else:
-            params['signature_algorithm'] = "pss"
 
         return self._post(url, json=params).json()
 
