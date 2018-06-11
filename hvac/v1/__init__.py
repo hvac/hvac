@@ -13,20 +13,23 @@ from hvac import exceptions
 
 try:
     from urlparse import urljoin
+    from urlparse import urlsplit
 except ImportError:
     from urllib.parse import urljoin
+    from urllib.parse import urlsplit
 
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None):
+                 allow_redirects=True, session=None, keep_url_path=False):
 
         if not session:
             session = requests.Session()
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
+        self.keep_url_path = keep_url_path
 
         self._url = url
         self._kwargs = {
@@ -134,14 +137,14 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
-       """
+        """
         PUT /sys/unseal
         """
-       params = {
-           'key': key,
-       }
+        params = {
+            'key': key,
+        }
 
-       return self._put('/v1/sys/unseal', json=params).json()
+        return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -1321,10 +1324,19 @@ class Client(object):
     def _delete(self, url, **kwargs):
         return self.__request('delete', url, **kwargs)
 
-    def __request(self, method, url, headers=None, **kwargs):
+    def __request(self, method, url, **kwargs):
+        # NOTE(rswedenburg): added ability to retain the vault url's path when it's needed (for example when referencing a service path in Mesosphere)
+        if self.keep_url_path:
+            split_url = urlsplit(self._url)
+            url = split_url[2] + url
         url = urljoin(self._url, url)
 
-        if not headers:
+        # NOTE(rswedenburg): assuming that the user wants to retain the headers on the session passed in, this grabs and uses them
+        if self.session:
+            headers = self.session.headers
+            if not headers:
+                headers = {}
+        else:
             headers = {}
 
         if self.token:
