@@ -954,7 +954,7 @@ class Client(object):
         GET /auth/<mount_point>/role
         """
 
-        return self._get('/v1/auth/{0}/role?list=true').format(mount_point).json()
+        self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
 
     def get_role_id(self, role_name, mount_point='approle'):
         """
