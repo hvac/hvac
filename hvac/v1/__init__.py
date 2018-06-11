@@ -936,6 +936,51 @@ class Client(object):
 
         self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
+    def tune_auth_backend(self, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
+                          audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
+                          passthrough_request_headers=None):
+        """
+        POST /sys/auth/<mount point>/tune
+        :param mount_point: str, The path the associated auth backend is mounted under.
+        :param description: str, Specifies the description of the mount. This overrides the current stored value, if any.
+        :param default_lease_ttl: int,
+        :param max_lease_ttl: int,
+        :param audit_non_hmac_request_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd by
+        audit devices in the request data object.
+        :param audit_non_hmac_response_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd
+        by audit devices in the response data object.
+        :param listing_visibility: str, Speficies whether to show this mount in the UI-specific listing endpoint.
+        Valid values are "unauth" or "".
+        :param passthrough_request_headers: list, Comma-separated list of headers to whitelist and pass from the request
+        to the backend.
+        :return: dict, The JSON response from Vault
+        """
+        # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
+        # parameters and add which parameters are set.
+        optional_parameters = [
+            'default_lease_ttl',
+            'max_lease_ttl',
+            'description',
+            'audit_non_hmac_request_keys',
+            'audit_non_hmac_response_keys',
+            'listing_visibility',
+            'passthrough_request_headers',
+        ]
+        params = {}
+        for optional_parameter in optional_parameters:
+            if locals().get(optional_parameter) is not None:
+                params[optional_parameter] = locals().get(optional_parameter)
+        return self._post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
+
+    def get_auth_backend_tuning(self, mount_point=None):
+        """
+        GET /sys/auth/<mount point>/tune
+        :param mount_point: str, The path the associated auth backend is mounted under.
+        :return: dict, The JSON response from Vault
+        """
+
+        return self._get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
+
     def disable_auth_backend(self, mount_point):
         """
         DELETE /sys/auth/<mount point>
