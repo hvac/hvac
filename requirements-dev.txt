@@ -1,6 +1,7 @@
 avakas
 coverage
 nose
+parameterized
 requests_mock
 semantic_version
 tox
