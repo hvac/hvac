@@ -62,7 +62,7 @@ client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 # App Role
 client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
 
-# AWS
+# AWS (IAM)
 client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY')
 client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', 'MY_AWS_SESSION_TOKEN')
 client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', role='MY_ROLE')
