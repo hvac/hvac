@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import json
+from base64 import b64encode
 
 try:
     import hcl
@@ -9,6 +10,7 @@ except ImportError:
     has_hcl_parser = False
 import requests
 
+from hvac import aws_utils
 from hvac import exceptions
 
 try:
@@ -597,6 +599,37 @@ class Client(object):
         params.update(kwargs)
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+        """
+        POST /auth/<mount point>/login
+        """
+        request = requests.Request(
+            method='POST',
+            url='https://sts.amazonaws.com/',
+            headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'Host': 'sts.amazonaws.com'},
+            data='Action=GetCallerIdentity&Version=2011-06-15',
+        )
+
+        if header_value:
+            request.headers['X-Vault-AWS-IAM-Server-ID'] = header_value
+
+        request = request.prepare()
+
+        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
+        auth.add_auth(request)
+
+        # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
+        headers = json.dumps({k: [request.headers[k]] for k in request.headers})
+        params = {
+            'iam_http_request_method': request.method,
+            'iam_request_url': b64encode(request.url.encode('utf-8')).decode('utf-8'),
+            'iam_request_headers': b64encode(headers.encode('utf-8')).decode('utf-8'),
+            'iam_request_body': b64encode(request.body.encode('utf-8')).decode('utf-8'),
+            'role': role,
+        }
+
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """
