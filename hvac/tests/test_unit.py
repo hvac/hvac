@@ -5,7 +5,6 @@ from unittest import TestCase
 
 import mock
 import requests_mock
-from nose.tools import *
 
 from hvac import Client
 
@@ -79,7 +78,7 @@ class UnitTest(TestCase):
         test_mount_point = 'aws-ec2'
         requests_mocker.register_uri('POST', 'http://localhost:8200/v1/auth/{0}/login'.format(test_mount_point), json=mock_response)
         client = Client()
-        actual_response= client.auth_ec2('mock_pcks7')
-        
+        actual_response = client.auth_ec2('mock_pcks7')
+
         # ensure we received our mock response data back successfully
         self.assertEqual(mock_response, actual_response)
