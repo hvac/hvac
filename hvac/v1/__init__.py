@@ -845,6 +845,7 @@ class Client(object):
         """
         params = {
             'role': role,
+            'auth_type': 'ec2',
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
