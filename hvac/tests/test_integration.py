@@ -1051,3 +1051,39 @@ class IntegrationTest(TestCase):
         # Reset test state.
         self.client.token = self.root_token()
         self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_tune_auth_backend(self):
+        test_backend_type = 'approle'
+        test_mount_point = 'tune-approle'
+        test_description = 'this is a test auth backend'
+        test_max_lease_ttl = 12345678
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend(
+            backend_type='approle',
+            mount_point=test_mount_point
+        )
+
+        expected_status_code = 204
+        response = self.client.tune_auth_backend(
+            backend_type=test_backend_type,
+            mount_point=test_mount_point,
+            description=test_description,
+            max_lease_ttl=test_max_lease_ttl,
+        )
+        self.assertEqual(
+            first=expected_status_code,
+            second=response.status_code,
+        )
+
+        response = self.client.get_auth_backend_tuning(
+            backend_type=test_backend_type,
+            mount_point=test_mount_point
+        )
+
+        self.assertEqual(
+            first=test_max_lease_ttl,
+            second=response['data']['max_lease_ttl']
+        )
+
+        self.client.disable_auth_backend(mount_point=test_mount_point)
