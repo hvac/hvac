@@ -5,8 +5,12 @@ matrix:
   include:
   - python: '2.7'
     env: TOXENV=py27 VAULT_BRANCH=release
+  - python: '2.7'
+    env: TOXENV=py27-flake8 VAULT_BRANCH=release
   - python: '3.6'
     env: TOXENV=py36 VAULT_BRANCH=release RELEASE=yes
+  - python: '3.6'
+    env: TOXENV=py36-flake8 VAULT_BRANCH=release RELEASE=yes
   - python: '3.6'
     env: TOXENV=py36 VAULT_BRANCH=head
   allow_failures:
