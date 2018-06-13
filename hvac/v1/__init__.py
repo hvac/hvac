@@ -480,13 +480,13 @@ class Client(object):
              msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
              raise exceptions.InvalidRequest(msg)
          elif accessor:
-             params = { 'accessor': token }
+             params = {'accessor': token}
              self._post('/v1/auth/token/revoke-accessor', json=params)
          elif orphan:
-             params = { 'token': token }
+             params = {'token': token}
              self._post('/v1/auth/token/revoke-orphan', json=params)
          else:
-             params = { 'token': token }
+             params = {'token': token 
              self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
