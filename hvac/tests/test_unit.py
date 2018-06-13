@@ -15,7 +15,6 @@ class UnitTest(TestCase):
     @mock.patch('hvac.v1.Client.auth')
     def test_auth_aws_iam(self, auth_mock, datetime_mock):
         datetime_mock.utcnow.return_value = datetime(2015, 8, 30, 12, 36, 0)
-
         client = Client()
         client.auth_aws_iam('AKIDEXAMPLE', 'wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY')
 
@@ -29,8 +28,13 @@ class UnitTest(TestCase):
         actual_iam_request_url = b64decode(actual_params['iam_request_url']).decode('utf-8')
         self.assertEqual('https://sts.amazonaws.com/', actual_iam_request_url)
 
+        expected_auth_header_parts = [
+            'Credential=AKIDEXAMPLE/20150830/us-east-1/sts/aws4_request',
+            'SignedHeaders=content-length;content-type;host;x-amz-date',
+            'Signature=0268ea4a725deae1116f5228d6b177fb047f9f3a9e1c5fd4baa0dc1fbb0d1a99',
+        ]
         expected_iam_request_headers = {
-            'Authorization': ['AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/sts/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date, Signature=0268ea4a725deae1116f5228d6b177fb047f9f3a9e1c5fd4baa0dc1fbb0d1a99'],
+            'Authorization': ['{0} {1}'.format('AWS4-HMAC-SHA256', ', '.join(expected_auth_header_parts))],
             'Content-Length': ['43'],
             'Content-Type': ['application/x-www-form-urlencoded; charset=utf-8'],
             'Host': ['sts.amazonaws.com'],
