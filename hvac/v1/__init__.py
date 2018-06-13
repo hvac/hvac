@@ -1,14 +1,17 @@
 from __future__ import unicode_literals
 
 import json
+from base64 import b64encode
 
 try:
     import hcl
+
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
 import requests
 
+from hvac import aws_utils
 from hvac import exceptions
 
 try:
@@ -134,14 +137,14 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
-       """
-        PUT /sys/unseal
         """
-       params = {
-           'key': key,
-       }
+         PUT /sys/unseal
+         """
+        params = {
+            'key': key,
+        }
 
-       return self._put('/v1/sys/unseal', json=params).json()
+        return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         result = None
@@ -468,23 +471,23 @@ class Client(object):
             return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
-         """
-         POST /auth/token/revoke
-         POST /auth/token/revoke-orphan
-         POST /auth/token/revoke-accessor
-         """
-         if accessor and orphan:
-             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
-             raise exceptions.InvalidRequest(msg)
-         elif accessor:
-             params = { 'accessor': token }
-             self._post('/v1/auth/token/revoke-accessor', json=params)
-         elif orphan:
-             params = { 'token': token }
-             self._post('/v1/auth/token/revoke-orphan', json=params)
-         else:
-             params = { 'token': token }
-             self._post('/v1/auth/token/revoke', json=params)
+        """
+        POST /auth/token/revoke
+        POST /auth/token/revoke-orphan
+        POST /auth/token/revoke-accessor
+        """
+        if accessor and orphan:
+            msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
+            raise exceptions.InvalidRequest(msg)
+        elif accessor:
+            params = {'accessor': token}
+            self._post('/v1/auth/token/revoke-accessor', json=params)
+        elif orphan:
+            params = {'token': token}
+            self._post('/v1/auth/token/revoke-orphan', json=params)
+        else:
+            params = {'token': token}
+            self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
         """
@@ -597,6 +600,37 @@ class Client(object):
         params.update(kwargs)
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+        """
+        POST /auth/<mount point>/login
+        """
+        request = requests.Request(
+            method='POST',
+            url='https://sts.amazonaws.com/',
+            headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'Host': 'sts.amazonaws.com'},
+            data='Action=GetCallerIdentity&Version=2011-06-15',
+        )
+
+        if header_value:
+            request.headers['X-Vault-AWS-IAM-Server-ID'] = header_value
+
+        request = request.prepare()
+
+        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
+        auth.add_auth(request)
+
+        # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
+        headers = json.dumps({k: [request.headers[k]] for k in request.headers})
+        params = {
+            'iam_http_request_method': request.method,
+            'iam_request_url': b64encode(request.url.encode('utf-8')).decode('utf-8'),
+            'iam_request_headers': b64encode(headers.encode('utf-8')).decode('utf-8'),
+            'iam_request_body': b64encode(request.body.encode('utf-8')).decode('utf-8'),
+            'role': role,
+        }
+
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """
@@ -811,6 +845,7 @@ class Client(object):
         """
         params = {
             'role': role,
+            'auth_type': 'ec2',
             'disallow_reauthentication': disallow_reauthentication,
             'allow_instance_migration': allow_instance_migration
         }
@@ -942,52 +977,51 @@ class Client(object):
         """
         self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
-    def create_role(self, role_name, **kwargs):
+    def create_role(self, role_name, mount_point='approle', **kwargs):
         """
-        POST /auth/approle/role/<role name>
-        """
-
-        self._post('/v1/auth/approle/role/{0}'.format(role_name), json=kwargs)
-
-    def list_roles(self):
-        """
-        GET /auth/approle/role
+        POST /auth/<mount_point>/role/<role name>
         """
 
-        return self._get('/v1/auth/approle/role?list=true').json()
+        return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
-    def get_role_id(self, role_name):
+    def list_roles(self, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>/role-id
+        GET /auth/<mount_point>/role
         """
 
-        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        return self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
+
+    def get_role_id(self, role_name, mount_point='approle'):
+        """
+        GET /auth/<mount_point>/role/<role name>/role-id
+        """
+
+        url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         return self._get(url).json()['data']['role_id']
 
-    def set_role_id(self, role_name, role_id):
+    def set_role_id(self, role_name, role_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/role-id
+        POST /auth/<mount_point>/role/<role name>/role-id
         """
 
-        url = '/v1/auth/approle/role/{0}/role-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         params = {
             'role_id': role_id
         }
-        self._post(url, json=params)
+        return self._post(url, json=params)
 
+    def get_role(self, role_name, mount_point='approle'):
+        """
+        GET /auth/<mount_point>/role/<role name>
+        """
+        return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
 
-    def get_role(self, role_name):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>
-        """
-        return self._get('/v1/auth/approle/role/{0}'.format(role_name)).json()
-
-    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None):
-        """
-        POST /auth/approle/role/<role name>/secret-id
+        POST /auth/<mount_point>/role/<role name>/secret-id
         """
 
-        url = '/v1/auth/approle/role/{0}/secret-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id'.format(mount_point, role_name)
         params = {}
         if meta is not None:
             params['metadata'] = json.dumps(meta)
@@ -995,53 +1029,53 @@ class Client(object):
             params['cidr_list'] = cidr_list
         return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
-    def get_role_secret_id(self, role_name, secret_id):
+    def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id/lookup
+        POST /auth/<mount_point>/role/<role name>/secret-id/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/lookup'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id/lookup'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
         return self._post(url, json=params).json()
 
-    def list_role_secrets(self, role_name):
+    def list_role_secrets(self, role_name, mount_point='approle'):
         """
-        GET /auth/approle/role/<role name>/secret-id?list=true
+        GET /auth/<mount_point>/role/<role name>/secret-id?list=true
         """
-        url = '/v1/auth/approle/role/{0}/secret-id?list=true'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
         return self._get(url).json()
 
-    def get_role_secret_id_accessor(self, role_name, secret_id_accessor):
+    def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id-accessor/lookup
+        POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/lookup'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/lookup'.format(mount_point, role_name)
         params = {'secret_id_accessor': secret_id_accessor}
         return self._post(url, json=params).json()
 
-    def delete_role_secret_id(self, role_name, secret_id):
+    def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/secret-id/destroy
+        POST /auth/<mount_point>/role/<role name>/secret-id/destroy
         """
-        url = '/v1/auth/approle/role/{0}/secret-id/destroy'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/secret-id/destroy'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
-        self._post(url, json=params)
+        return self._post(url, json=params)
 
-    def delete_role_secret_id_accessor(self, role_name, secret_id_accessor):
+    def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """
-        DELETE /auth/approle/role/<role name>/secret-id/<secret_id_accessor>
+        DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
         """
-        url = '/v1/auth/approle/role/{0}/secret-id-accessor/{1}'.format(role_name, secret_id_accessor)
-        self._delete(url)
+        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
+        return self._delete(url)
 
-    def create_role_custom_secret_id(self, role_name, secret_id, meta=None):
+    def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """
-        POST /auth/approle/role/<role name>/custom-secret-id
+        POST /auth/<mount_point>/role/<role name>/custom-secret-id
         """
-        url = '/v1/auth/approle/role/{0}/custom-secret-id'.format(role_name)
+        url = '/v1/auth/{0}/role/{1}/custom-secret-id'.format(mount_point, role_name)
         params = {
             'secret_id': secret_id
         }
@@ -1051,7 +1085,7 @@ class Client(object):
 
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """
-        POST /auth/approle/login
+        POST /auth/<mount_point>/login
         """
         params = {
             'role_id': role_id
@@ -1258,7 +1292,7 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
-                          mount_point='transit'):
+                          mount_point='transit', signature_algorithm='pss'):
         """
         POST /<mount_point>/sign/<name>(/<algorithm>)
         """
@@ -1276,11 +1310,12 @@ class Client(object):
             params['context'] = context
         if prehashed is not None:
             params['prehashed'] = prehashed
+        params['signature_algorithm'] = signature_algorithm
 
         return self._post(url, json=params).json()
 
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
-                                   prehashed=None, mount_point='transit'):
+                                   prehashed=None, mount_point='transit', signature_algorithm='pss'):
         """
         POST /<mount_point>/verify/<name>(/<algorithm>)
         """
@@ -1300,6 +1335,7 @@ class Client(object):
             params['context'] = context
         if prehashed is not None:
             params['prehashed'] = prehashed
+        params['signature_algorithm'] = signature_algorithm
 
         return self._post(url, json=params).json()
 

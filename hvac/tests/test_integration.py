@@ -1,9 +1,5 @@
-from unittest import TestCase, skipIf
+from unittest import TestCase
 
-import hcl
-import requests
-from nose.tools import *
-from time import sleep
 
 from hvac import Client, exceptions
 from hvac.tests import util
@@ -52,7 +48,7 @@ class IntegrationTest(TestCase):
         result = self.client.unseal_multi(keys[1:3])
         assert result['sealed']
         assert result['progress'] == 2
-        result = self.client.unseal_multi(keys[0:1])
+        self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
         assert not result['sealed']
 
@@ -135,16 +131,16 @@ class IntegrationTest(TestCase):
         assert 'test/' in self.client.list_secret_backends()
 
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
-        assert_equal(secret_backend_tuning['max_lease_ttl'], 2764800)
-        assert_equal(secret_backend_tuning['default_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 2764800)
 
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
 
         assert 'max_lease_ttl' in secret_backend_tuning
-        assert_equal(secret_backend_tuning['max_lease_ttl'], 8600)
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 8600)
         assert 'default_lease_ttl' in secret_backend_tuning
-        assert_equal(secret_backend_tuning['default_lease_ttl'], 3600)
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -358,7 +354,7 @@ class IntegrationTest(TestCase):
 
         self.client.token = self.root_token()
         self.client.delete_userpass('testcreateuser')
-        assert_raises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
+        self.assertRaises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
 
     def test_app_id_auth(self):
         if 'app-id/' in self.client.list_auth_backends():
@@ -497,7 +493,7 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('approle')
 
         self.client.create_role('testrole')
-        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id, use_token=False)
@@ -710,7 +706,7 @@ class IntegrationTest(TestCase):
 
         self.client.write('auth/userpass/users/testuser', password='testpass', policies='not_root')
 
-        result = self.client.auth_userpass('testuser', 'testpass')
+        self.client.auth_userpass('testuser', 'testpass')
 
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
@@ -752,7 +748,7 @@ class IntegrationTest(TestCase):
         self.client.write('auth/cert/certs/test', display_name='test',
                           policies='not_root', certificate=certificate)
 
-        result = self.client.auth_tls()
+        self.client.auth_tls()
 
     def test_gh51(self):
         key = 'secret/http://test.com'
@@ -800,17 +796,17 @@ class IntegrationTest(TestCase):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         # Intercept wrapped token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
         with self.assertRaises(exceptions.Forbidden):
-            result = self.client.unwrap(wrap['wrap_info']['token'])
+            self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         _token = self.client.token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
         assert self.client.token == _token
 
     def test_wrapped_token_revoke(self):
@@ -825,7 +821,7 @@ class IntegrationTest(TestCase):
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
-            lookup = self.client.lookup_token(result['auth']['client_token'])
+            self.client.lookup_token(result['auth']['client_token'])
 
     def test_create_token_explicit_max_ttl(self):
 
