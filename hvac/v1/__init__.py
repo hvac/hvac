@@ -83,7 +83,7 @@ class Client(object):
         payload = {
             'token': token
         }
-        return self._post('/v1/sys/wrapping/unwrap', data=payload).json()
+        return self._post('/v1/sys/wrapping/unwrap', json=payload).json()
 
     def is_initialized(self):
         """
