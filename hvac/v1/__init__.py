@@ -837,9 +837,10 @@ class Client(object):
         return self._get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
-                        bound_iam_instance_profile_arn=None, bound_region=None, bound_vpc_id=None, bound_subnet_id=None,
-                        role_tag=None, max_ttl=None, policies=None, allow_instance_migration=False,
-                        disallow_reauthentication=False, mount_point='aws-ec2', **kwargs):
+                        bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
+                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
+                        policies=None, allow_instance_migration=False, disallow_reauthentication=False,
+                        resolve_aws_unique_ids=None, mount_point='aws-ec2'):
         """
         POST /auth/<mount_point>/role/<role>
         """
@@ -856,6 +857,8 @@ class Client(object):
             params['bound_account_id'] = bound_account_id
         if bound_iam_role_arn is not None:
             params['bound_iam_role_arn'] = bound_iam_role_arn
+        if bound_ec2_instance_id is not None:
+            params['bound_iam_instance_profile_arn'] = bound_ec2_instance_id
         if bound_iam_instance_profile_arn is not None:
             params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
         if bound_region is not None:
@@ -866,12 +869,23 @@ class Client(object):
             params['bound_subnet_id'] = bound_subnet_id
         if role_tag is not None:
             params['role_tag'] = role_tag
+        if ttl is not None:
+            params['ttl'] = ttl
+        else:
+            params['ttl'] = 0
         if max_ttl is not None:
             params['max_ttl'] = max_ttl
+        else:
+            params['max_ttl'] = 0
+        if period is not None:
+            params['period'] = period
+        else:
+            params['period'] = 0
         if policies is not None:
             params['policies'] = policies
+        if resolve_aws_unique_ids is not None:
+            params['resolve_aws_unique_ids'] = resolve_aws_unique_ids
 
-        params.update(**kwargs)
         return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
 
     def get_ec2_role(self, role, mount_point='aws-ec2'):
@@ -970,6 +984,57 @@ class Client(object):
         }
 
         self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
+
+    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
+                          audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
+                          passthrough_request_headers=None):
+        """
+        POST /sys/auth/<mount point>/tune
+        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
+        :param mount_point: str, The path the associated auth backend is mounted under.
+        :param description: str, Specifies the description of the mount. This overrides the current stored value, if any.
+        :param default_lease_ttl: int,
+        :param max_lease_ttl: int,
+        :param audit_non_hmac_request_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd by
+        audit devices in the request data object.
+        :param audit_non_hmac_response_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd
+        by audit devices in the response data object.
+        :param listing_visibility: str, Speficies whether to show this mount in the UI-specific listing endpoint.
+        Valid values are "unauth" or "".
+        :param passthrough_request_headers: list, Comma-separated list of headers to whitelist and pass from the request
+        to the backend.
+        :return: dict, The JSON response from Vault
+        """
+        if not mount_point:
+            mount_point = backend_type
+        # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
+        # parameters and add which parameters are set.
+        optional_parameters = [
+            'default_lease_ttl',
+            'max_lease_ttl',
+            'description',
+            'audit_non_hmac_request_keys',
+            'audit_non_hmac_response_keys',
+            'listing_visibility',
+            'passthrough_request_headers',
+        ]
+        params = {}
+        for optional_parameter in optional_parameters:
+            if locals().get(optional_parameter) is not None:
+                params[optional_parameter] = locals().get(optional_parameter)
+        return self._post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
+
+    def get_auth_backend_tuning(self, backend_type, mount_point=None):
+        """
+        GET /sys/auth/<mount point>/tune
+        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
+        :param mount_point: str, The path the associated auth backend is mounted under.
+        :return: dict, The JSON response from Vault
+        """
+        if not mount_point:
+            mount_point = backend_type
+
+        return self._get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
 
     def disable_auth_backend(self, mount_point):
         """
