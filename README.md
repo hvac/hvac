@@ -62,6 +62,16 @@ client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 # App Role
 client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
 
+# AWS (IAM)
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY')
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', 'MY_AWS_SESSION_TOKEN')
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', role='MY_ROLE')
+
+import boto3
+session = boto3.Session()
+credentials = session.get_credentials()
+client.auth_aws_iam(credentials.access_key, credentials.secret_key, credentials.token)
+
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
 
@@ -229,8 +239,9 @@ print(client.is_sealed()) # => True
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
-1. [Install Vault](https://vaultproject.io/docs/install/index.html)
+1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `VAULT_BRANCH=release scripts/install-vault-release.sh`
 2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
+3. Run tests: `make test`
 
 ## Contributing
 

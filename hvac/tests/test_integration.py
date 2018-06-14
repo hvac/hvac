@@ -1,10 +1,8 @@
-import sys
 import binascii
+import sys
 from base64 import b64decode
 from unittest import TestCase
 from uuid import UUID
-
-from nose.tools import *
 
 from hvac import Client, exceptions
 from hvac.tests import util
@@ -53,7 +51,7 @@ class IntegrationTest(TestCase):
         result = self.client.unseal_multi(keys[1:3])
         assert result['sealed']
         assert result['progress'] == 2
-        result = self.client.unseal_multi(keys[0:1])
+        self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
         assert not result['sealed']
 
@@ -135,9 +133,17 @@ class IntegrationTest(TestCase):
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
 
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 2764800)
+
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
-        assert 'max_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
-        assert 'default_lease_ttl' in self.client.get_secret_backend_tuning('generic', mount_point='test')
+        secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
+
+        assert 'max_lease_ttl' in secret_backend_tuning
+        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 8600)
+        assert 'default_lease_ttl' in secret_backend_tuning
+        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         assert 'test/' not in self.client.list_secret_backends()
@@ -273,6 +279,71 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('userpass')
 
+    def test_list_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # add some users and confirm that they show up in the list
+        self.client.create_userpass('testuserone', 'testuseronepass', policies='not_root')
+        self.client.create_userpass('testusertwo', 'testusertwopass', policies='not_root')
+
+        user_list = self.client.list_userpass()
+        assert 'testuserone' in user_list['data']['keys']
+        assert 'testusertwo' in user_list['data']['keys']
+
+        # delete all the users and confirm that list_userpass() doesn't fail
+        for user in user_list['data']['keys']:
+            self.client.delete_userpass(user)
+
+        no_users_list = self.client.list_userpass()
+        assert no_users_list is None
+
+    def test_read_userpass(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user to read
+        self.client.create_userpass('readme', 'mypassword', policies='not_root')
+
+        # test that user can be read
+        read_user = self.client.read_userpass('readme')
+        assert 'not_root' in read_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_policies(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then update its policies
+        self.client.create_userpass('updatemypolicies', 'mypassword', policies='not_root')
+        self.client.update_userpass_policies('updatemypolicies', policies='somethingelse')
+
+        # test that policies have changed
+        updated_user = self.client.read_userpass('updatemypolicies')
+        assert 'somethingelse' in updated_user['data']['policies']
+
+        # teardown
+        self.client.disable_auth_backend('userpass')
+
+    def test_update_userpass_password(self):
+        if 'userpass/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('userpass')
+
+        # create user and then change its password
+        self.client.create_userpass('changeme', 'mypassword', policies='not_root')
+        self.client.update_userpass_password('changeme', 'mynewpassword')
+
+        # test that new password authenticates user
+        result = self.client.auth_userpass('changeme', 'mynewpassword')
+        assert self.client.token == result['auth']['client_token']
+        assert self.client.is_authenticated()
+
+        # teardown
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('userpass')
+
     def test_delete_userpass(self):
         if 'userpass/' not in self.client.list_auth_backends():
             self.client.enable_auth_backend('userpass')
@@ -286,7 +357,7 @@ class IntegrationTest(TestCase):
 
         self.client.token = self.root_token()
         self.client.delete_userpass('testcreateuser')
-        assert_raises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
+        self.assertRaises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
 
     def test_app_id_auth(self):
         if 'app-id/' in self.client.list_auth_backends():
@@ -325,6 +396,21 @@ class IntegrationTest(TestCase):
 
         self.client.token = self.root_token()
         self.client.disable_auth_backend('app-id')
+
+    def test_cubbyhole_auth(self):
+        orig_token = self.client.token
+
+        resp = self.client.create_token(lease='6h', wrap_ttl='1h')
+        assert resp['wrap_info']['ttl'] == 3600
+
+        wrapped_token = resp['wrap_info']['token']
+        self.client.auth_cubbyhole(wrapped_token)
+        assert self.client.token != orig_token
+        assert self.client.token != wrapped_token
+        assert self.client.is_authenticated()
+
+        self.client.token = orig_token
+        assert self.client.is_authenticated()
 
     def test_create_user_id(self):
         if 'app-id/' not in self.client.list_auth_backends():
@@ -369,6 +455,37 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
+    def test_delete_role(self):
+        test_role_name = 'test-role'
+        if 'approle/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('approle')
+        self.client.enable_auth_backend('approle')
+
+        self.client.create_role(test_role_name)
+        # We add a second dummy test role so we can still hit the /role?list=true route after deleting the first role
+        self.client.create_role('test-role-2')
+
+        # Ensure our created role shows up when calling list_roles as expected
+        result = self.client.list_roles()
+        actual_list_role_keys = result['data']['keys']
+        self.assertIn(
+            member=test_role_name,
+            container=actual_list_role_keys,
+        )
+
+        # Now delete the role and verify its absence when calling list_roles
+        self.client.delete_role(test_role_name)
+        result = self.client.list_roles()
+        actual_list_role_keys = result['data']['keys']
+        self.assertNotIn(
+            member=test_role_name,
+            container=actual_list_role_keys,
+        )
+
+        # reset test environment
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('approle')
+
     def test_create_delete_role_secret_id(self):
         if 'approle/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('approle')
@@ -410,7 +527,7 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('approle')
 
         self.client.create_role('testrole')
-        create_result = self.client.create_role_secret_id('testrole', {'foo':'bar'})
+        create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id, use_token=False)
@@ -623,7 +740,7 @@ class IntegrationTest(TestCase):
 
         self.client.write('auth/userpass/users/testuser', password='testpass', policies='not_root')
 
-        result = self.client.auth_userpass('testuser', 'testpass')
+        self.client.auth_userpass('testuser', 'testpass')
 
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
@@ -665,7 +782,7 @@ class IntegrationTest(TestCase):
         self.client.write('auth/cert/certs/test', display_name='test',
                           policies='not_root', certificate=certificate)
 
-        result = self.client.auth_tls()
+        self.client.auth_tls()
 
     def test_gh51(self):
         key = 'secret/http://test.com'
@@ -713,17 +830,17 @@ class IntegrationTest(TestCase):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         # Intercept wrapped token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
 
         # Attempt to retrieve the token after it's been intercepted
         with self.assertRaises(exceptions.Forbidden):
-            result = self.client.unwrap(wrap['wrap_info']['token'])
+            self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
         wrap = self.client.create_token(wrap_ttl='1m')
 
         _token = self.client.token
-        _ = self.client.unwrap(wrap['wrap_info']['token'])
+        self.client.unwrap(wrap['wrap_info']['token'])
         assert self.client.token == _token
 
     def test_wrapped_token_revoke(self):
@@ -738,7 +855,7 @@ class IntegrationTest(TestCase):
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
-            lookup = self.client.lookup_token(result['auth']['client_token'])
+            self.client.lookup_token(result['auth']['client_token'])
 
     def test_create_token_explicit_max_ttl(self):
 
@@ -847,30 +964,113 @@ class IntegrationTest(TestCase):
                                     bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
                                     policies='ec2rolepolicy')
 
+        # test binding by bound region
+        self.client.create_ec2_role('quux',
+                                    bound_region='ap-northeast-2',
+                                    policies='ec2rolepolicy')
+
+        # test binding by bound vpc id
+        self.client.create_ec2_role('corge',
+                                    bound_vpc_id='vpc-1a123456',
+                                    policies='ec2rolepolicy')
+
+        # test binding by bound subnet id
+        self.client.create_ec2_role('grault',
+                                    bound_subnet_id='subnet-123a456',
+                                    policies='ec2rolepolicy')
+
         roles = self.client.list_ec2_roles()
 
-        assert ('foo' in roles['data']['keys'])
-        assert ('bar' in roles['data']['keys'])
-        assert ('baz' in roles['data']['keys'])
-        assert ('qux' in roles['data']['keys'])
+        assert('foo' in roles['data']['keys'])
+        assert('bar' in roles['data']['keys'])
+        assert('baz' in roles['data']['keys'])
+        assert('qux' in roles['data']['keys'])
+        assert('quux' in roles['data']['keys'])
+        assert('corge' in roles['data']['keys'])
+        assert('grault' in roles['data']['keys'])
 
         foo_role = self.client.get_ec2_role('foo')
-        assert (foo_role['data']['bound_ami_id'] == 'ami-notarealami')
+        assert ('ami-notarealami' in foo_role['data']['bound_ami_id'])
         assert ('ec2rolepolicy' in foo_role['data']['policies'])
 
         bar_role = self.client.get_ec2_role('bar')
-        assert (bar_role['data']['bound_account_id'] == '123456789012')
+        assert ('123456789012' in bar_role['data']['bound_account_id'])
         assert ('ec2rolepolicy' in bar_role['data']['policies'])
 
         baz_role = self.client.get_ec2_role('baz')
-        assert (baz_role['data']['bound_iam_role_arn'] == 'arn:aws:iam::123456789012:role/mockec2role')
+        assert ('arn:aws:iam::123456789012:role/mockec2role' in baz_role['data']['bound_iam_role_arn'])
         assert ('ec2rolepolicy' in baz_role['data']['policies'])
 
         qux_role = self.client.get_ec2_role('qux')
+        assert(qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert('ec2rolepolicy' in qux_role['data']['policies'])
 
-        assert (
-        qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
-        assert ('ec2rolepolicy' in qux_role['data']['policies'])
+        quux_role = self.client.get_ec2_role('quux')
+        assert(quux_role['data']['bound_region'] == 'ap-northeast-2')
+        assert('ec2rolepolicy' in quux_role['data']['policies'])
+
+        corge_role = self.client.get_ec2_role('corge')
+        assert(corge_role['data']['bound_vpc_id'] == 'vpc-1a123456')
+        assert('ec2rolepolicy' in corge_role['data']['policies'])
+
+        grault_role = self.client.get_ec2_role('grault')
+        assert(grault_role['data']['bound_subnet_id'] == 'subnet-123a456')
+        assert('ec2rolepolicy' in grault_role['data']['policies'])
+
+        # teardown
+        self.client.delete_ec2_role('foo')
+        self.client.delete_ec2_role('bar')
+        self.client.delete_ec2_role('baz')
+        self.client.delete_ec2_role('qux')
+        self.client.delete_ec2_role('quux')
+        self.client.delete_ec2_role('corge')
+        self.client.delete_ec2_role('grault')
+
+        self.client.delete_policy('ec2rolepolicy')
+
+        self.client.disable_auth_backend('aws-ec2')
+
+    def test_ec2_role_token_lifespan(self):
+        if 'aws-ec2/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('aws-ec2')
+
+        # create a policy to associate with the role
+        self.prep_policy('ec2rolepolicy')
+
+        # create a role with no TTL
+        self.client.create_ec2_role('foo',
+                                    'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        # create a role with a 1hr TTL
+        self.client.create_ec2_role('bar',
+                                    'ami-notarealami',
+                                    ttl='1h',
+                                    policies='ec2rolepolicy')
+
+        # create a role with a 3-day max TTL
+        self.client.create_ec2_role('baz',
+                                    'ami-notarealami',
+                                    max_ttl='72h',
+                                    policies='ec2rolepolicy')
+
+        # create a role with 1-day period
+        self.client.create_ec2_role('qux',
+                                    'ami-notarealami',
+                                    period='24h',
+                                    policies='ec2rolepolicy')
+
+        foo_role = self.client.get_ec2_role('foo')
+        assert (foo_role['data']['ttl'] == 0)
+
+        bar_role = self.client.get_ec2_role('bar')
+        assert (bar_role['data']['ttl'] == 3600)
+
+        baz_role = self.client.get_ec2_role('baz')
+        assert (baz_role['data']['max_ttl'] == 259200)
+
+        qux_role = self.client.get_ec2_role('qux')
+        assert (qux_role['data']['period'] == 86400)
 
         # teardown
         self.client.delete_ec2_role('foo')
@@ -937,3 +1137,95 @@ class IntegrationTest(TestCase):
 
         self.client.cancel_generate_root()
         self.assertFalse(self.client.generate_root_status['started'])
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token_exception(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
+        # generic 'missing client token' response from Vault.
+        with self.assertRaises(exceptions.InvalidRequest) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7)
+
+        expected_exception_message = 'missing client token'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_auth_ec2_alternate_mount_point_with_no_client_token(self):
+        test_mount_point = 'aws-custom-path'
+        # Turn on the aws-ec2 backend with a custom mount_point path specified.
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend('aws-ec2', mount_point=test_mount_point)
+
+        # Drop the client's token to replicate a typical end user's use of any auth method.
+        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
+        self.client.token = None
+
+        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
+        with open('test/identity_document.p7b') as fp:
+            pkcs7 = fp.read()
+
+        # If our custom path is respected, we'll still end up with Vault's inability to decrypt our dummy PKCS7 string.
+        # However this exception indicates we're correctly hitting the expected auth endpoint.
+        with self.assertRaises(exceptions.InternalServerError) as assertRaisesContext:
+            self.client.auth_ec2(pkcs7=pkcs7, mount_point=test_mount_point)
+
+        expected_exception_message = 'failed to decode the PEM encoded PKCS#7 signature'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertEqual(expected_exception_message, actual_exception_message)
+
+        # Reset test state.
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_tune_auth_backend(self):
+        test_backend_type = 'approle'
+        test_mount_point = 'tune-approle'
+        test_description = 'this is a test auth backend'
+        test_max_lease_ttl = 12345678
+        if '{0}/'.format(test_mount_point) in self.client.list_auth_backends():
+            self.client.disable_auth_backend(test_mount_point)
+        self.client.enable_auth_backend(
+            backend_type='approle',
+            mount_point=test_mount_point
+        )
+
+        expected_status_code = 204
+        response = self.client.tune_auth_backend(
+            backend_type=test_backend_type,
+            mount_point=test_mount_point,
+            description=test_description,
+            max_lease_ttl=test_max_lease_ttl,
+        )
+        self.assertEqual(
+            first=expected_status_code,
+            second=response.status_code,
+        )
+
+        response = self.client.get_auth_backend_tuning(
+            backend_type=test_backend_type,
+            mount_point=test_mount_point
+        )
+
+        self.assertEqual(
+            first=test_max_lease_ttl,
+            second=response['data']['max_lease_ttl']
+        )
+
+        self.client.disable_auth_backend(mount_point=test_mount_point)
