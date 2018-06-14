@@ -1,5 +1,8 @@
-tox
-coverage
-nose
-semantic_version
 avakas
+coverage
+mock
+nose
+parameterized
+requests_mock
+semantic_version
+tox
