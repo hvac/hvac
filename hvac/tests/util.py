@@ -4,6 +4,7 @@ import time
 
 from semantic_version import Spec, Version
 
+
 class ServerManager(object):
     def __init__(self, config_path, client):
         self.config_path = config_path
@@ -51,7 +52,9 @@ class ServerManager(object):
     def unseal(self):
         self.client.unseal_multi(self.keys)
 
+
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+
 
 def match_version(spec):
     output = subprocess.check_output(['vault', 'version']).decode('ascii')
