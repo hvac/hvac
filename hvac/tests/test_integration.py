@@ -996,6 +996,58 @@ class IntegrationTest(TestCase):
 
         self.client.disable_auth_backend('aws-ec2')
 
+    def test_ec2_role_token_lifespan(self):
+        if 'aws-ec2/' not in self.client.list_auth_backends():
+            self.client.enable_auth_backend('aws-ec2')
+
+        # create a policy to associate with the role
+        self.prep_policy('ec2rolepolicy')
+
+        # create a role with no TTL
+        self.client.create_ec2_role('foo',
+                                    'ami-notarealami',
+                                    policies='ec2rolepolicy')
+
+        # create a role with a 1hr TTL
+        self.client.create_ec2_role('bar',
+                                    'ami-notarealami',
+                                    ttl='1h',
+                                    policies='ec2rolepolicy')
+
+        # create a role with a 3-day max TTL
+        self.client.create_ec2_role('baz',
+                                    'ami-notarealami',
+                                    max_ttl='72h',
+                                    policies='ec2rolepolicy')
+
+        # create a role with 1-day period
+        self.client.create_ec2_role('qux',
+                                    'ami-notarealami',
+                                    period='24h',
+                                    policies='ec2rolepolicy')
+
+        foo_role = self.client.get_ec2_role('foo')
+        assert (foo_role['data']['ttl'] == 0)
+
+        bar_role = self.client.get_ec2_role('bar')
+        assert (bar_role['data']['ttl'] == 3600)
+
+        baz_role = self.client.get_ec2_role('baz')
+        assert (baz_role['data']['max_ttl'] == 259200)
+
+        qux_role = self.client.get_ec2_role('qux')
+        assert (qux_role['data']['period'] == 86400)
+
+        # teardown
+        self.client.delete_ec2_role('foo')
+        self.client.delete_ec2_role('bar')
+        self.client.delete_ec2_role('baz')
+        self.client.delete_ec2_role('qux')
+
+        self.client.delete_policy('ec2rolepolicy')
+
+        self.client.disable_auth_backend('aws-ec2')
+
     def test_auth_ec2_alternate_mount_point_with_no_client_token_exception(self):
         test_mount_point = 'aws-custom-path'
         # Turn on the aws-ec2 backend with a custom mount_point path specified.
