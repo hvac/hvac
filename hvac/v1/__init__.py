@@ -157,6 +157,43 @@ class Client(object):
         return result
 
     @property
+    def generate_root_status(self):
+        """
+        GET /sys/generate-root/attempt
+        """
+        return self._get('/v1/sys/generate-root/attempt').json()
+
+    def start_generate_root(self, key, otp=False):
+        """
+        PUT /sys/generate-root/attempt
+        """
+        params = {}
+        if otp == True: 
+          params['otp'] = key
+        else: 
+          params['pgp_key'] = key
+
+        return self._put('/v1/sys/generate-root/attempt', json=params).json()
+
+    def generate_root(self, key, nonce):
+        """
+        PUT /sys/generate-root/update
+        """
+        params = {
+            'key': key,
+            'nonce': nonce,
+        }
+
+        return self._put('/v1/sys/generate-root/update', json=params).json()
+
+    def cancel_generate_root(self):
+        """
+        DELETE /sys/generate-root/attempt
+        """
+
+        return self._delete('/v1/sys/generate-root/attempt').status_code == 204
+
+    @property
     def key_status(self):
         """
         GET /sys/key-status
