@@ -1,3 +1,17 @@
+## 0.4.0 (February 1, 2018)
+
+IMPROVEMENTS:
+
+* Add support for the `period` parameter on token creation [GH-167]
+* Add support for the `cidr_list` parameter for approle secrets [GH-114]
+
+BUG FIXES:
+
+* Documentation is now more accurate [GH-165] / [GH-154]
+
+Thanks to @ti-mo, @dhoeric, @RAbraham, @lhdumittan, @ahsanali for 
+their lovely contributions.
+
 ## 0.3.0 (November 9, 2017)
 
 This is just the highlights, there have been a bunch of changes!
