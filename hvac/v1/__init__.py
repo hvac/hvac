@@ -837,9 +837,10 @@ class Client(object):
         return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
-                        bound_iam_instance_profile_arn=None, bound_region=None, bound_vpc_id=None, bound_subnet_id=None,
-                        role_tag=None,  ttl=None, max_ttl=None, period=None, policies=None,
-                        allow_instance_migration=False, disallow_reauthentication=False, **kwargs):
+                        bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
+                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
+                        policies=None, allow_instance_migration=False, disallow_reauthentication=False,
+                        resolve_aws_unique_ids=None):
         """
         POST /auth/aws-ec2/role/<role>
         """
@@ -856,6 +857,8 @@ class Client(object):
             params['bound_account_id'] = bound_account_id
         if bound_iam_role_arn is not None:
             params['bound_iam_role_arn'] = bound_iam_role_arn
+        if bound_ec2_instance_id is not None:
+            params['bound_iam_instance_profile_arn'] = bound_ec2_instance_id
         if bound_iam_instance_profile_arn is not None:
             params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
         if bound_region is not None:
@@ -880,8 +883,9 @@ class Client(object):
             params['period'] = 0
         if policies is not None:
             params['policies'] = policies
+        if resolve_aws_unique_ids is not None:
+            params['resolve_aws_unique_ids'] = resolve_aws_unique_ids
 
-        params.update(**kwargs)
         return self._post('/v1/auth/aws-ec2/role/{0}'.format(role), json=params)
 
     def get_ec2_role(self, role):
