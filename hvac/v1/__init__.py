@@ -77,12 +77,10 @@ class Client(object):
         POST /sys/wrapping/unwrap
         X-Vault-Token: <token>
         """
-        _token = self.token
-        try:
-            self.token = token
-            return self._post('/v1/sys/wrapping/unwrap').json()
-        finally:
-            self.token = _token
+        payload = {
+            'token': token
+        }
+        return self._post('/v1/sys/wrapping/unwrap', data=payload).json()
 
     def is_initialized(self):
         """
