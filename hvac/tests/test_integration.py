@@ -452,6 +452,37 @@ class IntegrationTest(TestCase):
         self.client.token = self.root_token()
         self.client.disable_auth_backend('approle')
 
+    def test_delete_role(self):
+        test_role_name = 'test-role'
+        if 'approle/' in self.client.list_auth_backends():
+            self.client.disable_auth_backend('approle')
+        self.client.enable_auth_backend('approle')
+
+        self.client.create_role(test_role_name)
+        # We add a second dummy test role so we can still hit the /role?list=true route after deleting the first role
+        self.client.create_role('test-role-2')
+
+        # Ensure our created role shows up when calling list_roles as expected
+        result = self.client.list_roles()
+        actual_list_role_keys = result['data']['keys']
+        self.assertIn(
+            member=test_role_name,
+            container=actual_list_role_keys,
+        )
+
+        # Now delete the role and verify its absence when calling list_roles
+        self.client.delete_role(test_role_name)
+        result = self.client.list_roles()
+        actual_list_role_keys = result['data']['keys']
+        self.assertNotIn(
+            member=test_role_name,
+            container=actual_list_role_keys,
+        )
+
+        # reset test environment
+        self.client.token = self.root_token()
+        self.client.disable_auth_backend('approle')
+
     def test_create_delete_role_secret_id(self):
         if 'approle/' in self.client.list_auth_backends():
             self.client.disable_auth_backend('approle')

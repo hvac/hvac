@@ -1049,6 +1049,13 @@ class Client(object):
 
         return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
+    def delete_role(self, role_name, mount_point='approle'):
+        """
+        DELETE /auth/<mount_point>/role/<role name>
+        """
+
+        return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
+
     def list_roles(self, mount_point='approle'):
         """
         GET /auth/<mount_point>/role
