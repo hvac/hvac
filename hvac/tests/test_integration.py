@@ -1100,7 +1100,8 @@ class IntegrationTest(TestCase):
             )
         self.assertFalse(self.client.generate_root_status['started'])
 
-        # Decode the token provided in the last response
+        # Decode the token provided in the last response. Root token decoding logic derived from:
+        # https://github.com/hashicorp/vault/blob/284600fbefc32d8ab71b6b9d1d226f2f83b56b1d/command/operator_generate_root.go#L289
         b64decoded_root_token = b64decode(response['encoded_root_token'])
         if sys.version_info > (3, 0):
             # b64decoding + bytes XOR'ing to decode the new root token in python 3.x
