@@ -800,7 +800,7 @@ class IntegrationTest(TestCase):
 
         # Attempt to retrieve the token after it's been intercepted
         with self.assertRaises(exceptions.InvalidRequest):
-            result = self.client.unwrap(wrap['wrap_info']['token'])
+            self.client.unwrap(wrap['wrap_info']['token'])
 
     def test_wrapped_token_cleanup(self):
         wrap = self.client.create_token(wrap_ttl='1m')
