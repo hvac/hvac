@@ -788,9 +788,9 @@ class Client(object):
         """
         return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
-    def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None):
+    def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
         """
-        POST /auth/aws-ec2/config/client
+        POST /auth/<mount_point>/config/client
         """
         params = {
             'access_key': access_key,
@@ -799,50 +799,50 @@ class Client(object):
         if endpoint is not None:
             params['endpoint'] = endpoint
 
-        return self._post('/v1/auth/aws-ec2/config/client', json=params)
+        return self._post('/v1/auth/{0}/config/client'.format(mount_point), json=params)
 
-    def get_vault_ec2_client_configuration(self):
+    def get_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """
-        GET /auth/aws-ec2/config/client
+        GET /auth/<mount_point>/config/client
         """
-        return self._get('/v1/auth/aws-ec2/config/client').json()
+        return self._get('/v1/auth/{0}/config/client'.format(mount_point)).json()
 
-    def delete_vault_ec2_client_configuration(self):
+    def delete_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """
-        DELETE /auth/aws-ec2/config/client
+        DELETE /auth/<mount_point>/config/client
         """
-        return self._delete('/v1/auth/aws-ec2/config/client')
+        return self._delete('/v1/auth/{0}/config/client'.format(mount_point))
 
-    def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert):
+    def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert, mount_point='aws-ec2'):
         """
-        POST /auth/aws-ec2/config/certificate/<cert_name>
+        POST /auth/<mount_point>/config/certificate/<cert_name>
         """
         params = {
             'cert_name': cert_name,
             'aws_public_cert': aws_public_cert
         }
-        return self._post('/v1/auth/aws-ec2/config/certificate/{0}'.format(cert_name), json=params)
+        return self._post('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name), json=params)
 
-    def get_vault_ec2_certificate_configuration(self, cert_name):
+    def get_vault_ec2_certificate_configuration(self, cert_name, mount_point='aws-ec2'):
         """
-        GET /auth/aws-ec2/config/certificate/<cert_name>
+        GET /auth/<mount_point>/config/certificate/<cert_name>
         """
-        return self._get('/v1/auth/aws-ec2/config/certificate/{0}'.format(cert_name)).json()
+        return self._get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
 
-    def list_vault_ec2_certificate_configurations(self):
+    def list_vault_ec2_certificate_configurations(self, mount_point='aws-ec2'):
         """
-        GET /auth/aws-ec2/config/certificates?list=true
+        GET /auth/<mount_point>/config/certificates?list=true
         """
         params = {'list': True}
-        return self._get('/v1/auth/aws-ec2/config/certificates', params=params).json()
+        return self._get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
                         bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
                         bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
                         policies=None, allow_instance_migration=False, disallow_reauthentication=False,
-                        resolve_aws_unique_ids=None):
+                        resolve_aws_unique_ids=None, mount_point='aws-ec2'):
         """
-        POST /auth/aws-ec2/role/<role>
+        POST /auth/<mount_point>/role/<role>
         """
         params = {
             'role': role,
@@ -886,33 +886,33 @@ class Client(object):
         if resolve_aws_unique_ids is not None:
             params['resolve_aws_unique_ids'] = resolve_aws_unique_ids
 
-        return self._post('/v1/auth/aws-ec2/role/{0}'.format(role), json=params)
+        return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
 
-    def get_ec2_role(self, role):
+    def get_ec2_role(self, role, mount_point='aws-ec2'):
         """
-        GET /auth/aws-ec2/role/<role>
+        GET /auth/<mount_point>/role/<role>
         """
-        return self._get('/v1/auth/aws-ec2/role/{0}'.format(role)).json()
+        return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
 
-    def delete_ec2_role(self, role):
+    def delete_ec2_role(self, role, mount_point='aws-ec2'):
         """
-        DELETE /auth/aws-ec2/role/<role>
+        DELETE /auth/<mount_point>/role/<role>
         """
-        return self._delete('/v1/auth/aws-ec2/role/{0}'.format(role))
+        return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role))
 
-    def list_ec2_roles(self):
+    def list_ec2_roles(self, mount_point='aws-ec2'):
         """
-        GET /auth/aws-ec2/roles?list=true
+        GET /auth/<mount_point>/roles?list=true
         """
         try:
-            return self._get('/v1/auth/aws-ec2/roles', params={'list': True}).json()
+            return self._get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True}).json()
         except exceptions.InvalidPath:
             return None
 
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
-                            disallow_reauthentication=False, allow_instance_migration=False):
+                            disallow_reauthentication=False, allow_instance_migration=False, mount_point='aws-ec2'):
         """
-        POST /auth/aws-ec2/role/<role>/tag
+        POST /auth/<mount_point>/role/<role>/tag
         """
         params = {
             'role': role,
@@ -926,7 +926,7 @@ class Client(object):
             params['policies'] = policies
         if instance_id is not None:
             params['instance_id'] = instance_id
-        return self._post('/v1/auth/aws-ec2/role/{0}/tag'.format(role), json=params)
+        return self._post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """
