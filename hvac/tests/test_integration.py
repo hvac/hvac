@@ -823,6 +823,55 @@ class IntegrationTest(TestCase):
         with self.assertRaises(exceptions.Forbidden):
             self.client.lookup_token(result['auth']['client_token'])
 
+    def test_wrapped_client_token_success(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+        self.client.token = wrap['wrap_info']['token']
+
+        # Unwrap token
+        result = self.client.unwrap()
+        assert result['auth']['client_token']
+
+        # Validate token
+        self.client.token = result['auth']['client_token']
+        lookup = self.client.lookup_token(result['auth']['client_token'])
+        assert result['auth']['client_token'] == lookup['data']['id']
+
+    def test_wrapped_client_token_intercept(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+        self.client.token = wrap['wrap_info']['token']
+
+        # Intercept wrapped token
+        self.client.unwrap()
+
+        # Attempt to retrieve the token after it's been intercepted
+        with self.assertRaises(exceptions.InvalidRequest):
+            self.client.unwrap()
+
+    def test_wrapped_client_token_cleanup(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        _token = self.client.token
+        self.client.token = wrap['wrap_info']['token']
+        self.client.unwrap()
+
+        assert self.client.token != wrap
+        assert self.client.token != _token
+
+    def test_wrapped_client_token_revoke(self):
+        wrap = self.client.create_token(wrap_ttl='1m')
+
+        # Revoke token before it's unwrapped
+        self.client.revoke_token(wrap['wrap_info']['wrapped_accessor'], accessor=True)
+
+        # Unwrap token anyway
+        self.client.token = wrap['wrap_info']['token']
+        result = self.client.unwrap()
+        assert result['auth']['client_token']
+
+        # Attempt to validate token
+        with self.assertRaises(exceptions.Forbidden):
+            self.client.lookup_token(result['auth']['client_token'])
+
     def test_create_token_explicit_max_ttl(self):
 
         token = self.client.create_token(ttl='30m', explicit_max_ttl='5m')
