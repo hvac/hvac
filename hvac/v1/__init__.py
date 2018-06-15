@@ -75,18 +75,18 @@ class Client(object):
         """
         self._delete('/v1/{0}'.format(path))
 
-    def unwrap(self, token):
+    def unwrap(self, token=None):
         """
-        GET /cubbyhole/response
+        POST /sys/wrapping/unwrap
         X-Vault-Token: <token>
         """
-        path = "cubbyhole/response"
-        _token = self.token
-        try:
-            self.token = token
-            return json.loads(self.read(path)['data']['response'])
-        finally:
-            self.token = _token
+        if token:
+            payload = {
+                'token': token
+            }
+            return self._post('/v1/sys/wrapping/unwrap', json=payload).json()
+        else:
+            return self._post('/v1/sys/wrapping/unwrap').json()
 
     def is_initialized(self):
         """
