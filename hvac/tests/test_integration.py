@@ -1051,19 +1051,19 @@ class IntegrationTest(TestCase):
         assert ('ec2rolepolicy' in baz_role['data']['policies'])
 
         qux_role = self.client.get_ec2_role('qux')
-        assert(qux_role['data']['bound_iam_instance_profile_arn'] == 'arn:aws:iam::123456789012:instance-profile/mockprofile')
+        assert('arn:aws:iam::123456789012:instance-profile/mockprofile' in qux_role['data']['bound_iam_instance_profile_arn'])
         assert('ec2rolepolicy' in qux_role['data']['policies'])
 
         quux_role = self.client.get_ec2_role('quux')
-        assert(quux_role['data']['bound_region'] == 'ap-northeast-2')
+        assert('ap-northeast-2' in quux_role['data']['bound_region'])
         assert('ec2rolepolicy' in quux_role['data']['policies'])
 
         corge_role = self.client.get_ec2_role('corge')
-        assert(corge_role['data']['bound_vpc_id'] == 'vpc-1a123456')
+        assert('vpc-1a123456' in corge_role['data']['bound_vpc_id'])
         assert('ec2rolepolicy' in corge_role['data']['policies'])
 
         grault_role = self.client.get_ec2_role('grault')
-        assert(grault_role['data']['bound_subnet_id'] == 'subnet-123a456')
+        assert('subnet-123a456' in grault_role['data']['bound_subnet_id'])
         assert('ec2rolepolicy' in grault_role['data']['policies'])
 
         # teardown
