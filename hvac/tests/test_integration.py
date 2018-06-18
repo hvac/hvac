@@ -1279,3 +1279,15 @@ class IntegrationTest(TestCase):
         )
 
         self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_kv2_secret_backend(self):
+        if 'test/' in self.client.list_secret_backends():
+            self.client.disable_secret_backend('test')
+        self.client.enable_secret_backend('kv', mount_point='test', options={'version': '2'})
+
+        secret_backends = self.client.list_secret_backends()
+
+        assert 'test/' in secret_backends
+        self.assertDictEqual(secret_backends['test/']['options'], {'version': '2'})
+
+        self.client.disable_secret_backend('test')
