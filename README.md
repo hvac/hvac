@@ -88,6 +88,9 @@ url = 'http://metadata.google.internal/computeMetadata/v1/instance/service-accou
 r = requests.get(url, headers=METADATA_HEADERS)
 client.auth_gcp(ROLE, r.text)
 
+# Kubernetes (from k8s pod)
+TODO: need to add an example reading JWT from /var/run/secrets/kubernetes.io/serviceaccount/token
+
 # LDAP, Username & Password
 client.auth_ldap('MY_USERNAME', 'MY_PASSWORD')
 client.auth_userpass('MY_USERNAME', 'MY_PASSWORD')
