@@ -977,46 +977,76 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def create_kubernetes_configuration(self, host="", cert=None, jwt_token=None, pem_keys=None, mount_point='kubernetes'):
+    def create_kubernetes_configuration(self, host="", kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
         """
-        POST /auth/kubernetes/config
+        POST /auth/<mount_point>/config
+        :param host: str, a host:port pair, or a URL to the base of the Kubernetes API server.
+        :param kubernetes_ca_cert: str, PEM encoded CA cert for use by the TLS client used to talk with the Kubernetes API.
+        :param token_reviewer_jwt: str, A service account JWT used to access the TokenReview API to validate other
+        JWTs during login. If not set the JWT used for login will be used to access the API.
+        :param pem_keys: list, Optional list of PEM-formated public keys or certificates used to verify the signatures of
+        Kubernetes service account JWTs. If a certificate is given, its public key will be extracted. Not every
+        installation of Kubernetes exposes these keys.
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the config POST request
         """
 
-        url = 'v1/auth/{0}/config'.format(mount_point)
         params = {
             'host': host,
-            'kubernetes_ca_cert': cert,
+            'kubernetes_ca_cert': kubernetes_ca_cert,
         }
 
-        if jwt_token is not None:
-            params['token_reviewer_jwt'] = jwt_token
+        if token_reviewer_jwt is not None:
+            params['token_reviewer_jwt'] = token_reviewer_jwt
         if pem_keys is not None:
             params['pem_keys'] = pem_keys
+
+        url = 'v1/auth/{0}/config'.format(mount_point)
         return self._post(url, json=params).json()
 
     def get_kubernetes_configuration(self, mount_point='kubernetes'):
         """
-        GET /auth/kubernetes/login
+        GET /auth/<mount_point>/config
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the config GET request
         """
 
         url = '/v1/auth/{0}/config'.format(mount_point)
         return self._get(url).json()
 
-    def auth_kubernetes(self, role, jwt, mount_point='kubernetes'):
+    def auth_kubernetes(self, role, jwt, use_token=True, mount_point='kubernetes'):
         """
-        POST /auth/kubernetes/login
+        POST /auth/<mount_point>/login
+        :param role: str, Name of the role against which the login is being attempted.
+        :param jwt: str, Signed JSON Web Token (JWT) for authenticating a service account.
+        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
+         attribute on the current Client class instance.
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the config POST request
         """
         params = {
             'role': role,
             'jwt': jwt
         }
         url = 'v1/auth/{0}/login'.format(mount_point)
-        return self._post(url, json=params).json()
+        return self.auth(url, json=params, use_token=use_token)
 
-    def create_kubernetes_role(self, mount_point='kubernetes', name=None, bound_service_accounts=None,
-                            bound_namespaces=None, ttl="", max_ttl="", period="", policies=None):
+    def create_kubernetes_role(self, name, bound_service_accounts, bound_namespaces=None, ttl="", max_ttl="",
+                               period="", policies=None, mount_point='kubernetes'):
         """
-        POST /auth/kubernetes/role/:name
+        POST /auth/<mount_point>/role/:name
+        :param name: str, Name of the role.
+        :param bound_service_accounts: list, List of service account names able to access this role. If set to "*" all
+        names are allowed, both this and bound_service_account_namespaces can not be "*".
+        :param bound_namespaces: list, List of namespaces allowed to access this role. If set to "*" all namespaces are allowed, both this and bound_service_account_names can not be set to "*".
+        :param ttl: str, The TTL period of tokens issued using this role in seconds.
+        :param max_ttl: str, The maximum allowed lifetime of tokens issued in seconds using this role.
+        :param period: str, If set, indicates that the token generated using this role should never expire.
+        The token should be renewed within the duration specified by this value. At each renewal, the token's TTL will
+        be set to the value of this parameter.
+        :param policies: list, Policies to be set on tokens issued using this role
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the create role POST request
         """
 
         params = {
@@ -1030,9 +1060,12 @@ class Client(object):
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
         return self._post(url, json=params).json()
 
-    def read_kubernetes_role(self, mount_point='kubernetes', name=''):
+    def read_kubernetes_role(self, name='', mount_point='kubernetes'):
         """
-        GET /auth/kubernetes/role/:name
+        GET /auth/<mount_point>/role/:name
+        :param name: str, Name of the role.
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the read role GET request
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
@@ -1040,15 +1073,20 @@ class Client(object):
 
     def list_kubernetes_role(self, mount_point='kubernetes'):
         """
-        GET /auth/kubernetes/role?list=true
+        GET /auth/<mount_point>/role?list=true
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return: dict, parsed JSON response from the list roles GET request
         """
 
         url = 'v1/auth/{0}/role?list=true'.format(mount_point)
         return self._get(url)
 
-    def delete_kubernetes_role(self, mount_point='kubernetes', role=''):
+    def delete_kubernetes_role(self, role='', mount_point='kubernetes'):
         """
-        DELETE /auth/kubernetes/role/:role
+        DELETE /auth/<mount_point>/role/:role
+        :param role: str, Name of the role.
+        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :return:  dict, parsed JSON response from the delete role DELETE request
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, role)
