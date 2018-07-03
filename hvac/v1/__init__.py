@@ -1031,14 +1031,15 @@ class Client(object):
         url = 'v1/auth/{0}/login'.format(mount_point)
         return self.auth(url, json=params, use_token=use_token)
 
-    def create_kubernetes_role(self, name, bound_service_accounts, bound_namespaces=None, ttl="", max_ttl="",
-                               period="", policies=None, mount_point='kubernetes'):
+    def create_kubernetes_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="",
+                               max_ttl="", period="", policies=None, mount_point='kubernetes'):
         """
         POST /auth/<mount_point>/role/:name
         :param name: str, Name of the role.
-        :param bound_service_accounts: list, List of service account names able to access this role. If set to "*" all
+        :param bound_service_account_names: list, List of service account names able to access this role. If set to "*" all
         names are allowed, both this and bound_service_account_namespaces can not be "*".
-        :param bound_namespaces: list, List of namespaces allowed to access this role. If set to "*" all namespaces are allowed, both this and bound_service_account_names can not be set to "*".
+        :param bound_service_account_namespaces: list, List of namespaces allowed to access this role. If set to "*" all
+        namespaces are allowed, both this and bound_service_account_names can not be set to "*".
         :param ttl: str, The TTL period of tokens issued using this role in seconds.
         :param max_ttl: str, The maximum allowed lifetime of tokens issued in seconds using this role.
         :param period: str, If set, indicates that the token generated using this role should never expire.
@@ -1048,10 +1049,13 @@ class Client(object):
         :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
         :return: dict, parsed JSON response from the create role POST request
         """
+        if bound_service_account_names == '*' and bound_service_account_namespaces == '*':
+            error_message = 'bound_service_account_names and bound_service_account_namespaces can not both be set to "*"'
+            raise exceptions.ParamValidationError(error_message)
 
         params = {
-            'bound_service_account_names': bound_service_accounts,
-            'bound_service_account_namespaces': bound_namespaces,
+            'bound_service_account_names': bound_service_account_names,
+            'bound_service_account_namespaces': bound_service_account_namespaces,
             'ttl': ttl,
             'max_ttl': max_ttl,
             'period': period,

@@ -33,3 +33,7 @@ class VaultDown(VaultError):
 
 class UnexpectedError(VaultError):
     pass
+
+
+class ParamValidationError(VaultError):
+    pass
