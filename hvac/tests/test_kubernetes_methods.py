@@ -252,8 +252,10 @@ class TestKubernetesMethods(TestCase):
                 'lease_duration': 10000,
                 'metadata': {
                     'role': 'custom_role',
-                    'service_account_email': 'dev1@project-123456.iam.gserviceaccount.com',
-                    'service_account_id': '111111111111111111111'
+                    'service_account_name': 'vault-auth',
+                    'service_account_namespace': 'default',
+                    'service_account_secret_name': 'vault-auth-token-pd21c',
+                    'service_account_uid': 'aa9aa8ff-98d0-11e7-9bb7-0800276d99bf'
                 },
                 'policies': [
                     'default',
