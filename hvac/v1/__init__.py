@@ -977,7 +977,7 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def create_kubernetes_configuration(self, host="", cert=None, jwt_token=None, pem_keys=[], mountpoint='kubernetes'):
+    def create_kubernetes_configuration(self, host="", cert=None, jwt_token=None, pem_keys=None, mount_point='kubernetes'):
         """
         POST /auth/kubernetes/config
         """
@@ -987,8 +987,11 @@ class Client(object):
             'host': host,
             'kubernetes_ca_cert': cert,
         }
-        if jwt_token is not None: params['token_reviewer_jwt'] = jwt_token
-        if len(pem_keys) > 0: params['pem_keys'] = pem_keys
+
+        if jwt_token is not None:
+            params['token_reviewer_jwt'] = jwt_token
+        if pem_keys is not None:
+            params['pem_keys'] = pem_keys
         return self._post(url, json=params).json()
 
     def get_kubernetes_configuration(self, mount_point='kubernetes'):
@@ -1010,8 +1013,8 @@ class Client(object):
         url = 'v1/auth/{0}/login'.format(mount_point)
         return self._post(url, json=params).json()
 
-    def create_kubernetes_role(self, mount_point='kubernetes', name=None, bound_service_accounts=[],
-                            bound_namespaces=[], ttl="", max_ttl="", period="", policies=[]):
+    def create_kubernetes_role(self, mount_point='kubernetes', name=None, bound_service_accounts=None,
+                            bound_namespaces=None, ttl="", max_ttl="", period="", policies=None):
         """
         POST /auth/kubernetes/role/:name
         """
@@ -1040,7 +1043,7 @@ class Client(object):
         GET /auth/kubernetes/role?list=true
         """
 
-        url = 'v1/auth/{0}/role?list=true'.format(mountpoint)
+        url = 'v1/auth/{0}/role?list=true'.format(mount_point)
         return self._get(url)
 
     def delete_kubernetes_role(self, mount_point='kubernetes', role=''):
@@ -1048,7 +1051,7 @@ class Client(object):
         DELETE /auth/kubernetes/role/:role
         """
 
-        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, role)
         return self._delete(url)
 
     def close(self):
