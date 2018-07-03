@@ -1222,10 +1222,10 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def create_kubernetes_configuration(self, host="", kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
+    def create_kubernetes_configuration(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
         """
         POST /auth/<mount_point>/config
-        :param host: str, a host:port pair, or a URL to the base of the Kubernetes API server.
+        :param kubernetes_host: str, a host:port pair, or a URL to the base of the Kubernetes API server.
         :param kubernetes_ca_cert: str, PEM encoded CA cert for use by the TLS client used to talk with the Kubernetes API.
         :param token_reviewer_jwt: str, A service account JWT used to access the TokenReview API to validate other
         JWTs during login. If not set the JWT used for login will be used to access the API.
@@ -1237,7 +1237,7 @@ class Client(object):
         """
 
         params = {
-            'host': host,
+            'kubernetes_host': kubernetes_host,
             'kubernetes_ca_cert': kubernetes_ca_cert,
         }
 
