@@ -1,3 +1,61 @@
+# Changelog
+
+## 0.6.0 (June 14, 2018)
+
+BACKWARDS COMPATIBILITY NOTICE:
+
+* Token revocation now sends the token in the request payload. Requires Vault >0.6.5
+* Various methods have new and/or re-ordered keyword arguments. Code calling these methods with positional arguments
+may need to be modified.
+
+IMPROVEMENTS:
+
+* Ensure mount_point Parameter for All AWS EC2 Methods [GH-195]
+* Add Methods for Auth Backend Tuning [GH-193]
+* Customizable approle path / mount_point [GH-190]
+* Add more methods for the userpass backend [GH-175]
+* Add transit signature_algorithm parameter [GH-174]
+* Add auth_iam_aws() method [GH-170]
+* lookup_token function POST token not GET [GH-164]
+* Create_role_secret_id with wrap_ttl & fix get_role_secret_id_accessor [GH-159]
+* Fixed json() from dict bug and added additional arguments on auth_ec2() method [GH-157]
+* Support specifying period when creating EC2 roles [GH-140]
+* Added support for /sys/generate-root endpoint [GH-131] / [GH-199]
+* Added "auth_cubbyhole" method [GH-119]
+* Send token/accessor as a payload to avoid being logged [GH-117]
+* Add AppRole delete_role method [GH-112]
+
+
+BUG FIXES:
+
+* Always Specify auth_type In create_ec2_role [GH-197]
+* Fix "double parasing" of JSON response in auth_ec2 method [GH-181]
+
+Thanks to @freimer, @ramiamar, @marcoslopes, @ianwestcott, @marc-sensenich, @sunghyun-lee, @jnaulty, @sijis,
+@Myles-Steinhauser-Bose, @oxmane, @ltm, @bchannak, @tkinz27, @crmulliner, for their lovely contributions.
+
+## 0.5.0 (February 20, 2018)
+
+IMPROVEMENTS:
+
+* Added `disallowed_policies` parameter to `create_token_role` method [GH-169]
+
+Thanks to @morganda for their lovely contribution.
+
+## 0.4.0 (February 1, 2018)
+
+IMPROVEMENTS:
+
+* Add support for the `period` parameter on token creation [GH-167]
+* Add support for the `cidr_list` parameter for approle secrets [GH-114]
+
+BUG FIXES:
+
+* Documentation is now more accurate [GH-165] / [GH-154]
+
+Thanks to @ti-mo, @dhoeric, @RAbraham, @lhdumittan, @ahsanali for
+their lovely contributions.
+
 ## 0.3.0 (November 9, 2017)
 
 This is just the highlights, there have been a bunch of changes!

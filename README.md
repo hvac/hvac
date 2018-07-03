@@ -15,7 +15,7 @@ pip install hvac
 ```
 or
 ```bash
-pip install hvac[parser]
+pip install "hvac[parser]"
 ```
 if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
@@ -60,10 +60,33 @@ assert client.is_authenticated() # => True
 client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
 # App Role
-client.auth_approle('MY_ROLE_ID', 'MY_ROLE_ID')
+client.auth_approle('MY_ROLE_ID', 'MY_SECRET_ID')
+
+# AWS (IAM)
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY')
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', 'MY_AWS_SESSION_TOKEN')
+client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', role='MY_ROLE')
+
+import boto3
+session = boto3.Session()
+credentials = session.get_credentials()
+client.auth_aws_iam(credentials.access_key, credentials.secret_key, credentials.token)
 
 # GitHub
 client.auth_github('MY_GITHUB_TOKEN')
+
+# GCP (from GCE instance)
+import requests
+
+VAULT_ADDR="https://vault.example.com:8200"
+ROLE="example"
+AUDIENCE_URL =  VAULT_ADDR + "/vault/" + ROLE
+METADATA_HEADERS = {'Metadata-Flavor': 'Google'}
+FORMAT = 'full'
+
+url = 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience={}&format={}'.format(AUDIENCE_URL, FORMAT)
+r = requests.get(url, headers=METADATA_HEADERS)
+client.auth_gcp(ROLE, r.text)
 
 # LDAP, Username & Password
 client.auth_ldap('MY_USERNAME', 'MY_PASSWORD')
@@ -229,8 +252,9 @@ print(client.is_sealed()) # => True
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
-1. [Install Vault](https://vaultproject.io/docs/install/index.html)
+1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `VAULT_BRANCH=release scripts/install-vault-release.sh`
 2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
+3. Run tests: `make test`
 
 ## Contributing
 
