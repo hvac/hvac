@@ -709,6 +709,24 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    def auth_kubernetes(self, role, jwt, mount_point='kubernetes', use_token=True):
+        """
+        POST /auth/<mount point>/login
+        :param role: str, identifier for the Kubernetes auth backend role being requested
+        :param jwt: str, Kubernetes service account JSON Web Token
+        :param mount_point: str, The "path" the Kubernetes auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
+        attribute on the current Client class instance.
+        :return: dict, parsed JSON response from the auth POST request
+        """
+
+        params = {
+            'role': role,
+            'jwt': jwt
+        }
+
+        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """
         POST /auth/<mount point>/users/<username>
