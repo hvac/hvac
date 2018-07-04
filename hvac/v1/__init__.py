@@ -21,16 +21,19 @@ except ImportError:
 
 
 class Client(object):
+    _version = 1
+
+    # Kineticit - Add version parameter to support vault backend kv-v2
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None):
+                 allow_redirects=True, session=None, version=1):
 
         if not session:
             session = requests.Session()
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
-
+        self._version = version
         self._url = url
         self._kwargs = {
             'cert': cert,
@@ -44,7 +47,11 @@ class Client(object):
         GET /<path>
         """
         try:
-            return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
+            # Kineticit - Update URLs for vault backend kv-v2
+            if self._version == 1:
+                return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
+            elif self._version == 2:
+                return self._get('/v1/secret/data/{}'.format(path), wrap_ttl=wrap_ttl).json()
         except exceptions.InvalidPath:
             return None
 
@@ -56,7 +63,11 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._get('/v1/{}'.format(path), params=payload).json()
+            # Kineticit - Update URLs for vault backend kv-v2
+            if self._version == 1:
+                return self._get('/v1/{}'.format(path), params=payload).json()
+            elif self._version == 2:
+                return self._get('/v1/secret/metadata/{}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -64,7 +75,11 @@ class Client(object):
         """
         POST /<path>
         """
-        response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
+        # Kineticit - Update URLs for vault backend kv-v2
+        if self._version == 1:
+            response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
+        elif self._version == 2:
+            response = self._post('/v1/secret/data/{0}'.format(path), data=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
             return response.json()
@@ -639,7 +654,8 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='',
+                     use_token=True):
         """
         POST /auth/<mount point>/login
         """
@@ -894,7 +910,7 @@ class Client(object):
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
                         bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
-                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
+                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None, ttl=None, max_ttl=None, period=None,
                         policies=None, allow_instance_migration=False, disallow_reauthentication=False,
                         resolve_aws_unique_ids=None, mount_point='aws-ec2'):
         """
@@ -1041,7 +1057,8 @@ class Client(object):
 
         self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
-    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
+    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None,
+                          description=None,
                           audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
                           passthrough_request_headers=None):
         """
@@ -1501,16 +1518,24 @@ class Client(object):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        response = self.session.request(method, url, headers=headers,
-                                        allow_redirects=False, **_kwargs)
+        if self._version == 1:
+            response = self.session.request(method, url, headers=headers,
+                                            allow_redirects=False, **_kwargs)
+        elif self._version == 2:
+            response = self.session.request(method, url, headers=headers,
+                                            allow_redirects=False, data=json.dumps(_kwargs))
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
             url = urljoin(self._url, response.headers['Location'])
-            response = self.session.request(method, url, headers=headers,
-                                            allow_redirects=False, **_kwargs)
+            if self._version == 1:
+                response = self.session.request(method, url, headers=headers,
+                                                allow_redirects=False, **_kwargs)
+            elif self._version == 2:
+                response = self.session.request(method, url, headers=headers,
+                                                allow_redirects=False, data=json.dumps(_kwargs))
 
-        if response.status_code >= 400 and response.status_code < 600:
+        if 400 <= response.status_code < 600:
             text = errors = None
             if response.headers.get('Content-Type') == 'application/json':
                 errors = response.json().get('errors')
