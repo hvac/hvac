@@ -89,7 +89,9 @@ r = requests.get(url, headers=METADATA_HEADERS)
 client.auth_gcp(ROLE, r.text)
 
 # Kubernetes (from k8s pod)
-TODO: need to add an example reading JWT from /var/run/secrets/kubernetes.io/serviceaccount/token
+f = open('/var/run/secrets/kubernetes.io/serviceaccount/token')
+jwt = f.read()
+client.auth_kubernetes("example", jwt)
 
 # LDAP, Username & Password
 client.auth_ldap('MY_USERNAME', 'MY_PASSWORD')
