@@ -26,14 +26,13 @@ class Client(object):
     # Kineticit - Add version parameter to support vault backend kv-v2
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, version=1):
+                 allow_redirects=True, session=None):
 
         if not session:
             session = requests.Session()
         self.allow_redirects = allow_redirects
         self.session = session
         self.token = token
-        self._version = version
         self._url = url
         self._kwargs = {
             'cert': cert,
@@ -41,6 +40,15 @@ class Client(object):
             'timeout': timeout,
             'proxies': proxies,
         }
+
+        # auto detect backend version
+        try:
+            json_back = self.list_secret_backends()
+            if 'data' in json_back and 'kv/' in json_back['data']:
+                detected_version = json_back['data']['kv/']['options']['version']
+                self._version = int(detected_version)
+        except:
+            print('Cant determine backend version')
 
     def read(self, path, wrap_ttl=None):
         """
@@ -50,7 +58,7 @@ class Client(object):
             # Kineticit - Update URLs for vault backend kv-v2
             if self._version == 1:
                 return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
-            elif self._version == 2:
+            elif self._version >= 2:
                 return self._get('/v1/secret/data/{}'.format(path), wrap_ttl=wrap_ttl).json()
         except exceptions.InvalidPath:
             return None
@@ -66,7 +74,7 @@ class Client(object):
             # Kineticit - Update URLs for vault backend kv-v2
             if self._version == 1:
                 return self._get('/v1/{}'.format(path), params=payload).json()
-            elif self._version == 2:
+            elif self._version >= 2:
                 return self._get('/v1/secret/metadata/{}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
@@ -78,7 +86,7 @@ class Client(object):
         # Kineticit - Update URLs for vault backend kv-v2
         if self._version == 1:
             response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
-        elif self._version == 2:
+        elif self._version >= 2:
             response = self._post('/v1/secret/data/{0}'.format(path), data=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
@@ -1521,7 +1529,7 @@ class Client(object):
         if self._version == 1:
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
-        elif self._version == 2:
+        elif self._version >= 2:
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, data=json.dumps(_kwargs))
 
@@ -1531,7 +1539,7 @@ class Client(object):
             if self._version == 1:
                 response = self.session.request(method, url, headers=headers,
                                                 allow_redirects=False, **_kwargs)
-            elif self._version == 2:
+            elif self._version >= 2:
                 response = self.session.request(method, url, headers=headers,
                                                 allow_redirects=False, data=json.dumps(_kwargs))
 
