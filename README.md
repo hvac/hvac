@@ -37,6 +37,9 @@ client = hvac.Client(url='https://localhost:8200')
 # Using TLS with client-side certificate authentication
 client = hvac.Client(url='https://localhost:8200',
                      cert=('path/to/cert.pem', 'path/to/key.pem'))
+
+ # Skipping TLS verification entirely (should only be used for local development; unsafe for production clusters)
+ client = hvac.Client(url='https://localhost:8200', verify=False)
 ```
 
 ### Read and write to secret backends
