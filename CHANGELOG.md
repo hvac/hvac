@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.6.1 (July 5th, 2018)
+
+IMPROVEMENTS:
+
+* Update `unwrap()` method to match current Vault versions [GH-149]
+* Initial support for Kubernetes authentication backend [GH-210]
+* Initial support for Google Cloud Platform (GCP) authentication backend [GH-206]
+* Update enable_secret_backend function to support kv version 2 [GH-201]
+
+
+BUG FIXES:
+
+* Change URL parsing to allow for routes in the base Vault address (e.g., `https://example.com/vault`) [GH-212].
+
+Thanks to @mracter, @cdsf, @SiN, @seanmalloy, for their lovely contributions.
+
 ## 0.6.0 (June 14, 2018)
 
 BACKWARDS COMPATIBILITY NOTICE:
