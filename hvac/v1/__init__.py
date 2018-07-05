@@ -14,11 +14,6 @@ import requests
 from hvac import aws_utils
 from hvac import exceptions
 
-try:
-    from urlparse import urljoin
-except ImportError:
-    from urllib.parse import urljoin
-
 
 class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
@@ -1602,8 +1597,17 @@ class Client(object):
     def _delete(self, url, **kwargs):
         return self.__request('delete', url, **kwargs)
 
+    @staticmethod
+    def urljoin(*args):
+        """
+        Joins given arguments into a url. Trailing and leading slashes are
+        stripped for each argument.
+        """
+
+        return '/'.join(map(lambda x: str(x).strip('/'), args))
+
     def __request(self, method, url, headers=None, **kwargs):
-        url = urljoin(self._url, url)
+        url = self.urljoin(self._url, url)
 
         if not headers:
             headers = {}
@@ -1623,7 +1627,7 @@ class Client(object):
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
-            url = urljoin(self._url, response.headers['Location'])
+            url = self.urljoin(self._url, response.headers['Location'])
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
 
