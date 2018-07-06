@@ -1585,7 +1585,6 @@ class Client(object):
 
     # to support backwards compatibility with version 1, for version to remove the leading 'secret/' from the path
     def __cleanse_path(self, secret_path):
-        # cleanse the path of the leading secret/ if this is version 2+
         if self._version >= 2 and secret_path.startswith('secret/'):
             secret_path = secret_path[7:]
 
