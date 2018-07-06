@@ -59,7 +59,7 @@ class Client(object):
             if self._version == 1:
                 return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
             elif self._version >= 2:
-                return self._get('/v1/secret/data/{}'.format(path), wrap_ttl=wrap_ttl).json()
+                return self._get('/v1/secret/data/{}'.format(self.__cleanse_path(path)), wrap_ttl=wrap_ttl).json()
         except exceptions.InvalidPath:
             return None
 
@@ -73,9 +73,9 @@ class Client(object):
             }
             # Kineticit - Update URLs for vault backend kv-v2
             if self._version == 1:
-                return self._get('/v1/{}'.format(path), params=payload).json()
+                return self._get('/v1/{0}'.format(path), params=payload).json()
             elif self._version >= 2:
-                return self._get('/v1/secret/metadata/{}'.format(path), params=payload).json()
+                return self._get('/v1/secret/metadata/{0}'.format(self.__cleanse_path(path)), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -87,7 +87,7 @@ class Client(object):
         if self._version == 1:
             response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
         elif self._version >= 2:
-            response = self._post('/v1/secret/data/{0}'.format(path), data=kwargs, wrap_ttl=wrap_ttl)
+            response = self._post('/v1/secret/data/{0}'.format(self.__cleanse_path(path)), data=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
             return response.json()
@@ -96,7 +96,11 @@ class Client(object):
         """
         DELETE /<path>
         """
-        self._delete('/v1/{0}'.format(path))
+        # Kineticit - Update URLs for vault backend kv-v2
+        if self._version == 1:
+            self._delete('/v1/{0}'.format(path))
+        elif self._version >= 2:
+            self._delete('/v1/secret/data/{0}'.format(self.__cleanse_path(path)))
 
     def unwrap(self, token=None):
         """
@@ -1526,12 +1530,17 @@ class Client(object):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
+        params = {}
+        if 'params' in _kwargs:
+            params = _kwargs['params']
+
         if self._version == 1:
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
         elif self._version >= 2:
+            # KV V2 does not support python single quote delimited JSON convert to double quotes using json.dumps
             response = self.session.request(method, url, headers=headers,
-                                            allow_redirects=False, data=json.dumps(_kwargs))
+                                            allow_redirects=False, data=json.dumps(_kwargs), params=params)
 
         # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
@@ -1540,8 +1549,9 @@ class Client(object):
                 response = self.session.request(method, url, headers=headers,
                                                 allow_redirects=False, **_kwargs)
             elif self._version >= 2:
+                # KV V2 does not support python single quote delimited JSON convert to double quotes using json.dumps
                 response = self.session.request(method, url, headers=headers,
-                                                allow_redirects=False, data=json.dumps(_kwargs))
+                                                allow_redirects=False, data=json.dumps(_kwargs), params=params)
 
         if 400 <= response.status_code < 600:
             text = errors = None
@@ -1572,3 +1582,11 @@ class Client(object):
             raise exceptions.VaultDown(message, errors=errors)
         else:
             raise exceptions.UnexpectedError(message)
+
+    # to support backwards compatibility with version 1, for version to remove the leading 'secret/' from the path
+    def __cleanse_path(self, secret_path):
+        # cleanse the path of the leading secret/ if this is version 2+
+        if self._version >= 2 and secret_path.startswith('secret/'):
+            secret_path = secret_path[7:]
+
+        return secret_path
