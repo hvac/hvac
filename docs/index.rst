@@ -7,7 +7,7 @@ Welcome to hvac's documentation!
    :caption: Contents:
 
 
-   Quickstart <readme>
+   Readme <readme>
    Examples <examples/examples>
    source/hvac
    contributing
