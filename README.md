@@ -56,9 +56,3 @@ client.delete('secret/foo')
 client.token = 'MY_TOKEN'
 assert client.is_authenticated() # => True
 ```
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-
