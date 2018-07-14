@@ -6,6 +6,10 @@
 
 Tested against Vault v0.1.2 and HEAD. Requires v0.1.2 or later.
 
+## Documentation
+
+Documentation for this module is hosted on [readthedocs.io](https://hvac.readthedocs.io/en/latest/).
+
 ## Getting started
 
 ### Installation
