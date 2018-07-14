@@ -8,7 +8,6 @@ hvac.v1.Client
     :members:
     :undoc-members:
     :show-inheritance:
-    :private-members:
 
 hvac.aws\_utils
 ----------------------
