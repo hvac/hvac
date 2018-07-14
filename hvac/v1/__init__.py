@@ -19,6 +19,25 @@ class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None):
+        """
+
+        :param url:
+        :type url:
+        :param token:
+        :type token:
+        :param cert:
+        :type cert:
+        :param verify:
+        :type verify:
+        :param timeout:
+        :type timeout:
+        :param proxies:
+        :type proxies:
+        :param allow_redirects:
+        :type allow_redirects:
+        :param session:
+        :type session:
+        """
 
         if not session:
             session = requests.Session()
@@ -35,8 +54,14 @@ class Client(object):
         }
 
     def read(self, path, wrap_ttl=None):
-        """
-        GET /<path>
+        """GET /<path>
+
+        :param path:
+        :type path:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
         """
         try:
             return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
@@ -44,8 +69,12 @@ class Client(object):
             return None
 
     def list(self, path):
-        """
-        GET /<path>?list=true
+        """GET /<path>?list=true
+
+        :param path:
+        :type path:
+        :return:
+        :rtype:
         """
         try:
             payload = {
@@ -56,8 +85,16 @@ class Client(object):
             return None
 
     def write(self, path, wrap_ttl=None, **kwargs):
-        """
-        POST /<path>
+        """POST /<path>
+
+        :param path:
+        :type path:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
         response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
@@ -65,15 +102,22 @@ class Client(object):
             return response.json()
 
     def delete(self, path):
-        """
-        DELETE /<path>
+        """DELETE /<path>
+
+        :param path:
+        :type path:
+        :return:
+        :rtype:
         """
         self._delete('/v1/{0}'.format(path))
 
     def unwrap(self, token=None):
-        """
-        POST /sys/wrapping/unwrap
-        X-Vault-Token: <token>
+        """POST /sys/wrapping/unwrap
+
+        :param token:
+        :type token:
+        :return:
+        :rtype:
         """
         if token:
             payload = {
@@ -84,14 +128,24 @@ class Client(object):
             return self._post('/v1/sys/wrapping/unwrap').json()
 
     def is_initialized(self):
-        """
-        GET /sys/init
+        """GET /sys/init
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/init').json()['initialized']
 
     def initialize(self, secret_shares=5, secret_threshold=3, pgp_keys=None):
-        """
-        PUT /sys/init
+        """PUT /sys/init
+
+        :param secret_shares:
+        :type secret_shares:
+        :param secret_threshold:
+        :type secret_threshold:
+        :param pgp_keys:
+        :type pgp_keys:
+        :return:
+        :rtype:
         """
         params = {
             'secret_shares': secret_shares,
@@ -108,23 +162,34 @@ class Client(object):
 
     @property
     def seal_status(self):
-        """
-        GET /sys/seal-status
+        """GET /sys/seal-status
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/seal-status').json()
 
     def is_sealed(self):
+        """
+
+        :return:
+        :rtype:
+        """
         return self.seal_status['sealed']
 
     def seal(self):
-        """
-        PUT /sys/seal
+        """PUT /sys/seal
+
+        :return:
+        :rtype:
         """
         self._put('/v1/sys/seal')
 
     def unseal_reset(self):
-        """
-        PUT /sys/unseal
+        """PUT /sys/unseal
+
+        :return:
+        :rtype:
         """
         params = {
             'reset': True,
@@ -132,9 +197,13 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
+        """PUT /sys/unseal
+
+        :param key:
+        :type key:
+        :return:
+        :rtype:
         """
-         PUT /sys/unseal
-         """
         params = {
             'key': key,
         }
@@ -142,6 +211,13 @@ class Client(object):
         return self._put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
+        """
+
+        :param keys:
+        :type keys:
+        :return:
+        :rtype:
+        """
         result = None
 
         for key in keys:
@@ -153,14 +229,22 @@ class Client(object):
 
     @property
     def generate_root_status(self):
-        """
-        GET /sys/generate-root/attempt
+        """GET /sys/generate-root/attempt
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/generate-root/attempt').json()
 
     def start_generate_root(self, key, otp=False):
-        """
-        PUT /sys/generate-root/attempt
+        """PUT /sys/generate-root/attempt
+
+        :param key:
+        :type key:
+        :param otp:
+        :type otp:
+        :return:
+        :rtype:
         """
         params = {}
         if otp:
@@ -171,8 +255,14 @@ class Client(object):
         return self._put('/v1/sys/generate-root/attempt', json=params).json()
 
     def generate_root(self, key, nonce):
-        """
-        PUT /sys/generate-root/update
+        """PUT /sys/generate-root/update
+
+        :param key:
+        :type key:
+        :param nonce:
+        :type nonce:
+        :return:
+        :rtype:
         """
         params = {
             'key': key,
@@ -182,36 +272,54 @@ class Client(object):
         return self._put('/v1/sys/generate-root/update', json=params).json()
 
     def cancel_generate_root(self):
-        """
-        DELETE /sys/generate-root/attempt
+        """DELETE /sys/generate-root/attempt
+
+        :return:
+        :rtype:
         """
 
         return self._delete('/v1/sys/generate-root/attempt').status_code == 204
 
     @property
     def key_status(self):
-        """
-        GET /sys/key-status
+        """GET /sys/key-status
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/key-status').json()
 
     def rotate(self):
-        """
-        PUT /sys/rotate
+        """PUT /sys/rotate
+
+        :return:
+        :rtype:
         """
         self._put('/v1/sys/rotate')
 
     @property
     def rekey_status(self):
-        """
-        GET /sys/rekey/init
+        """GET /sys/rekey/init
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/rekey/init').json()
 
     def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None,
                     backup=False):
-        """
-        PUT /sys/rekey/init
+        """PUT /sys/rekey/init
+
+        :param secret_shares:
+        :type secret_shares:
+        :param secret_threshold:
+        :type secret_threshold:
+        :param pgp_keys:
+        :type pgp_keys:
+        :param backup:
+        :type backup:
+        :return:
+        :rtype:
         """
         params = {
             'secret_shares': secret_shares,
@@ -230,14 +338,22 @@ class Client(object):
             return resp.json()
 
     def cancel_rekey(self):
-        """
-        DELETE /sys/rekey/init
+        """DELETE /sys/rekey/init
+
+        :return:
+        :rtype:
         """
         self._delete('/v1/sys/rekey/init')
 
     def rekey(self, key, nonce=None):
-        """
-        PUT /sys/rekey/update
+        """PUT /sys/rekey/update
+
+        :param key:
+        :type key:
+        :param nonce:
+        :type nonce:
+        :return:
+        :rtype:
         """
         params = {
             'key': key,
@@ -249,6 +365,15 @@ class Client(object):
         return self._put('/v1/sys/rekey/update', json=params).json()
 
     def rekey_multi(self, keys, nonce=None):
+        """
+
+        :param keys:
+        :type keys:
+        :param nonce:
+        :type nonce:
+        :return:
+        :rtype:
+        """
         result = None
 
         for key in keys:
@@ -259,21 +384,31 @@ class Client(object):
         return result
 
     def get_backed_up_keys(self):
-        """
-        GET /sys/rekey/backup
+        """GET /sys/rekey/backup
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/rekey/backup').json()
 
     @property
     def ha_status(self):
-        """
-        GET /sys/leader
+        """GET /sys/leader
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/leader').json()
 
     def renew_secret(self, lease_id, increment=None):
-        """
-        PUT /sys/leases/renew
+        """PUT /sys/leases/renew
+
+        :param lease_id:
+        :type lease_id:
+        :param increment:
+        :type increment:
+        :return:
+        :rtype:
         """
         params = {
             'lease_id': lease_id,
@@ -282,32 +417,56 @@ class Client(object):
         return self._put('/v1/sys/leases/renew', json=params).json()
 
     def revoke_secret(self, lease_id):
-        """
-        PUT /sys/revoke/<lease id>
+        """PUT /sys/revoke/<lease id>
+
+        :param lease_id:
+        :type lease_id:
+        :return:
+        :rtype:
         """
         self._put('/v1/sys/revoke/{0}'.format(lease_id))
 
     def revoke_secret_prefix(self, path_prefix):
-        """
-        PUT /sys/revoke-prefix/<path prefix>
+        """PUT /sys/revoke-prefix/<path prefix>
+
+        :param path_prefix:
+        :type path_prefix:
+        :return:
+        :rtype:
         """
         self._put('/v1/sys/revoke-prefix/{0}'.format(path_prefix))
 
     def revoke_self_token(self):
-        """
-        PUT /auth/token/revoke-self
+        """PUT /auth/token/revoke-self
+
+        :return:
+        :rtype:
         """
         self._put('/v1/auth/token/revoke-self')
 
     def list_secret_backends(self):
-        """
-        GET /sys/mounts
+        """GET /sys/mounts
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/mounts').json()
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
-        """
-        POST /sys/auth/<mount point>
+        """POST /sys/auth/<mount point>
+
+        :param backend_type:
+        :type backend_type:
+        :param description:
+        :type description:
+        :param mount_point:
+        :type mount_point:
+        :param config:
+        :type config:
+        :param options:
+        :type options:
+        :return:
+        :rtype:
         """
         if not mount_point:
             mount_point = backend_type
@@ -324,8 +483,7 @@ class Client(object):
     def tune_secret_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
                             audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
                             passthrough_request_headers=None):
-        """
-        POST /sys/mounts/<mount point>/tune
+        """POST /sys/mounts/<mount point>/tune
 
         :param backend_type: Type of the secret backend to modify
         :type backend_type: str
@@ -333,24 +491,27 @@ class Client(object):
         :type mount_point: str
         :param description: Specifies the description of the mount. This overrides the current stored value, if any.
         :type description: str
-        :param default_lease_ttl: Default time-to-live. This overrides the global default. A value of 0 is equivalent to the system default TTL
+        :param default_lease_ttl: Default time-to-live. This overrides the global default. A value of 0 is equivalent to
+            the system default TTL
         :type default_lease_ttl: int
-        :param max_lease_ttl: Maximum time-to-live. This overrides the global default. A value of 0 are equivalent and set to the system max TTL.
+        :param max_lease_ttl: Maximum time-to-live. This overrides the global default. A value of 0 are equivalent and
+            set to the system max TTL.
         :type max_lease_ttl: int
-        :param audit_non_hmac_request_keys: Specifies the comma-separated list of keys that will not be HMAC'd by
-        audit devices in the request data object.
+        :param audit_non_hmac_request_keys: Specifies the comma-separated list of keys that will not be HMAC'd by audit
+            devices in the request data object.
         :type audit_non_hmac_request_keys: list
-        :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd
-        by audit devices in the response data object.
+        :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd by audit
+            devices in the response data object.
         :type audit_non_hmac_response_keys: list
-        :param listing_visibility: Speficies whether to show this mount in the UI-specific listing endpoint.
-        Valid values are "unauth" or "".
+        :param listing_visibility: Speficies whether to show this mount in the UI-specific listing endpoint. Valid
+            values are "unauth" or "".
         :type listing_visibility: str
         :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request
-        to the backend.
+            to the backend.
         :type passthrough_request_headers: str
 
-        :return: dict, The JSON response from Vault
+        :return: The JSON response from Vault
+        :rtype: dict.
         """
 
         if not mount_point:
@@ -373,8 +534,14 @@ class Client(object):
         return self._post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
 
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
-        """
-        GET /sys/mounts/<mount point>/tune
+        """GET /sys/mounts/<mount point>/tune
+
+        :param backend_type:
+        :type backend_type:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if not mount_point:
             mount_point = backend_type
@@ -382,14 +549,24 @@ class Client(object):
         return self._get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
 
     def disable_secret_backend(self, mount_point):
-        """
-        DELETE /sys/mounts/<mount point>
+        """DELETE /sys/mounts/<mount point>
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         self._delete('/v1/sys/mounts/{0}'.format(mount_point))
 
     def remount_secret_backend(self, from_mount_point, to_mount_point):
-        """
-        POST /sys/remount
+        """POST /sys/remount
+
+        :param from_mount_point:
+        :type from_mount_point:
+        :param to_mount_point:
+        :type to_mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'from': from_mount_point,
@@ -399,14 +576,22 @@ class Client(object):
         self._post('/v1/sys/remount', json=params)
 
     def list_policies(self):
-        """
-        GET /sys/policy
+        """GET /sys/policy
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/policy').json()['policies']
 
     def get_policy(self, name, parse=False):
-        """
-        GET /sys/policy/<name>
+        """GET /sys/policy/<name>
+
+        :param name:
+        :type name:
+        :param parse:
+        :type parse:
+        :return:
+        :rtype:
         """
         try:
             policy = self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
@@ -421,8 +606,14 @@ class Client(object):
             return None
 
     def set_policy(self, name, rules):
-        """
-        PUT /sys/policy/<name>
+        """PUT /sys/policy/<name>
+
+        :param name:
+        :type name:
+        :param rules:
+        :type rules:
+        :return:
+        :rtype:
         """
 
         if isinstance(rules, dict):
@@ -435,20 +626,36 @@ class Client(object):
         self._put('/v1/sys/policy/{0}'.format(name), json=params)
 
     def delete_policy(self, name):
-        """
-        DELETE /sys/policy/<name>
+        """DELETE /sys/policy/<name>
+
+        :param name:
+        :type name:
+        :return:
+        :rtype:
         """
         self._delete('/v1/sys/policy/{0}'.format(name))
 
     def list_audit_backends(self):
-        """
-        GET /sys/audit
+        """GET /sys/audit
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/audit').json()
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
-        """
-        POST /sys/audit/<name>
+        """POST /sys/audit/<name>
+
+        :param backend_type:
+        :type backend_type:
+        :param description:
+        :type description:
+        :param options:
+        :type options:
+        :param name:
+        :type name:
+        :return:
+        :rtype:
         """
         if not name:
             name = backend_type
@@ -462,14 +669,24 @@ class Client(object):
         self._post('/v1/sys/audit/{0}'.format(name), json=params)
 
     def disable_audit_backend(self, name):
-        """
-        DELETE /sys/audit/<name>
+        """DELETE /sys/audit/<name>
+
+        :param name:
+        :type name:
+        :return:
+        :rtype:
         """
         self._delete('/v1/sys/audit/{0}'.format(name))
 
     def audit_hash(self, name, input):
-        """
-        POST /sys/audit-hash
+        """POST /sys/audit-hash
+
+        :param name:
+        :type name:
+        :param input:
+        :type input:
+        :return:
+        :rtype:
         """
         params = {
             'input': input,
@@ -481,10 +698,44 @@ class Client(object):
                      num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False, wrap_ttl=None, renewable=None,
                      explicit_max_ttl=None, period=None):
-        """
-        POST /auth/token/create
+        """POST /auth/token/create
+
         POST /auth/token/create/<role>
+
         POST /auth/token/create-orphan
+
+        :param role:
+        :type role:
+        :param token_id:
+        :type token_id:
+        :param policies:
+        :type policies:
+        :param meta:
+        :type meta:
+        :param no_parent:
+        :type no_parent:
+        :param lease:
+        :type lease:
+        :param display_name:
+        :type display_name:
+        :param num_uses:
+        :type num_uses:
+        :param no_default_policy:
+        :type no_default_policy:
+        :param ttl:
+        :type ttl:
+        :param orphan:
+        :type orphan:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :param renewable:
+        :type renewable:
+        :param explicit_max_ttl:
+        :type explicit_max_ttl:
+        :param period:
+        :type period:
+        :return:
+        :rtype:
         """
         params = {
             'id': token_id,
@@ -517,10 +768,20 @@ class Client(object):
             return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
     def lookup_token(self, token=None, accessor=False, wrap_ttl=None):
-        """
-        GET /auth/token/lookup/<token>
+        """GET /auth/token/lookup/<token>
+
         GET /auth/token/lookup-accessor/<token-accessor>
+
         GET /auth/token/lookup-self
+
+        :param token:
+        :type token: str.
+        :param accessor:
+        :type accessor: str.
+        :param wrap_ttl:
+        :type wrap_ttl: int.
+        :return:
+        :rtype:
         """
         token_param = {
             'token': token,
@@ -540,10 +801,20 @@ class Client(object):
             return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
-        """
-        POST /auth/token/revoke
+        """POST /auth/token/revoke
+
         POST /auth/token/revoke-orphan
+
         POST /auth/token/revoke-accessor
+
+        :param token:
+        :type token:
+        :param orphan:
+        :type orphan:
+        :param accessor:
+        :type accessor:
+        :return:
+        :rtype:
         """
         if accessor and orphan:
             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
@@ -559,15 +830,28 @@ class Client(object):
             self._post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
-        """
-        POST /auth/token/revoke-prefix/<prefix>
+        """POST /auth/token/revoke-prefix/<prefix>
+
+        :param prefix:
+        :type prefix:
+        :return:
+        :rtype:
         """
         self._post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
     def renew_token(self, token=None, increment=None, wrap_ttl=None):
-        """
-        POST /auth/token/renew/<token>
+        """POST /auth/token/renew/<token>
+
         POST /auth/token/renew-self
+
+        :param token:
+        :type token:
+        :param increment:
+        :type increment:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
         """
         params = {
             'increment': increment,
@@ -583,8 +867,26 @@ class Client(object):
                           allowed_policies=None, disallowed_policies=None,
                           orphan=None, period=None, renewable=None,
                           path_suffix=None, explicit_max_ttl=None):
-        """
-        POST /auth/token/roles/<role>
+        """POST /auth/token/roles/<role>
+
+        :param role:
+        :type role:
+        :param allowed_policies:
+        :type allowed_policies:
+        :param disallowed_policies:
+        :type disallowed_policies:
+        :param orphan:
+        :type orphan:
+        :param period:
+        :type period:
+        :param renewable:
+        :type renewable:
+        :param path_suffix:
+        :type path_suffix:
+        :param explicit_max_ttl:
+        :type explicit_max_ttl:
+        :return:
+        :rtype:
         """
         params = {
             'allowed_policies': allowed_policies,
@@ -598,26 +900,40 @@ class Client(object):
         return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
 
     def token_role(self, role):
-        """
-        Returns the named token role.
+        """Returns the named token role.
+
+        :param role:
+        :type role:
+        :return:
+        :rtype:
         """
         return self.read('auth/token/roles/{0}'.format(role))
 
     def delete_token_role(self, role):
-        """
-        Deletes the named token role.
+        """Deletes the named token role.
+
+        :param role:
+        :type role:
+        :return:
+        :rtype:
         """
         return self.delete('auth/token/roles/{0}'.format(role))
 
     def list_token_roles(self):
-        """
-        GET /auth/token/roles?list=true
+        """GET /auth/token/roles?list=true
+
+        :return:
+        :rtype:
         """
         return self.list('auth/token/roles')
 
     def logout(self, revoke_token=False):
-        """
-        Clears the token used for authentication, optionally revoking it before doing so
+        """Clears the token used for authentication, optionally revoking it before doing so.
+
+        :param revoke_token:
+        :type revoke_token:
+        :return:
+        :rtype:
         """
         if revoke_token:
             self.revoke_self_token()
@@ -625,8 +941,10 @@ class Client(object):
         self.token = None
 
     def is_authenticated(self):
-        """
-        Helper method which returns the authentication status of the client
+        """Helper method which returns the authentication status of the client
+
+        :return:
+        :rtype:
         """
         if not self.token:
             return False
@@ -642,8 +960,18 @@ class Client(object):
             return False
 
     def auth_app_id(self, app_id, user_id, mount_point='app-id', use_token=True):
-        """
-        POST /auth/<mount point>/login
+        """POST /auth/<mount point>/login
+
+        :param app_id:
+        :type app_id:
+        :param user_id:
+        :type user_id:
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :return:
+        :rtype:
         """
         params = {
             'app_id': app_id,
@@ -653,14 +981,32 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_tls(self, mount_point='cert', use_token=True):
-        """
-        POST /auth/<mount point>/login
+        """POST /auth/<mount point>/login
+
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :return:
+        :rtype:
         """
         return self.auth('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
-        """
-        POST /auth/<mount point>/login/<username>
+        """POST /auth/<mount point>/login/<username>
+
+        :param username:
+        :type username:
+        :param password:
+        :type password:
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
         params = {
             'password': password,
@@ -671,8 +1017,24 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
-        """
-        POST /auth/<mount point>/login
+        """POST /auth/<mount point>/login
+
+        :param access_key:
+        :type access_key:
+        :param secret_key:
+        :type secret_key:
+        :param session_token:
+        :type session_token:
+        :param header_value:
+        :type header_value:
+        :param mount_point:
+        :type mount_point:
+        :param role:
+        :type role:
+        :param use_token:
+        :type use_token:
+        :return:
+        :rtype:
         """
         request = requests.Request(
             method='POST',
@@ -702,17 +1064,24 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
-        """
-        POST /auth/<mount point>/login
-        :param pkcs7: str, PKCS#7 version of an AWS Instance Identity Document from the EC2 Metadata Service.
-        :param nonce: str, optional nonce returned as part of the original authentication request. Not required if the
-         backend has "allow_instance_migration" or "disallow_reauthentication" options turned on.
-        :param role: str, identifier for the AWS auth backend role being requested
-        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
-         attribute on the current Client class instance.
-        :param mount_point: str, The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws".
-         "aws-ec2" is the default argument for backwards comparability within this module.
-        :return: dict, parsed JSON response from the auth POST request
+        """POST /auth/<mount point>/login
+
+        :param pkcs7: PKCS#7 version of an AWS Instance Identity Document from the EC2 Metadata Service.
+        :type pkcs7: str.
+        :param nonce: Optional nonce returned as part of the original authentication request. Not required if the backend
+            has "allow_instance_migration" or "disallow_reauthentication" options turned on.
+        :type nonce: str.
+        :param role: Identifier for the AWS auth backend role being requested.
+        :type role: str.
+        :param use_token: If True, uses the token in the response received from the auth request to set the "token"
+            attribute on the current Client class instance.
+        :type use_token: bool.
+        :param mount_point: The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws". "aws-ec2"
+            is the default argument for backwards comparability within this module.
+        :type mount_point: str.
+        :return: parsed JSON response from the auth POST request
+        :rtype: dict.
+
         """
         params = {'pkcs7': pkcs7}
         if nonce:
@@ -725,12 +1094,18 @@ class Client(object):
     def auth_gcp(self, role, jwt, mount_point='gcp', use_token=True):
         """
         POST /auth/<mount point>/login
-        :param role: str, identifier for the GCP auth backend role being requested
-        :param jwt: str, JSON Web Token from the GCP metadata service
-        :param mount_point: str, The "path" the GCP auth backend was mounted on. Vault currently defaults to "gcp".
-        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
-        attribute on the current Client class instance.
-        :return: dict, parsed JSON response from the auth POST request
+
+        :param role: identifier for the GCP auth backend role being requested
+        :type role: str.
+        :param jwt: JSON Web Token from the GCP metadata service
+        :type jwt: str.
+        :param mount_point: The "path" the GCP auth backend was mounted on. Vault currently defaults to "gcp".
+        :type mount_point: str.
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the current Client class instance.
+        :type use_token: bool.
+        :return: parsed JSON response from the auth POST request
+        :rtype: dict.
         """
 
         params = {
@@ -741,8 +1116,20 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
-        """
-        POST /auth/<mount point>/users/<username>
+        """POST /auth/<mount point>/users/<username>
+
+        :param username:
+        :type username:
+        :param password:
+        :type password:
+        :param policies:
+        :type policies:
+        :param mount_point:
+        :type mount_point:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
 
         # Users can have more than 1 policy. It is easier for the user to pass in the
@@ -759,8 +1146,12 @@ class Client(object):
         return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
     def list_userpass(self, mount_point='userpass'):
-        """
-        GET /auth/<mount point>/users?list=true
+        """GET /auth/<mount point>/users?list=true
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         try:
             return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
@@ -768,14 +1159,28 @@ class Client(object):
             return None
 
     def read_userpass(self, username, mount_point='userpass'):
-        """
-        GET /auth/<mount point>/users/<username>
+        """GET /auth/<mount point>/users/<username>
+
+        :param username:
+        :type username:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
 
     def update_userpass_policies(self, username, policies, mount_point='userpass'):
-        """
-        POST /auth/<mount point>/users/<username>/policies
+        """POST /auth/<mount point>/users/<username>/policies
+
+        :param username:
+        :type username:
+        :param policies:
+        :type policies:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         # userpass can have more than 1 policy. It is easier for the user to pass in the
         # policies as a list so if they do, we need to convert to a , delimited string.
@@ -789,8 +1194,16 @@ class Client(object):
         return self._post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
 
     def update_userpass_password(self, username, password, mount_point='userpass'):
-        """
-        POST /auth/<mount point>/users/<username>/password
+        """POST /auth/<mount point>/users/<username>/password
+
+        :param username:
+        :type username:
+        :param password:
+        :type password:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'password': password
@@ -798,14 +1211,32 @@ class Client(object):
         return self._post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
 
     def delete_userpass(self, username, mount_point='userpass'):
-        """
-        DELETE /auth/<mount point>/users/<username>
+        """DELETE /auth/<mount point>/users/<username>
+
+        :param username:
+        :type username:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._delete('/v1/auth/{}/users/{}'.format(mount_point, username))
 
     def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
-        """
-        POST /auth/<mount point>/map/app-id/<app_id>
+        """POST /auth/<mount point>/map/app-id/<app_id>
+
+        :param app_id:
+        :type app_id:
+        :param policies:
+        :type policies:
+        :param display_name:
+        :type display_name:
+        :param mount_point:
+        :type mount_point:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
 
         # app-id can have more than 1 policy. It is easier for the user to pass in the
@@ -827,21 +1258,47 @@ class Client(object):
         return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
     def get_app_id(self, app_id, mount_point='app-id', wrap_ttl=None):
-        """
-        GET /auth/<mount_point>/map/app-id/<app_id>
+        """GET /auth/<mount_point>/map/app-id/<app_id>
+
+        :param app_id:
+        :type app_id:
+        :param mount_point:
+        :type mount_point:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
         """
         path = '/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)
         return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_app_id(self, app_id, mount_point='app-id'):
-        """
-        DELETE /auth/<mount_point>/map/app-id/<app_id>
+        """DELETE /auth/<mount_point>/map/app-id/<app_id>
+
+        :param app_id:
+        :type app_id:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._delete('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id))
 
     def create_user_id(self, user_id, app_id, cidr_block=None, mount_point='app-id', **kwargs):
-        """
-        POST /auth/<mount point>/map/user-id/<user_id>
+        """POST /auth/<mount point>/map/user-id/<user_id>
+
+        :param user_id:
+        :type user_id:
+        :param app_id:
+        :type app_id:
+        :param cidr_block:
+        :type cidr_block:
+        :param mount_point:
+        :type mount_point:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
 
         # user-id can be associated to more than 1 app-id (aka policy). It is easier for the user to
@@ -863,21 +1320,45 @@ class Client(object):
         return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
 
     def get_user_id(self, user_id, mount_point='app-id', wrap_ttl=None):
-        """
-        GET /auth/<mount_point>/map/user-id/<user_id>
+        """GET /auth/<mount_point>/map/user-id/<user_id>
+
+        :param user_id:
+        :type user_id:
+        :param mount_point:
+        :type mount_point:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
         """
         path = '/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)
         return self._get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_user_id(self, user_id, mount_point='app-id'):
-        """
-        DELETE /auth/<mount_point>/map/user-id/<user_id>
+        """DELETE /auth/<mount_point>/map/user-id/<user_id>
+
+        :param user_id:
+        :type user_id:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
     def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
-        """
-        POST /auth/<mount_point>/config/client
+        """POST /auth/<mount_point>/config/client
+
+        :param access_key:
+        :type access_key:
+        :param secret_key:
+        :type secret_key:
+        :param endpoint:
+        :type endpoint:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'access_key': access_key,
@@ -889,20 +1370,36 @@ class Client(object):
         return self._post('/v1/auth/{0}/config/client'.format(mount_point), json=params)
 
     def get_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
-        """
-        GET /auth/<mount_point>/config/client
+        """GET /auth/<mount_point>/config/client
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._get('/v1/auth/{0}/config/client'.format(mount_point)).json()
 
     def delete_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
-        """
-        DELETE /auth/<mount_point>/config/client
+        """DELETE /auth/<mount_point>/config/client
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._delete('/v1/auth/{0}/config/client'.format(mount_point))
 
     def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert, mount_point='aws-ec2'):
-        """
-        POST /auth/<mount_point>/config/certificate/<cert_name>
+        """POST /auth/<mount_point>/config/certificate/<cert_name>
+
+        :param cert_name:
+        :type cert_name:
+        :param aws_public_cert:
+        :type aws_public_cert:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'cert_name': cert_name,
@@ -911,14 +1408,24 @@ class Client(object):
         return self._post('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name), json=params)
 
     def get_vault_ec2_certificate_configuration(self, cert_name, mount_point='aws-ec2'):
-        """
-        GET /auth/<mount_point>/config/certificate/<cert_name>
+        """GET /auth/<mount_point>/config/certificate/<cert_name>
+
+        :param cert_name:
+        :type cert_name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
 
     def list_vault_ec2_certificate_configurations(self, mount_point='aws-ec2'):
-        """
-        GET /auth/<mount_point>/config/certificates?list=true
+        """GET /auth/<mount_point>/config/certificates?list=true
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {'list': True}
         return self._get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
@@ -928,8 +1435,46 @@ class Client(object):
                         bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
                         policies=None, allow_instance_migration=False, disallow_reauthentication=False,
                         resolve_aws_unique_ids=None, mount_point='aws-ec2'):
-        """
-        POST /auth/<mount_point>/role/<role>
+        """POST /auth/<mount_point>/role/<role>
+
+        :param role:
+        :type role:
+        :param bound_ami_id:
+        :type bound_ami_id:
+        :param bound_account_id:
+        :type bound_account_id:
+        :param bound_iam_role_arn:
+        :type bound_iam_role_arn:
+        :param bound_iam_instance_profile_arn:
+        :type bound_iam_instance_profile_arn:
+        :param bound_ec2_instance_id:
+        :type bound_ec2_instance_id:
+        :param bound_region:
+        :type bound_region:
+        :param bound_vpc_id:
+        :type bound_vpc_id:
+        :param bound_subnet_id:
+        :type bound_subnet_id:
+        :param role_tag:
+        :type role_tag:
+        :param ttl:
+        :type ttl:
+        :param max_ttl:
+        :type max_ttl:
+        :param period:
+        :type period:
+        :param policies:
+        :type policies:
+        :param allow_instance_migration:
+        :type allow_instance_migration:
+        :param disallow_reauthentication:
+        :type disallow_reauthentication:
+        :param resolve_aws_unique_ids:
+        :type resolve_aws_unique_ids:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'role': role,
@@ -976,20 +1521,36 @@ class Client(object):
         return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
 
     def get_ec2_role(self, role, mount_point='aws-ec2'):
-        """
-        GET /auth/<mount_point>/role/<role>
+        """GET /auth/<mount_point>/role/<role>
+
+        :param role:
+        :type role:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
 
     def delete_ec2_role(self, role, mount_point='aws-ec2'):
-        """
-        DELETE /auth/<mount_point>/role/<role>
+        """DELETE /auth/<mount_point>/role/<role>
+
+        :param role:
+        :type role:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role))
 
     def list_ec2_roles(self, mount_point='aws-ec2'):
-        """
-        GET /auth/<mount_point>/roles?list=true
+        """GET /auth/<mount_point>/roles?list=true
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         try:
             return self._get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True}).json()
@@ -998,8 +1559,24 @@ class Client(object):
 
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
                             disallow_reauthentication=False, allow_instance_migration=False, mount_point='aws-ec2'):
-        """
-        POST /auth/<mount_point>/role/<role>/tag
+        """POST /auth/<mount_point>/role/<role>/tag
+
+        :param role:
+        :type role:
+        :param policies:
+        :type policies:
+        :param max_ttl:
+        :type max_ttl:
+        :param instance_id:
+        :type instance_id:
+        :param disallow_reauthentication:
+        :type disallow_reauthentication:
+        :param allow_instance_migration:
+        :type allow_instance_migration:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         params = {
             'role': role,
@@ -1016,8 +1593,20 @@ class Client(object):
         return self._post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
-        """
-        POST /auth/<mount point>/login/<username>
+        """POST /auth/<mount point>/login/<username>
+
+        :param username:
+        :type username:
+        :param password:
+        :type password:
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
         params = {
             'password': password,
@@ -1028,8 +1617,16 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_github(self, token, mount_point='github', use_token=True):
-        """
-        POST /auth/<mount point>/login
+        """POST /auth/<mount point>/login
+
+        :param token:
+        :type token:
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :return:
+        :rtype:
         """
         params = {
             'token': token,
@@ -1038,13 +1635,28 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_cubbyhole(self, token):
-        """
-        POST /v1/sys/wrapping/unwrap
+        """POST /v1/sys/wrapping/unwrap
+
+        :param token:
+        :type token:
+        :return:
+        :rtype:
         """
         self.token = token
         return self.auth('/v1/sys/wrapping/unwrap')
 
     def auth(self, url, use_token=True, **kwargs):
+        """
+
+        :param url:
+        :type url:
+        :param use_token:
+        :type use_token:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         response = self._post(url, **kwargs).json()
 
         if use_token:
@@ -1053,14 +1665,24 @@ class Client(object):
         return response
 
     def list_auth_backends(self):
-        """
-        GET /sys/auth
+        """GET /sys/auth
+
+        :return:
+        :rtype:
         """
         return self._get('/v1/sys/auth').json()
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None):
-        """
-        POST /sys/auth/<mount point>
+        """POST /sys/auth/<mount point>
+
+        :param backend_type:
+        :type backend_type:
+        :param description:
+        :type description:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if not mount_point:
             mount_point = backend_type
@@ -1074,22 +1696,32 @@ class Client(object):
     def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
                           audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
                           passthrough_request_headers=None):
-        """
-        POST /sys/auth/<mount point>/tune
-        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
-        :param mount_point: str, The path the associated auth backend is mounted under.
-        :param description: str, Specifies the description of the mount. This overrides the current stored value, if any.
-        :param default_lease_ttl: int,
-        :param max_lease_ttl: int,
-        :param audit_non_hmac_request_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd by
-        audit devices in the request data object.
-        :param audit_non_hmac_response_keys: list, Specifies the comma-separated list of keys that will not be HMAC'd
-        by audit devices in the response data object.
-        :param listing_visibility: str, Speficies whether to show this mount in the UI-specific listing endpoint.
-        Valid values are "unauth" or "".
-        :param passthrough_request_headers: list, Comma-separated list of headers to whitelist and pass from the request
-        to the backend.
-        :return: dict, The JSON response from Vault
+        """POST /sys/auth/<mount point>/tune
+
+        :param backend_type: Name of the auth backend to modify (e.g., token, approle, etc.)
+        :type backend_type: str.
+        :param mount_point: The path the associated auth backend is mounted under.
+        :type mount_point: str.
+        :param description: Specifies the description of the mount. This overrides the current stored value, if any.
+        :type description: str.
+        :param default_lease_ttl:
+        :type default_lease_ttl: int.
+        :param max_lease_ttl:
+        :type max_lease_ttl: int.
+        :param audit_non_hmac_request_keys: Specifies the comma-separated list of keys that will not be HMAC'd by
+        :type audit_non_hmac_request_keys: list.
+            audit devices in the request data object.
+        :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd
+        :type audit_non_hmac_response_keys: list.
+            by audit devices in the response data object.
+        :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint.
+            Valid values are "unauth" or "".
+        :type listing_visibility: str.
+        :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request
+            to the backend.
+        :type passthrough_request_headers: list.
+        :return: The JSON response from Vault
+        :rtype: dict.
         """
         if not mount_point:
             mount_point = backend_type
@@ -1111,11 +1743,14 @@ class Client(object):
         return self._post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
 
     def get_auth_backend_tuning(self, backend_type, mount_point=None):
-        """
-        GET /sys/auth/<mount point>/tune
-        :param backend_type: str, Name of the auth backend to modify (e.g., token, approle, etc.)
-        :param mount_point: str, The path the associated auth backend is mounted under.
-        :return: dict, The JSON response from Vault
+        """GET /sys/auth/<mount point>/tune
+
+        :param backend_type: Name of the auth backend to modify (e.g., token, approle, etc.)
+        :type backend_type: str.
+        :param mount_point: The path the associated auth backend is mounted under.
+        :type mount_point: str.
+        :return: The JSON response from Vault
+        :rtype: dict.
         """
         if not mount_point:
             mount_point = backend_type
@@ -1123,43 +1758,79 @@ class Client(object):
         return self._get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
 
     def disable_auth_backend(self, mount_point):
-        """
-        DELETE /sys/auth/<mount point>
+        """DELETE /sys/auth/<mount point>
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         self._delete('/v1/sys/auth/{0}'.format(mount_point))
 
     def create_role(self, role_name, mount_point='approle', **kwargs):
-        """
-        POST /auth/<mount_point>/role/<role name>
+        """POST /auth/<mount_point>/role/<role name>
+
+        :param role_name:
+        :type role_name:
+        :param mount_point:
+        :type mount_point:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
         """
 
         return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
     def delete_role(self, role_name, mount_point='approle'):
-        """
-        DELETE /auth/<mount_point>/role/<role name>
+        """DELETE /auth/<mount_point>/role/<role name>
+
+        :param role_name:
+        :type role_name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
 
         return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
     def list_roles(self, mount_point='approle'):
-        """
-        GET /auth/<mount_point>/role
+        """GET /auth/<mount_point>/role
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
 
         return self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
 
     def get_role_id(self, role_name, mount_point='approle'):
-        """
-        GET /auth/<mount_point>/role/<role name>/role-id
+        """GET /auth/<mount_point>/role/<role name>/role-id
+
+        :param role_name:
+        :type role_name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
 
         url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         return self._get(url).json()['data']['role_id']
 
     def set_role_id(self, role_name, role_id, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/role-id
+        """POST /auth/<mount_point>/role/<role name>/role-id
+
+        :param role_name:
+        :type role_name:
+        :param role_id:
+        :type role_id:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
 
         url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
@@ -1169,14 +1840,32 @@ class Client(object):
         return self._post(url, json=params)
 
     def get_role(self, role_name, mount_point='approle'):
-        """
-        GET /auth/<mount_point>/role/<role name>
+        """GET /auth/<mount_point>/role/<role name>
+
+        :param role_name:
+        :type role_name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
 
     def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/secret-id
+        """POST /auth/<mount_point>/role/<role name>/secret-id
+
+        :param role_name:
+        :type role_name:
+        :param meta:
+        :type meta:
+        :param cidr_list:
+        :type cidr_list:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
 
         url = '/v1/auth/{0}/role/{1}/secret-id'.format(mount_point, role_name)
@@ -1188,8 +1877,16 @@ class Client(object):
         return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/secret-id/lookup
+        """POST /auth/<mount_point>/role/<role name>/secret-id/lookup
+
+        :param role_name:
+        :type role_name:
+        :param secret_id:
+        :type secret_id:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id/lookup'.format(mount_point, role_name)
         params = {
@@ -1198,23 +1895,45 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def list_role_secrets(self, role_name, mount_point='approle'):
-        """
-        GET /auth/<mount_point>/role/<role name>/secret-id?list=true
+        """GET /auth/<mount_point>/role/<role name>/secret-id?list=true
+
+        :param role_name:
+        :type role_name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
         return self._get(url).json()
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
+        """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
+
+        :param role_name:
+        :type role_name:
+        :param secret_id_accessor:
+        :type secret_id_accessor:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/lookup'.format(mount_point, role_name)
         params = {'secret_id_accessor': secret_id_accessor}
         return self._post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/secret-id/destroy
+        """POST /auth/<mount_point>/role/<role name>/secret-id/destroy
+
+        :param role_name:
+        :type role_name:
+        :param secret_id:
+        :type secret_id:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id/destroy'.format(mount_point, role_name)
         params = {
@@ -1223,15 +1942,33 @@ class Client(object):
         return self._post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
-        """
-        DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
+        """DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
+
+        :param role_name:
+        :type role_name:
+        :param secret_id_accessor:
+        :type secret_id_accessor:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
         return self._delete(url)
 
     def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
-        """
-        POST /auth/<mount_point>/role/<role name>/custom-secret-id
+        """POST /auth/<mount_point>/role/<role name>/custom-secret-id
+
+        :param role_name:
+        :type role_name:
+        :param secret_id:
+        :type secret_id:
+        :param meta:
+        :type meta:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/custom-secret-id'.format(mount_point, role_name)
         params = {
@@ -1242,8 +1979,18 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
-        """
-        POST /auth/<mount_point>/login
+        """POST /auth/<mount_point>/login
+
+        :param role_id:
+        :type role_id:
+        :param secret_id:
+        :type secret_id:
+        :param mount_point:
+        :type mount_point:
+        :param use_token:
+        :type use_token:
+        :return:
+        :rtype:
         """
         params = {
             'role_id': role_id
@@ -1254,17 +2001,23 @@ class Client(object):
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_kubernetes_configuration(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
-        """
-        POST /auth/<mount_point>/config
-        :param kubernetes_host: str, a host:port pair, or a URL to the base of the Kubernetes API server.
-        :param kubernetes_ca_cert: str, PEM encoded CA cert for use by the TLS client used to talk with the Kubernetes API.
-        :param token_reviewer_jwt: str, A service account JWT used to access the TokenReview API to validate other
-        JWTs during login. If not set the JWT used for login will be used to access the API.
-        :param pem_keys: list, Optional list of PEM-formated public keys or certificates used to verify the signatures of
-        Kubernetes service account JWTs. If a certificate is given, its public key will be extracted. Not every
-        installation of Kubernetes exposes these keys.
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: requests.Response, will be an empty body with a 204 status code upon success
+        """POST /auth/<mount_point>/config
+
+        :param kubernetes_host: A host:port pair, or a URL to the base of the Kubernetes API server.
+        :type kubernetes_host: str.
+        :param kubernetes_ca_cert: PEM encoded CA cert for use by the TLS client used to talk with the Kubernetes API.
+        :type kubernetes_ca_cert: str.
+        :param token_reviewer_jwt: A service account JWT used to access the TokenReview API to validate other
+            JWTs during login. If not set the JWT used for login will be used to access the API.
+        :type token_reviewer_jwt: str.
+        :param pem_keys: Optional list of PEM-formated public keys or certificates used to verify the signatures of
+            Kubernetes service account JWTs. If a certificate is given, its public key will be extracted. Not every
+            installation of Kubernetes exposes these keys.
+        :type pem_keys: list.
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Will be an empty body with a 204 status code upon success
+        :rtype: requests.Response.
         """
         params = {
             'kubernetes_host': kubernetes_host,
@@ -1280,10 +2033,12 @@ class Client(object):
         return self._post(url, json=params)
 
     def get_kubernetes_configuration(self, mount_point='kubernetes'):
-        """
-        GET /auth/<mount_point>/config
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: dict, parsed JSON response from the config GET request
+        """GET /auth/<mount_point>/config
+
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Parsed JSON response from the config GET request
+        :rtype: dict.
         """
 
         url = '/v1/auth/{0}/config'.format(mount_point)
@@ -1291,21 +2046,30 @@ class Client(object):
 
     def create_kubernetes_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="",
                                max_ttl="", period="", policies=None, mount_point='kubernetes'):
-        """
-        POST /auth/<mount_point>/role/:name
-        :param name: str, Name of the role.
-        :param bound_service_account_names: list, List of service account names able to access this role. If set to "*" all
-        names are allowed, both this and bound_service_account_namespaces can not be "*".
-        :param bound_service_account_namespaces: list, List of namespaces allowed to access this role. If set to "*" all
-        namespaces are allowed, both this and bound_service_account_names can not be set to "*".
-        :param ttl: str, The TTL period of tokens issued using this role in seconds.
-        :param max_ttl: str, The maximum allowed lifetime of tokens issued in seconds using this role.
-        :param period: str, If set, indicates that the token generated using this role should never expire.
-        The token should be renewed within the duration specified by this value. At each renewal, the token's TTL will
-        be set to the value of this parameter.
-        :param policies: list, Policies to be set on tokens issued using this role
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: requests.Response, will be an empty body with a 204 status code upon success
+        """POST /auth/<mount_point>/role/:name
+
+        :param name: Name of the role.
+        :type name: str.
+        :param bound_service_account_names: List of service account names able to access this role. If set to "*" all
+            names are allowed, both this and bound_service_account_namespaces can not be "*".
+        :type bound_service_account_names: list.
+        :param bound_service_account_namespaces: List of namespaces allowed to access this role. If set to "*" all
+            namespaces are allowed, both this and bound_service_account_names can not be set to "*".
+        :type bound_service_account_namespaces: list.
+        :param ttl: The TTL period of tokens issued using this role in seconds.
+        :type ttl: str.
+        :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
+        :type max_ttl: str.
+        :param period: If set, indicates that the token generated using this role should never expire.
+            The token should be renewed within the duration specified by this value. At each renewal, the token's TTL will
+            be set to the value of this parameter.
+        :type period: str.
+        :param policies: Policies to be set on tokens issued using this role
+        :type policies: list.
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Will be an empty body with a 204 status code upon success
+        :rtype: requests.Response.
         """
         if bound_service_account_names == '*' and bound_service_account_namespaces == '*':
             error_message = 'bound_service_account_names and bound_service_account_namespaces can not both be set to "*"'
@@ -1323,46 +2087,59 @@ class Client(object):
         return self._post(url, json=params)
 
     def get_kubernetes_role(self, name, mount_point='kubernetes'):
-        """
-        GET /auth/<mount_point>/role/:name
-        :param name: str, Name of the role.
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: dict, parsed JSON response from the read role GET request
+        """GET /auth/<mount_point>/role/:name
+
+        :param name: Name of the role.
+        :type name: str.
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Parsed JSON response from the read role GET request
+        :rtype: dict.
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
         return self._get(url).json()
 
     def list_kubernetes_roles(self, mount_point='kubernetes'):
-        """
-        GET /auth/<mount_point>/role?list=true
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: dict, parsed JSON response from the list roles GET request
+        """GET /auth/<mount_point>/role?list=true
+
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Parsed JSON response from the list roles GET request.
+        :rtype: dict.
         """
 
         url = 'v1/auth/{0}/role?list=true'.format(mount_point)
         return self._get(url).json()
 
     def delete_kubernetes_role(self, role, mount_point='kubernetes'):
-        """
-        DELETE /auth/<mount_point>/role/:role
-        :param role: str, Name of the role.
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: requests.Response, will be an empty body with a 204 status code upon success
+        """DELETE /auth/<mount_point>/role/:role
+
+        :type role: Name of the role.
+        :param role: str.
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Will be an empty body with a 204 status code upon success.
+        :rtype: requests.Response.
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, role)
         return self._delete(url)
 
     def auth_kubernetes(self, role, jwt, use_token=True, mount_point='kubernetes'):
-        """
-        POST /auth/<mount_point>/login
-        :param role: str, Name of the role against which the login is being attempted.
-        :param jwt: str, Signed JSON Web Token (JWT) for authenticating a service account.
-        :param use_token: bool, if True, uses the token in the response received from the auth request to set the "token"
-         attribute on the current Client class instance.
-        :param mount_point: str, The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
-        :return: dict, parsed JSON response from the config POST request
+        """POST /auth/<mount_point>/login
+
+        :param role: Name of the role against which the login is being attempted.
+        :type role: str.
+        :param jwt: Signed JSON Web Token (JWT) for authenticating a service account.
+        :type jwt: str.
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the current Client class instance.
+        :type use_token: bool.
+        :param mount_point: The "path" the k8s auth backend was mounted on. Vault currently defaults to "kubernetes".
+        :type mount_point: str.
+        :return: Parsed JSON response from the config POST request.
+        :rtype: dict.
         """
         params = {
             'role': role,
@@ -1373,8 +2150,22 @@ class Client(object):
 
     def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
                            key_type=None, mount_point='transit'):
-        """
-        POST /<mount_point>/keys/<name>
+        """POST /<mount_point>/keys/<name>
+
+        :param name:
+        :type name:
+        :param convergent_encryption:
+        :type convergent_encryption:
+        :param derived:
+        :type derived:
+        :param exportable:
+        :type exportable:
+        :param key_type:
+        :type key_type:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
         params = {}
@@ -1390,30 +2181,58 @@ class Client(object):
         return self._post(url, json=params)
 
     def transit_read_key(self, name, mount_point='transit'):
-        """
-        GET /<mount_point>/keys/<name>
+        """GET /<mount_point>/keys/<name>
+
+        :param name:
+        :type name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
         return self._get(url).json()
 
     def transit_list_keys(self, mount_point='transit'):
-        """
-        GET /<mount_point>/keys?list=true
+        """GET /<mount_point>/keys?list=true
+
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys?list=true'.format(mount_point)
         return self._get(url).json()
 
     def transit_delete_key(self, name, mount_point='transit'):
-        """
-        DELETE /<mount_point>/keys/<name>
+        """DELETE /<mount_point>/keys/<name>
+
+        :param name:
+        :type name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
         return self._delete(url)
 
     def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
                            mount_point='transit'):
-        """
-        POST /<mount_point>/keys/<name>/config
+        """POST /<mount_point>/keys/<name>/config
+
+        :param name:
+        :type name:
+        :param min_decryption_version:
+        :type min_decryption_version:
+        :param min_encryption_version:
+        :type min_encryption_version:
+        :param deletion_allowed:
+        :type deletion_allowed:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys/{1}/config'.format(mount_point, name)
         params = {}
@@ -1427,15 +2246,31 @@ class Client(object):
         return self._post(url, json=params)
 
     def transit_rotate_key(self, name, mount_point='transit'):
-        """
-        POST /<mount_point>/keys/<name>/rotate
+        """POST /<mount_point>/keys/<name>/rotate
+
+        :param name:
+        :type name:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
         return self._post(url)
 
     def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
-        """
-        GET /<mount_point>/export/<key_type>/<name>(/<version>)
+        """GET /<mount_point>/export/<key_type>/<name>(/<version>)
+
+        :param name:
+        :type name:
+        :param key_type:
+        :type key_type:
+        :param version:
+        :type version:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if version is not None:
             url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
@@ -1445,8 +2280,28 @@ class Client(object):
 
     def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
                              key_type=None, convergent_encryption=None, mount_point='transit'):
-        """
-        POST /<mount_point>/encrypt/<name>
+        """POST /<mount_point>/encrypt/<name>
+
+        :param name:
+        :type name:
+        :param plaintext:
+        :type plaintext:
+        :param context:
+        :type context:
+        :param key_version:
+        :type key_version:
+        :param nonce:
+        :type nonce:
+        :param batch_input:
+        :type batch_input:
+        :param key_type:
+        :type key_type:
+        :param convergent_encryption:
+        :type convergent_encryption:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/encrypt/{1}'.format(mount_point, name)
         params = {
@@ -1468,8 +2323,22 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
-        """
-        POST /<mount_point>/decrypt/<name>
+        """POST /<mount_point>/decrypt/<name>
+
+        :param name:
+        :type name:
+        :param ciphertext:
+        :type ciphertext:
+        :param context:
+        :type context:
+        :param nonce:
+        :type nonce:
+        :param batch_input:
+        :type batch_input:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/decrypt/{1}'.format(mount_point, name)
         params = {
@@ -1486,8 +2355,24 @@ class Client(object):
 
     def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
                             mount_point='transit'):
-        """
-        POST /<mount_point>/rewrap/<name>
+        """POST /<mount_point>/rewrap/<name>
+
+        :param name:
+        :type name:
+        :param ciphertext:
+        :type ciphertext:
+        :param context:
+        :type context:
+        :param key_version:
+        :type key_version:
+        :param nonce:
+        :type nonce:
+        :param batch_input:
+        :type batch_input:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/rewrap/{1}'.format(mount_point, name)
         params = {
@@ -1505,8 +2390,22 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
-        """
-        POST /<mount_point>/datakey/<type>/<name>
+        """POST /<mount_point>/datakey/<type>/<name>
+
+        :param name:
+        :type name:
+        :param key_type:
+        :type key_type:
+        :param context:
+        :type context:
+        :param nonce:
+        :type nonce:
+        :param bits:
+        :type bits:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         url = '/v1/{0}/datakey/{1}/{2}'.format(mount_point, key_type, name)
         params = {}
@@ -1520,8 +2419,16 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
-        """
-        POST /<mount_point>/random(/<data_bytes>)
+        """POST /<mount_point>/random(/<data_bytes>)
+
+        :param data_bytes:
+        :type data_bytes:
+        :param output_format:
+        :type output_format:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if data_bytes is not None:
             url = '/v1/{0}/random/{1}'.format(mount_point, data_bytes)
@@ -1535,8 +2442,18 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
-        """
-        POST /<mount_point>/hash(/<algorithm>)
+        """POST /<mount_point>/hash(/<algorithm>)
+
+        :param hash_input:
+        :type hash_input:
+        :param algorithm:
+        :type algorithm:
+        :param output_format:
+        :type output_format:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if algorithm is not None:
             url = '/v1/{0}/hash/{1}'.format(mount_point, algorithm)
@@ -1552,8 +2469,20 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
-        """
-        POST /<mount_point>/hmac/<name>(/<algorithm>)
+        """POST /<mount_point>/hmac/<name>(/<algorithm>)
+
+        :param name:
+        :type name:
+        :param hmac_input:
+        :type hmac_input:
+        :param key_version:
+        :type key_version:
+        :param algorithm:
+        :type algorithm:
+        :param mount_point:
+        :type mount_point:
+        :return:
+        :rtype:
         """
         if algorithm is not None:
             url = '/v1/{0}/hmac/{1}/{2}'.format(mount_point, name, algorithm)
@@ -1569,8 +2498,26 @@ class Client(object):
 
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
                           mount_point='transit', signature_algorithm='pss'):
-        """
-        POST /<mount_point>/sign/<name>(/<algorithm>)
+        """POST /<mount_point>/sign/<name>(/<algorithm>)
+
+        :param name:
+        :type name:
+        :param input_data:
+        :type input_data:
+        :param key_version:
+        :type key_version:
+        :param algorithm:
+        :type algorithm:
+        :param context:
+        :type context:
+        :param prehashed:
+        :type prehashed:
+        :param mount_point:
+        :type mount_point:
+        :param signature_algorithm:
+        :type signature_algorithm:
+        :return:
+        :rtype:
         """
         if algorithm is not None:
             url = '/v1/{0}/sign/{1}/{2}'.format(mount_point, name, algorithm)
@@ -1592,8 +2539,28 @@ class Client(object):
 
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
                                    prehashed=None, mount_point='transit', signature_algorithm='pss'):
-        """
-        POST /<mount_point>/verify/<name>(/<algorithm>)
+        """POST /<mount_point>/verify/<name>(/<algorithm>)
+
+        :param name:
+        :type name:
+        :param input_data:
+        :type input_data:
+        :param algorithm:
+        :type algorithm:
+        :param signature:
+        :type signature:
+        :param hmac:
+        :type hmac:
+        :param context:
+        :type context:
+        :param prehashed:
+        :type prehashed:
+        :param mount_point:
+        :type mount_point:
+        :param signature_algorithm:
+        :type signature_algorithm:
+        :return:
+        :rtype:
         """
         if algorithm is not None:
             url = '/v1/{0}/verify/{1}/{2}'.format(mount_point, name, algorithm)
@@ -1616,33 +2583,87 @@ class Client(object):
         return self._post(url, json=params).json()
 
     def close(self):
-        """
-        Close the underlying Requests session
+        """Close the underlying Requests session
+
+        :return:
+        :rtype:
         """
         self.session.close()
 
     def _get(self, url, **kwargs):
+        """
+
+        :param url:
+        :type url:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         return self.__request('get', url, **kwargs)
 
     def _post(self, url, **kwargs):
+        """
+
+        :param url:
+        :type url:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         return self.__request('post', url, **kwargs)
 
     def _put(self, url, **kwargs):
+        """
+
+        :param url:
+        :type url:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         return self.__request('put', url, **kwargs)
 
     def _delete(self, url, **kwargs):
+        """
+
+        :param url:
+        :type url:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         return self.__request('delete', url, **kwargs)
 
     @staticmethod
     def urljoin(*args):
-        """
-        Joins given arguments into a url. Trailing and leading slashes are
-        stripped for each argument.
+        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
+
+        :param args:
+        :type args:
+        :return:
+        :rtype:
         """
 
         return '/'.join(map(lambda x: str(x).strip('/'), args))
 
     def __request(self, method, url, headers=None, **kwargs):
+        """
+
+        :param method:
+        :type method:
+        :param url:
+        :type url:
+        :param headers:
+        :type headers:
+        :param kwargs:
+        :type kwargs:
+        :return:
+        :rtype:
+        """
         url = self.urljoin(self._url, url)
 
         if not headers:
@@ -1678,6 +2699,17 @@ class Client(object):
         return response
 
     def __raise_error(self, status_code, message=None, errors=None):
+        """
+
+        :param status_code:
+        :type status_code:
+        :param message:
+        :type message:
+        :param errors:
+        :type errors:
+        :return:
+        :rtype:
+        """
         if status_code == 400:
             raise exceptions.InvalidRequest(message, errors=errors)
         elif status_code == 401:

@@ -12,3 +12,6 @@
 *~
 
 /hvac/version
+
+# sphinx build folder
+docs/_build/

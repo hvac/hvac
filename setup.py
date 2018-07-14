@@ -4,6 +4,9 @@ import sys
 from setuptools import setup, find_packages
 from pkg_resources import resource_filename
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 # depending on your execution context the version file
 # may be located in a different place!
 vsn_path = resource_filename(__name__, 'hvac/version')
@@ -17,6 +20,8 @@ setup(
     name='hvac',
     version=open(vsn_path, 'r').read(),
     description='HashiCorp Vault API client',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Ian Unruh',
     author_email='ianunruh@gmail.com',
     url='https://github.com/ianunruh/hvac',
