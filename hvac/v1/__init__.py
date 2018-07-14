@@ -1709,11 +1709,11 @@ class Client(object):
         :param max_lease_ttl:
         :type max_lease_ttl: int.
         :param audit_non_hmac_request_keys: Specifies the comma-separated list of keys that will not be HMAC'd by
-        :type audit_non_hmac_request_keys: list.
             audit devices in the request data object.
+        :type audit_non_hmac_request_keys: list.
         :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd
-        :type audit_non_hmac_response_keys: list.
             by audit devices in the response data object.
+        :type audit_non_hmac_response_keys: list.
         :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint.
             Valid values are "unauth" or "".
         :type listing_visibility: str.
