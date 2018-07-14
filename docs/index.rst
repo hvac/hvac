@@ -1,5 +1,7 @@
-Welcome to hvac's documentation!
-================================
+hvac: Python Client Library for HashiCorp's Vault
+=================================================
+
+Source code repository hosted at `github.com/ianunruh/hvac`_.
 
 .. toctree::
    :glob:
@@ -14,10 +16,12 @@ Welcome to hvac's documentation!
    changelog
 
 
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+.. _github.com/ianunruh/hvac: https://github.com/ianunruh/hvac/
