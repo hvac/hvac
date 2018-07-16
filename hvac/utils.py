@@ -10,16 +10,19 @@ from hvac import exceptions
 
 
 def raise_for_error(status_code, message=None, errors=None):
-    """
+    """Helper method to raise exceptions based on the status code of a response received back from Vault.
 
-    :param status_code:
-    :type status_code:
-    :param message:
-    :type message:
-    :param errors:
-    :type errors:
-    :return:
-    :rtype:
+    :param status_code: Status code received in a response from Vault.
+    :type status_code: int
+    :param message: Optional message to include in a resulting exception.
+    :type message: str
+    :param errors: Optional errors to include in a resulting exception.
+    :type errors: list | str
+
+    :raises: hvac.exceptions.InvalidRequest | hvac.exceptions.Unauthorized | hvac.exceptions.Forbidden |
+        hvac.exceptions.InvalidPath | hvac.exceptions.RateLimitExceeded | hvac.exceptions.InternalServerError |
+        hvac.exceptions.VaultNotInitialized | hvac.exceptions.VaultDown | hvac.exceptions.UnexpectedError
+
     """
     if status_code == 400:
         raise exceptions.InvalidRequest(message, errors=errors)
