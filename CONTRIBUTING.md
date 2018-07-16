@@ -16,3 +16,10 @@ the latest `vault` binary is available in your `PATH`.
 ### Examples
 
 Example code or general guides for methods in this module can be added under [docs/examples](docs/examples).
+
+## Backwards Compatibility Breaking Changes
+
+Due to the close connection between this module and HashiCorp Vault versions, breaking changes are sometimes required. This can also occur as part of code refactoring to enable improvements in the module generally. In these cases:
+
+* A deprecation notice should be displayed to callers of the module until the minor revision +2. E.g., a notice added in version 0.6.2 could see the marked method / functionality removed in version 0.8.0.
+* Breaking changes should be called out in the [CHANGELOG.md](CHANGELOG.md) for the affected version.
