@@ -4,7 +4,7 @@
 
 BACKWARDS COMPATIBILITY NOTICE:
 
-* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explictly update the `adapter` propery on the `Client` class or access the `_kwargs` property via the `adapter` property on the `Client` class.
+* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` propery on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
 
 IMPROVEMENTS:
 
