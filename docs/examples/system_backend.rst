@@ -103,3 +103,26 @@ Manipulate audit backends
 
     client.enable_audit_backend('file', options=options, name='somefile')
     client.disable_audit_backend('oldfile')
+
+View and Manage Leases
+----------------------
+
+Read a lease:
+
+.. code-block:: python
+
+    >>> client.read_lease(lease_id='pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f')
+    {'lease_id': '', 'warnings': None, 'wrap_info': None, 'auth': None, 'lease_duration': 0, 'request_id': 'a08768dc-b14e-5e2d-f291-4702056f8d4e', 'data': {'last_renewal': None, 'ttl': 259145, 'expire_time': '2018-07-19T06:20:02.000046424-05:00', 'id': 'pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f', 'renewable': False, 'issue_time': '2018-07-16T06:20:02.918474523-05:00'}, 'renewable': False}
+
+Renewing a lease:
+
+.. code-block:: python
+
+    >>> client.renew_secret(lease_id='pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f')
+    {'lease_id': 'pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f', 'lease_duration': 2764790, 'renewable': True}
+
+Revoking a lease:
+
+.. code-block:: python
+
+    >>> client.revoke_secret(lease_id='pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f')
