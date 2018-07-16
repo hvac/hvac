@@ -1566,3 +1566,23 @@ class IntegrationTest(TestCase):
 
         # Reset integration test state
         self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_read_lease(self):
+        # Set up a test pki backend and issue a cert against some role so we.
+        util.configure_test_pki(client=self.client)
+        pki_issue_response = self.client.write(
+            path='pki/issue/my-role',
+            common_name='test.hvac.com',
+        )
+
+        # Read the lease of our test cert that was just issued.
+        read_lease_response = self.client.read_lease(pki_issue_response['lease_id'])
+
+        # Validate we received the expected lease ID back in our response.
+        self.assertEquals(
+            first=pki_issue_response['lease_id'],
+            second=read_lease_response['data']['id'],
+        )
+
+        # Reset integration test state.
+        util.disable_test_pki(client=self.client)
