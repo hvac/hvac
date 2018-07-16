@@ -45,8 +45,7 @@ def raise_for_error(status_code, message=None, errors=None):
 
 
 def deprecated_method(to_be_removed_in_version, new_call_path=None, new_method=None):
-    """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emitted
+    """This is a decorator which can be used to mark methods as deprecated. It will result in a warning being emitted
     when the function is used.
 
     :param to_be_removed_in_version: Version of this module the decorated method will be removed in.
