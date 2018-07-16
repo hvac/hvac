@@ -400,6 +400,19 @@ class Client(object):
         """
         return self._get('/v1/sys/leader').json()
 
+    def read_lease(self, lease_id):
+        """PUT /sys/leases/lookup
+
+        :param lease_id: Specifies the ID of the lease to lookup.
+        :type lease_id: str.
+        :return: Parsed JSON response from the leases PUT request
+        :rtype: dict.
+        """
+        params = {
+            'lease_id': lease_id
+        }
+        return self._put('/v1/sys/leases/lookup', json=params).json()
+
     def renew_secret(self, lease_id, increment=None):
         """PUT /sys/leases/renew
 
