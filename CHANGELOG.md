@@ -11,9 +11,10 @@ IMPROVEMENTS:
 * sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222]
 * README.md included in setuptools metadata. [GH-222]
 * All `tune_secret_backend()` parameters now accepted. [GH-215]
-* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class.
+* Add `read_lease()` method [GH-218]
+* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223]
 
-Thanks to @bbayszczak for their lovely contributions.
+Thanks to @bbayszczak, @jvanbrunschot-coolblue for their lovely contributions.
 
 ## 0.6.1 (July 5th, 2018)
 
