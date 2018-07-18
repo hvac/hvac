@@ -11,6 +11,7 @@ Source code repository hosted at `github.com/ianunruh/hvac`_.
 
    Readme <readme>
    Examples <examples/examples>
+   advanced_usage
    source/hvac
    contributing
    changelog
