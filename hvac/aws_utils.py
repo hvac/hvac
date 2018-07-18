@@ -1,6 +1,7 @@
 import hmac
 from datetime import datetime
 from hashlib import sha256
+import requests
 
 
 class SigV4Auth(object):
@@ -40,3 +41,28 @@ class SigV4Auth(object):
         authorization = '{0} Credential={1}/{2}, SignedHeaders={3}, Signature={4}'.format(
             algorithm, self.access_key, credential_scope, signed_headers, signature)
         request.headers['Authorization'] = authorization
+
+
+def generate_sigv4_auth_request(header_value=None):
+    """Helper function to prepare a AWS API request to subsequently generate a "AWS Signature Version 4" header.
+
+    :param header_value: Vault allows you to require an additional header, X-Vault-AWS-IAM-Server-ID, to be present
+        to mitigate against different types of replay attacks. Depending on the configuration of the AWS auth
+        backend, providing a argument to this optional parameter may be required.
+    :type header_value: str
+    :return: A PreparedRequest instance, optionally containing the provided header value under a
+        'X-Vault-AWS-IAM-Server-ID' header name pointed to AWS's simple token service with action "GetCallerIdentity"
+    :rtype: requests.PreparedRequest
+    """
+    request = requests.Request(
+        method='POST',
+        url='https://sts.amazonaws.com/',
+        headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'Host': 'sts.amazonaws.com'},
+        data='Action=GetCallerIdentity&Version=2011-06-15',
+    )
+
+    if header_value:
+        request.headers['X-Vault-AWS-IAM-Server-ID'] = header_value
+
+    prepared_request = request.prepare()
+    return prepared_request

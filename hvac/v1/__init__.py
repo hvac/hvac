@@ -9,7 +9,6 @@ try:
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
-import requests
 
 from hvac import aws_utils, exceptions, adapters, utils
 
@@ -1078,34 +1077,32 @@ class Client(object):
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
         """POST /auth/<mount point>/login
 
-        :param access_key:
-        :type access_key:
-        :param secret_key:
-        :type secret_key:
-        :param session_token:
-        :type session_token:
-        :param header_value:
-        :type header_value:
-        :param mount_point:
-        :type mount_point:
-        :param role:
-        :type role:
-        :param use_token:
-        :type use_token:
-        :return:
-        :rtype:
+        :param access_key: AWS IAM access key ID
+        :type access_key: str
+        :param secret_key: AWS IAM secret access key
+        :type secret_key: str
+        :param session_token: Optional AWS IAM session token retrieved via a GetSessionToken AWS API request.
+            see: https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html
+        :type session_token: str
+        :param header_value: Vault allows you to require an additional header, X-Vault-AWS-IAM-Server-ID, to be present
+            to mitigate against different types of replay attacks. Depending on the configuration of the AWS auth
+            backend, providing a argument to this optional parameter may be required.
+        :type header_value: str
+        :param mount_point: The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws". "aws-ec2"
+            is the default argument for backwards comparability within this module.
+        :type mount_point: str
+        :param role: Name of the role against which the login is being attempted. If role is not specified, then the
+            login endpoint looks for a role bearing the name of the AMI ID of the EC2 instance that is trying to login
+            if using the ec2 auth method, or the "friendly name" (i.e., role name or username) of the IAM principal
+            authenticated. If a matching role is not found, login fails.
+        :type role: str
+        :param use_token: If True, uses the token in the response received from the auth request to set the "token"
+            attribute on the current Client class instance.
+        :type use_token: bool.
+        :return: The response from the AWS IAM login request attempt.
+        :rtype: requests.Response
         """
-        request = requests.Request(
-            method='POST',
-            url='https://sts.amazonaws.com/',
-            headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'Host': 'sts.amazonaws.com'},
-            data='Action=GetCallerIdentity&Version=2011-06-15',
-        )
-
-        if header_value:
-            request.headers['X-Vault-AWS-IAM-Server-ID'] = header_value
-
-        request = request.prepare()
+        request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
 
         auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
         auth.add_auth(request)
