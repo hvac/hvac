@@ -456,7 +456,7 @@ class Client(object):
         params = {
             'lease_id': lease_id
         }
-        return self._put('/v1/sys/leases/lookup', json=params).json()
+        return self._adapter.put('/v1/sys/leases/lookup', json=params).json()
 
     def renew_secret(self, lease_id, increment=None):
         """PUT /sys/leases/renew
