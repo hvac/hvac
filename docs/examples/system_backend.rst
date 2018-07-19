@@ -109,7 +109,7 @@ View and Manage Leases
 
 Read a lease:
 
-.. versionadded:: 0.6.3
+.. versionadded:: 0.6.2
 
 .. code-block:: python
 
