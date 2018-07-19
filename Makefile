@@ -11,6 +11,6 @@ distclean: clean
 	rm -rf build hvac/version .tox
 
 package: version
-	python setup.py sdist
+	python setup.py sdist bdist_wheel
 
 .PHONY: clean package publish test version
