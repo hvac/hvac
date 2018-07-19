@@ -1,18 +1,20 @@
 # Changelog
 
-## 0.6.2 (UNRELEASED)
+## 0.6.2 (July 19th, 2018)
 
 BACKWARDS COMPATIBILITY NOTICE:
 
 * With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` propery on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
 
+See the [Advanced Usage](https://hvac.readthedocs.io/en/latest/advanced_usage.html#custom-requests-http-adapter) section of this module's documentation for additional details.
+
 IMPROVEMENTS:
 
-* sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222]
-* README.md included in setuptools metadata. [GH-222]
-* All `tune_secret_backend()` parameters now accepted. [GH-215]
-* Add `read_lease()` method [GH-218]
-* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223]
+* sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222](https://github.com/ianunruh/hvac/pull/222)
+* README.md included in setuptools metadata. [GH-222](https://github.com/ianunruh/hvac/pull/222)
+* All `tune_secret_backend()` parameters now accepted. [GH-215](https://github.com/ianunruh/hvac/pull/215)
+* Add `read_lease()` method [GH-218](https://github.com/ianunruh/hvac/pull/218)
+* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223](https://github.com/ianunruh/hvac/pull/223)
 
 Thanks to @bbayszczak, @jvanbrunschot-coolblue for their lovely contributions.
 
