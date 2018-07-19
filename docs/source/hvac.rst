@@ -9,10 +9,26 @@ hvac.v1.Client
     :undoc-members:
     :show-inheritance:
 
+hvac.utils
+----------------------
+
+.. automodule:: hvac.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 hvac.aws\_utils
 ----------------------
 
 .. automodule:: hvac.aws_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hvac.adapters
+----------------------
+
+.. automodule:: hvac.adapters
     :members:
     :undoc-members:
     :show-inheritance:

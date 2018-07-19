@@ -9,49 +9,94 @@ try:
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
-import requests
 
-from hvac import aws_utils
-from hvac import exceptions
+from hvac import aws_utils, exceptions, adapters, utils
 
 
 class Client(object):
+    """The hvac Client class for HashiCorp's Vault."""
+
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None):
+                 allow_redirects=True, session=None, adapter=None):
+        """Creates a new hvac client instnace.
+
+        :param url: Base URL for the Vault instance being addressed.
+        :type url: str
+        :param token: Authentication token to include in requests sent to Vault.
+        :type token: str
+        :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
+            certificate and then key.
+        :type cert: tuple
+        :param verify: Flag to indicate whether TLS verification should be performed when sending requests to Vault.
+        :type verify: bool
+        :param timeout: The timeout value for requests sent to Vault.
+        :type timeout: int
+        :param proxies: Proxies to use when preforming requests.
+            See: http://docs.python-requests.org/en/master/user/advanced/#proxies
+        :type proxies: dict
+        :param allow_redirects: Whether to follow redirects when sending requests to Vault.
+        :type allow_redirects: bool
+        :param session: Optional session object to use when performing request.
+        :type session: request.Session
+        :param adapter: Optional class to be used for performing requests. If none is provided, defaults to
+            hvac.adapters.Request
+        :type adapter: hvac.adapters.Adapter
         """
 
-        :param url:
-        :type url:
-        :param token:
-        :type token:
-        :param cert:
-        :type cert:
-        :param verify:
-        :type verify:
-        :param timeout:
-        :type timeout:
-        :param proxies:
-        :type proxies:
-        :param allow_redirects:
-        :type allow_redirects:
-        :param session:
-        :type session:
-        """
+        if adapter is not None:
+            self._adapter = adapter
+        else:
+            self._adapter = adapters.Request(
+                base_uri=url,
+                token=token,
+                cert=cert,
+                verify=verify,
+                timeout=timeout,
+                proxies=proxies,
+                allow_redirects=allow_redirects,
+                session=session,
+            )
 
-        if not session:
-            session = requests.Session()
-        self.allow_redirects = allow_redirects
-        self.session = session
-        self.token = token
+    @property
+    def adapter(self):
+        return self._adapter
 
-        self._url = url
-        self._kwargs = {
-            'cert': cert,
-            'verify': verify,
-            'timeout': timeout,
-            'proxies': proxies,
-        }
+    @adapter.setter
+    def adapter(self, adapter):
+        self._adapter = adapter
+
+    @property
+    def url(self):
+        return self._adapter.base_uri
+
+    @url.setter
+    def url(self, url):
+        self._adapter.base_uri = url
+
+    @property
+    def token(self):
+        return self._adapter.token
+
+    @token.setter
+    def token(self, token):
+        self._adapter.token = token
+
+    @property
+    def session(self):
+        return self._adapter.session
+
+    @session.setter
+    def session(self, session):
+        self._adapter.session = session
+
+    @property
+    def allow_redirects(self):
+        return self._adapter.allow_redirects
+
+    @allow_redirects.setter
+    def allow_redirects(self, allow_redirects):
+        self._adapter.allow_redirects = allow_redirects
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
@@ -64,7 +109,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
+            return self._adapter.get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
         except exceptions.InvalidPath:
             return None
 
@@ -80,7 +125,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._get('/v1/{}'.format(path), params=payload).json()
+            return self._adapter.get('/v1/{}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -96,7 +141,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        response = self._post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
+        response = self._adapter.post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
         if response.status_code == 200:
             return response.json()
@@ -109,7 +154,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/{0}'.format(path))
+        self._adapter.delete('/v1/{0}'.format(path))
 
     def unwrap(self, token=None):
         """POST /sys/wrapping/unwrap
@@ -123,9 +168,9 @@ class Client(object):
             payload = {
                 'token': token
             }
-            return self._post('/v1/sys/wrapping/unwrap', json=payload).json()
+            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json()
         else:
-            return self._post('/v1/sys/wrapping/unwrap').json()
+            return self._adapter.post('/v1/sys/wrapping/unwrap').json()
 
     def is_initialized(self):
         """GET /sys/init
@@ -133,7 +178,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/init').json()['initialized']
+        return self._adapter.get('/v1/sys/init').json()['initialized']
 
     def initialize(self, secret_shares=5, secret_threshold=3, pgp_keys=None):
         """PUT /sys/init
@@ -158,7 +203,7 @@ class Client(object):
 
             params['pgp_keys'] = pgp_keys
 
-        return self._put('/v1/sys/init', json=params).json()
+        return self._adapter.put('/v1/sys/init', json=params).json()
 
     @property
     def seal_status(self):
@@ -167,7 +212,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/seal-status').json()
+        return self._adapter.get('/v1/sys/seal-status').json()
 
     def is_sealed(self):
         """
@@ -183,7 +228,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._put('/v1/sys/seal')
+        self._adapter.put('/v1/sys/seal')
 
     def unseal_reset(self):
         """PUT /sys/unseal
@@ -194,7 +239,7 @@ class Client(object):
         params = {
             'reset': True,
         }
-        return self._put('/v1/sys/unseal', json=params).json()
+        return self._adapter.put('/v1/sys/unseal', json=params).json()
 
     def unseal(self, key):
         """PUT /sys/unseal
@@ -208,7 +253,7 @@ class Client(object):
             'key': key,
         }
 
-        return self._put('/v1/sys/unseal', json=params).json()
+        return self._adapter.put('/v1/sys/unseal', json=params).json()
 
     def unseal_multi(self, keys):
         """
@@ -234,7 +279,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/generate-root/attempt').json()
+        return self._adapter.get('/v1/sys/generate-root/attempt').json()
 
     def start_generate_root(self, key, otp=False):
         """PUT /sys/generate-root/attempt
@@ -252,7 +297,7 @@ class Client(object):
         else:
             params['pgp_key'] = key
 
-        return self._put('/v1/sys/generate-root/attempt', json=params).json()
+        return self._adapter.put('/v1/sys/generate-root/attempt', json=params).json()
 
     def generate_root(self, key, nonce):
         """PUT /sys/generate-root/update
@@ -269,7 +314,7 @@ class Client(object):
             'nonce': nonce,
         }
 
-        return self._put('/v1/sys/generate-root/update', json=params).json()
+        return self._adapter.put('/v1/sys/generate-root/update', json=params).json()
 
     def cancel_generate_root(self):
         """DELETE /sys/generate-root/attempt
@@ -278,7 +323,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._delete('/v1/sys/generate-root/attempt').status_code == 204
+        return self._adapter.delete('/v1/sys/generate-root/attempt').status_code == 204
 
     @property
     def key_status(self):
@@ -287,7 +332,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/key-status').json()
+        return self._adapter.get('/v1/sys/key-status').json()
 
     def rotate(self):
         """PUT /sys/rotate
@@ -295,7 +340,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._put('/v1/sys/rotate')
+        self._adapter.put('/v1/sys/rotate')
 
     @property
     def rekey_status(self):
@@ -304,7 +349,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/rekey/init').json()
+        return self._adapter.get('/v1/sys/rekey/init').json()
 
     def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None,
                     backup=False):
@@ -333,7 +378,7 @@ class Client(object):
             params['pgp_keys'] = pgp_keys
             params['backup'] = backup
 
-        resp = self._put('/v1/sys/rekey/init', json=params)
+        resp = self._adapter.put('/v1/sys/rekey/init', json=params)
         if resp.text:
             return resp.json()
 
@@ -343,7 +388,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/sys/rekey/init')
+        self._adapter.delete('/v1/sys/rekey/init')
 
     def rekey(self, key, nonce=None):
         """PUT /sys/rekey/update
@@ -362,7 +407,7 @@ class Client(object):
         if nonce:
             params['nonce'] = nonce
 
-        return self._put('/v1/sys/rekey/update', json=params).json()
+        return self._adapter.put('/v1/sys/rekey/update', json=params).json()
 
     def rekey_multi(self, keys, nonce=None):
         """
@@ -389,7 +434,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/rekey/backup').json()
+        return self._adapter.get('/v1/sys/rekey/backup').json()
 
     @property
     def ha_status(self):
@@ -398,7 +443,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/leader').json()
+        return self._adapter.get('/v1/sys/leader').json()
 
     def read_lease(self, lease_id):
         """PUT /sys/leases/lookup
@@ -411,7 +456,7 @@ class Client(object):
         params = {
             'lease_id': lease_id
         }
-        return self._put('/v1/sys/leases/lookup', json=params).json()
+        return self._adapter.put('/v1/sys/leases/lookup', json=params).json()
 
     def renew_secret(self, lease_id, increment=None):
         """PUT /sys/leases/renew
@@ -427,7 +472,7 @@ class Client(object):
             'lease_id': lease_id,
             'increment': increment,
         }
-        return self._put('/v1/sys/leases/renew', json=params).json()
+        return self._adapter.put('/v1/sys/leases/renew', json=params).json()
 
     def revoke_secret(self, lease_id):
         """PUT /sys/revoke/<lease id>
@@ -437,7 +482,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._put('/v1/sys/revoke/{0}'.format(lease_id))
+        self._adapter.put('/v1/sys/revoke/{0}'.format(lease_id))
 
     def revoke_secret_prefix(self, path_prefix):
         """PUT /sys/revoke-prefix/<path prefix>
@@ -447,7 +492,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._put('/v1/sys/revoke-prefix/{0}'.format(path_prefix))
+        self._adapter.put('/v1/sys/revoke-prefix/{0}'.format(path_prefix))
 
     def revoke_self_token(self):
         """PUT /auth/token/revoke-self
@@ -455,7 +500,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._put('/v1/auth/token/revoke-self')
+        self._adapter.put('/v1/auth/token/revoke-self')
 
     def list_secret_backends(self):
         """GET /sys/mounts
@@ -463,7 +508,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/mounts').json()
+        return self._adapter.get('/v1/sys/mounts').json()
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/auth/<mount point>
@@ -491,7 +536,7 @@ class Client(object):
             'options': options,
         }
 
-        self._post('/v1/sys/mounts/{0}'.format(mount_point), json=params)
+        self._adapter.post('/v1/sys/mounts/{0}'.format(mount_point), json=params)
 
     def tune_secret_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
                             audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
@@ -544,7 +589,7 @@ class Client(object):
         for optional_parameter in optional_parameters:
             if locals().get(optional_parameter) is not None:
                 params[optional_parameter] = locals().get(optional_parameter)
-        return self._post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
+        return self._adapter.post('/v1/sys/mounts/{0}/tune'.format(mount_point), json=params)
 
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/mounts/<mount point>/tune
@@ -559,7 +604,7 @@ class Client(object):
         if not mount_point:
             mount_point = backend_type
 
-        return self._get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
@@ -569,7 +614,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/sys/mounts/{0}'.format(mount_point))
+        self._adapter.delete('/v1/sys/mounts/{0}'.format(mount_point))
 
     def remount_secret_backend(self, from_mount_point, to_mount_point):
         """POST /sys/remount
@@ -586,7 +631,7 @@ class Client(object):
             'to': to_mount_point,
         }
 
-        self._post('/v1/sys/remount', json=params)
+        self._adapter.post('/v1/sys/remount', json=params)
 
     def list_policies(self):
         """GET /sys/policy
@@ -594,7 +639,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/policy').json()['policies']
+        return self._adapter.get('/v1/sys/policy').json()['policies']
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
@@ -607,7 +652,7 @@ class Client(object):
         :rtype:
         """
         try:
-            policy = self._get('/v1/sys/policy/{0}'.format(name)).json()['rules']
+            policy = self._adapter.get('/v1/sys/policy/{0}'.format(name)).json()['rules']
             if parse:
                 if not has_hcl_parser:
                     raise ImportError('pyhcl is required for policy parsing')
@@ -636,7 +681,7 @@ class Client(object):
             'rules': rules,
         }
 
-        self._put('/v1/sys/policy/{0}'.format(name), json=params)
+        self._adapter.put('/v1/sys/policy/{0}'.format(name), json=params)
 
     def delete_policy(self, name):
         """DELETE /sys/policy/<name>
@@ -646,7 +691,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/sys/policy/{0}'.format(name))
+        self._adapter.delete('/v1/sys/policy/{0}'.format(name))
 
     def list_audit_backends(self):
         """GET /sys/audit
@@ -654,7 +699,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/audit').json()
+        return self._adapter.get('/v1/sys/audit').json()
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
@@ -679,7 +724,7 @@ class Client(object):
             'options': options,
         }
 
-        self._post('/v1/sys/audit/{0}'.format(name), json=params)
+        self._adapter.post('/v1/sys/audit/{0}'.format(name), json=params)
 
     def disable_audit_backend(self, name):
         """DELETE /sys/audit/<name>
@@ -689,7 +734,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/sys/audit/{0}'.format(name))
+        self._adapter.delete('/v1/sys/audit/{0}'.format(name))
 
     def audit_hash(self, name, input):
         """POST /sys/audit-hash
@@ -704,7 +749,7 @@ class Client(object):
         params = {
             'input': input,
         }
-        return self._post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -774,11 +819,11 @@ class Client(object):
             params['period'] = period
 
         if orphan:
-            return self._post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
         elif role:
-            return self._post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
         else:
-            return self._post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
 
     def lookup_token(self, token=None, accessor=False, wrap_ttl=None):
         """GET /auth/token/lookup/<token>
@@ -805,13 +850,13 @@ class Client(object):
         if token:
             if accessor:
                 path = '/v1/auth/token/lookup-accessor'
-                return self._post(path, json=accessor_param, wrap_ttl=wrap_ttl).json()
+                return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl).json()
             else:
                 path = '/v1/auth/token/lookup'
-                return self._post(path, json=token_param).json()
+                return self._adapter.post(path, json=token_param).json()
         else:
             path = '/v1/auth/token/lookup-self'
-            return self._get(path, wrap_ttl=wrap_ttl).json()
+            return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
 
     def revoke_token(self, token, orphan=False, accessor=False):
         """POST /auth/token/revoke
@@ -834,13 +879,13 @@ class Client(object):
             raise exceptions.InvalidRequest(msg)
         elif accessor:
             params = {'accessor': token}
-            self._post('/v1/auth/token/revoke-accessor', json=params)
+            self._adapter.post('/v1/auth/token/revoke-accessor', json=params)
         elif orphan:
             params = {'token': token}
-            self._post('/v1/auth/token/revoke-orphan', json=params)
+            self._adapter.post('/v1/auth/token/revoke-orphan', json=params)
         else:
             params = {'token': token}
-            self._post('/v1/auth/token/revoke', json=params)
+            self._adapter.post('/v1/auth/token/revoke', json=params)
 
     def revoke_token_prefix(self, prefix):
         """POST /auth/token/revoke-prefix/<prefix>
@@ -850,7 +895,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
+        self._adapter.post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
     def renew_token(self, token=None, increment=None, wrap_ttl=None):
         """POST /auth/token/renew/<token>
@@ -872,9 +917,9 @@ class Client(object):
 
         if token:
             path = '/v1/auth/token/renew/{0}'.format(token)
-            return self._post(path, json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post(path, json=params, wrap_ttl=wrap_ttl).json()
         else:
-            return self._post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
 
     def create_token_role(self, role,
                           allowed_policies=None, disallowed_policies=None,
@@ -910,7 +955,7 @@ class Client(object):
             'path_suffix': path_suffix,
             'explicit_max_ttl': explicit_max_ttl
         }
-        return self._post('/v1/auth/token/roles/{0}'.format(role), json=params)
+        return self._adapter.post('/v1/auth/token/roles/{0}'.format(role), json=params)
 
     def token_role(self, role):
         """Returns the named token role.
@@ -1032,34 +1077,32 @@ class Client(object):
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
         """POST /auth/<mount point>/login
 
-        :param access_key:
-        :type access_key:
-        :param secret_key:
-        :type secret_key:
-        :param session_token:
-        :type session_token:
-        :param header_value:
-        :type header_value:
-        :param mount_point:
-        :type mount_point:
-        :param role:
-        :type role:
-        :param use_token:
-        :type use_token:
-        :return:
-        :rtype:
+        :param access_key: AWS IAM access key ID
+        :type access_key: str
+        :param secret_key: AWS IAM secret access key
+        :type secret_key: str
+        :param session_token: Optional AWS IAM session token retrieved via a GetSessionToken AWS API request.
+            see: https://docs.aws.amazon.com/STS/latest/APIReference/API_GetSessionToken.html
+        :type session_token: str
+        :param header_value: Vault allows you to require an additional header, X-Vault-AWS-IAM-Server-ID, to be present
+            to mitigate against different types of replay attacks. Depending on the configuration of the AWS auth
+            backend, providing a argument to this optional parameter may be required.
+        :type header_value: str
+        :param mount_point: The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws". "aws-ec2"
+            is the default argument for backwards comparability within this module.
+        :type mount_point: str
+        :param role: Name of the role against which the login is being attempted. If role is not specified, then the
+            login endpoint looks for a role bearing the name of the AMI ID of the EC2 instance that is trying to login
+            if using the ec2 auth method, or the "friendly name" (i.e., role name or username) of the IAM principal
+            authenticated. If a matching role is not found, login fails.
+        :type role: str
+        :param use_token: If True, uses the token in the response received from the auth request to set the "token"
+            attribute on the current Client class instance.
+        :type use_token: bool.
+        :return: The response from the AWS IAM login request attempt.
+        :rtype: requests.Response
         """
-        request = requests.Request(
-            method='POST',
-            url='https://sts.amazonaws.com/',
-            headers={'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', 'Host': 'sts.amazonaws.com'},
-            data='Action=GetCallerIdentity&Version=2011-06-15',
-        )
-
-        if header_value:
-            request.headers['X-Vault-AWS-IAM-Server-ID'] = header_value
-
-        request = request.prepare()
+        request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
 
         auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
         auth.add_auth(request)
@@ -1156,7 +1199,7 @@ class Client(object):
         }
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
+        return self._adapter.post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
     def list_userpass(self, mount_point='userpass'):
         """GET /auth/<mount point>/users?list=true
@@ -1167,7 +1210,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+            return self._adapter.get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
         except exceptions.InvalidPath:
             return None
 
@@ -1181,7 +1224,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
+        return self._adapter.get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
 
     def update_userpass_policies(self, username, policies, mount_point='userpass'):
         """POST /auth/<mount point>/users/<username>/policies
@@ -1204,7 +1247,7 @@ class Client(object):
             'policies': policies
         }
 
-        return self._post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
+        return self._adapter.post('/v1/auth/{}/users/{}/policies'.format(mount_point, username), json=params)
 
     def update_userpass_password(self, username, password, mount_point='userpass'):
         """POST /auth/<mount point>/users/<username>/password
@@ -1221,7 +1264,7 @@ class Client(object):
         params = {
             'password': password
         }
-        return self._post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
+        return self._adapter.post('/v1/auth/{}/users/{}/password'.format(mount_point, username), json=params)
 
     def delete_userpass(self, username, mount_point='userpass'):
         """DELETE /auth/<mount point>/users/<username>
@@ -1233,7 +1276,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._delete('/v1/auth/{}/users/{}'.format(mount_point, username))
+        return self._adapter.delete('/v1/auth/{}/users/{}'.format(mount_point, username))
 
     def create_app_id(self, app_id, policies, display_name=None, mount_point='app-id', **kwargs):
         """POST /auth/<mount point>/map/app-id/<app_id>
@@ -1268,7 +1311,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
+        return self._adapter.post('/v1/auth/{}/map/app-id/{}'.format(mount_point, app_id), json=params)
 
     def get_app_id(self, app_id, mount_point='app-id', wrap_ttl=None):
         """GET /auth/<mount_point>/map/app-id/<app_id>
@@ -1283,7 +1326,7 @@ class Client(object):
         :rtype:
         """
         path = '/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)
-        return self._get(path, wrap_ttl=wrap_ttl).json()
+        return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_app_id(self, app_id, mount_point='app-id'):
         """DELETE /auth/<mount_point>/map/app-id/<app_id>
@@ -1295,7 +1338,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._delete('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id))
+        return self._adapter.delete('/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id))
 
     def create_user_id(self, user_id, app_id, cidr_block=None, mount_point='app-id', **kwargs):
         """POST /auth/<mount point>/map/user-id/<user_id>
@@ -1330,7 +1373,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self._post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
+        return self._adapter.post('/v1/auth/{}/map/user-id/{}'.format(mount_point, user_id), json=params)
 
     def get_user_id(self, user_id, mount_point='app-id', wrap_ttl=None):
         """GET /auth/<mount_point>/map/user-id/<user_id>
@@ -1345,7 +1388,7 @@ class Client(object):
         :rtype:
         """
         path = '/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)
-        return self._get(path, wrap_ttl=wrap_ttl).json()
+        return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
 
     def delete_user_id(self, user_id, mount_point='app-id'):
         """DELETE /auth/<mount_point>/map/user-id/<user_id>
@@ -1357,7 +1400,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
+        return self._adapter.delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
     def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/client
@@ -1380,7 +1423,7 @@ class Client(object):
         if endpoint is not None:
             params['endpoint'] = endpoint
 
-        return self._post('/v1/auth/{0}/config/client'.format(mount_point), json=params)
+        return self._adapter.post('/v1/auth/{0}/config/client'.format(mount_point), json=params)
 
     def get_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/client
@@ -1390,7 +1433,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/auth/{0}/config/client'.format(mount_point)).json()
+        return self._adapter.get('/v1/auth/{0}/config/client'.format(mount_point)).json()
 
     def delete_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """DELETE /auth/<mount_point>/config/client
@@ -1400,7 +1443,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._delete('/v1/auth/{0}/config/client'.format(mount_point))
+        return self._adapter.delete('/v1/auth/{0}/config/client'.format(mount_point))
 
     def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/certificate/<cert_name>
@@ -1418,7 +1461,7 @@ class Client(object):
             'cert_name': cert_name,
             'aws_public_cert': aws_public_cert
         }
-        return self._post('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name), json=params)
+        return self._adapter.post('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name), json=params)
 
     def get_vault_ec2_certificate_configuration(self, cert_name, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/certificate/<cert_name>
@@ -1430,7 +1473,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
+        return self._adapter.get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
 
     def list_vault_ec2_certificate_configurations(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/certificates?list=true
@@ -1441,7 +1484,7 @@ class Client(object):
         :rtype:
         """
         params = {'list': True}
-        return self._get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
+        return self._adapter.get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
 
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
                         bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
@@ -1531,7 +1574,7 @@ class Client(object):
         if resolve_aws_unique_ids is not None:
             params['resolve_aws_unique_ids'] = resolve_aws_unique_ids
 
-        return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
+        return self._adapter.post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
 
     def get_ec2_role(self, role, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/role/<role>
@@ -1543,7 +1586,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
+        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
 
     def delete_ec2_role(self, role, mount_point='aws-ec2'):
         """DELETE /auth/<mount_point>/role/<role>
@@ -1555,7 +1598,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role))
+        return self._adapter.delete('/v1/auth/{0}/role/{1}'.format(mount_point, role))
 
     def list_ec2_roles(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/roles?list=true
@@ -1566,7 +1609,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True}).json()
+            return self._adapter.get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True}).json()
         except exceptions.InvalidPath:
             return None
 
@@ -1603,7 +1646,7 @@ class Client(object):
             params['policies'] = policies
         if instance_id is not None:
             params['instance_id'] = instance_id
-        return self._post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
+        return self._adapter.post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
 
     def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
         """POST /auth/<mount point>/login/<username>
@@ -1670,7 +1713,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        response = self._post(url, **kwargs).json()
+        response = self._adapter.post(url, **kwargs).json()
 
         if use_token:
             self.token = response['auth']['client_token']
@@ -1683,7 +1726,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/sys/auth').json()
+        return self._adapter.get('/v1/sys/auth').json()
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None):
         """POST /sys/auth/<mount point>
@@ -1704,7 +1747,7 @@ class Client(object):
             'type': backend_type,
             'description': description,
         }
-        self._post('/v1/sys/auth/{0}'.format(mount_point), json=params)
+        self._adapter.post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
     def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
                           audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
@@ -1753,7 +1796,7 @@ class Client(object):
         for optional_parameter in optional_parameters:
             if locals().get(optional_parameter) is not None:
                 params[optional_parameter] = locals().get(optional_parameter)
-        return self._post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
+        return self._adapter.post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
 
     def get_auth_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/auth/<mount point>/tune
@@ -1768,7 +1811,7 @@ class Client(object):
         if not mount_point:
             mount_point = backend_type
 
-        return self._get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
+        return self._adapter.get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
 
     def disable_auth_backend(self, mount_point):
         """DELETE /sys/auth/<mount point>
@@ -1778,7 +1821,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._delete('/v1/sys/auth/{0}'.format(mount_point))
+        self._adapter.delete('/v1/sys/auth/{0}'.format(mount_point))
 
     def create_role(self, role_name, mount_point='approle', **kwargs):
         """POST /auth/<mount_point>/role/<role name>
@@ -1793,7 +1836,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
+        return self._adapter.post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
     def delete_role(self, role_name, mount_point='approle'):
         """DELETE /auth/<mount_point>/role/<role name>
@@ -1806,7 +1849,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._delete('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
+        return self._adapter.delete('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
     def list_roles(self, mount_point='approle'):
         """GET /auth/<mount_point>/role
@@ -1817,7 +1860,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
+        return self._adapter.get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
 
     def get_role_id(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>/role-id
@@ -1831,7 +1874,7 @@ class Client(object):
         """
 
         url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
-        return self._get(url).json()['data']['role_id']
+        return self._adapter.get(url).json()['data']['role_id']
 
     def set_role_id(self, role_name, role_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/role-id
@@ -1850,7 +1893,7 @@ class Client(object):
         params = {
             'role_id': role_id
         }
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def get_role(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>
@@ -1862,7 +1905,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
+        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
 
     def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id
@@ -1887,7 +1930,7 @@ class Client(object):
             params['metadata'] = json.dumps(meta)
         if cidr_list is not None:
             params['cidr_list'] = cidr_list
-        return self._post(url, json=params, wrap_ttl=wrap_ttl).json()
+        return self._adapter.post(url, json=params, wrap_ttl=wrap_ttl).json()
 
     def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/lookup
@@ -1905,7 +1948,7 @@ class Client(object):
         params = {
             'secret_id': secret_id
         }
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def list_role_secrets(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>/secret-id?list=true
@@ -1918,7 +1961,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
@@ -1934,7 +1977,7 @@ class Client(object):
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/lookup'.format(mount_point, role_name)
         params = {'secret_id_accessor': secret_id_accessor}
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/destroy
@@ -1952,7 +1995,7 @@ class Client(object):
         params = {
             'secret_id': secret_id
         }
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
@@ -1967,7 +2010,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
-        return self._delete(url)
+        return self._adapter.delete(url)
 
     def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/custom-secret-id
@@ -1989,7 +2032,7 @@ class Client(object):
         }
         if meta is not None:
             params['meta'] = meta
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """POST /auth/<mount_point>/login
@@ -2043,7 +2086,7 @@ class Client(object):
             params['pem_keys'] = pem_keys
 
         url = 'v1/auth/{0}/config'.format(mount_point)
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def get_kubernetes_configuration(self, mount_point='kubernetes'):
         """GET /auth/<mount_point>/config
@@ -2055,7 +2098,7 @@ class Client(object):
         """
 
         url = '/v1/auth/{0}/config'.format(mount_point)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def create_kubernetes_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="",
                                max_ttl="", period="", policies=None, mount_point='kubernetes'):
@@ -2097,7 +2140,7 @@ class Client(object):
             'policies': policies,
         }
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def get_kubernetes_role(self, name, mount_point='kubernetes'):
         """GET /auth/<mount_point>/role/:name
@@ -2111,7 +2154,7 @@ class Client(object):
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def list_kubernetes_roles(self, mount_point='kubernetes'):
         """GET /auth/<mount_point>/role?list=true
@@ -2123,7 +2166,7 @@ class Client(object):
         """
 
         url = 'v1/auth/{0}/role?list=true'.format(mount_point)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def delete_kubernetes_role(self, role, mount_point='kubernetes'):
         """DELETE /auth/<mount_point>/role/:role
@@ -2137,7 +2180,7 @@ class Client(object):
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, role)
-        return self._delete(url)
+        return self._adapter.delete(url)
 
     def auth_kubernetes(self, role, jwt, use_token=True, mount_point='kubernetes'):
         """POST /auth/<mount_point>/login
@@ -2191,7 +2234,7 @@ class Client(object):
         if key_type is not None:
             params['type'] = key_type
 
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def transit_read_key(self, name, mount_point='transit'):
         """GET /<mount_point>/keys/<name>
@@ -2204,7 +2247,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def transit_list_keys(self, mount_point='transit'):
         """GET /<mount_point>/keys?list=true
@@ -2215,7 +2258,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys?list=true'.format(mount_point)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def transit_delete_key(self, name, mount_point='transit'):
         """DELETE /<mount_point>/keys/<name>
@@ -2228,7 +2271,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        return self._delete(url)
+        return self._adapter.delete(url)
 
     def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
                            mount_point='transit'):
@@ -2256,7 +2299,7 @@ class Client(object):
         if deletion_allowed is not None:
             params['deletion_allowed'] = deletion_allowed
 
-        return self._post(url, json=params)
+        return self._adapter.post(url, json=params)
 
     def transit_rotate_key(self, name, mount_point='transit'):
         """POST /<mount_point>/keys/<name>/rotate
@@ -2269,7 +2312,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
-        return self._post(url)
+        return self._adapter.post(url)
 
     def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
         """GET /<mount_point>/export/<key_type>/<name>(/<version>)
@@ -2289,7 +2332,7 @@ class Client(object):
             url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
         else:
             url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
-        return self._get(url).json()
+        return self._adapter.get(url).json()
 
     def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
                              key_type=None, convergent_encryption=None, mount_point='transit'):
@@ -2333,7 +2376,7 @@ class Client(object):
         if convergent_encryption is not None:
             params['convergent_encryption'] = convergent_encryption
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
         """POST /<mount_point>/decrypt/<name>
@@ -2364,7 +2407,7 @@ class Client(object):
         if batch_input is not None:
             params['batch_input'] = batch_input
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
                             mount_point='transit'):
@@ -2400,7 +2443,7 @@ class Client(object):
         if batch_input is not None:
             params['batch_input'] = batch_input
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
         """POST /<mount_point>/datakey/<type>/<name>
@@ -2429,7 +2472,7 @@ class Client(object):
         if bits is not None:
             params['bits'] = bits
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
         """POST /<mount_point>/random(/<data_bytes>)
@@ -2452,7 +2495,7 @@ class Client(object):
         if output_format is not None:
             params["format"] = output_format
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
         """POST /<mount_point>/hash(/<algorithm>)
@@ -2479,7 +2522,7 @@ class Client(object):
         if output_format is not None:
             params['format'] = output_format
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
         """POST /<mount_point>/hmac/<name>(/<algorithm>)
@@ -2507,7 +2550,7 @@ class Client(object):
         if key_version is not None:
             params['key_version'] = key_version
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
                           mount_point='transit', signature_algorithm='pss'):
@@ -2548,7 +2591,7 @@ class Client(object):
             params['prehashed'] = prehashed
         params['signature_algorithm'] = signature_algorithm
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
                                    prehashed=None, mount_point='transit', signature_algorithm='pss'):
@@ -2593,151 +2636,37 @@ class Client(object):
             params['prehashed'] = prehashed
         params['signature_algorithm'] = signature_algorithm
 
-        return self._post(url, json=params).json()
+        return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.close', new_method=adapters.Request.close)
     def close(self):
-        """Close the underlying Requests session
+        return self._adapter.close()
 
-        :return:
-        :rtype:
-        """
-        self.session.close()
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.get', new_method=adapters.Request.get)
+    def _get(self, *args, **kwargs):
+        return self._adapter.get(*args, **kwargs)
 
-    def _get(self, url, **kwargs):
-        """
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.post', new_method=adapters.Request.post)
+    def _post(self, *args, **kwargs):
+        return self._adapter.post(*args, **kwargs)
 
-        :param url:
-        :type url:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        return self.__request('get', url, **kwargs)
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.put', new_method=adapters.Request.put)
+    def _put(self, *args, **kwargs):
+        return self._adapter.put(*args, **kwargs)
 
-    def _post(self, url, **kwargs):
-        """
-
-        :param url:
-        :type url:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        return self.__request('post', url, **kwargs)
-
-    def _put(self, url, **kwargs):
-        """
-
-        :param url:
-        :type url:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        return self.__request('put', url, **kwargs)
-
-    def _delete(self, url, **kwargs):
-        """
-
-        :param url:
-        :type url:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        return self.__request('delete', url, **kwargs)
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.delete', new_method=adapters.Request.delete)
+    def _delete(self, *args, **kwargs):
+        return self._adapter.delete(*args, **kwargs)
 
     @staticmethod
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.urljoin', new_method=adapters.Request.urljoin)
     def urljoin(*args):
-        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
+        return adapters.Request.urljoin(*args)
 
-        :param args:
-        :type args:
-        :return:
-        :rtype:
-        """
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.request', new_method=adapters.Request.request)
+    def __request(self, *args, **kwargs):
+        return self._adapter.request(*args, **kwargs)
 
-        return '/'.join(map(lambda x: str(x).strip('/'), args))
-
-    def __request(self, method, url, headers=None, **kwargs):
-        """
-
-        :param method:
-        :type method:
-        :param url:
-        :type url:
-        :param headers:
-        :type headers:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        url = self.urljoin(self._url, url)
-
-        if not headers:
-            headers = {}
-
-        if self.token:
-            headers['X-Vault-Token'] = self.token
-
-        wrap_ttl = kwargs.pop('wrap_ttl', None)
-        if wrap_ttl:
-            headers['X-Vault-Wrap-TTL'] = str(wrap_ttl)
-
-        _kwargs = self._kwargs.copy()
-        _kwargs.update(kwargs)
-
-        response = self.session.request(method, url, headers=headers,
-                                        allow_redirects=False, **_kwargs)
-
-        # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
-        while response.is_redirect and self.allow_redirects:
-            url = self.urljoin(self._url, response.headers['Location'])
-            response = self.session.request(method, url, headers=headers,
-                                            allow_redirects=False, **_kwargs)
-
-        if response.status_code >= 400 and response.status_code < 600:
-            text = errors = None
-            if response.headers.get('Content-Type') == 'application/json':
-                errors = response.json().get('errors')
-            if errors is None:
-                text = response.text
-            self.__raise_error(response.status_code, text, errors=errors)
-
-        return response
-
-    def __raise_error(self, status_code, message=None, errors=None):
-        """
-
-        :param status_code:
-        :type status_code:
-        :param message:
-        :type message:
-        :param errors:
-        :type errors:
-        :return:
-        :rtype:
-        """
-        if status_code == 400:
-            raise exceptions.InvalidRequest(message, errors=errors)
-        elif status_code == 401:
-            raise exceptions.Unauthorized(message, errors=errors)
-        elif status_code == 403:
-            raise exceptions.Forbidden(message, errors=errors)
-        elif status_code == 404:
-            raise exceptions.InvalidPath(message, errors=errors)
-        elif status_code == 429:
-            raise exceptions.RateLimitExceeded(message, errors=errors)
-        elif status_code == 500:
-            raise exceptions.InternalServerError(message, errors=errors)
-        elif status_code == 501:
-            raise exceptions.VaultNotInitialized(message, errors=errors)
-        elif status_code == 503:
-            raise exceptions.VaultDown(message, errors=errors)
-        else:
-            raise exceptions.UnexpectedError(message)
+    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='hvac.utils.raise_for_error', new_method=utils.raise_for_error)
+    def __raise_error(self, *args, **kwargs):
+        utils.raise_for_error(*args, **kwargs)

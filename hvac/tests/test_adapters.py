@@ -3,10 +3,10 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
 
-from hvac import Client
+from hvac import adapters
 
 
-class TestClient(TestCase):
+class TestRequest(TestCase):
     """Unit tests providing coverage for requests-related methods in the hvac Client class."""
 
     @parameterized.expand([
@@ -22,8 +22,8 @@ class TestClient(TestCase):
             method='GET',
             url=mock_url,
         )
-        client = Client(url=test_url)
-        response = client._get(
+        adapter = adapters.Request(base_uri=test_url)
+        response = adapter.get(
             url='v1/sys/health',
         )
         self.assertEquals(

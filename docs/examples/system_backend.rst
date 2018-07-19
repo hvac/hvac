@@ -109,6 +109,8 @@ View and Manage Leases
 
 Read a lease:
 
+.. versionadded:: 0.6.3
+
 .. code-block:: python
 
     >>> client.read_lease(lease_id='pki/issue/my-role/d05138a2-edeb-889d-db98-2057ecd5138f')

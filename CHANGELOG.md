@@ -2,12 +2,17 @@
 
 ## 0.6.2 (UNRELEASED)
 
+BACKWARDS COMPATIBILITY NOTICE:
+
+* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` propery on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
+
 IMPROVEMENTS:
 
 * sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222]
 * README.md included in setuptools metadata. [GH-222]
 * All `tune_secret_backend()` parameters now accepted. [GH-215]
 * Add `read_lease()` method [GH-218]
+* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223]
 
 Thanks to @bbayszczak, @jvanbrunschot-coolblue for their lovely contributions.
 
