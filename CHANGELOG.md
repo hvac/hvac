@@ -10,11 +10,11 @@ See the [Advanced Usage](https://hvac.readthedocs.io/en/latest/advanced_usage.ht
 
 IMPROVEMENTS:
 
-* sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222](https://github.com/ianunruh/hvac/pull/222)
-* README.md included in setuptools metadata. [GH-222](https://github.com/ianunruh/hvac/pull/222)
-* All `tune_secret_backend()` parameters now accepted. [GH-215](https://github.com/ianunruh/hvac/pull/215)
-* Add `read_lease()` method [GH-218](https://github.com/ianunruh/hvac/pull/218)
-* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223](https://github.com/ianunruh/hvac/pull/223)
+* sphinx documentation and [readthedocs.io project](https://hvac.readthedocs.io/en/latest/) added. [GH-222](https://github.com/hvac/hvac/pull/222)
+* README.md included in setuptools metadata. [GH-222](https://github.com/hvac/hvac/pull/222)
+* All `tune_secret_backend()` parameters now accepted. [GH-215](https://github.com/hvac/hvac/pull/215)
+* Add `read_lease()` method [GH-218](https://github.com/hvac/hvac/pull/218)
+* Added adapter module with `Request` class to abstract HTTP requests away from the `Client` class. [GH-223](https://github.com/hvac/hvac/pull/223)
 
 Thanks to @bbayszczak, @jvanbrunschot-coolblue for their lovely contributions.
 

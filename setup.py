@@ -24,7 +24,7 @@ setup(
     long_description_content_type="text/markdown",
     author='Ian Unruh',
     author_email='ianunruh@gmail.com',
-    url='https://github.com/ianunruh/hvac',
+    url='https://github.com/hvac/hvac',
     keywords=['hashicorp', 'vault'],
     classifiers=['License :: OSI Approved :: Apache Software License'],
     packages=find_packages(),
