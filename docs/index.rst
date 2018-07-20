@@ -1,7 +1,7 @@
 hvac: Python Client Library for HashiCorp's Vault
 =================================================
 
-Source code repository hosted at `github.com/ianunruh/hvac`_.
+Source code repository hosted at `github.com/hvac/hvac`_.
 
 .. toctree::
    :glob:
@@ -25,4 +25,4 @@ Indices and tables
 * :ref:`search`
 
 
-.. _github.com/ianunruh/hvac: https://github.com/ianunruh/hvac/
+.. _github.com/hvac/hvac: https://github.com/hvac/hvac/

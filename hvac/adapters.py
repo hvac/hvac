@@ -186,7 +186,7 @@ class Request(Adapter):
         response = self.session.request(method, url, headers=headers,
                                         allow_redirects=False, **_kwargs)
 
-        # NOTE(ianunruh): workaround for https://github.com/ianunruh/hvac/issues/51
+        # NOTE(ianunruh): workaround for https://github.com/hvac/hvac/issues/51
         while response.is_redirect and self.allow_redirects:
             url = self.urljoin(self.base_uri, response.headers['Location'])
             response = self.session.request(method, url, headers=headers,

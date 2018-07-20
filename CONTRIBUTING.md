@@ -36,7 +36,7 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
   git checkout -b master_v0-6-2
   ```
-- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff using the previous version's tag. E.g.: [https://github.com/ianunruh/hvac/compare/v0.6.1...master](https://github.com/ianunruh/hvac/compare/v0.6.1...master)
+- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff using the previous version's tag. E.g.: [https://github.com/hvac/hvac/compare/v0.6.1...master](https://github.com/hvac/hvac/compare/v0.6.1...master)
 - [ ] Commit the changelog changes:
   ```
   git add CHANGELOG.md
@@ -78,9 +78,9 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   <verify hvac functionality>
   deactivate
   ```
-- [ ] Create a **draft** GitHub release using the contents of the new release version's [CHANGELOG.md](CHANGELOG.md) content: https://github.com/ianunruh/hvac/releases/new
+- [ ] Create a **draft** GitHub release using the contents of the new release version's [CHANGELOG.md](CHANGELOG.md) content: https://github.com/hvac/hvac/releases/new
 - [ ] Upload the sdist and whl files to the draft GitHub release as attached "binaries".
-- [ ] Push up the working branch (`git push`) and open a PR to merge the working branch into master:  [https://github.com/ianunruh/hvac/compare/master...master_v0-6-2](https://github.com/ianunruh/hvac/compare/master...master_v0-6-2)
+- [ ] Push up the working branch (`git push`) and open a PR to merge the working branch into master:  [https://github.com/hvac/hvac/compare/master...master_v0-6-2](https://github.com/hvac/hvac/compare/master...master_v0-6-2)
 - [ ] After merging the working branch into master, tag master with the release version and push that up as well:
   ```
   git checkout master
@@ -104,5 +104,5 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   deactivate
   ```
 
-- [ ] Publish the draft release on GitHub: [https://github.com/ianunruh/hvac/releases](https://github.com/ianunruh/hvac/releases)
+- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases)
 - [ ] Update the [hvac project on readthedocs.io](https://readthedocs.org/dashboard/hvac/versions/), set the "stable" version to the new release and ensure the new tag for the release version is set as "active".
