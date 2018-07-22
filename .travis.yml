@@ -21,3 +21,4 @@ install:
 - pip install tox
 script:
 - export PATH=$HOME/bin:$PATH
+- make test
