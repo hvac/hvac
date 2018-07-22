@@ -1,0 +1,7 @@
+comment:
+  layout: "diff, files"
+  behavior: default
+  require_changes: true
+  require_base: yes
+  require_head: yes
+  branches: null
