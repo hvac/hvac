@@ -1,4 +1,4 @@
-avakas
+codecov
 coverage
 mock
 nose
