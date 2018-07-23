@@ -60,3 +60,15 @@ client.delete('secret/foo')
 client.token = 'MY_TOKEN'
 assert client.is_authenticated() # => True
 ```
+
+### Making use of private CA
+
+There is a not uncommon use case of people deploying Hashicorp Vault with a private certificate authority. Unfortunately the `requests` module does not make use of the system CA certificates. Instead of disabling SSL verification you can make use of the `REQUESTS_CA_BUNDLE` environment variable.
+
+As [documented](http://docs.python-requests.org/en/master/user/advanced/) in the advanced usage section for `requests` this environment variable should point to a file that is comprised of all CA certificates you may wish to use. This can be a single private CA, or an existing list of root certificates with the private appended to the end. The following example shows how to achieve this.
+
+```
+$ cp "$(python -c 'import certifi;print certifi.where();')" /tmp/bundle.pem
+$ cat /path/to/custom.pem >> /tmp/bundle.pem
+$ export REQUESTS_CA_BUNDLE=/tmp/bundle.pem
+```
