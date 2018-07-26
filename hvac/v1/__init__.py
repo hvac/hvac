@@ -1702,23 +1702,25 @@ class Client(object):
         return self.auth('/v1/sys/wrapping/unwrap')
 
     def auth(self, url, use_token=True, **kwargs):
+        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+            in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
+            Client attribute.
+
+        :param url: Path to send the authentication request to.
+        :type url: basestring
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+        :type use_token: bool
+        :param kwargs: Additional keyword arguments to include in the params sent with the request.
+        :type kwargs: dict
+        :return: The response of the auth request.
+        :rtype: requests.Response
         """
-
-        :param url:
-        :type url:
-        :param use_token:
-        :type use_token:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        response = self._adapter.post(url, **kwargs).json()
-
-        if use_token:
-            self.token = response['auth']['client_token']
-
-        return response
+        return self._adapter.auth(
+            url=url,
+            use_token=use_token,
+            **kwargs
+        )
 
     def list_auth_backends(self):
         """GET /sys/auth
