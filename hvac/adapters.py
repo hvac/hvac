@@ -13,52 +13,14 @@ from abc import ABCMeta, abstractmethod
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BASE_URI = 'http://localhost:8200'
+
 
 class Adapter(object):
     """Abstract base class used when constructing adapters for use with the Client class."""
     __metaclass__ = ABCMeta
 
-    @staticmethod
-    def urljoin(*args):
-        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
-
-        :param args: Multiple parts of a URL to be combined into one string.
-        :type args: str
-        :return: Full URL combining all provided arguments
-        :rtype: str
-        """
-
-        return '/'.join(map(lambda x: str(x).strip('/'), args))
-
-    @abstractmethod
-    def close(self):
-        raise NotImplemented
-
-    @abstractmethod
-    def get(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def post(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def put(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def delete(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def request(self, method, url, headers=None, **kwargs):
-        raise NotImplemented
-
-
-class Request(Adapter):
-    """The Request adapter class"""
-
-    def __init__(self, base_uri='http://localhost:8200', token=None, cert=None, verify=True, timeout=30, proxies=None,
+    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None):
         """Create a new request adapter instance.
 
@@ -96,17 +58,24 @@ class Request(Adapter):
             'proxies': proxies,
         }
 
-    def close(self):
-        """Close the underlying Requests session.
+    @staticmethod
+    def urljoin(*args):
+        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
+
+        :param args: Multiple parts of a URL to be combined into one string.
+        :type args: basestring
+        :return: Full URL combining all provided arguments
+        :rtype: basestring
         """
-        self.session.close()
+
+        return '/'.join(map(lambda x: str(x).strip('/'), args))
 
     def get(self, url, **kwargs):
         """Performs a GET request.
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: basestring
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -119,7 +88,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: basestring
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -132,7 +101,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: basestring
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -140,18 +109,31 @@ class Request(Adapter):
         """
         return self.request('put', url, **kwargs)
 
+    def close(self):
+        """Close the underlying Requests session.
+        """
+        self.session.close()
+
     def delete(self, url, **kwargs):
         """Performs a DELETE request.
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: basestring
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
         return self.request('delete', url, **kwargs)
+
+    @abstractmethod
+    def request(self, method, url, headers=None, **kwargs):
+        raise NotImplemented
+
+
+class Request(Adapter):
+    """The Request adapter class"""
 
     def request(self, method, url, headers=None, **kwargs):
         """
@@ -160,7 +142,7 @@ class Request(Adapter):
         :type method: str
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: basestring
         :param headers: Additional headers to include with the request.
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.
