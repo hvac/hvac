@@ -70,6 +70,11 @@ class Adapter(object):
 
         return '/'.join(map(lambda x: str(x).strip('/'), args))
 
+    def close(self):
+        """Close the underlying Requests session.
+        """
+        self.session.close()
+
     def get(self, url, **kwargs):
         """Performs a GET request.
 
@@ -108,11 +113,6 @@ class Adapter(object):
         :rtype: requests.Response
         """
         return self.request('put', url, **kwargs)
-
-    def close(self):
-        """Close the underlying Requests session.
-        """
-        self.session.close()
 
     def delete(self, url, **kwargs):
         """Performs a DELETE request.
