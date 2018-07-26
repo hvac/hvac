@@ -151,6 +151,20 @@ class Adapter(object):
 
     @abstractmethod
     def request(self, method, url, headers=None, **kwargs):
+        """Main method for routing HTTP requests to the configured Vault base_uri. Intended to be implement by subclasses.
+
+        :param method: HTTP method to use with the request. E.g., GET, POST, etc.
+        :type method: str
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: basestring
+        :param headers: Additional headers to include with the request.
+        :type headers: dict
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
         raise NotImplemented
 
 
@@ -158,7 +172,7 @@ class Request(Adapter):
     """The Request adapter class"""
 
     def request(self, method, url, headers=None, **kwargs):
-        """
+        """Main method for routing HTTP requests to the configured Vault base_uri.
 
         :param method: HTTP method to use with the request. E.g., GET, POST, etc.
         :type method: str
