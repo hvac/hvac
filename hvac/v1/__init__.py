@@ -2638,35 +2638,59 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.close', new_method=adapters.Request.close)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.close,
+    )
     def close(self):
         return self._adapter.close()
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.get', new_method=adapters.Request.get)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.get,
+    )
     def _get(self, *args, **kwargs):
         return self._adapter.get(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.post', new_method=adapters.Request.post)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.post,
+    )
     def _post(self, *args, **kwargs):
         return self._adapter.post(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.put', new_method=adapters.Request.put)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.put,
+    )
     def _put(self, *args, **kwargs):
         return self._adapter.put(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.delete', new_method=adapters.Request.delete)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.delete,
+    )
     def _delete(self, *args, **kwargs):
         return self._adapter.delete(*args, **kwargs)
 
     @staticmethod
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.urljoin', new_method=adapters.Request.urljoin)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.urljoin,
+    )
     def urljoin(*args):
         return adapters.Request.urljoin(*args)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.request', new_method=adapters.Request.request)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.request,
+    )
     def __request(self, *args, **kwargs):
         return self._adapter.request(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='hvac.utils.raise_for_error', new_method=utils.raise_for_error)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=utils.raise_for_error,
+    )
     def __raise_error(self, *args, **kwargs):
         utils.raise_for_error(*args, **kwargs)
