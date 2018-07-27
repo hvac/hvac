@@ -63,9 +63,9 @@ class Adapter(object):
         """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
 
         :param args: Multiple parts of a URL to be combined into one string.
-        :type args: basestring
+        :type args: str | unicode
         :return: Full URL combining all provided arguments
-        :rtype: basestring
+        :rtype: str | unicode
         """
 
         return '/'.join(map(lambda x: str(x).strip('/'), args))
@@ -80,7 +80,7 @@ class Adapter(object):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -93,7 +93,7 @@ class Adapter(object):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -106,7 +106,7 @@ class Adapter(object):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -119,7 +119,7 @@ class Adapter(object):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -133,7 +133,7 @@ class Adapter(object):
             Client attribute.
 
         :param url: Path to send the authentication request to.
-        :type url: basestring
+        :type url: str | unicode
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
             attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
         :type use_token: bool
@@ -157,7 +157,7 @@ class Adapter(object):
         :type method: str
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param headers: Additional headers to include with the request.
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.
@@ -178,7 +178,7 @@ class Request(Adapter):
         :type method: str
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: basestring
+        :type url: str | unicode
         :param headers: Additional headers to include with the request.
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.

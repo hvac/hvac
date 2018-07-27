@@ -1707,7 +1707,7 @@ class Client(object):
             Client attribute.
 
         :param url: Path to send the authentication request to.
-        :type url: basestring
+        :type url: str | unicode
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
             attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
         :type use_token: bool
