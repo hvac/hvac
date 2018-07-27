@@ -165,7 +165,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class Request(Adapter):
