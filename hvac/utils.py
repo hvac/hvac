@@ -3,6 +3,7 @@ Misc utility functions and constants
 """
 
 import functools
+import inspect
 import warnings
 from textwrap import dedent
 
@@ -44,14 +45,12 @@ def raise_for_error(status_code, message=None, errors=None):
         raise exceptions.UnexpectedError(message)
 
 
-def deprecated_method(to_be_removed_in_version, new_call_path=None, new_method=None):
+def deprecated_method(to_be_removed_in_version, new_method=None):
     """This is a decorator which can be used to mark methods as deprecated. It will result in a warning being emitted
     when the function is used.
 
     :param to_be_removed_in_version: Version of this module the decorated method will be removed in.
     :type to_be_removed_in_version: str
-    :param new_call_path: Example call to replace deprecated usage.
-    :type new_call_path: str
     :param new_method: Method intended to replace the decorated method. This method's docstrings are included in the
         decorated method's docstring.
     :type new_method: function
@@ -63,8 +62,11 @@ def deprecated_method(to_be_removed_in_version, new_call_path=None, new_method=N
             old_func=method.__name__,
             version=to_be_removed_in_version,
         )
-        if new_call_path:
-            message += " Please use `{}` moving forward.".format(new_call_path)
+        if new_method:
+            message += " Please use the '{method_name}' method on the '{module_name}' class moving forward.".format(
+                method_name=new_method.__name__,
+                module_name=inspect.getmodule(new_method).__name__
+            )
 
         @functools.wraps(method)
         def new_func(*args, **kwargs):
