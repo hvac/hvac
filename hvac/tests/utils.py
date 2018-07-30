@@ -10,6 +10,26 @@ from hvac import Client
 logger = logging.getLogger(__name__)
 
 
+VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+
+
+def create_client(**kwargs):
+    return Client(
+        url='https://localhost:8200',
+        cert=('test/client-cert.pem', 'test/client-key.pem'),
+        verify='test/server-cert.pem',
+        timeout=2,
+        **kwargs
+    )
+
+
+def match_version(spec):
+    output = subprocess.check_output(['vault', 'version']).decode('ascii')
+    version = Version(VERSION_REGEX.match(output).group(1))
+
+    return Spec(spec).match(version)
+
+
 class ServerManager(object):
     def __init__(self, config_path, client):
         self.config_path = config_path
@@ -99,75 +119,49 @@ class HvacIntegrationTestCase(object):
         self.client.set_policy(name, text)
         return text, obj
 
+    def configure_test_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
+        """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
 
-VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+        :param common_name: Common name to configure in the pki backend
+        :type common_name: str.
+        :param role_name: Name of the test role to configure.
+        :type role_name: str.
+        :param mount_point: The path the pki backend is mounted under.
+        :type mount_point: str.
+        :return: Nothing.
+        :rtype: None.
+        """
+        if '{path}/'.format(path=mount_point) in self.client.list_secret_backends():
+            self.client.disable_secret_backend(mount_point)
 
+        self.client.enable_secret_backend(backend_type='pki', mount_point=mount_point)
 
-def match_version(spec):
-    output = subprocess.check_output(['vault', 'version']).decode('ascii')
-    version = Version(VERSION_REGEX.match(output).group(1))
+        self.client.write(
+            path='{path}/root/generate/internal'.format(path=mount_point),
+            common_name=common_name,
+            ttl='8760h',
+        )
+        self.client.write(
+            path='{path}/config/urls'.format(path=mount_point),
+            issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
+            crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
+        )
+        self.client.write(
+            path='{path}/roles/{name}'.format(path=mount_point, name=role_name),
+            allowed_domains=common_name,
+            allow_subdomains=True,
+            generate_lease=True,
+            max_ttl='72h',
+        )
 
-    return Spec(spec).match(version)
+    def disable_test_pki(self, mount_point='pki'):
+        """
 
+        :param mount_point: The path the pki backend is mounted under.
+        :type mount_point: str.
+        :return: Nothing.
+        :rtype: None.
+        """
 
-def configure_test_pki(client, common_name='hvac.com', role_name='my-role', mount_point='pki'):
-    """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
-
-    :param client: Authenticated hvac.v1.Client instance.
-    :type client: hvac.v1.Client
-    :param common_name: Common name to configure in the pki backend
-    :type common_name: str.
-    :param role_name: Name of the test role to configure.
-    :type role_name: str.
-    :param mount_point: The path the pki backend is mounted under.
-    :type mount_point: str.
-    :return: Nothing.
-    :rtype: None.
-    """
-    if '{path}/'.format(path=mount_point) in client.list_secret_backends():
-        client.disable_secret_backend(mount_point)
-
-    client.enable_secret_backend(backend_type='pki', mount_point=mount_point)
-
-    client.write(
-        path='{path}/root/generate/internal'.format(path=mount_point),
-        common_name=common_name,
-        ttl='8760h',
-    )
-    client.write(
-        path='{path}/config/urls'.format(path=mount_point),
-        issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
-        crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
-    )
-    client.write(
-        path='{path}/roles/{name}'.format(path=mount_point, name=role_name),
-        allowed_domains=common_name,
-        allow_subdomains=True,
-        generate_lease=True,
-        max_ttl='72h',
-    )
-
-
-def disable_test_pki(client, mount_point='pki'):
-    """
-
-    :param client: Authenticated hvac.v1.Client instance.
-    :type client: hvac.v1.Client
-    :param mount_point: The path the pki backend is mounted under.
-    :type mount_point: str.
-    :return: Nothing.
-    :rtype: None.
-    """
-
-    # Reset integration test state
-    client.disable_secret_backend(mount_point)
-
-
-def create_client(**kwargs):
-    return Client(
-        url='https://localhost:8200',
-        cert=('test/client-cert.pem', 'test/client-key.pem'),
-        verify='test/server-cert.pem',
-        timeout=2,
-        **kwargs
-    )
+        # Reset integration test state
+        self.client.disable_secret_backend(mount_point)

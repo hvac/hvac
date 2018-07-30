@@ -1525,7 +1525,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
 
     def test_read_lease(self):
         # Set up a test pki backend and issue a cert against some role so we.
-        utils.configure_test_pki(client=self.client)
+        self.configure_test_pki()
         pki_issue_response = self.client.write(
             path='pki/issue/my-role',
             common_name='test.hvac.com',
@@ -1541,4 +1541,4 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         )
 
         # Reset integration test state.
-        utils.disable_test_pki(client=self.client)
+        self.disable_test_pki()
