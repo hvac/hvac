@@ -5,7 +5,7 @@ from unittest import TestCase
 from uuid import UUID
 
 from hvac import Client, exceptions
-from hvac.tests import util
+from hvac.tests import utils
 
 
 def create_client(**kwargs):
@@ -18,7 +18,7 @@ def create_client(**kwargs):
 class IntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manager = util.ServerManager(config_path='test/vault-tls.hcl', client=create_client())
+        cls.manager = utils.ServerManager(config_path='test/vault-tls.hcl', client=create_client())
         cls.manager.start()
         cls.manager.initialize()
         cls.manager.unseal()
@@ -1569,7 +1569,7 @@ class IntegrationTest(TestCase):
 
     def test_read_lease(self):
         # Set up a test pki backend and issue a cert against some role so we.
-        util.configure_test_pki(client=self.client)
+        utils.configure_test_pki(client=self.client)
         pki_issue_response = self.client.write(
             path='pki/issue/my-role',
             common_name='test.hvac.com',
@@ -1585,4 +1585,4 @@ class IntegrationTest(TestCase):
         )
 
         # Reset integration test state.
-        util.disable_test_pki(client=self.client)
+        utils.disable_test_pki(client=self.client)
