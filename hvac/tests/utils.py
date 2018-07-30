@@ -4,6 +4,8 @@ import time
 
 from semantic_version import Spec, Version
 
+from hvac import Client
+
 
 class ServerManager(object):
     def __init__(self, config_path, client):
@@ -114,3 +116,13 @@ def disable_test_pki(client, mount_point='pki'):
 
     # Reset integration test state
     client.disable_secret_backend(mount_point)
+
+
+def create_client(**kwargs):
+    return Client(
+        url='https://localhost:8200',
+        cert=('test/client-cert.pem', 'test/client-key.pem'),
+        verify='test/server-cert.pem',
+        timeout=2,
+        **kwargs
+    )

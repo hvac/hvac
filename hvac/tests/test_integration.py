@@ -4,21 +4,14 @@ from base64 import b64decode
 from unittest import TestCase
 from uuid import UUID
 
-from hvac import Client, exceptions
+from hvac import exceptions
 from hvac.tests import utils
-
-
-def create_client(**kwargs):
-    return Client(url='https://localhost:8200',
-                  cert=('test/client-cert.pem', 'test/client-key.pem'),
-                  verify='test/server-cert.pem',
-                  **kwargs)
 
 
 class IntegrationTest(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manager = utils.ServerManager(config_path='test/vault-tls.hcl', client=create_client())
+        cls.manager = utils.ServerManager(config_path='test/vault-tls.hcl', client=utils.create_client())
         cls.manager.start()
         cls.manager.initialize()
         cls.manager.unseal()
@@ -32,7 +25,7 @@ class IntegrationTest(TestCase):
         return cls.manager.root_token
 
     def setUp(self):
-        self.client = create_client(token=self.root_token())
+        self.client = utils.create_client(token=self.root_token())
 
     def test_unseal_multi(self):
         cls = type(self)
@@ -704,22 +697,22 @@ class IntegrationTest(TestCase):
         assert verify_resp
 
     def test_missing_token(self):
-        client = create_client()
+        client = utils.create_client()
         assert not client.is_authenticated()
 
     def test_invalid_token(self):
-        client = create_client(token='not-a-real-token')
+        client = utils.create_client(token='not-a-real-token')
         assert not client.is_authenticated()
 
     def test_illegal_token(self):
-        client = create_client(token='token-with-new-line\n')
+        client = utils.create_client(token='token-with-new-line\n')
         try:
             client.is_authenticated()
         except ValueError as e:
             assert 'Invalid header value' in str(e)
 
     def test_broken_token(self):
-        client = create_client(token='\x1b')
+        client = utils.create_client(token='\x1b')
         try:
             client.is_authenticated()
         except exceptions.InvalidRequest as e:
