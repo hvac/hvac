@@ -26,7 +26,7 @@ class TestRequest(TestCase):
         response = adapter.get(
             url='v1/sys/health',
         )
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=response.status_code,
         )
