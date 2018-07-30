@@ -127,6 +127,19 @@ class Adapter(object):
         """
         return self.request('delete', url, **kwargs)
 
+    def list(self, url, **kwargs):
+        """Performs a LIST request.
+
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: str | unicode
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        return self.request('list', url, **kwargs)
+
     def auth(self, url, use_token=True, **kwargs):
         """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
             in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater

@@ -30,3 +30,40 @@ class TestRequest(TestCase):
             first=expected_status_code,
             second=response.status_code,
         )
+
+    @parameterized.expand([
+        ("kv secret lookup", 'v1/secret/some-secret'),
+    ])
+    @requests_mock.Mocker()
+    def test_list(self, test_label, test_path, requests_mocker):
+        mock_response = {
+            'auth': None,
+            'data': {
+                'keys': ['things1', 'things2']
+            },
+            'lease_duration': 0,
+            'lease_id': '',
+            'renewable': False,
+            'request_id': 'ba933afe-84d4-410f-161b-592a5c016009',
+            'warnings': None,
+            'wrap_info': None
+        }
+        expected_status_code = 200
+        mock_url = '{0}/{1}'.format(adapters.DEFAULT_BASE_URI, test_path)
+        requests_mocker.register_uri(
+            method='LIST',
+            url=mock_url,
+            json=mock_response
+        )
+        adapter = adapters.Request()
+        response = adapter.list(
+            url=test_path,
+        )
+        self.assertEqual(
+            first=expected_status_code,
+            second=response.status_code,
+        )
+        self.assertEqual(
+            first=mock_response,
+            second=response.json()
+        )
