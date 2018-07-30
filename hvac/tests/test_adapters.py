@@ -14,7 +14,7 @@ class TestRequest(TestCase):
         ("Vault address with route", 'https://example.com/vault'),
     ])
     @requests_mock.Mocker()
-    def test___request(self, test_label, test_url, requests_mocker):
+    def test_get(self, test_label, test_url, requests_mocker):
         test_path = 'v1/sys/health'
         expected_status_code = 200
         mock_url = '{0}/{1}'.format(test_url, test_path)
