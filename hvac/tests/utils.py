@@ -55,6 +55,28 @@ class ServerManager(object):
         self.client.unseal_multi(self.keys)
 
 
+class HvacIntegrationTestCase(object):
+    manager = None
+    client = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.manager = ServerManager(
+            config_path='test/vault-tls.hcl',
+            client=create_client()
+        )
+        cls.manager.start()
+        cls.manager.initialize()
+        cls.manager.unseal()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.manager.stop()
+
+    def setUp(self):
+        self.client = create_client(token=self.manager.root_token)
+
+
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
 
 

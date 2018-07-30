@@ -8,24 +8,7 @@ from hvac import exceptions
 from hvac.tests import utils
 
 
-class IntegrationTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.manager = utils.ServerManager(config_path='test/vault-tls.hcl', client=utils.create_client())
-        cls.manager.start()
-        cls.manager.initialize()
-        cls.manager.unseal()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.manager.stop()
-
-    def root_token(self):
-        cls = type(self)
-        return cls.manager.root_token
-
-    def setUp(self):
-        self.client = utils.create_client(token=self.root_token())
+class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
 
     def test_unseal_multi(self):
         cls = type(self)
@@ -116,7 +99,7 @@ class IntegrationTest(TestCase):
         self.client.enable_auth_backend('github')
         assert 'github/' in self.client.list_auth_backends()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('github')
         assert 'github/' not in self.client.list_auth_backends()
 
@@ -142,7 +125,7 @@ class IntegrationTest(TestCase):
         assert 'test/' not in self.client.list_secret_backends()
         assert 'foobar/' in self.client.list_secret_backends()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_secret_backend('foobar')
         assert 'foobar/' not in self.client.list_secret_backends()
 
@@ -156,7 +139,7 @@ class IntegrationTest(TestCase):
         self.client.enable_audit_backend('file', options=options, name='tmpfile')
         assert 'tmpfile/' in self.client.list_audit_backends()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
@@ -246,7 +229,7 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('userpass')
 
     def test_create_userpass(self):
@@ -261,7 +244,7 @@ class IntegrationTest(TestCase):
         assert self.client.is_authenticated()
 
         # Test ttl:
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='not_root', ttl='10s')
         self.client.token = result['auth']['client_token']
 
@@ -269,7 +252,7 @@ class IntegrationTest(TestCase):
 
         assert result['auth']['lease_duration'] == 10
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('userpass')
 
     def test_list_userpass(self):
@@ -334,7 +317,7 @@ class IntegrationTest(TestCase):
         assert self.client.is_authenticated()
 
         # teardown
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('userpass')
 
     def test_delete_userpass(self):
@@ -348,7 +331,7 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.delete_userpass('testcreateuser')
         self.assertRaises(exceptions.InvalidRequest, self.client.auth_userpass, 'testcreateuser', 'testcreateuserpass')
 
@@ -366,7 +349,7 @@ class IntegrationTest(TestCase):
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('app-id')
 
     def test_create_app_id(self):
@@ -387,7 +370,7 @@ class IntegrationTest(TestCase):
         self.client.delete_app_id('testappid')
         assert self.client.get_app_id('testappid')['data'] is None
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('app-id')
 
     def test_cubbyhole_auth(self):
@@ -425,11 +408,11 @@ class IntegrationTest(TestCase):
 
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.delete_user_id('testuserid')
         assert self.client.get_user_id('testuserid')['data'] is None
 
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('app-id')
 
     def test_create_role(self):
@@ -445,7 +428,7 @@ class IntegrationTest(TestCase):
         del lib_result['request_id']
 
         assert result == lib_result
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('approle')
 
     def test_delete_role(self):
@@ -476,7 +459,7 @@ class IntegrationTest(TestCase):
         )
 
         # reset test environment
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('approle')
 
     def test_create_delete_role_secret_id(self):
@@ -495,7 +478,7 @@ class IntegrationTest(TestCase):
             assert False
         except (exceptions.InvalidPath, ValueError):
             assert True
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('approle')
 
     def test_auth_approle(self):
@@ -511,7 +494,7 @@ class IntegrationTest(TestCase):
         assert result['auth']['metadata']['foo'] == 'bar'
         assert self.client.token == result['auth']['client_token']
         assert self.client.is_authenticated()
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('approle')
 
     def test_auth_approle_dont_use_token(self):
@@ -526,7 +509,7 @@ class IntegrationTest(TestCase):
         result = self.client.auth_approle(role_id, secret_id, use_token=False)
         assert result['auth']['metadata']['foo'] == 'bar'
         assert self.client.token != result['auth']['client_token']
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend('approle')
 
     def test_transit_read_write(self):
@@ -1206,7 +1189,7 @@ class IntegrationTest(TestCase):
         self.assertEqual(expected_exception_message, actual_exception_message)
 
         # Reset test state.
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
     def test_auth_ec2_alternate_mount_point_with_no_client_token(self):
@@ -1234,7 +1217,7 @@ class IntegrationTest(TestCase):
         self.assertEqual(expected_exception_message, actual_exception_message)
 
         # Reset test state.
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
     def test_auth_gcp_alternate_mount_point_with_no_client_token_exception(self):
@@ -1262,7 +1245,7 @@ class IntegrationTest(TestCase):
         self.assertEqual(expected_exception_message, actual_exception_message)
 
         # Reset test state.
-        self.client.token = self.root_token()
+        self.client.token = self.manager.root_token
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
     def test_tune_auth_backend(self):
