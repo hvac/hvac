@@ -79,6 +79,26 @@ class HvacIntegrationTestCase(object):
     def setUp(self):
         self.client = create_client(token=self.manager.root_token)
 
+    def prep_policy(self, name):
+        text = """
+        path "sys" {
+            policy = "deny"
+        }
+            path "secret" {
+        policy = "write"
+        }
+        """
+        obj = {
+            'path': {
+                'sys': {
+                    'policy': 'deny'},
+                'secret': {
+                    'policy': 'write'}
+            }
+        }
+        self.client.set_policy(name, text)
+        return text, obj
+
 
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
 

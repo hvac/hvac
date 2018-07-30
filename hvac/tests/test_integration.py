@@ -143,26 +143,6 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.disable_audit_backend('tmpfile')
         assert 'tmpfile/' not in self.client.list_audit_backends()
 
-    def prep_policy(self, name):
-        text = """
-        path "sys" {
-            policy = "deny"
-        }
-            path "secret" {
-        policy = "write"
-        }
-        """
-        obj = {
-            'path': {
-                'sys': {
-                    'policy': 'deny'},
-                'secret': {
-                    'policy': 'write'}
-            }
-        }
-        self.client.set_policy(name, text)
-        return text, obj
-
     def test_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
         assert self.client.get_policy('test') is None
