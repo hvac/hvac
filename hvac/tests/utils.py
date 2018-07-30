@@ -1,3 +1,4 @@
+import logging
 import re
 import subprocess
 import time
@@ -5,6 +6,8 @@ import time
 from semantic_version import Spec, Version
 
 from hvac import Client
+
+logger = logging.getLogger(__name__)
 
 
 class ServerManager(object):
@@ -31,7 +34,7 @@ class ServerManager(object):
                 self.client.is_initialized()
                 return
             except Exception as ex:
-                print('Waiting for Vault to start')
+                logger.debug('Waiting for Vault to start')
 
                 time.sleep(0.5)
 
