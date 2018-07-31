@@ -15,7 +15,7 @@ the latest `vault` binary is available in your `PATH`.
 
 ### Examples
 
-Example code or general guides for methods in this module can be added under [docs/examples](docs/examples). Any newly added or update method in this module will ideally have a corresponding addition to these examples.
+Example code or general guides for methods in this module can be added under [docs/usage](docs/usage). Any newly added or updated method in this module will ideally have a corresponding addition to these examples. New usage sections should also be added to the table of contents tracked in [docs/usage.rst](docs/usage.rst).
 
 ## Backwards Compatibility Breaking Changes
 

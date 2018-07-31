@@ -10,7 +10,7 @@ Source code repository hosted at `github.com/hvac/hvac`_.
 
 
    Readme <readme>
-   Examples <examples/examples>
+   usage
    advanced_usage
    source/hvac
    contributing
