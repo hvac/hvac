@@ -31,8 +31,9 @@ class Adapter(object):
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
             certificate and then key.
         :type cert: tuple
-        :param verify: Flag to indicate whether TLS verification should be performed when sending requests to Vault.
-        :type verify: bool
+        :param verify: Either a boolean to indicate whether TLS verification should be performed when sending requests to Vault,
+            or a string pointing at the CA bundle to use for verification. See http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification.
+        :type verify: Union[bool,str]
         :param timeout: The timeout value for requests sent to Vault.
         :type timeout: int
         :param proxies: Proxies to use when preforming requests.
