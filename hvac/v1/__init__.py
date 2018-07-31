@@ -1220,6 +1220,86 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    def create_gcp_role(self, name, type, project_id, bound_service_accounts, ttl="",
+                               max_ttl="", period="", policies=None, mount_point='gcp',
+                               max_jwt_exp="15m", allow_gce_inference=True, bound_zones=[],
+                               bound_regions=[], bound_instance_groups=[], bound_labels=[]):
+        """POST /auth/<mount_point>/role/:name
+
+        :param name: Name of the role.
+        :type name: str.
+        :param type: Type of the role. Valid values are gce and iam.
+        :type type: str.
+        :param project_id: The GCP project ID. Only entities belonging to this project can authenticate with this role.
+        :type project_id: str.
+        :param bound_service_accounts: List of service account emails or IDs able to access this role. If set to *, all service
+            accounts are allowed (role will still be bound by project). Required when type is set to iam.
+        :type bound_service_accounts: list.
+        :param ttl: The TTL period of tokens issued using this role in seconds.
+        :type ttl: str.
+        :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
+        :type max_ttl: str.
+        :param period: If set, indicates that the token generated using this role should never expire.
+            The token should be renewed within the duration specified by this value. At each renewal, the token's TTL will
+            be set to the value of this parameter.
+        :type period: str.
+        :param policies: Policies to be set on tokens issued using this role
+        :type policies: list.
+        :param mount_point: The "path" the gcp auth backend was mounted on. Vault currently defaults to "gcp".
+        :type mount_point: str.
+        :param max_jwt_exp: The number of seconds past the time of authentication that the login param JWT must expire within.
+            For example, if a user attempts to login with a token that expires within an hour and this is set to 15 minutes,
+            Vault will return an error prompting the user to create a new signed JWT with a shorter exp. Vault currently defaults to "15m".
+        :type max_jwt_exp: str.
+        :param allow_gce_inference: A flag to determine if this role should allow GCE instances to authenticate by inferring service accounts
+            from the GCE identity metadata token. Vault currently defaults to True.
+        :type allow_gce_inference: bool.
+        :param bound_zones: The list of zones that a GCE instance must belong to in order to be authenticated. If bound_instance_groups is
+            provided, it is assumed to be a zonal group and the group must belong to this zone.
+        :type bound_zones: list[str].
+        :param bound_regions: The list of regions that a GCE instance must belong to in order to be authenticated. If bound_instance_groups is
+            provided, it is assumed to be a regional group and the group must belong to this region. If bound_zones are provided, this
+            attribute is ignored.
+        :type bound_regions: list[str].
+        :param bound_instance_groups: The instance groups that an authorized instance must belong to in order to be authenticated.
+            If specified, either bound_zones or bound_regions must be set too.
+        :type bound_instance_groups: list[str].
+        :param bound_labels: A comma-separated list of GCP labels formatted as "key:value" strings that must be set on authorized GCE instances.
+        :type bound_labels: list[str].
+        :return: Will be an empty body with a 204 status code upon success
+        :rtype: requests.Response.
+        """
+        # TODO: validate bound_service_accounts param
+        if bound_service_account_names == '*' and bound_service_account_namespaces == '*':
+            error_message = 'bound_service_account_names and bound_service_account_namespaces can not both be set to "*"'
+            raise exceptions.ParamValidationError(error_message)
+
+        if type != "iam" and type != "gce":
+            error_message = 'type must be "iam" or "gce"'
+            raise exceptions.ParamValidationError(error_message)
+
+        params = {
+            'project_id': project_id,
+            'bound_service_accounts': bound_service_accounts,
+            'ttl': ttl,
+            'max_ttl': max_ttl,
+            'period': period,
+            'policies': policies,
+        }
+
+        if type == 'iam':
+            params['max_jwt_exp'] = max_jwt_exp
+            params['allow_gce_inference'] = allow_gce_inference
+
+        if type == 'gce':
+            params['bound_zones'] = bound_zones
+            params['bound_regions'] = bound_regions
+            params['bound_instance_groups'] = bound_instance_groups
+            params['bound_labels'] = bound_labels
+
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        return self._adapter.post(url, json=params)
+
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
 
