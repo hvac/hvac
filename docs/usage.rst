@@ -4,13 +4,13 @@ Usage
 .. toctree::
    :maxdepth: 4
 
-   system_backend
-   token_auth_method
-   aws
-   gcp
-   kubernetes_auth_method
-   approle_auth_method
-   ldap_auth_method
+   usage/system_backend
+   usage/token_auth_method
+   usage/aws
+   usage/gcp
+   usage/kubernetes_auth_method
+   usage/approle_auth_method
+   usage/ldap_auth_method
 
 
 Authenticate to different auth backends
