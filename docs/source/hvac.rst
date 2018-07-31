@@ -10,7 +10,7 @@ hvac.v1.Client
     :show-inheritance:
 
 hvac.utils
-----------------------
+----------
 
 .. automodule:: hvac.utils
     :members:
@@ -18,7 +18,7 @@ hvac.utils
     :show-inheritance:
 
 hvac.aws\_utils
-----------------------
+---------------
 
 .. automodule:: hvac.aws_utils
     :members:
@@ -26,7 +26,7 @@ hvac.aws\_utils
     :show-inheritance:
 
 hvac.adapters
-----------------------
+-------------
 
 .. automodule:: hvac.adapters
     :members:
@@ -34,7 +34,7 @@ hvac.adapters
     :show-inheritance:
 
 hvac.exceptions
-----------------------
+---------------
 
 .. automodule:: hvac.exceptions
     :members:
