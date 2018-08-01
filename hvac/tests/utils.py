@@ -107,6 +107,9 @@ class HvacIntegrationTestCase(object):
     def setUp(self):
         self.client = create_client(token=self.manager.root_token)
 
+    def tearDown(self):
+        self.client.token = self.manager.root_token
+
     def prep_policy(self, name):
         text = """
         path "sys" {
