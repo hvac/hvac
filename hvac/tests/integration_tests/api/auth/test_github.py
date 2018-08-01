@@ -218,7 +218,6 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
                 token=test_token
             )
         else:
-            # Until / unless we mock out a local github API to use in this test config, we do as much as we can.
             with self.assertRaises(exceptions_raised) as cm:
                 self.client.github.login(
                     token=test_token
