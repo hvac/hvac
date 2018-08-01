@@ -10,7 +10,7 @@ try:
 except ImportError:
     has_hcl_parser = False
 
-from hvac import aws_utils, exceptions, adapters, utils
+from hvac import aws_utils, exceptions, adapters, utils, api
 
 
 class Client(object):
@@ -59,6 +59,9 @@ class Client(object):
                 session=session,
             )
 
+        # Instantiate API classes to be exposed as properties on this class
+        self._github = api.auth.Github(adapter=self._adapter)
+
     @property
     def adapter(self):
         return self._adapter
@@ -98,6 +101,15 @@ class Client(object):
     @allow_redirects.setter
     def allow_redirects(self, allow_redirects):
         self._adapter.allow_redirects = allow_redirects
+
+    @property
+    def github(self):
+        """Accessor for the Client instance's Github methods. Provided via the :py:class:`hvac.api.auth.Github` class.
+
+        :return: This Client instance's associated Github instance.
+        :rtype: hvac.api.auth.Github
+        """
+        return self._github
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
@@ -1673,24 +1685,6 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_github(self, token, mount_point='github', use_token=True):
-        """POST /auth/<mount point>/login
-
-        :param token:
-        :type token:
-        :param mount_point:
-        :type mount_point:
-        :param use_token:
-        :type use_token:
-        :return:
-        :rtype:
-        """
-        params = {
-            'token': token,
-        }
-
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
-
     def auth_cubbyhole(self, token):
         """POST /v1/sys/wrapping/unwrap
 
@@ -2640,6 +2634,13 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=api.auth.Github.login,
+    )
+    def auth_github(self, *args, **kwargs):
+        return self.github.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
