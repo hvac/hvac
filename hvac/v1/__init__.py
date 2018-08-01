@@ -1220,7 +1220,7 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def create_gcp_role(self, name, type, project_id, bound_service_accounts, ttl="",
+    def create_gcp_role(self, name, type, project_id, bound_service_accounts=[], ttl="",
                                max_ttl="", period="", policies=None, mount_point='gcp',
                                max_jwt_exp="15m", allow_gce_inference=True, bound_zones=[],
                                bound_regions=[], bound_instance_groups=[], bound_labels=[]):
@@ -1234,7 +1234,7 @@ class Client(object):
         :type project_id: str.
         :param bound_service_accounts: List of service account emails or IDs able to access this role. If set to *, all service
             accounts are allowed (role will still be bound by project). Required when type is set to iam.
-        :type bound_service_accounts: list.
+        :type bound_service_accounts: list[str].
         :param ttl: The TTL period of tokens issued using this role in seconds.
         :type ttl: str.
         :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
@@ -1270,9 +1270,10 @@ class Client(object):
         :rtype: requests.Response.
         """
         # TODO: validate bound_service_accounts param
-        if bound_service_account_names == '*' and bound_service_account_namespaces == '*':
-            error_message = 'bound_service_account_names and bound_service_account_namespaces can not both be set to "*"'
-            raise exceptions.ParamValidationError(error_message)
+        #
+        #if bound_service_account == '*'
+        #    error_message = 'bound_service_account_names and bound_service_account_namespaces can not both be set to "*"'
+        #    raise exceptions.ParamValidationError(error_message)
 
         if type != "iam" and type != "gce":
             error_message = 'type must be "iam" or "gce"'
@@ -1299,6 +1300,50 @@ class Client(object):
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
         return self._adapter.post(url, json=params)
+
+    def get_gcp_role(self, name, mount_point='gcp'):
+        """GET /auth/<mount_point>/role/:name
+
+        :param name: Name of the role.
+        :type name: str.
+        :param mount_point: The "path" the gcp auth backend was mounted on. Vault currently defaults to "gcp".
+        :type mount_point: str.
+        :return: Parsed JSON response from the read role GET request
+        :rtype: dict.
+        """
+
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
+        return self._adapter.get(url).json()
+
+    #
+    # TODO: the API docs for this method look like they might be incorrect and need fixing
+    #
+    def list_gcp_roles(self, mount_point='gcp'):
+        """GET /auth/<mount_point>/role?list=true
+
+        :param mount_point: The "path" the gcp auth backend was mounted on. Vault currently defaults to "gcp".
+        :type mount_point: str.
+        :return: Parsed JSON response from the list roles GET request.
+        :rtype: dict.
+        """
+
+        url = 'v1/auth/{0}/role?list=true'.format(mount_point)
+        return self._adapter.get(url).json()
+
+    def delete_gcp_role(self, role, mount_point='gcp'):
+        """DELETE /auth/<mount_point>/role/:role
+
+        :type role: Name of the role.
+        :param role: str.
+        :param mount_point: The "path" the gcp auth backend was mounted on. Vault currently defaults to "gcp".
+        :type mount_point: str.
+        :return: Will be an empty body with a 204 status code upon success.
+        :rtype: requests.Response.
+        """
+
+        url = 'v1/auth/{0}/role/{1}'.format(mount_point, role)
+        return self._adapter.delete(url)
+
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
