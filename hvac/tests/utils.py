@@ -151,6 +151,25 @@ class HvacIntegrationTestCase(object):
         """
         self.client.token = self.manager.root_token
 
+    @staticmethod
+    def convert_python_ttl_value_to_expected_vault_response(ttl_value):
+        """Convert any acceptable Vault TTL *input* to the expected value that Vault would return.
+
+        Vault accepts TTL values in the form r'[0-9]+[smh]?' (number of seconds/minutes/hours). However it returns those
+            values as integers when retrieving configuration. This method
+
+        :param ttl_value: A TTL string accepted by vault; number of seconds/minutes/hours
+        :type ttl_value: string
+        :return: The provided TTL value in the form returned by the Vault API.
+        :rtype: int
+        """
+        expected_ttl = ttl_value
+        if not isinstance(ttl_value, int) and ttl_value != '':
+            expected_ttl = int(ttl_value.rstrip('sh'))
+        elif ttl_value == '':
+            expected_ttl = 0
+        return expected_ttl
+
     def prep_policy(self, name):
         """Add a common policy used by a subset of integration test cases."""
         text = """
