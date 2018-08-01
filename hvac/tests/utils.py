@@ -26,7 +26,6 @@ def create_client(**kwargs):
         url='https://localhost:8200',
         cert=(client_cert_path, client_key_path),
         verify=server_cert_path,
-        timeout=2,
         **kwargs
     )
 
