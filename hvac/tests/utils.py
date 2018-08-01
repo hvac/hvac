@@ -5,8 +5,6 @@ import re
 import subprocess
 import time
 
-from semantic_version import Spec, Version
-
 from hvac import Client
 
 logger = logging.getLogger(__name__)
@@ -35,11 +33,6 @@ def create_client(**kwargs):
         verify=server_cert_path,
         **kwargs
     )
-
-def match_version(spec):
-    output = subprocess.check_output(['vault', 'version']).decode('ascii')
-    version = Version(VERSION_REGEX.match(output).group(1))
-    return Spec(spec).match(version)
 
 
 class ServerManager(object):
