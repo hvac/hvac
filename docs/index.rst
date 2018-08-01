@@ -12,7 +12,7 @@ Source code repository hosted at `github.com/hvac/hvac`_.
    Readme <readme>
    usage
    advanced_usage
-   source/hvac
+   source_reference
    contributing
    changelog
 
