@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import subprocess
 import time
@@ -12,12 +13,19 @@ logger = logging.getLogger(__name__)
 
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
 
+# Use __file__ to derive an absolute path relative to this modules location to point to the test data directory.
+TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'test')
+
 
 def create_client(**kwargs):
+    client_cert_path = os.path.join(TEST_DATA_DIR, 'client-cert.pem')
+    client_key_path = os.path.join(TEST_DATA_DIR, 'client-key.pem')
+    server_cert_path = os.path.join(TEST_DATA_DIR, 'server-cert.pem')
+
     return Client(
         url='https://localhost:8200',
-        cert=('test/client-cert.pem', 'test/client-key.pem'),
-        verify='test/server-cert.pem',
+        cert=(client_cert_path, client_key_path),
+        verify=server_cert_path,
         timeout=2,
         **kwargs
     )
@@ -85,7 +93,7 @@ class HvacIntegrationTestCase(object):
     @classmethod
     def setUpClass(cls):
         cls.manager = ServerManager(
-            config_path='test/vault-tls.hcl',
+            config_path=os.path.join(TEST_DATA_DIR, 'vault-tls.hcl'),
             client=create_client()
         )
         cls.manager.start()
