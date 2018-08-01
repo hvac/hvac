@@ -1,11 +1,20 @@
 """Collection of classes and methods used by various hvac test cases."""
+import json
 import logging
 import os
 import re
+import socket
 import subprocess
 import time
 
 from hvac import Client
+
+try:
+    # Python 2.7
+    from http.server import BaseHTTPRequestHandler
+except ImportError:
+    # Python 3.x
+    from BaseHTTPServer import BaseHTTPRequestHandler
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +42,19 @@ def create_client(**kwargs):
         verify=server_cert_path,
         **kwargs
     )
+
+
+def get_free_port():
+    """Small helper method used to discover an open port to use by mock API HTTP servers.
+
+    :return: An available port number.
+    :rtype: int
+    """
+    s = socket.socket(socket.AF_INET, type=socket.SOCK_STREAM)
+    s.bind(('localhost', 0))
+    address, port = s.getsockname()
+    s.close()
+    return port
 
 
 class ServerManager(object):
@@ -192,3 +214,68 @@ class HvacIntegrationTestCase(object):
         :type mount_point: str
         """
         self.client.disable_secret_backend(mount_point)
+
+
+class MockGithubRequestHandler(BaseHTTPRequestHandler):
+    """Small HTTP server used to mock out certain GitHub API routes that vault requests in the github auth method."""
+
+    def do_GET(self):
+        """Dispatch GET requests to associated mock GitHub 'handlers'."""
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+
+        if self.path == '/user':
+            self.do_user()
+        elif self.path == '/user/orgs?per_page=100':
+            self.do_organizations_list()
+        elif self.path == '/user/teams?per_page=100':
+            self.do_team_list()
+        return
+
+    def log_message(self, format, *args):
+        """Squelch any HTTP logging."""
+        return
+
+    def do_user(self):
+        """Return the bare minimum GitHub user data needed for Vault's github auth method."""
+        response = {
+            "login": "hvac-dude",
+            "id": 1,
+        }
+
+        self.wfile.write(json.dumps(response).encode())
+
+    def do_organizations_list(self):
+        """Return the bare minimum GitHub organization data needed for Vault's github auth method.
+
+        Only returns data if the request Authorization header has a contrived github token value of "valid-token".
+        """
+        response = []
+        if self.headers.get('Authorization') == 'Bearer valid-token':
+            response.append(
+                {
+                    "login": "hvac",
+                    "id": 1,
+                }
+            )
+
+            self.wfile.write(json.dumps(response).encode())
+
+    def do_team_list(self):
+        """Return the bare minimum GitHub team data needed for Vault's github auth method.
+
+        Only returns data if the request Authorization header has a contrived github token value of "valid-token".
+        """
+        response = []
+        if self.headers.get('Authorization') == 'Bearer valid-token':
+            response.append(
+                {
+                    "name": "hvac-team",
+                    "slug": "hvac-team",
+                    "organization": {
+                        "id": 1,
+                    }
+                }
+            )
+        self.wfile.write(json.dumps(response).encode())
