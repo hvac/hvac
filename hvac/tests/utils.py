@@ -165,7 +165,7 @@ class HvacIntegrationTestCase(object):
         """
         expected_ttl = ttl_value
         if not isinstance(ttl_value, int) and ttl_value != '':
-            expected_ttl = int(ttl_value.rstrip('sh'))
+            expected_ttl = int(ttl_value.rstrip('smh'))
         elif ttl_value == '':
             expected_ttl = 0
         return expected_ttl
