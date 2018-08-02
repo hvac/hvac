@@ -11,7 +11,6 @@ Usage
    usage/kubernetes_auth_method
    usage/approle_auth_method
    usage/ldap
-   usage/ldap_auth_method
    usage/github
 
 
