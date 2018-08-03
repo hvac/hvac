@@ -155,8 +155,10 @@ class HvacIntegrationTestCase(object):
     def convert_python_ttl_value_to_expected_vault_response(ttl_value):
         """Convert any acceptable Vault TTL *input* to the expected value that Vault would return.
 
-        Vault accepts TTL values in the form r'[0-9]+[smh]?' (number of seconds/minutes/hours). However it returns those
-            values as integers when retrieving configuration. This method
+        Vault accepts TTL values in the form r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$ (number of seconds/minutes/hours).
+            However it returns those values as integers corresponding to seconds when retrieving configuration.
+            This method converts the "go duration format" arguments Vault accepts into the number (integer) of seconds
+            corresponding to what Vault returns.
 
         :param ttl_value: A TTL string accepted by vault; number of seconds/minutes/hours
         :type ttl_value: string
@@ -165,7 +167,16 @@ class HvacIntegrationTestCase(object):
         """
         expected_ttl = ttl_value
         if not isinstance(ttl_value, int) and ttl_value != '':
-            expected_ttl = int(ttl_value.rstrip('smh'))
+            regexp_matches = re.match(r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$', ttl_value)
+            if regexp_matches:
+                fields = regexp_matches.groupdict()
+                expected_ttl = int(fields['duration'])
+                if fields['unit'] == 'm':
+                    # convert minutes to seconds
+                    expected_ttl = expected_ttl * 60
+                elif fields['unit'] == 'h':
+                    # convert hours to seconds
+                    expected_ttl = expected_ttl * 60 * 60
         elif ttl_value == '':
             expected_ttl = 0
         return expected_ttl
