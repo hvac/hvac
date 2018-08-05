@@ -1075,7 +1075,7 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
 
         :param access_key: AWS IAM access key ID
@@ -1105,7 +1105,7 @@ class Client(object):
         """
         request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
 
-        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
+        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token, region)
         auth.add_auth(request)
 
         # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
