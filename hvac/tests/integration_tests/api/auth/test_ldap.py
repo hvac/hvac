@@ -60,8 +60,7 @@ def load_test_cert():
     :return: Test certificate contents
     :rtype: str | unicode
     """
-    test_data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..', '..', '..', 'test')
-    server_cert_path = os.path.join(test_data_dir, 'server-cert.pem')
+    server_cert_path = os.path.join(utils.get_test_data_path(), 'server-cert.pem')
     with open(server_cert_path, 'r') as f:
         test_cert = f.read()
     return test_cert
