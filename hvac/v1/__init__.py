@@ -61,6 +61,7 @@ class Client(object):
 
         # Instantiate API classes to be exposed as properties on this class
         self._github = api.auth.Github(adapter=self._adapter)
+        self._mfa = api.auth.Mfa(adapter=self._adapter)
 
     @property
     def adapter(self):
@@ -110,6 +111,15 @@ class Client(object):
         :rtype: hvac.api.auth.Github
         """
         return self._github
+
+    @property
+    def mfa(self):
+        """Accessor for the Client instance's MFA methods. Provided via the :py:class:`hvac.api.auth.mfa` class.
+
+        :return: This Client instance's associated MFA instance.
+        :rtype: hvac.api.auth.mfa
+        """
+        return self._mfa
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
