@@ -1,7 +1,7 @@
 Advanced Usage
 ==============
 
-Making use of private CA
+Making Use of Private CA
 ------------------------
 
 There is a not uncommon use case of people deploying Hashicorp Vault with a private certificate authority. Unfortunately the `requests` module does not make use of the system CA certificates. Instead of disabling SSL verification you can make use of the `REQUESTS_CA_BUNDLE` environment variable.
