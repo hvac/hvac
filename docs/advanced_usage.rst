@@ -1,6 +1,57 @@
 Advanced Usage
 ==============
 
+Making Use of Private CA
+------------------------
+
+There is a not uncommon use case of people deploying Hashicorp Vault with a private certificate authority. Unfortunately the `requests` module does not make use of the system CA certificates. Instead of disabling SSL verification you can make use of the `REQUESTS_CA_BUNDLE` environment variable.
+
+As `documented in the advanced usage section for requests`_ this environment variable should point to a file that is comprised of all CA certificates you may wish to use. This can be a single private CA, or an existing list of root certificates with the private appended to the end. The following example shows how to achieve this:
+
+.. code:: python
+
+	$ cp "$(python -c 'import certifi;print certifi.where();')" /tmp/bundle.pem
+	$ cat /path/to/custom.pem >> /tmp/bundle.pem
+	$ export REQUESTS_CA_BUNDLE=/tmp/bundle.pem
+
+Alternative, this envrionmental variable can be set via the `os` module in-line with other Python statements. The following example would be one way to manage this configuration on a Ubuntu host:
+
+.. code:: python
+
+	import os
+
+	import hvac
+
+
+	def get_vault_client(vault_url=VAULT_URL, certs=VAULT_CERTS):
+		"""
+		Instantiates a hvac / vault client.
+		:param vault_url: string, protocol + address + port for the vault service
+		:param certs: tuple, Optional tuple of self-signed certs to use for verification
+			with hvac's requests adapater.
+		:return: hvac.Client
+		"""
+		logger.debug('Retrieving a vault (hvac) client...')
+		if certs:
+			# When use a self-signed certificate for the vault service itself, we need to
+			# include our local ca bundle here for the underlying requests module.
+			os.environ['REQUESTS_CA_BUNDLE'] = '/etc/ssl/certs/ca-certificates.crt'
+
+		vault_client = hvac.Client(
+			url=vault_url,
+			cert=certs,
+		)
+
+		vault_client.token = load_vault_token(vault_client)
+
+		if not vault_client.is_authenticated():
+			error_msg = 'Unable to authenticate to the Vault service'
+			raise hvac.exceptions.Unauthorized(error_msg)
+
+		return vault_client
+
+.. _documented in the advanced usage section for requests: http://docs.python-requests.org/en/master/user/advanced/
+
 Custom Requests / HTTP Adapter
 ------------------------------
 
