@@ -114,7 +114,7 @@ class Client(object):
 
     @property
     def ldap(self):
-        """Accessor for the Client instance's Ldap methods. Provided via the :py:class:`hvac.api.auth.Ldap` class.
+        """Accessor for the Client instance's LDAP methods. Provided via the :py:class:`hvac.api.auth.Ldap` class.
 
         :return: This Client instance's associated Ldap instance.
         :rtype: hvac.api.auth.Ldap
