@@ -115,7 +115,7 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    def configure_duo_behavior(self, mount_point, push_info, user_agent='', username_format='%s'):
+    def configure_duo_behavior(self, mount_point, push_info=None, user_agent=None, username_format='%s'):
         """Configure Duo second factor behavior.
 
         This endpoint allows you to configure how the original auth method username maps to the Duo username by
@@ -139,10 +139,12 @@ class Mfa(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'push_info': push_info,
-            'user_agent': user_agent,
             'username_format': username_format,
         }
+        if push_info is not None:
+            params['push_info'] = push_info
+        if user_agent is not None:
+            params['user_agent'] = user_agent
         api_path = '/v1/auth/{mount_point}/duo/config'.format(
             mount_point=mount_point,
         )
