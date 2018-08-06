@@ -5,10 +5,11 @@ import requests
 
 
 class SigV4Auth(object):
-    def __init__(self, access_key, secret_key, session_token=None):
+    def __init__(self, access_key, secret_key, session_token=None, region='us-east-1'):
         self.access_key = access_key
         self.secret_key = secret_key
         self.session_token = session_token
+        self.region = region
 
     def add_auth(self, request):
         timestamp = datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
@@ -25,14 +26,14 @@ class SigV4Auth(object):
 
         # https://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
         algorithm = 'AWS4-HMAC-SHA256'
-        credential_scope = '/'.join([timestamp[0:8], 'us-east-1', 'sts', 'aws4_request'])
+        credential_scope = '/'.join([timestamp[0:8], self.region, 'sts', 'aws4_request'])
         canonical_request_hash = sha256(canonical_request.encode('utf-8')).hexdigest()
         string_to_sign = '\n'.join([algorithm, timestamp, credential_scope, canonical_request_hash])
 
         # https://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html
         key = 'AWS4{0}'.format(self.secret_key).encode('utf-8')
         key = hmac.new(key, timestamp[0:8].encode('utf-8'), sha256).digest()
-        key = hmac.new(key, 'us-east-1'.encode('utf-8'), sha256).digest()
+        key = hmac.new(key, self.region.encode('utf-8'), sha256).digest()
         key = hmac.new(key, 'sts'.encode('utf-8'), sha256).digest()
         key = hmac.new(key, 'aws4_request'.encode('utf-8'), sha256).digest()
         signature = hmac.new(key, string_to_sign.encode('utf-8'), sha256).hexdigest()
