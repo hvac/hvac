@@ -12,6 +12,7 @@ Usage
    usage/approle_auth_method
    usage/ldap_auth_method
    usage/github
+   usage/mfa
 
 
 Authenticate to different auth backends
