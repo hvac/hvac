@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """LDAP methods module."""
 from hvac.api.vault_api_base import VaultApiBase
+from hvac import exceptions
 
 DEFAULT_MOUNT_POINT = 'ldap'
 DEFAULT_GROUP_FILTER = '(|(memberUid={{.Username}})(member={{.UserDN}})(uniqueMember={{.UserDN}}))'
@@ -147,6 +148,12 @@ class Ldap(VaultApiBase):
         """
         if policies is None:
             policies = []
+        if not isinstance(policies, list):
+            error_msg = '"policies" argument must be an instance of list or None, "{policies_type}" provided.'.format(
+                policies_type=type(policies),
+            )
+            raise exceptions.ParamValidationError(error_msg)
+
         params = {
             'policies': ','.join(policies),
         }
@@ -254,6 +261,18 @@ class Ldap(VaultApiBase):
             policies = []
         if groups is None:
             groups = []
+        list_required_params = {
+            'policies': policies,
+            'groups': groups,
+        }
+        for param_name, param_arg in list_required_params.items():
+            if not isinstance(param_arg, list):
+                error_msg = '"{param_name}" argument must be an instance of list or None, "{param_type}" provided.'.format(
+                    param_name=param_name,
+                    param_type=type(param_arg),
+                )
+                raise exceptions.ParamValidationError(error_msg)
+
         params = {
             'policies': ','.join(policies),
             'groups': ','.join(groups),

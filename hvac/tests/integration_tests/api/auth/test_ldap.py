@@ -155,17 +155,31 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand([
         ('no policies', 'cats'),
+        ('policies as list', 'cats', ['purr-policy']),
+        ('policies as invalid type', 'cats', 'purr-policy', exceptions.ParamValidationError, '"policies" argument must be an instance of list'),
     ])
-    def test_create_or_update_group(self, test_label, name, policies=None):
+    def test_create_or_update_group(self, test_label, name, policies=None, raises=None, exception_message=''):
         expected_status_code = 204
-        create_response = self.client.ldap.create_or_update_group(
-            name=name,
-            policies=policies,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=create_response.status_code
-        )
+        if raises:
+            with self.assertRaises(raises) as cm:
+                create_response = self.client.ldap.create_or_update_group(
+                    name=name,
+                    policies=policies,
+                )
+            if exception_message is not None:
+                self.assertIn(
+                    member=exception_message,
+                    container=str(cm.exception),
+                )
+        else:
+            create_response = self.client.ldap.create_or_update_group(
+                name=name,
+                policies=policies,
+            )
+            self.assertEqual(
+                first=expected_status_code,
+                second=create_response.status_code
+            )
 
     @parameterized.expand([
         ('read configured groups', 'cats'),
@@ -213,6 +227,39 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
             )
 
     @parameterized.expand([
+        ('no policies or groups', 'cats'),
+        ('policies as list', 'cats', ['purr-policy']),
+        ('policies as invalid type', 'cats', 'purr-policy', None, exceptions.ParamValidationError, '"policies" argument must be an instance of list'),
+        ('no groups', 'cats', ['purr-policy']),
+        ('groups as list', 'cats', None, ['meow-group']),
+        ('groups as invalid type', 'cats', None, 'meow-group', exceptions.ParamValidationError, '"groups" argument must be an instance of list'),
+    ])
+    def test_create_or_update_user(self, test_label, username, policies=None, groups=None, raises=None, exception_message=''):
+        expected_status_code = 204
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.ldap.create_or_update_user(
+                    username=username,
+                    policies=policies,
+                    groups=groups,
+                )
+            if exception_message is not None:
+                self.assertIn(
+                    member=exception_message,
+                    container=str(cm.exception),
+                )
+        else:
+            create_response = self.client.ldap.create_or_update_user(
+                username=username,
+                policies=policies,
+                    groups=groups,
+            )
+            self.assertEqual(
+                first=expected_status_code,
+                second=create_response.status_code
+            )
+
+    @parameterized.expand([
         ('read configured group', 'cats'),
         ('non-existent group', 'cats', False, exceptions.InvalidPath),
     ])
@@ -224,20 +271,6 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         self.assertEqual(
             first=expected_status_code,
             second=delete_group_response.status_code
-        )
-
-    @parameterized.expand([
-        ('no policies', 'cats'),
-    ])
-    def test_create_or_update_user(self, test_label, username, policies=None):
-        expected_status_code = 204
-        create_response = self.client.ldap.create_or_update_user(
-            username=username,
-            policies=policies,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=create_response.status_code
         )
 
     @parameterized.expand([
