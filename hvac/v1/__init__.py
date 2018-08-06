@@ -10,7 +10,7 @@ try:
 except ImportError:
     has_hcl_parser = False
 
-from hvac import aws_utils, exceptions, adapters, utils
+from hvac import aws_utils, exceptions, adapters, utils, api
 
 
 class Client(object):
@@ -28,8 +28,9 @@ class Client(object):
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
             certificate and then key.
         :type cert: tuple
-        :param verify: Flag to indicate whether TLS verification should be performed when sending requests to Vault.
-        :type verify: bool
+        :param verify: Either a boolean to indicate whether TLS verification should be performed when sending requests to Vault,
+            or a string pointing at the CA bundle to use for verification. See http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification.
+        :type verify: Union[bool,str]
         :param timeout: The timeout value for requests sent to Vault.
         :type timeout: int
         :param proxies: Proxies to use when preforming requests.
@@ -57,6 +58,9 @@ class Client(object):
                 allow_redirects=allow_redirects,
                 session=session,
             )
+
+        # Instantiate API classes to be exposed as properties on this class
+        self._github = api.auth.Github(adapter=self._adapter)
 
     @property
     def adapter(self):
@@ -97,6 +101,15 @@ class Client(object):
     @allow_redirects.setter
     def allow_redirects(self, allow_redirects):
         self._adapter.allow_redirects = allow_redirects
+
+    @property
+    def github(self):
+        """Accessor for the Client instance's Github methods. Provided via the :py:class:`hvac.api.auth.Github` class.
+
+        :return: This Client instance's associated Github instance.
+        :rtype: hvac.api.auth.Github
+        """
+        return self._github
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
@@ -1074,7 +1087,7 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True):
+    def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
 
         :param access_key: AWS IAM access key ID
@@ -1104,7 +1117,7 @@ class Client(object):
         """
         request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
 
-        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token)
+        auth = aws_utils.SigV4Auth(access_key, secret_key, session_token, region)
         auth.add_auth(request)
 
         # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
@@ -1672,24 +1685,6 @@ class Client(object):
 
         return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
-    def auth_github(self, token, mount_point='github', use_token=True):
-        """POST /auth/<mount point>/login
-
-        :param token:
-        :type token:
-        :param mount_point:
-        :type mount_point:
-        :param use_token:
-        :type use_token:
-        :return:
-        :rtype:
-        """
-        params = {
-            'token': token,
-        }
-
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
-
     def auth_cubbyhole(self, token):
         """POST /v1/sys/wrapping/unwrap
 
@@ -1702,23 +1697,25 @@ class Client(object):
         return self.auth('/v1/sys/wrapping/unwrap')
 
     def auth(self, url, use_token=True, **kwargs):
+        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+            in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
+            Client attribute.
+
+        :param url: Path to send the authentication request to.
+        :type url: str | unicode
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+        :type use_token: bool
+        :param kwargs: Additional keyword arguments to include in the params sent with the request.
+        :type kwargs: dict
+        :return: The response of the auth request.
+        :rtype: requests.Response
         """
-
-        :param url:
-        :type url:
-        :param use_token:
-        :type use_token:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        response = self._adapter.post(url, **kwargs).json()
-
-        if use_token:
-            self.token = response['auth']['client_token']
-
-        return response
+        return self._adapter.auth(
+            url=url,
+            use_token=use_token,
+            **kwargs
+        )
 
     def list_auth_backends(self):
         """GET /sys/auth
@@ -2638,35 +2635,66 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.close', new_method=adapters.Request.close)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=api.auth.Github.login,
+    )
+    def auth_github(self, *args, **kwargs):
+        return self.github.login(*args, **kwargs)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.close,
+    )
     def close(self):
         return self._adapter.close()
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.get', new_method=adapters.Request.get)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.get,
+    )
     def _get(self, *args, **kwargs):
         return self._adapter.get(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.post', new_method=adapters.Request.post)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.post,
+    )
     def _post(self, *args, **kwargs):
         return self._adapter.post(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.put', new_method=adapters.Request.put)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.put,
+    )
     def _put(self, *args, **kwargs):
         return self._adapter.put(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.delete', new_method=adapters.Request.delete)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.delete,
+    )
     def _delete(self, *args, **kwargs):
         return self._adapter.delete(*args, **kwargs)
 
     @staticmethod
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.urljoin', new_method=adapters.Request.urljoin)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.urljoin,
+    )
     def urljoin(*args):
         return adapters.Request.urljoin(*args)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='_adapter.request', new_method=adapters.Request.request)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=adapters.Request.request,
+    )
     def __request(self, *args, **kwargs):
         return self._adapter.request(*args, **kwargs)
 
-    @utils.deprecated_method(to_be_removed_in_version='0.8.0', new_call_path='hvac.utils.raise_for_error', new_method=utils.raise_for_error)
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=utils.raise_for_error,
+    )
     def __raise_error(self, *args, **kwargs):
         utils.raise_for_error(*args, **kwargs)

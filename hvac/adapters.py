@@ -13,52 +13,14 @@ from abc import ABCMeta, abstractmethod
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_BASE_URI = 'http://localhost:8200'
+
 
 class Adapter(object):
     """Abstract base class used when constructing adapters for use with the Client class."""
     __metaclass__ = ABCMeta
 
-    @staticmethod
-    def urljoin(*args):
-        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
-
-        :param args: Multiple parts of a URL to be combined into one string.
-        :type args: str
-        :return: Full URL combining all provided arguments
-        :rtype: str
-        """
-
-        return '/'.join(map(lambda x: str(x).strip('/'), args))
-
-    @abstractmethod
-    def close(self):
-        raise NotImplemented
-
-    @abstractmethod
-    def get(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def post(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def put(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def delete(self, url, **kwargs):
-        raise NotImplemented
-
-    @abstractmethod
-    def request(self, method, url, headers=None, **kwargs):
-        raise NotImplemented
-
-
-class Request(Adapter):
-    """The Request adapter class"""
-
-    def __init__(self, base_uri='http://localhost:8200', token=None, cert=None, verify=True, timeout=30, proxies=None,
+    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None):
         """Create a new request adapter instance.
 
@@ -69,8 +31,9 @@ class Request(Adapter):
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
             certificate and then key.
         :type cert: tuple
-        :param verify: Flag to indicate whether TLS verification should be performed when sending requests to Vault.
-        :type verify: bool
+        :param verify: Either a boolean to indicate whether TLS verification should be performed when sending requests to Vault,
+            or a string pointing at the CA bundle to use for verification. See http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification.
+        :type verify: Union[bool,str]
         :param timeout: The timeout value for requests sent to Vault.
         :type timeout: int
         :param proxies: Proxies to use when preforming requests.
@@ -96,6 +59,18 @@ class Request(Adapter):
             'proxies': proxies,
         }
 
+    @staticmethod
+    def urljoin(*args):
+        """Joins given arguments into a url. Trailing and leading slashes are stripped for each argument.
+
+        :param args: Multiple parts of a URL to be combined into one string.
+        :type args: str | unicode
+        :return: Full URL combining all provided arguments
+        :rtype: str | unicode
+        """
+
+        return '/'.join(map(lambda x: str(x).strip('/'), args))
+
     def close(self):
         """Close the underlying Requests session.
         """
@@ -106,7 +81,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -119,7 +94,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -132,7 +107,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -145,7 +120,7 @@ class Request(Adapter):
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: str | unicode
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
@@ -153,14 +128,71 @@ class Request(Adapter):
         """
         return self.request('delete', url, **kwargs)
 
-    def request(self, method, url, headers=None, **kwargs):
+    def list(self, url, **kwargs):
+        """Performs a LIST request.
+
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: str | unicode
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
         """
+        return self.request('list', url, **kwargs)
+
+    def auth(self, url, use_token=True, **kwargs):
+        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+            in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
+            Client attribute.
+
+        :param url: Path to send the authentication request to.
+        :type url: str | unicode
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+        :type use_token: bool
+        :param kwargs: Additional keyword arguments to include in the params sent with the request.
+        :type kwargs: dict
+        :return: The response of the auth request.
+        :rtype: requests.Response
+        """
+        response = self.post(url, **kwargs).json()
+
+        if use_token:
+            self.token = response['auth']['client_token']
+
+        return response
+
+    @abstractmethod
+    def request(self, method, url, headers=None, **kwargs):
+        """Main method for routing HTTP requests to the configured Vault base_uri. Intended to be implement by subclasses.
 
         :param method: HTTP method to use with the request. E.g., GET, POST, etc.
         :type method: str
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
-        :type url: str
+        :type url: str | unicode
+        :param headers: Additional headers to include with the request.
+        :type headers: dict
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        raise NotImplementedError
+
+
+class Request(Adapter):
+    """The Request adapter class"""
+
+    def request(self, method, url, headers=None, **kwargs):
+        """Main method for routing HTTP requests to the configured Vault base_uri.
+
+        :param method: HTTP method to use with the request. E.g., GET, POST, etc.
+        :type method: str
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: str | unicode
         :param headers: Additional headers to include with the request.
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.
