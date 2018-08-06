@@ -1,11 +1,20 @@
 """Collection of classes and methods used by various hvac test cases."""
+import json
 import logging
 import os
 import re
+import socket
 import subprocess
 import time
 
 from hvac import Client
+
+try:
+    # Python 2.7
+    from http.server import BaseHTTPRequestHandler
+except ImportError:
+    # Python 3.x
+    from BaseHTTPServer import BaseHTTPRequestHandler
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +42,19 @@ def create_client(**kwargs):
         verify=server_cert_path,
         **kwargs
     )
+
+
+def get_free_port():
+    """Small helper method used to discover an open port to use by mock API HTTP servers.
+
+    :return: An available port number.
+    :rtype: int
+    """
+    s = socket.socket(socket.AF_INET, type=socket.SOCK_STREAM)
+    s.bind(('localhost', 0))
+    address, port = s.getsockname()
+    s.close()
+    return port
 
 
 class ServerManager(object):
@@ -129,6 +151,36 @@ class HvacIntegrationTestCase(object):
         """
         self.client.token = self.manager.root_token
 
+    @staticmethod
+    def convert_python_ttl_value_to_expected_vault_response(ttl_value):
+        """Convert any acceptable Vault TTL *input* to the expected value that Vault would return.
+
+        Vault accepts TTL values in the form r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$ (number of seconds/minutes/hours).
+            However it returns those values as integers corresponding to seconds when retrieving configuration.
+            This method converts the "go duration format" arguments Vault accepts into the number (integer) of seconds
+            corresponding to what Vault returns.
+
+        :param ttl_value: A TTL string accepted by vault; number of seconds/minutes/hours
+        :type ttl_value: string
+        :return: The provided TTL value in the form returned by the Vault API.
+        :rtype: int
+        """
+        expected_ttl = ttl_value
+        if not isinstance(ttl_value, int) and ttl_value != '':
+            regexp_matches = re.match(r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$', ttl_value)
+            if regexp_matches:
+                fields = regexp_matches.groupdict()
+                expected_ttl = int(fields['duration'])
+                if fields['unit'] == 'm':
+                    # convert minutes to seconds
+                    expected_ttl = expected_ttl * 60
+                elif fields['unit'] == 'h':
+                    # convert hours to seconds
+                    expected_ttl = expected_ttl * 60 * 60
+        elif ttl_value == '':
+            expected_ttl = 0
+        return expected_ttl
+
     def prep_policy(self, name):
         """Add a common policy used by a subset of integration test cases."""
         text = """
@@ -192,3 +244,68 @@ class HvacIntegrationTestCase(object):
         :type mount_point: str
         """
         self.client.disable_secret_backend(mount_point)
+
+
+class MockGithubRequestHandler(BaseHTTPRequestHandler):
+    """Small HTTP server used to mock out certain GitHub API routes that vault requests in the github auth method."""
+
+    def do_GET(self):
+        """Dispatch GET requests to associated mock GitHub 'handlers'."""
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+
+        if self.path == '/user':
+            self.do_user()
+        elif self.path == '/user/orgs?per_page=100':
+            self.do_organizations_list()
+        elif self.path == '/user/teams?per_page=100':
+            self.do_team_list()
+        return
+
+    def log_message(self, format, *args):
+        """Squelch any HTTP logging."""
+        return
+
+    def do_user(self):
+        """Return the bare minimum GitHub user data needed for Vault's github auth method."""
+        response = {
+            "login": "hvac-dude",
+            "id": 1,
+        }
+
+        self.wfile.write(json.dumps(response).encode())
+
+    def do_organizations_list(self):
+        """Return the bare minimum GitHub organization data needed for Vault's github auth method.
+
+        Only returns data if the request Authorization header has a contrived github token value of "valid-token".
+        """
+        response = []
+        if self.headers.get('Authorization') == 'Bearer valid-token':
+            response.append(
+                {
+                    "login": "hvac",
+                    "id": 1,
+                }
+            )
+
+            self.wfile.write(json.dumps(response).encode())
+
+    def do_team_list(self):
+        """Return the bare minimum GitHub team data needed for Vault's github auth method.
+
+        Only returns data if the request Authorization header has a contrived github token value of "valid-token".
+        """
+        response = []
+        if self.headers.get('Authorization') == 'Bearer valid-token':
+            response.append(
+                {
+                    "name": "hvac-team",
+                    "slug": "hvac-team",
+                    "organization": {
+                        "id": 1,
+                    }
+                }
+            )
+        self.wfile.write(json.dumps(response).encode())
