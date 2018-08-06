@@ -104,7 +104,6 @@ Read Duo MFA Type Behavior
 Authentication / Login
 ----------------------
 
-
 .. code:: python
 
     from getpass import getpass
