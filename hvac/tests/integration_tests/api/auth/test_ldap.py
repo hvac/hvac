@@ -1,5 +1,4 @@
 import logging
-import os
 from unittest import TestCase
 
 from ldap_test import LdapServer
@@ -54,18 +53,6 @@ LDAP_ENTRIES = [
 ]
 
 
-def load_test_cert():
-    """Load test cert for use when testing Ldap.configure's `certificate` parameter.
-
-    :return: Test certificate contents
-    :rtype: str | unicode
-    """
-    server_cert_path = os.path.join(utils.get_test_data_path(), 'server-cert.pem')
-    with open(server_cert_path, 'r') as f:
-        test_cert = f.read()
-    return test_cert
-
-
 class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ldap_server = None
     mock_server_port = None
@@ -115,7 +102,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         ('update url', dict(url=LDAP_URL)),
         ('update binddn', dict(url=LDAP_URL, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
         ('update upn_domain', dict(url=LDAP_URL, upn_domain='hvac.network')),
-        ('update certificate', dict(url=LDAP_URL, certificate=load_test_cert())),
+        ('update certificate', dict(url=LDAP_URL, certificate=utils.load_test_data('server-cert.pem'))),
         ('incorrect tls version', dict(url=LDAP_URL, tls_min_version='cats'), exceptions.InvalidRequest,
          "invalid 'tls_min_version'"),
     ])
@@ -252,7 +239,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
             create_response = self.client.ldap.create_or_update_user(
                 username=username,
                 policies=policies,
-                    groups=groups,
+                groups=groups,
             )
             self.assertEqual(
                 first=expected_status_code,
