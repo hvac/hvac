@@ -1,4 +1,4 @@
-from unittest import TestCase, SkipTest
+from unittest import TestCase
 
 from parameterized import parameterized
 
@@ -15,10 +15,6 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestMfa, cls).setUpClass()
-
-        # Mock Duo server not currently able to be implemented in integration tests due to upstream Vault vendor code.
-        # The following statement is a placeholder for when/if a workaround is found.
-        cls.mock_server_port = utils.get_free_port()
 
     @classmethod
     def tearDownClass(cls):
@@ -184,7 +180,6 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ('login success',),
         ('login without duo access configured', False, exceptions.InvalidRequest, "Duo access credentials haven't been configured."),
     ])
     def test_login_with_mfa(self, test_label, configure_access=True, raises=None, exception_message=''):
@@ -220,21 +215,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            raise SkipTest('Unable to fully test login flow (easily) without working TLS for mock Duo server')
-            login_response = self.client.auth_userpass(
-                username=username,
-                password=password,
-                mount_point=TEST_AUTH_PATH,
-            )
-            self.assertEqual(
-                first=['default'],
-                second=login_response['auth']['policies']
-            )
-            self.assertDictEqual(
-                d1=dict(username=username),
-                d2=login_response['auth']['metadata'],
-            )
-            self.assertEqual(
-                first=login_response['auth']['client_token'],
-                second=self.client.token,
-            )
+            # TODO: Add full userpass + MFA integration test case should a mock Duo API server become available and/or
+            # if a option for toggling the following SetInsecure func on the vendor code Vault itself uses is exposed:
+            # https://github.com/duosecurity/duo_api_golang/blob/master/duoapi.go#L84-L89
+            pass
