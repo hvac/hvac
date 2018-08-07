@@ -20,9 +20,6 @@ logger = logging.getLogger(__name__)
 
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
 
-# Use __file__ to derive an absolute path relative to this modules location to point to the test data directory.
-TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'test')
-
 
 def create_client(**kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
@@ -32,9 +29,9 @@ def create_client(**kwargs):
     :return: Instantiated :py:class:`hvac.v1.Client` class.
     :rtype: hvac.v1.Client
     """
-    client_cert_path = os.path.join(TEST_DATA_DIR, 'client-cert.pem')
-    client_key_path = os.path.join(TEST_DATA_DIR, 'client-key.pem')
-    server_cert_path = os.path.join(TEST_DATA_DIR, 'server-cert.pem')
+    client_cert_path = get_test_data_path('client-cert.pem')
+    client_key_path = get_test_data_path('client-key.pem')
+    server_cert_path = get_test_data_path('server-cert.pem')
 
     return Client(
         url='https://localhost:8200',
@@ -55,6 +52,34 @@ def get_free_port():
     address, port = s.getsockname()
     s.close()
     return port
+
+
+def load_test_data(filename):
+    """Load test data for use by various test cases.
+
+    :param filename: Name of the test data file.
+    :type filename: str | unicode
+    :return: Test data contents
+    :rtype: str | unicode
+    """
+    test_data_path = get_test_data_path(filename)
+    with open(test_data_path, 'r') as f:
+        test_data = f.read()
+    return test_data
+
+
+def get_test_data_path(filename):
+    """Get the path to a file under the "test data" directory. I.e., the directory containing self-signed certificates,
+        configuration files, etc. that are used for various tests.
+
+    :param filename: Name of the test data file.
+    :type filename: str | unicode
+    :return: The absolute path to the test data directory.
+    :rtype: str | unicode
+    """
+    # Use __file__ to derive a path relative to this module's location which points to the test data directory.
+    relative_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'test')
+    return os.path.join(os.path.abspath(relative_path), filename)
 
 
 class ServerManager(object):
@@ -128,7 +153,7 @@ class HvacIntegrationTestCase(object):
     def setUpClass(cls):
         """Use the ServerManager class to launch a vault server process."""
         cls.manager = ServerManager(
-            config_path=os.path.join(TEST_DATA_DIR, 'vault-tls.hcl'),
+            config_path=get_test_data_path('vault-tls.hcl'),
             client=create_client()
         )
         cls.manager.start()

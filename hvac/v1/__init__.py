@@ -61,6 +61,7 @@ class Client(object):
 
         # Instantiate API classes to be exposed as properties on this class
         self._github = api.auth.Github(adapter=self._adapter)
+        self._ldap = api.auth.Ldap(adapter=self._adapter)
         self._mfa = api.auth.Mfa(adapter=self._adapter)
 
     @property
@@ -111,6 +112,15 @@ class Client(object):
         :rtype: hvac.api.auth.Github
         """
         return self._github
+
+    @property
+    def ldap(self):
+        """Accessor for the Client instance's LDAP methods. Provided via the :py:class:`hvac.api.auth.Ldap` class.
+
+        :return: This Client instance's associated Ldap instance.
+        :rtype: hvac.api.auth.Ldap
+        """
+        return self._ldap
 
     @property
     def mfa(self):
@@ -1671,30 +1681,6 @@ class Client(object):
             params['instance_id'] = instance_id
         return self._adapter.post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
 
-    def auth_ldap(self, username, password, mount_point='ldap', use_token=True, **kwargs):
-        """POST /auth/<mount point>/login/<username>
-
-        :param username:
-        :type username:
-        :param password:
-        :type password:
-        :param mount_point:
-        :type mount_point:
-        :param use_token:
-        :type use_token:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
-        """
-        params = {
-            'password': password,
-        }
-
-        params.update(kwargs)
-
-        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
-
     def auth_cubbyhole(self, token):
         """POST /v1/sys/wrapping/unwrap
 
@@ -2644,6 +2630,13 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=api.auth.Ldap.login,
+    )
+    def auth_ldap(self, *args, **kwargs):
+        return self.ldap.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
