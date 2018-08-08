@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.6.3 (August 8th, 2018)
+
+DEPRECATION NOTICES:
+
+* The `auth_github()` method within the `hvac.Client` class has been marked as deprecated and will be removed in hvac v0.8.0 (or later). Please update any callers of this method to use the `hvac.Client.github.login()` instead.
+* The `auth_ldap()` method within the `hvac.Client` class has been marked as deprecated and will be removed in hvac v0.8.0 (or later). Please update any callers of this method to use the `hvac.Client.ldap.login()` instead.
+
+IMPROVEMENTS:
+
+* New Github auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/github.html). [GH-242](https://github.com/hvac/hvac/pull/242)
+* New Ldap auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/ldap.html). [GH-244](https://github.com/hvac/hvac/pull/244)
+* New Mfa auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/mfa.html). [GH-255](https://github.com/hvac/hvac/pull/255)
+* `auth_aws_iam()` method updated to include "region" parameter for deployments in different AWS regions. [GH-243](https://github.com/hvac/hvac/pull/243)
+
+DOCUMENTATION UPDATES:
+
+* Additional guidance for how to configure hvac's `Client` class to leverage self-signed certificates / private CA bundles has been added at: [Making Use of Private CA](https://hvac.readthedocs.io/en/latest/advanced_usage.html#making-use-of-private-ca). [GH-230](https://github.com/hvac/hvac/pull/230)
+* Docstring for `verify` `Client` parameter corrected and expanded. [GH-238](https://github.com/hvac/hvac/pull/238)
+
+MISCELLANEOUS:
+
+* Automated PyPi deploys via travis-ci removed. [GH-226](https://github.com/hvac/hvac/pull/226)
+* Repository transferred to the new ["hvac" GitHub organization](https://github.com/hvac); thanks @ianunruh! [GH-227](https://github.com/hvac/hvac/pull/227)
+* Codecov (automatic code coverage reports) added. [GH-229](https://github.com/hvac/hvac/pull/229) / [GH-228](https://github.com/hvac/hvac/pull/229)
+* Tests subdirectory reorganized; now broken up by integration versus unit tests with subdirectories matching the module path for the code under test. [GH-236](https://github.com/hvac/hvac/pull/236)
+
+Thanks to @otakup0pe, @FabianFrank, @andrewheald for their lovely contributions.
+
 ## 0.6.2 (July 19th, 2018)
 
 BACKWARDS COMPATIBILITY NOTICE:
