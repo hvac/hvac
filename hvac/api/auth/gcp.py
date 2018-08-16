@@ -299,8 +299,8 @@ class Gcp(VaultApiBase):
         
         Supported methods:
             GET: /auth/gcp/role/:name. Produces: 200 application/json
-        
-        
+
+
         :param name: The name of the role to read.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -320,11 +320,11 @@ class Gcp(VaultApiBase):
     def list_roles(self, role, mount_point=DEFAULT_MOUNT_POINT):
         """
         Lists all the roles that are registered with the plugin.
-        
+
         Supported methods:
             LIST: /auth/gcp/roles. Produces: 200 application/json
-        
-        
+
+
         :param role: The name of the role to delete.
         :type role: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -344,11 +344,11 @@ class Gcp(VaultApiBase):
     def delete_role(self, role, mount_point=DEFAULT_MOUNT_POINT):
         """
         Deletes the previously registered role.
-        
+
         Supported methods:
             DELETE: /auth/gcp/role/:role. Produces: 204 (empty body)
-        
-        
+
+
         :param role: The name of the role to delete.
         :type role: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -371,19 +371,19 @@ class Gcp(VaultApiBase):
         (JWT) and a role name for some entity. It verifies the JWT signature with Google
         Cloud to authenticate that entity and then authorizes the entity for the given
         role.
-        
+
         Supported methods:
             POST: /auth/gcp/login. Produces: 200 application/json
-        
-        
+
+
         :param role: The name of the role against which the login
             is being attempted.
         :type role: str | unicode
-        :param jwt: 
+        :param jwt:
         :type jwt: str | unicode
         :param iam: a self-signed JWT.
         :type iam: signJwt
-        :param gce: 
+        :param gce:
         :type gce: unknown
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
