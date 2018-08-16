@@ -9,22 +9,22 @@ DEFAULT_MOUNT_POINT = ''
 
 class Gcp(VaultApiBase):
     """Google Cloud Auth Method (API).
-    
+
     Reference: https://www.vaultproject.io/api/auth/gcp/index.html
     """
-    
+
     def configure(self, credentials="", google_certs_endpoint="https://www.googleapis.com/oauth2/v3/certs", mount_point=DEFAULT_MOUNT_POINT):
         """
         Configures the credentials required for the plugin to perform API calls
         to Google Cloud. These credentials will be used to query the status of IAM
         entities and get service account or other Google public certificates
         to confirm signed JWTs passed in during login.
-        
+
         Supported methods:
             POST: /auth/gcp/config. Produces: 204 (empty body)
-        
-        
-        :param credentials: 
+
+
+        :param credentials:
         :type credentials: str | unicode
         :param google_certs_endpoint: The Google OAuth2 endpoint
             from which to obtain public certificates. This is used for testing and should
@@ -48,11 +48,11 @@ class Gcp(VaultApiBase):
     def read_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=[default], mount_point=DEFAULT_MOUNT_POINT):
         """
         Returns the configuration, if any, including credentials.
-        
+
         Supported methods:
             GET: /auth/gcp/config. Produces: 200 application/json
-        
-        
+
+
         :param name: The name of the role.
         :type name: str | unicode
         :param type: The type of this role. Certain fields
@@ -107,11 +107,11 @@ class Gcp(VaultApiBase):
     def delete_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=[default], mount_point=DEFAULT_MOUNT_POINT):
         """
         Deletes all GCP configuration data. This operation is idempotent.
-        
+
         Supported methods:
             DELETE: /auth/gcp/config. Produces: 204 (empty body)
-        
-        
+
+
         :param name: The name of the role.
         :type name: str | unicode
         :param type: The type of this role. Certain fields
