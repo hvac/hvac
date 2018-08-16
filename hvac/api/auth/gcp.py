@@ -45,7 +45,7 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def read_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=[default], mount_point=DEFAULT_MOUNT_POINT):
+    def read_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", mount_point=DEFAULT_MOUNT_POINT):
         """
         Returns the configuration, if any, including credentials.
 
@@ -80,9 +80,6 @@ class Gcp(VaultApiBase):
             value of this parameter. This can be specified as an integer number of seconds
             or as a duration value like "5m".
         :type period: str | unicode
-        :param policies: The list of policies to be set on tokens
-            issued using this role.
-        :type policies: array
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the read_config request.
@@ -96,7 +93,6 @@ class Gcp(VaultApiBase):
             'ttl': ttl,
             'max_ttl': max_ttl,
             'period': period,
-            'policies': policies,
         }
         api_path = '/v1/auth/gcp/config'.format(mount_point=mount_point)
         return self._adapter.get(
@@ -104,7 +100,7 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def delete_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=[default], mount_point=DEFAULT_MOUNT_POINT):
+    def delete_config(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", mount_point=DEFAULT_MOUNT_POINT):
         """
         Deletes all GCP configuration data. This operation is idempotent.
 
@@ -139,9 +135,6 @@ class Gcp(VaultApiBase):
             value of this parameter. This can be specified as an integer number of seconds
             or as a duration value like "5m".
         :type period: str | unicode
-        :param policies: The list of policies to be set on tokens
-            issued using this role.
-        :type policies: array
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the delete_config request.
@@ -155,7 +148,6 @@ class Gcp(VaultApiBase):
             'ttl': ttl,
             'max_ttl': max_ttl,
             'period': period,
-            'policies': policies,
         }
         api_path = '/v1/auth/gcp/config'.format(mount_point=mount_point)
         return self._adapter.delete(
@@ -163,7 +155,7 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def create_role(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=[default], mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, type, project_id, bound_service_accounts, ttl="", max_ttl="", period="", policies=["default"], mount_point=DEFAULT_MOUNT_POINT):
         """
         Registers a role in the method. Role types have specific entities
         that can perform login operations against this endpoint. Constraints specific
