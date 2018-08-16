@@ -169,11 +169,11 @@ class Gcp(VaultApiBase):
         that can perform login operations against this endpoint. Constraints specific
         to the role type must be set on the role. These are applied to the authenticated
         entities attempting to login.
-        
+
         Supported methods:
             POST: /auth/gcp/role/:name. Produces: 204 (empty body)
-        
-        
+
+
         :param name: The name of the role.
         :type name: str | unicode
         :param type: The type of this role. Certain fields
@@ -230,11 +230,11 @@ class Gcp(VaultApiBase):
         Edit service accounts for an existing IAM role in the method.
         This allows you to add or remove service accounts from the list of
         service accounts on the role.
-        
+
         Supported methods:
             POST: /auth/gcp/role/:name/service-accounts. Produces: 204 (empty body)
-        
-        
+
+
         :param name: role.
         :type name: str | unicode
         :param add: The list of service accounts to add to the role's
@@ -263,11 +263,11 @@ class Gcp(VaultApiBase):
         """
         Edit labels for an existing GCE role in the backend. This allows you to add or
         remove labels (keys, values, or both) from the list of keys on the role.
-        
+
         Supported methods:
             POST: /auth/gcp/role/:name/labels. Produces: 204 (empty body)
-        
-        
+
+
         :param name: role.
         :type name: str | unicode
         :param add: to add to the GCE role's
@@ -296,7 +296,7 @@ class Gcp(VaultApiBase):
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
         Returns the previously registered role configuration.
-        
+
         Supported methods:
             GET: /auth/gcp/role/:name. Produces: 200 application/json
 
