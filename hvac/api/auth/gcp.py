@@ -4,7 +4,7 @@
 from hvac.api.vault_api_base import VaultApiBase
 
 
-DEFAULT_MOUNT_POINT = ''
+DEFAULT_MOUNT_POINT = 'gcp'
 
 
 class Gcp(VaultApiBase):
