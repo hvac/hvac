@@ -931,7 +931,7 @@ class Client(object):
         self._adapter.post('/v1/auth/token/revoke-prefix/{0}'.format(prefix))
 
     def renew_token(self, token=None, increment=None, wrap_ttl=None):
-        """POST /auth/token/renew/<token>
+        """POST /auth/token/renew
 
         POST /auth/token/renew-self
 
@@ -946,11 +946,11 @@ class Client(object):
         """
         params = {
             'increment': increment,
+            'token': token,
         }
 
         if token:
-            path = '/v1/auth/token/renew/{0}'.format(token)
-            return self._adapter.post(path, json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/renew', json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
 
