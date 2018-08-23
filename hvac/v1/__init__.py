@@ -946,10 +946,10 @@ class Client(object):
         """
         params = {
             'increment': increment,
-            'token': token,
         }
 
-        if token:
+        if token is not None:
+            params['token'] = token
             return self._adapter.post('/v1/auth/token/renew', json=params, wrap_ttl=wrap_ttl).json()
         else:
             return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
