@@ -544,7 +544,7 @@ class Client(object):
         return self._adapter.get('/v1/sys/mounts').json()
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
-        """POST /sys/auth/<mount point>
+        """POST /sys/mounts/<mount point>
 
         :param backend_type:
         :type backend_type:
@@ -1721,7 +1721,7 @@ class Client(object):
         """
         return self._adapter.get('/v1/sys/auth').json()
 
-    def enable_auth_backend(self, backend_type, description=None, mount_point=None):
+    def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
 
         :param backend_type:
@@ -1730,6 +1730,10 @@ class Client(object):
         :type description:
         :param mount_point:
         :type mount_point:
+        :param config:
+        :type config:
+        :param plugin_name:
+        :type plugin_name:
         :return:
         :rtype:
         """
@@ -1739,6 +1743,8 @@ class Client(object):
         params = {
             'type': backend_type,
             'description': description,
+            'config': config,
+            'plugin_name': plugin_name,
         }
         self._adapter.post('/v1/sys/auth/{0}'.format(mount_point), json=params)
 
