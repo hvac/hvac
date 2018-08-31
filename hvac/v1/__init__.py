@@ -59,10 +59,13 @@ class Client(object):
                 session=session,
             )
 
-        # Instantiate API classes to be exposed as properties on this class
+        # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
         self._github = api.auth.Github(adapter=self._adapter)
         self._ldap = api.auth.Ldap(adapter=self._adapter)
         self._mfa = api.auth.Mfa(adapter=self._adapter)
+
+        # Secret engine attributes / properties.
+        self._kv = api.secrets_engines.Kv(adapter=self._adapter)
 
     @property
     def adapter(self):
@@ -130,6 +133,15 @@ class Client(object):
         :rtype: hvac.api.auth.mfa
         """
         return self._mfa
+
+    @property
+    def kv(self):
+        """Accessor for the Client instance's KV methods. Provided via the :py:class:`hvac.api.secrets_engines.KV` class.
+
+        :return: This Client instance's associated Kv instance.
+        :rtype: hvac.api.secrets_engines.Kv
+        """
+        return self._kv
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
