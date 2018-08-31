@@ -685,11 +685,11 @@ class Client(object):
         :rtype:
         """
         try:
-            data = self._get('/v1/sys/policy/{0}'.format(name)).json()
-            if data.get('rules'):
-                policy = data.get('rules')
+            get_policy_response = self._adapter.get('/v1/sys/policy/{0}'.format(name)).json()
+            if get_policy_response.get('rules'):
+                policy = get_policy_response.get('rules')
             else:
-                policy = data['data'].get('rules')
+                policy = get_policy_response['data'].get('rules')
             if parse:
                 if not has_hcl_parser:
                     raise ImportError('pyhcl is required for policy parsing')
