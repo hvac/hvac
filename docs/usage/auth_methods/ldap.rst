@@ -1,5 +1,5 @@
-LDAP Auth Method
-================
+LDAP
+====
 
 .. note::
     Every method under the :py:attr:`Client class's ldap attribute<hvac.v1.Client.ldap>` includes a `mount_point` parameter that can be used to address the LDAP auth method under a custom mount path. E.g., If enabling the LDAP auth method using Vault's CLI commands via `vault auth enable -path=my-ldap ldap`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Ldap` methods would be set to "my-ldap".

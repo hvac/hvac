@@ -1,5 +1,5 @@
-AWS Authentication Backend
-==========================
+AWS
+===
 
 Authentication
 --------------

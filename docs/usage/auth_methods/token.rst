@@ -1,5 +1,5 @@
-Token Auth Method
-=================
+Token
+=====
 
 Authentication
 --------------

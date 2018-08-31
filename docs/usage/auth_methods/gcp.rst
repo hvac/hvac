@@ -1,5 +1,5 @@
-GCP Auth Backend
-================
+GCP
+===
 
 Authentication
 --------------

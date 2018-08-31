@@ -1,5 +1,5 @@
-MFA Auth Method
-================
+MFA
+===
 
 Configure MFA Auth Method Settings
 -----------------------------------
