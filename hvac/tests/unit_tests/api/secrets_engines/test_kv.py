@@ -50,6 +50,6 @@ class TestKv(utils.HvacIntegrationTestCase, TestCase):
         mock_adapter = MagicMock()
         kv = Kv(adapter=mock_adapter, default_kv_version='1')
         self.assertEqual(
-            first=KvV1.read_secret.__class__,
-            second=kv.read_secret.__class__,
+            first=kv.read_secret,
+            second=kv.v1.read_secret,
         )
