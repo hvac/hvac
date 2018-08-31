@@ -685,7 +685,7 @@ class Client(object):
         :rtype:
         """
         try:
-            data = self._get('/v1/sys/policy/{0}'.format(name)).json()
+            data = self._adapter.get('/v1/sys/policy/{0}'.format(name)).json()
             if data.get('rules'):
                 policy = data.get('rules')
             else:
