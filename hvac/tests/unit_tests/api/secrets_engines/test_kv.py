@@ -53,3 +53,7 @@ class TestKv(utils.HvacIntegrationTestCase, TestCase):
             first=kv.read_secret,
             second=kv.v1.read_secret,
         )
+
+        kv._default_kv_version = 0
+        with self.assertRaises(AttributeError):
+            assert kv.read_secret
