@@ -1,5 +1,5 @@
-Approle Auth Method
-===================
+Approle
+=======
 
 Authentication
 --------------

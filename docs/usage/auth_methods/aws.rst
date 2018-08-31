@@ -1,5 +1,5 @@
-AWS Authentication Backend
-==========================
+AWS
+===
 
 Authentication
 --------------
@@ -16,8 +16,3 @@ IAM authentication method:
     session = boto3.Session()
     credentials = session.get_credentials()
     client.auth_aws_iam(credentials.access_key, credentials.secret_key, credentials.token)
-
-AWS Secret Backend
-==================
-
-To be filled in.

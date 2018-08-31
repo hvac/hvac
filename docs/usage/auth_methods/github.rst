@@ -1,5 +1,5 @@
-GitHub Auth Method
-==================
+GitHub
+======
 
 .. note::
     Every method under the :py:attr:`Client class's github attribute<hvac.v1.Client.github>` includes a `mount_point` parameter that can be used to address the Github auth method under a custom mount path. E.g., If enabling the Github auth method using Vault's CLI commands via `vault auth enable -path=my-github github`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Github` methods would be set to "my-github".

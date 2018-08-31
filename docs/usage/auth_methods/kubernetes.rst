@@ -1,5 +1,5 @@
-Kubernetes Auth Backend
-=======================
+Kubernetes
+==========
 
 Authentication
 --------------
