@@ -97,8 +97,8 @@ class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
         ('create secret with cas of 0', 'hvac', 0, False),
         ('update secret', 'hvac', None),
         ('update secret with valid cas of 1', 'hvac', 1, True),
-        ('update secret with invalid cas', 'hvac', -1, True, exceptions.InvalidRequest, 'check-and-set parameter did not match the current version'),
-        ('update with cas of 0 after path already written', 'hvac', 0, True, exceptions.InvalidRequest, 'check-and-set parameter did not match the current version'),
+        ('update secret with invalid cas', 'hvac', -1, True, exceptions.InvalidRequest, 'did not match the current version'),
+        ('update with cas of 0 after path already written', 'hvac', 0, True, exceptions.InvalidRequest, 'did not match the current version'),
     ])
     def test_create_or_update_secret(self, test_label, path, cas=None, write_secret_before_test=True, raises=None, exception_message=''):
         test_secret = {
