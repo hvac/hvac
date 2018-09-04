@@ -22,7 +22,7 @@ class KvV1(VaultApiBase):
 
         :param path: Specifies the path of the secret to read. This is specified as part of the URL.
         :type path: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
+        :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the read_secret request.
         :rtype: dict
@@ -46,7 +46,7 @@ class KvV1(VaultApiBase):
         :param path: Specifies the path of the secrets to list.
             This is specified as part of the URL.
         :type path: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
+        :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the list_secrets request.
         :rtype: dict
@@ -77,7 +77,7 @@ class KvV1(VaultApiBase):
             kv secret engine. If no argument is provided for this parameter, hvac attempts to intelligently determine
             which method is appropriate.
         :type method: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
+        :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the create_or_update_secret request.
         :rtype: requests.Response
@@ -122,7 +122,7 @@ class KvV1(VaultApiBase):
         :param path: Specifies the path of the secret to delete.
             This is specified as part of the URL.
         :type path: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
+        :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the delete_secret request.
         :rtype: requests.Response
