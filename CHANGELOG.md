@@ -9,8 +9,8 @@ DEPRECATION NOTICES:
 
 IMPROVEMENTS:
 
-* New Github auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/github.html). [GH-242](https://github.com/hvac/hvac/pull/242)
-* New Ldap auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/ldap.html). [GH-244](https://github.com/hvac/hvac/pull/244)
+* New Github auth method class added. See the [Github documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/github.html). [GH-242](https://github.com/hvac/hvac/pull/242)
+* New Ldap auth method class added. See the [Ldap documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/ldap.html). [GH-244](https://github.com/hvac/hvac/pull/244)
 * New Mfa auth method class added. See the [documentation for usage / examples](https://hvac.readthedocs.io/en/latest/usage/mfa.html). [GH-255](https://github.com/hvac/hvac/pull/255)
 * `auth_aws_iam()` method updated to include "region" parameter for deployments in different AWS regions. [GH-243](https://github.com/hvac/hvac/pull/243)
 
