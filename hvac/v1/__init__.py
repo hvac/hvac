@@ -136,7 +136,7 @@ class Client(object):
 
     @property
     def kv(self):
-        """Accessor for the Client instance's KV methods. Provided via the :py:class:`hvac.api.secrets_engines.KV` class.
+        """Accessor for the Client instance's KV methods. Provided via the :py:class:`hvac.api.secrets_engines.Kv` class.
 
         :return: This Client instance's associated Kv instance.
         :rtype: hvac.api.secrets_engines.Kv

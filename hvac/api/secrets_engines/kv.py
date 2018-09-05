@@ -2,7 +2,7 @@
 
 import logging
 
-from hvac.api.secrets_engines import kv_v1
+from hvac.api.secrets_engines import kv_v1, kv_v2
 from hvac.api.vault_api_base import VaultApiBase
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,9 @@ class Kv(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/secrets/kv/index.html
 
     """
-    allowed_kv_versions = ['1']
+    allowed_kv_versions = ['1', '2']
 
-    def __init__(self, adapter, default_kv_version='1'):
+    def __init__(self, adapter, default_kv_version='2'):
         """Create a new Kv instnace.
 
         :param adapter: Instance of :py:class:`hvac.adapters.Adapter`; used for performing HTTP requests.
@@ -28,6 +28,7 @@ class Kv(VaultApiBase):
         self._default_kv_version = default_kv_version
 
         self._kv_v1 = kv_v1.KvV1(adapter=self._adapter)
+        self._kv_v2 = kv_v2.KvV2(adapter=self._adapter)
 
     @property
     def v1(self):
@@ -40,7 +41,12 @@ class Kv(VaultApiBase):
 
     @property
     def v2(self):
-        raise NotImplementedError
+        """Accessor for kv version 2 class / method. Provided via the :py:class:`hvac.api.secrets_engines.kv_v2.KvV2` class.
+
+        :return: This Kv instance's associated KvV2 instance.
+        :rtype: hvac.api.secrets_engines.kv_v2.KvV2
+        """
+        return self._kv_v2
 
     @property
     def default_kv_version(self):
@@ -66,5 +72,7 @@ class Kv(VaultApiBase):
         """
         if self.default_kv_version == '1':
             return getattr(self._kv_v1, item)
+        elif self.default_kv_version == '2':
+            return getattr(self._kv_v2, item)
 
         raise AttributeError
