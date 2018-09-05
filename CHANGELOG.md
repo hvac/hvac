@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.4 (September 5th, 2018)
+
+IMPROVEMENTS:
+
+* New KV secret engine-related classes added. See the [KV documentation under hvac's readthedocs.io site for usage / examples](https://hvac.readthedocs.io/en/latest/usage/secrets_engines/kv.html). [GH-257](https://github.com/hvac/hvac/pull/257) / [GH-260](https://github.com/hvac/hvac/pull/260)
+
+MISCELLANEOUS:
+
+* Language classifiers are now being included with the distribution. [GH-247](https://github.com/hvac/hvac/pull/247)
+* Token no longer being sent in URL path for the `Client.renew_token` method. [GH-250](https://github.com/hvac/hvac/pull/250)
+* Support for the response structure in newer versions of Vault within the `Client.get_policy` method. [GH-254](https://github.com/hvac/hvac/pull/254)
+* `config` and `plugin_name` parameters added to the `Client.enable_auth_backend` method. [GH-253](https://github.com/hvac/hvac/pull/253)
+
+Thanks to @ijl, @rastut, @seuf, @downeast for their lovely contributions.
+
 ## 0.6.3 (August 8th, 2018)
 
 DEPRECATION NOTICES:
