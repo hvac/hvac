@@ -105,4 +105,3 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
 
 - [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases)
-- [ ] Update the [hvac project on readthedocs.io](https://readthedocs.org/dashboard/hvac/versions/), set the "stable" version to the new release and ensure the new tag for the release version is set as "active".
