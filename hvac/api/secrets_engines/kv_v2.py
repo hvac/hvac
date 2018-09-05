@@ -28,7 +28,7 @@ class KvV2(VaultApiBase):
         :type cas_required: bool
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the configure request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         params = {
@@ -51,7 +51,7 @@ class KvV2(VaultApiBase):
 
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_configuration request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = '/v1/{mount_point}/config'.format(
@@ -73,7 +73,7 @@ class KvV2(VaultApiBase):
         :type version: int
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_secret_version request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         params = {}
@@ -105,7 +105,7 @@ class KvV2(VaultApiBase):
         :type secret: dict
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the create_or_update_secret request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         params = {
@@ -137,7 +137,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the delete_latest_version_of_secret request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/data/{path}'.format(mount_point=mount_point, path=path)
@@ -163,7 +163,7 @@ class KvV2(VaultApiBase):
         :type versions: int
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the delete_secret_versions request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
@@ -196,7 +196,7 @@ class KvV2(VaultApiBase):
         :type versions: list of int
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the undelete_secret_versions request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
@@ -228,7 +228,7 @@ class KvV2(VaultApiBase):
         :type versions: list of int
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the destroy_secret_versions request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
@@ -260,7 +260,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the list_secrets request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
@@ -280,7 +280,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_secret_metadata request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
@@ -307,7 +307,7 @@ class KvV2(VaultApiBase):
         :type cas_required: bool
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the update_metadata request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         params = {}
@@ -337,7 +337,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
-        :return: The response of the delete_metadata_and_all_versions request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
