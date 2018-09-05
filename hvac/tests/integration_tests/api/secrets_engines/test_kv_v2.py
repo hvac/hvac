@@ -31,26 +31,28 @@ class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
         super(TestKvV2, cls).tearDownClass()
 
     @parameterized.expand([
-        ('default parameters',),
-        ('custom max versions', 1),
-        ('custom cas required', 10, True),
+        ('no parameters',),
+        ('set max versions', 1),
+        ('set cas required', 10, True),
+        ('set max versions and cas required', 17, True),
     ])
-    def test_configure_and_read_configuration(self, test_label, max_versions=10, cas_required=False, mount_point=DEFAULT_MOUNT_POINT):
-        self.client.kv.v2.configure(
-            max_versions=max_versions,
-            cas_required=cas_required,
-            mount_point=mount_point,
-        )
+    def test_configure_and_read_configuration(self, test_label, max_versions=10, cas_required=None):
+        configure_arguments = dict(mount_point=self.DEFAULT_MOUNT_POINT)
+        if max_versions is not None:
+            configure_arguments['max_versions'] = max_versions
+        if cas_required is not None:
+            configure_arguments['cas_required'] = cas_required
+        self.client.kv.v2.configure(**configure_arguments)
         read_configuration_response = self.client.kv.v2.read_configuration(
-            mount_point=mount_point,
+            mount_point=self.DEFAULT_MOUNT_POINT,
         )
-        logging.debug(read_configuration_response)
+        logging.debug('read_configuration_response: %s' % read_configuration_response)
         self.assertEqual(
             first=max_versions,
             second=read_configuration_response['data']['max_versions'],
         )
         self.assertEqual(
-            first=cas_required,
+            first=cas_required or False,
             second=read_configuration_response['data']['cas_required'],
         )
 

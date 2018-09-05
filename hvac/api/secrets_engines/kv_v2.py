@@ -13,7 +13,7 @@ class KvV2(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/kv/kv-v2.html
     """
 
-    def configure(self, max_versions=10, cas_required=False, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, max_versions=10, cas_required=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure backend level settings that are applied to every key in the key-value store.
 
         Supported methods:
@@ -33,8 +33,9 @@ class KvV2(VaultApiBase):
         """
         params = {
             'max_versions': max_versions,
-            'cas_required': cas_required,
         }
+        if cas_required is not None:
+            params['cas_required'] = cas_required
         api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
