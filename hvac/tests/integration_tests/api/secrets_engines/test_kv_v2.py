@@ -10,10 +10,6 @@ from hvac.tests import utils
 class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = 'kvv2'
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestKvV2, cls).setUpClass()
-
     def setUp(self):
         super(TestKvV2, self).setUp()
         self.client.enable_secret_backend(
@@ -25,10 +21,6 @@ class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
     def tearDown(self):
         self.client.disable_secret_backend(mount_point=self.DEFAULT_MOUNT_POINT)
         super(TestKvV2, self).tearDown()
-
-    @classmethod
-    def tearDownClass(cls):
-        super(TestKvV2, cls).tearDownClass()
 
     @parameterized.expand([
         ('no parameters',),
