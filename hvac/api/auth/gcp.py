@@ -357,7 +357,7 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def login(self, role, jwt, iam, gce, mount_point=DEFAULT_MOUNT_POINT):
+    def login(self, role, jwt, mount_point=DEFAULT_MOUNT_POINT):
         """
         Login to retrieve a Vault token. This endpoint takes a signed JSON Web Token
         (JWT) and a role name for some entity. It verifies the JWT signature with Google
@@ -371,12 +371,8 @@ class Gcp(VaultApiBase):
         :param role: The name of the role against which the login
             is being attempted.
         :type role: str | unicode
-        :param jwt:
+        :param jwt: A signed JSON web token
         :type jwt: str | unicode
-        :param iam: a self-signed JWT.
-        :type iam: signJwt
-        :param gce:
-        :type gce: unknown
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the login request.
@@ -385,10 +381,8 @@ class Gcp(VaultApiBase):
         params = {
             'role': role,
             'jwt': jwt,
-            'iam': iam,
-            'gce': gce,
         }
-        api_path = '/v1/auth/gcp/login'.format(mount_point=mount_point)
+        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
