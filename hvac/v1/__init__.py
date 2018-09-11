@@ -213,9 +213,9 @@ class Client(object):
             payload = {
                 'token': token
             }
-            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json()
+            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json().get("data", None)
         else:
-            return self._adapter.post('/v1/sys/wrapping/unwrap').json()
+            return self._adapter.post('/v1/sys/wrapping/unwrap').json().get("data", None)
 
     def is_initialized(self):
         """GET /sys/init
@@ -377,7 +377,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/sys/key-status').json()
+        return self._adapter.get('/v1/sys/key-status').json().get("data", None)
 
     def rotate(self):
         """PUT /sys/rotate
@@ -501,7 +501,7 @@ class Client(object):
         params = {
             'lease_id': lease_id
         }
-        return self._adapter.put('/v1/sys/leases/lookup', json=params).json()
+        return self._adapter.put('/v1/sys/leases/lookup', json=params).json().get("data", None)
 
     def renew_secret(self, lease_id, increment=None):
         """PUT /sys/leases/renew
@@ -553,7 +553,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/sys/mounts').json()
+        return self._adapter.get('/v1/sys/mounts').json().get("data", [])
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/mounts/<mount point>
@@ -649,7 +649,7 @@ class Client(object):
         if not mount_point:
             mount_point = backend_type
 
-        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json().get("data", None)
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
@@ -684,7 +684,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/sys/policy').json()['policies']
+        return self._adapter.get('/v1/sys/policy').json().get("data", {}).get("policies", [])
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
@@ -748,7 +748,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/sys/audit').json()
+        return self._adapter.get('/v1/sys/audit').json().get("data", [])
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
@@ -798,7 +798,7 @@ class Client(object):
         params = {
             'input': input,
         }
-        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json().get("data", None)
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -1735,7 +1735,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/sys/auth').json()
+        return self._adapter.get('/v1/sys/auth').json().get("data", [])
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
