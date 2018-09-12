@@ -1537,7 +1537,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         # Validate we received the expected lease ID back in our response.
         self.assertEquals(
             first=pki_issue_response['lease_id'],
-            second=read_lease_response['id'],
+            second=read_lease_response['data']['id'],
         )
 
         # Reset integration test state.
