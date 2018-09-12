@@ -37,7 +37,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         super(TestGithub, self).tearDown()
-        for mount_point, configuration in self.client.list_auth_backends()['data'].items():
+        for mount_point, configuration in self.client.list_auth_backends().items():
             if configuration.get('type') == 'github':
                 self.client.disable_auth_backend(
                     mount_point=mount_point,
