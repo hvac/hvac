@@ -213,9 +213,9 @@ class Client(object):
             payload = {
                 'token': token
             }
-            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json().get("data", None)
+            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json()
         else:
-            return self._adapter.post('/v1/sys/wrapping/unwrap').json().get("data", None)
+            return self._adapter.post('/v1/sys/wrapping/unwrap').json()
 
     def is_initialized(self):
         """GET /sys/init
