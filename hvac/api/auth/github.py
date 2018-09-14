@@ -78,7 +78,7 @@ class Github(VaultApiBase):
         :param team_name: GitHub team name in "slugified" format
         :type team_name: str | unicode
         :param policies: Comma separated list of policies to assign
-        :type policies: list
+        :type policies: List[str]
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the map_github_teams request.
@@ -129,7 +129,7 @@ class Github(VaultApiBase):
         :param user_name: GitHub user name
         :type user_name: str | unicode
         :param policies: Comma separated list of policies to assign
-        :type policies: str | unicode
+        :type policies: List[str]
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the map_github_users request.
