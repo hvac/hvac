@@ -85,8 +85,17 @@ class Github(VaultApiBase):
         :return: The response of the map_github_teams request.
         :rtype: requests.Response
         """
+        # First, perform parameter validation.
         if policies is None:
             policies = []
+        if not isinstance(policies, list) or not all([isinstance(p, str) for p in policies]):
+
+            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
+            raise exceptions.ParamValidationError(error_msg.format(
+                arg=policies,
+                arg_type=type(policies),
+            ))
+        # Then, perform request.
         params = {
             'value': ','.join(policies),
         }
