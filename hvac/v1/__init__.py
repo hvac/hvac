@@ -59,6 +59,7 @@ class Client(object):
                 proxies=proxies,
                 allow_redirects=allow_redirects,
                 session=session,
+                namespace=namespace
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
