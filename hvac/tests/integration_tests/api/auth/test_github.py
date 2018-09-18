@@ -130,30 +130,43 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         ("no policies", 204, 'hvac', None),
         ("with policy", 204, 'hvac', ['default']),
+        ("with policy incorrect type", 204, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
         ("with policies", 204, 'hvac', ['default', 'root']),
     ])
-    def test_map_team_and_read_mapping(self, test_label, expected_status_code, team_name, policies):
-        response = self.client.github.map_team(
-            team_name=team_name,
-            policies=policies,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code
-        )
+    def test_map_team_and_read_mapping(self, test_label, expected_status_code, team_name, policies, raises=False, exception_msg=''):
 
-        response = self.client.github.read_team_mapping(
-            team_name=team_name,
-        )
-        if policies is None:
-            expected_policies = ''
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.github.map_team(
+                    team_name=team_name,
+                    policies=policies,
+                )
+            self.assertIn(
+                member=exception_msg,
+                container=str(cm.exception),
+            )
         else:
-            expected_policies = ','.join(policies)
+            response = self.client.github.map_team(
+                team_name=team_name,
+                policies=policies,
+            )
+            self.assertEqual(
+                first=expected_status_code,
+                second=response.status_code
+            )
 
-        self.assertDictEqual(
-            d1=dict(key=team_name, value=expected_policies),
-            d2=response['data'],
-        )
+            response = self.client.github.read_team_mapping(
+                team_name=team_name,
+            )
+            if policies is None:
+                expected_policies = ''
+            else:
+                expected_policies = ','.join(policies)
+
+            self.assertDictEqual(
+                d1=dict(key=team_name, value=expected_policies),
+                d2=response['data'],
+            )
 
     @parameterized.expand([
         ("no policies", 204, 'hvac-user', None),
@@ -181,30 +194,43 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         ("no policies", 204, 'hvac', None),
         ("with policy", 204, 'hvac', ['default']),
+        ("with policy incorrect type", 204, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
         ("with policies", 204, 'hvac', ['default', 'root']),
     ])
-    def test_map_user_and_read_mapping(self, test_label, expected_status_code, user_name, policies):
-        response = self.client.github.map_user(
-            user_name=user_name,
-            policies=policies,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code
-        )
+    def test_map_user_and_read_mapping(self, test_label, expected_status_code, user_name, policies, raises=False, exception_msg=''):
 
-        response = self.client.github.read_user_mapping(
-            user_name=user_name,
-        )
-        if policies is None:
-            expected_policies = ''
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.github.map_user(
+                    user_name=user_name,
+                    policies=policies,
+                )
+            self.assertIn(
+                member=exception_msg,
+                container=str(cm.exception),
+            )
         else:
-            expected_policies = ','.join(policies)
+            response = self.client.github.map_user(
+                user_name=user_name,
+                policies=policies,
+            )
+            self.assertEqual(
+                first=expected_status_code,
+                second=response.status_code
+            )
 
-        self.assertDictEqual(
-            d1=dict(key=user_name, value=expected_policies),
-            d2=response['data'],
-        )
+            response = self.client.github.read_user_mapping(
+                user_name=user_name,
+            )
+            if policies is None:
+                expected_policies = ''
+            else:
+                expected_policies = ','.join(policies)
+
+            self.assertDictEqual(
+                d1=dict(key=user_name, value=expected_policies),
+                d2=response['data'],
+            )
 
     @parameterized.expand([
         ("valid token", 'valid-token', None, None),
