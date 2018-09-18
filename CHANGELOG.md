@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.5 (September 12th, 2018)
+## 0.6.5 (Unreleased)
 
 IMPROVEMENTS:
 
