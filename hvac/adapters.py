@@ -20,16 +20,14 @@ class Adapter(object):
     """Abstract base class used when constructing adapters for use with the Client class."""
     __metaclass__ = ABCMeta
 
-    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, namespace=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None):
+    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
+                 allow_redirects=True, session=None, namespace=None:str):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
         :type base_uri: str
         :param token: Authentication token to include in requests sent to Vault.
         :type token: str
-        :param namespace: Vault Namespace, if any.
-        :type namespace: str
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
             certificate and then key.
         :type cert: tuple
@@ -45,6 +43,8 @@ class Adapter(object):
         :type allow_redirects: bool
         :param session: Optional session object to use when performing request.
         :type session: request.Session
+        :param namespace: Optional Vault Namespace.
+        :type namespace: str
         """
         if not session:
             session = requests.Session()
