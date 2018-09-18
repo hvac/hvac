@@ -21,7 +21,7 @@ class Adapter(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, namespace=None:str):
+                 allow_redirects=True, session=None, namespace=None):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.

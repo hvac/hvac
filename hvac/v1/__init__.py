@@ -18,7 +18,7 @@ class Client(object):
 
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, adapter=None, namespace=None:str):
+                 allow_redirects=True, session=None, adapter=None, namespace=None):
         """Creates a new hvac client instnace.
 
         :param url: Base URL for the Vault instance being addressed.
