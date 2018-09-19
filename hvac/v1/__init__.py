@@ -18,7 +18,7 @@ class Client(object):
 
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, adapter=None):
+                 allow_redirects=True, session=None, adapter=None, namespace=None):
         """Creates a new hvac client instnace.
 
         :param url: Base URL for the Vault instance being addressed.
@@ -43,6 +43,8 @@ class Client(object):
         :param adapter: Optional class to be used for performing requests. If none is provided, defaults to
             hvac.adapters.Request
         :type adapter: hvac.adapters.Adapter
+        :param namespace: Optional Vault Namespace.
+        :type namespace: str
         """
 
         if adapter is not None:
@@ -57,6 +59,7 @@ class Client(object):
                 proxies=proxies,
                 allow_redirects=allow_redirects,
                 session=session,
+                namespace=namespace
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
