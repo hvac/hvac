@@ -68,6 +68,7 @@ class Client(object):
 
         # Secret engine attributes / properties.
         self._kv = api.secrets_engines.Kv(adapter=self._adapter)
+        self._identity = api.secrets_engines.Identity(adapter=self._adapter)
 
     @property
     def adapter(self):
@@ -144,6 +145,15 @@ class Client(object):
         :rtype: hvac.api.secrets_engines.Kv
         """
         return self._kv
+
+    @property
+    def identity(self):
+        """Accessor for the Client instance's identity methods. Provided via the :py:class:`hvac.api.secrets_engines.Identity` class.
+
+        :return: This Client instance's associated Identity instance.
+        :rtype: hvac.api.secrets_engines.Identity
+        """
+        return self._identity
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
