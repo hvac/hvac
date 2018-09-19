@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Github methods module."""
+from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'github'
@@ -78,14 +79,22 @@ class Github(VaultApiBase):
         :param team_name: GitHub team name in "slugified" format
         :type team_name: str | unicode
         :param policies: Comma separated list of policies to assign
-        :type policies: list
+        :type policies: List[str]
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the map_github_teams request.
         :rtype: requests.Response
         """
+        # First, perform parameter validation.
         if policies is None:
             policies = []
+        if not isinstance(policies, list) or not all([isinstance(p, str) for p in policies]):
+            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
+            raise exceptions.ParamValidationError(error_msg.format(
+                arg=policies,
+                arg_type=type(policies),
+            ))
+        # Then, perform request.
         params = {
             'value': ','.join(policies),
         }
@@ -129,14 +138,23 @@ class Github(VaultApiBase):
         :param user_name: GitHub user name
         :type user_name: str | unicode
         :param policies: Comma separated list of policies to assign
-        :type policies: str | unicode
+        :type policies: List[str]
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the map_github_users request.
         :rtype: requests.Response
         """
+        # First, perform parameter validation.
         if policies is None:
             policies = []
+        if not isinstance(policies, list) or not all([isinstance(p, str) for p in policies]):
+            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
+            raise exceptions.ParamValidationError(error_msg.format(
+                arg=policies,
+                arg_type=type(policies),
+            ))
+
+        # Then, perform request.
         params = {
             'value': ','.join(policies),
         }

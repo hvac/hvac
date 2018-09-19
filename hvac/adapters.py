@@ -21,7 +21,7 @@ class Adapter(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None):
+                 allow_redirects=True, session=None, namespace=None):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
@@ -43,12 +43,15 @@ class Adapter(object):
         :type allow_redirects: bool
         :param session: Optional session object to use when performing request.
         :type session: request.Session
+        :param namespace: Optional Vault Namespace.
+        :type namespace: str
         """
         if not session:
             session = requests.Session()
 
         self.base_uri = base_uri
         self.token = token
+        self.namespace = namespace
         self.session = session
         self.allow_redirects = allow_redirects
 
@@ -207,6 +210,9 @@ class Request(Adapter):
 
         if self.token:
             headers['X-Vault-Token'] = self.token
+
+        if self.namespace:
+            headers['X-Vault-Namespace'] = self.namespace
 
         wrap_ttl = kwargs.pop('wrap_ttl', None)
         if wrap_ttl:
