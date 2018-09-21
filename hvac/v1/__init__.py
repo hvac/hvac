@@ -549,6 +549,26 @@ class Client(object):
         :rtype:
         """
         self._adapter.put('/v1/auth/token/revoke-self')
+        
+    def auth_okta(self, username, password, mount_point='okta', use_token=True):
+        """POST /auth/<mount point>/login/<username>
+        
+        :return:
+        :rtype:
+        """
+        params = {
+            'password': password,
+        }
+        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+
+    def list_okta_groups(self):
+        """GET /auth/okta/groups
+                
+        :return:
+        :rtype:
+        """
+
+        return self._adapter.get('/v1/auth/okta/groups').json()
 
     def list_secret_backends(self):
         """GET /sys/mounts
