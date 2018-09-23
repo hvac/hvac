@@ -191,8 +191,10 @@ class Client(object):
         """
         response = self._adapter.post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
-        if response.status_code == 200:
+        if self.kv.default_kv_version == '1' and response.status_code == 200:
             return response.json()
+        elif self.kv.default_kv_version == '2' and response.status_code == 204:
+            return True
 
     def delete(self, path):
         """DELETE /<path>
