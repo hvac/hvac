@@ -20,13 +20,13 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         result = self.client.unseal_multi(keys[0:2])
 
         assert result['sealed']
-        assert result['progress'] == 2
+        self.assertEqual(result['progress'], 2)
 
         result = self.client.unseal_reset()
-        assert result['progress'] == 0
+        self.assertEqual(result['progress'], 0)
         result = self.client.unseal_multi(keys[1:3])
         assert result['sealed']
-        assert result['progress'] == 2
+        self.assertEqual(result['progress'], 2)
         self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
         assert not result['sealed']
@@ -112,8 +112,8 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         assert self.client.get_policy('test') is None
         policy, parsed_policy = self.prep_policy('test')
         assert 'test' in self.client.list_policies()
-        assert policy == self.client.get_policy('test')
-        assert parsed_policy == self.client.get_policy('test', parse=True)
+        self.assertEqual(policy, self.client.get_policy('test'))
+        self.assertEqual(parsed_policy, self.client.get_policy('test', parse=True))
 
         self.client.delete_policy('test')
         assert 'test' not in self.client.list_policies()
@@ -142,7 +142,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         orig_token = self.client.token
 
         resp = self.client.create_token(lease='6h', wrap_ttl='1h')
-        assert resp['wrap_info']['ttl'] == 3600
+        self.assertEqual(resp['wrap_info']['ttl'], 3600)
 
         wrapped_token = resp['wrap_info']['token']
         self.client.auth_cubbyhole(wrapped_token)
@@ -190,7 +190,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         # Validate token
         lookup = self.client.lookup_token(result['auth']['client_token'])
-        assert result['auth']['client_token'] == lookup['data']['id']
+        self.assertEqual(result['auth']['client_token'], lookup['data']['id'])
 
     def test_wrapped_token_intercept(self):
         wrap = self.client.create_token(wrap_ttl='1m')
@@ -207,7 +207,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         _token = self.client.token
         self.client.unwrap(wrap['wrap_info']['token'])
-        assert self.client.token == _token
+        self.assertEqual(self.client.token, _token)
 
     def test_wrapped_token_revoke(self):
         wrap = self.client.create_token(wrap_ttl='1m')
@@ -234,7 +234,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         # Validate token
         self.client.token = result['auth']['client_token']
         lookup = self.client.lookup_token(result['auth']['client_token'])
-        assert result['auth']['client_token'] == lookup['data']['id']
+        self.assertEqual(result['auth']['client_token'], lookup['data']['id'])
 
     def test_wrapped_client_token_intercept(self):
         wrap = self.client.create_token(wrap_ttl='1m')
