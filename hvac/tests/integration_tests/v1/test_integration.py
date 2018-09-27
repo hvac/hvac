@@ -1125,10 +1125,10 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         # Assert our new root token is properly formed and authenticated
         self.client.token = new_root_token
         if self.client.is_authenticated():
-            self.root_token = new_root_token
+            self.manager.root_token = new_root_token
         else:
             # If our new token was unable to authenticate, set the test client's token back to the original value
-            self.client.token = self.root_token
+            self.client.token = self.manager.root_token
             self.fail('Unable to authenticate with the newly generated root token.')
 
     def test_start_generate_root_then_cancel(self):
