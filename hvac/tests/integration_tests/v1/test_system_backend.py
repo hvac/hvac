@@ -19,13 +19,13 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         result = self.client.unseal_multi(keys[0:2])
 
-        assert result['sealed']
+        self.assertTrue(result['sealed'])
         self.assertEqual(result['progress'], 2)
 
         result = self.client.unseal_reset()
         self.assertEqual(result['progress'], 0)
         result = self.client.unseal_multi(keys[1:3])
-        assert result['sealed']
+        self.assertTrue(result['sealed'])
         self.assertEqual(result['progress'], 2)
         self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
@@ -38,7 +38,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.seal()
 
-        assert self.client.is_sealed()
+        self.assertTrue(self.client.is_sealed())
 
         cls.manager.unseal()
 
@@ -148,10 +148,10 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.client.auth_cubbyhole(wrapped_token)
         assert self.client.token != orig_token
         assert self.client.token != wrapped_token
-        assert self.client.is_authenticated()
+        self.assertTrue(self.client.is_authenticated())
 
         self.client.token = orig_token
-        assert self.client.is_authenticated()
+        self.assertTrue(self.client.is_authenticated())
 
     def test_rekey_multi(self):
         cls = type(self)
@@ -159,7 +159,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         assert not self.client.rekey_status['started']
 
         self.client.start_rekey()
-        assert self.client.rekey_status['started']
+        self.assertTrue(self.client.rekey_status['started'])
 
         self.client.cancel_rekey()
         assert not self.client.rekey_status['started']
@@ -169,7 +169,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         keys = cls.manager.keys
 
         result = self.client.rekey_multi(keys, nonce=result['nonce'])
-        assert result['complete']
+        self.assertTrue(result['complete'])
 
         cls.manager.keys = result['keys']
         cls.manager.unseal()
@@ -186,7 +186,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         # Unwrap token
         result = self.client.unwrap(wrap['wrap_info']['token'])
-        assert result['auth']['client_token']
+        self.assertTrue(result['auth']['client_token'])
 
         # Validate token
         lookup = self.client.lookup_token(result['auth']['client_token'])
@@ -217,7 +217,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         # Unwrap token anyway
         result = self.client.unwrap(wrap['wrap_info']['token'])
-        assert result['auth']['client_token']
+        self.assertTrue(result['auth']['client_token'])
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
@@ -229,7 +229,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         # Unwrap token
         result = self.client.unwrap()
-        assert result['auth']['client_token']
+        self.assertTrue(result['auth']['client_token'])
 
         # Validate token
         self.client.token = result['auth']['client_token']
@@ -266,7 +266,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         # Unwrap token anyway
         self.client.token = wrap['wrap_info']['token']
         result = self.client.unwrap()
-        assert result['auth']['client_token']
+        self.assertTrue(result['auth']['client_token'])
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
