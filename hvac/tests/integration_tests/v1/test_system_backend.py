@@ -179,7 +179,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.rotate()
 
-        assert self.client.key_status['term'] > status['term']
+        self.assertGreater(self.client.key_status['term'], status['term'])
 
     def test_wrapped_token_success(self):
         wrap = self.client.create_token(wrap_ttl='1m')
