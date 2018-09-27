@@ -4,7 +4,8 @@
 
 [![Travis CI](https://travis-ci.org/hvac/hvac.svg?branch=master)](https://travis-ci.org/hvac/hvac) [![codecov](https://codecov.io/gh/hvac/hvac/branch/master/graph/badge.svg)](https://codecov.io/gh/hvac/hvac) [![Documentation Status](https://readthedocs.org/projects/hvac/badge/)](https://hvac.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/hvac.svg)](https://badge.fury.io/py/hvac)
 
-Tested against Vault v0.1.2 and HEAD. Requires v0.1.2 or later.
+Tested against the latest release, HEAD ref, and 3 previous (counting back from the latest release) major versions of Vault. 
+Currently supports Vault v0.8.3 or later.
 
 ## Documentation
 
