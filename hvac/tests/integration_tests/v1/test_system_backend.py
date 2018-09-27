@@ -29,12 +29,12 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertEqual(result['progress'], 2)
         self.client.unseal_multi(keys[0:1])
         result = self.client.unseal_multi(keys[2:3])
-        assert not result['sealed']
+        self.assertFalse(result['sealed'])
 
     def test_seal_unseal(self):
         cls = type(self)
 
-        assert not self.client.is_sealed()
+        self.assertFalse(self.client.is_sealed())
 
         self.client.seal()
 
@@ -42,7 +42,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         cls.manager.unseal()
 
-        assert not self.client.is_sealed()
+        self.assertFalse(self.client.is_sealed())
 
     def test_ha_status(self):
         assert 'ha_enabled' in self.client.ha_status
@@ -156,13 +156,13 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
     def test_rekey_multi(self):
         cls = type(self)
 
-        assert not self.client.rekey_status['started']
+        self.assertFalse(self.client.rekey_status['started'])
 
         self.client.start_rekey()
         self.assertTrue(self.client.rekey_status['started'])
 
         self.client.cancel_rekey()
-        assert not self.client.rekey_status['started']
+        self.assertFalse(self.client.rekey_status['started'])
 
         result = self.client.start_rekey()
 
