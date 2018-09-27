@@ -5,6 +5,8 @@ from unittest import TestCase
 from uuid import UUID
 
 from hvac import exceptions
+from unittest import skipIf
+
 from hvac.tests import utils
 
 
@@ -1264,6 +1266,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
+    @skipIf(utils.skip_if_vault_version('0.10.0'), "not supported in this vault version")
     def test_kv2_secret_backend(self):
         if 'test/' in self.client.list_secret_backends():
             self.client.disable_secret_backend('test')
