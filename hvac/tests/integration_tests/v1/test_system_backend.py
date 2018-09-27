@@ -437,3 +437,11 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
             member='default_lease_ttl',
             container=secret_backend_tuning['data'],
         )
+
+    def test_get_backed_up_keys(self):
+        with self.assertRaises(exceptions.InvalidRequest) as cm:
+            self.client.get_backed_up_keys()
+            self.assertEqual(
+                first='no backed-up keys found',
+                second=str(cm.exception),
+            )
