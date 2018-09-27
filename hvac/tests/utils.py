@@ -1,11 +1,13 @@
 """Collection of classes and methods used by various hvac test cases."""
 import json
 import logging
+import operator
 import os
 import re
 import socket
 import subprocess
 import time
+from distutils.version import StrictVersion
 
 from hvac import Client
 
@@ -19,6 +21,31 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+LATEST_VAULT_VERSION = '0.11.1'
+
+
+def get_installed_vault_version():
+    command = ['vault', '-version']
+    process = subprocess.Popen(args=command, stdout=subprocess.PIPE)
+    output, _ = process.communicate()
+    version = output.strip().split()[1].lstrip('v')
+    return version
+
+
+def skip_if_vault_version(supported_version, comparison=operator.lt):
+    current_version = os.getenv('VAULT_VERSION')
+    if current_version is None or current_version.lower() == 'head':
+        current_version = get_installed_vault_version()
+
+    return comparison(StrictVersion(current_version), StrictVersion(supported_version))
+
+
+def skip_if_vault_version_lt(supported_version):
+    return skip_if_vault_version(supported_version, comparison=operator.lt)
+
+
+def skip_if_vault_version_ge(supported_version):
+    return skip_if_vault_version(supported_version, comparison=operator.ge)
 
 
 def create_client(**kwargs):
