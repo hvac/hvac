@@ -58,17 +58,17 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.client.disable_auth_backend("approle")
 
     def test_auth_backend_manipulation(self):
-        assert 'github/' not in self.client.list_auth_backends()
+        self.assertNotIn('github/', self.client.list_auth_backends())
 
         self.client.enable_auth_backend('github')
         assert 'github/' in self.client.list_auth_backends()
 
         self.client.token = self.manager.root_token
         self.client.disable_auth_backend('github')
-        assert 'github/' not in self.client.list_auth_backends()
+        self.assertNotIn('github/', self.client.list_auth_backends())
 
     def test_secret_backend_manipulation(self):
-        assert 'test/' not in self.client.list_secret_backends()
+        self.assertNotIn('test/', self.client.list_secret_backends())
 
         self.client.enable_secret_backend('generic', mount_point='test')
         assert 'test/' in self.client.list_secret_backends()
@@ -86,15 +86,15 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
-        assert 'test/' not in self.client.list_secret_backends()
+        self.assertNotIn('test/', self.client.list_secret_backends())
         assert 'foobar/' in self.client.list_secret_backends()
 
         self.client.token = self.manager.root_token
         self.client.disable_secret_backend('foobar')
-        assert 'foobar/' not in self.client.list_secret_backends()
+        self.assertNotIn('foobar/', self.client.list_secret_backends())
 
     def test_audit_backend_manipulation(self):
-        assert 'tmpfile/' not in self.client.list_audit_backends()
+        self.assertNotIn('tmpfile/', self.client.list_audit_backends())
 
         options = {
             'path': '/tmp/vault.audit.log'
@@ -105,7 +105,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.token = self.manager.root_token
         self.client.disable_audit_backend('tmpfile')
-        assert 'tmpfile/' not in self.client.list_audit_backends()
+        self.assertNotIn('tmpfile/', self.client.list_audit_backends())
 
     def test_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
@@ -116,7 +116,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertEqual(parsed_policy, self.client.get_policy('test', parse=True))
 
         self.client.delete_policy('test')
-        assert 'test' not in self.client.list_policies()
+        self.assertNotIn('test', self.client.list_policies())
 
     def test_json_policy_manipulation(self):
         assert 'root' in self.client.list_policies()
@@ -136,7 +136,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         assert 'test' in self.client.list_policies()
 
         self.client.delete_policy('test')
-        assert 'test' not in self.client.list_policies()
+        self.assertNotIn('test', self.client.list_policies())
 
     def test_cubbyhole_auth(self):
         orig_token = self.client.token
