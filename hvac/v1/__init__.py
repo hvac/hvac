@@ -403,16 +403,21 @@ class Client(object):
                     backup=False):
         """PUT /sys/rekey/init
 
-        :param secret_shares:
-        :type secret_shares:
-        :param secret_threshold:
-        :type secret_threshold:
-        :param pgp_keys:
-        :type pgp_keys:
-        :param backup:
-        :type backup:
-        :return:
-        :rtype:
+        :param secret_shares: Specifies the number of shares to split the master key into.
+        :type secret_shares: int
+        :param secret_threshold: Specifies the number of shares required to reconstruct the master key. This must be
+            less than or equal to secret_shares.
+        :type secret_threshold: int
+        :param pgp_keys: List of PGP public keys used to encrypt the output unseal keys. Ordering is preserved. The keys
+            must be base64-encoded from their original binary representation. The size of this array must be the same as
+            secret_shares.
+        :type pgp_keys: list
+        :param backup: Specifies if using PGP-encrypted keys, whether Vault should also store a plaintext backup of the
+            PGP-encrypted keys at core/unseal-keys-backup in the physical storage backend. These can then be retrieved
+            and removed via the sys/rekey/backup endpoint.
+        :type backup: bool
+        :return: The full response object if an empty body is received, otherwise the JSON dict of the response.
+        :rtype: dict | request.Response
         """
         params = {
             'secret_shares': secret_shares,
