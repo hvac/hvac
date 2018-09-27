@@ -616,8 +616,8 @@ class Client(object):
             to the backend.
         :type passthrough_request_headers: str
 
-        :return: The JSON response from Vault
-        :rtype: dict.
+        :return: The response from Vault
+        :rtype: request.Response
         """
 
         if not mount_point:
