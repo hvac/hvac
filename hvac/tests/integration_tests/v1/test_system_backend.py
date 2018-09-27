@@ -45,7 +45,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertFalse(self.client.is_sealed())
 
     def test_ha_status(self):
-        assert 'ha_enabled' in self.client.ha_status
+        self.assertIn('ha_enabled', self.client.ha_status)
 
     def test_wrap_write(self):
         if 'approle/' not in self.client.list_auth_backends():
@@ -53,7 +53,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.write("auth/approle/role/testrole")
         result = self.client.write('auth/approle/role/testrole/secret-id', wrap_ttl="10s")
-        assert 'token' in result['wrap_info']
+        self.assertIn('token', result['wrap_info'])
         self.client.unwrap(result['wrap_info']['token'])
         self.client.disable_auth_backend("approle")
 
@@ -61,7 +61,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertNotIn('github/', self.client.list_auth_backends())
 
         self.client.enable_auth_backend('github')
-        assert 'github/' in self.client.list_auth_backends()
+        self.assertIn('github/', self.client.list_auth_backends())
 
         self.client.token = self.manager.root_token
         self.client.disable_auth_backend('github')
@@ -71,7 +71,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertNotIn('test/', self.client.list_secret_backends())
 
         self.client.enable_secret_backend('generic', mount_point='test')
-        assert 'test/' in self.client.list_secret_backends()
+        self.assertIn('test/', self.client.list_secret_backends())
 
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
         self.assertEqual(secret_backend_tuning['max_lease_ttl'], 2764800)
@@ -80,14 +80,14 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
 
-        assert 'max_lease_ttl' in secret_backend_tuning
+        self.assertIn('max_lease_ttl', secret_backend_tuning)
         self.assertEqual(secret_backend_tuning['max_lease_ttl'], 8600)
-        assert 'default_lease_ttl' in secret_backend_tuning
+        self.assertIn('default_lease_ttl', secret_backend_tuning)
         self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
         self.assertNotIn('test/', self.client.list_secret_backends())
-        assert 'foobar/' in self.client.list_secret_backends()
+        self.assertIn('foobar/', self.client.list_secret_backends())
 
         self.client.token = self.manager.root_token
         self.client.disable_secret_backend('foobar')
@@ -101,17 +101,17 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         }
 
         self.client.enable_audit_backend('file', options=options, name='tmpfile')
-        assert 'tmpfile/' in self.client.list_audit_backends()
+        self.assertIn('tmpfile/', self.client.list_audit_backends())
 
         self.client.token = self.manager.root_token
         self.client.disable_audit_backend('tmpfile')
         self.assertNotIn('tmpfile/', self.client.list_audit_backends())
 
     def test_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
+        self.assertIn('root', self.client.list_policies())
         assert self.client.get_policy('test') is None
         policy, parsed_policy = self.prep_policy('test')
-        assert 'test' in self.client.list_policies()
+        self.assertIn('test', self.client.list_policies())
         self.assertEqual(policy, self.client.get_policy('test'))
         self.assertEqual(parsed_policy, self.client.get_policy('test', parse=True))
 
@@ -119,7 +119,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertNotIn('test', self.client.list_policies())
 
     def test_json_policy_manipulation(self):
-        assert 'root' in self.client.list_policies()
+        self.assertIn('root', self.client.list_policies())
 
         policy = {
             "path": {
@@ -133,7 +133,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         }
 
         self.client.set_policy('test', policy)
-        assert 'test' in self.client.list_policies()
+        self.assertIn('test', self.client.list_policies())
 
         self.client.delete_policy('test')
         self.assertNotIn('test', self.client.list_policies())
