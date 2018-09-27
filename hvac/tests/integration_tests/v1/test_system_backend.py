@@ -146,8 +146,8 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         wrapped_token = resp['wrap_info']['token']
         self.client.auth_cubbyhole(wrapped_token)
-        assert self.client.token != orig_token
-        assert self.client.token != wrapped_token
+        self.assertNotEqual(self.client.token, orig_token)
+        self.assertNotEqual(self.client.token, wrapped_token)
         self.assertTrue(self.client.is_authenticated())
 
         self.client.token = orig_token
@@ -254,8 +254,8 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.client.token = wrap['wrap_info']['token']
         self.client.unwrap()
 
-        assert self.client.token != wrap
-        assert self.client.token != _token
+        self.assertNotEqual(self.client.token, wrap)
+        self.assertNotEqual(self.client.token, _token)
 
     def test_wrapped_client_token_revoke(self):
         wrap = self.client.create_token(wrap_ttl='1m')
