@@ -109,7 +109,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
     def test_policy_manipulation(self):
         self.assertIn('root', self.client.list_policies())
-        assert self.client.get_policy('test') is None
+        self.assertIsNone(self.client.get_policy('test'))
         policy, parsed_policy = self.prep_policy('test')
         self.assertIn('test', self.client.list_policies())
         self.assertEqual(policy, self.client.get_policy('test'))
