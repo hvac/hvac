@@ -3,22 +3,78 @@ sudo: false
 language: python
 matrix:
   include:
-  - python: '2.7'
-    env: TOXENV=py27 VAULT_BRANCH=release
-  - python: '2.7'
-    env: TOXENV=py27-flake8 VAULT_BRANCH=release
-  - python: '3.6'
-    env: TOXENV=py36 VAULT_BRANCH=release
-  - python: '3.6'
-    env: TOXENV=py36-flake8 VAULT_BRANCH=release
-  - python: '3.6'
-    env: TOXENV=py36 VAULT_BRANCH=head
+    - name: 'Python v2.7, Vault v0.8.3 - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.8.3
+    - name: 'Python v2.7, Vault v0.9.6 - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.9.6
+    - name: 'Python v2.7, Vault v0.10.4 - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.10.4
+    - name: 'Python v2.7, Vault v0.11.1 - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.11.1
+    - name: 'Python v2.7, Vault HEAD ref - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=HEAD
+    - name: 'Python v2.7 - Linting (flake8)'
+      python: '2.7'
+      env:
+        - TOXENV=py27-flake8
+    - name: 'Python v3.6, Vault v0.8.3 - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.8.3
+    - name: 'Python v3.6, Vault v0.9.6 - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.9.6
+    - name: 'Python v3.6, Vault v0.10.4 - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.10.4
+    - name: 'Python v3.6, Vault v0.11.1 - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=0.11.1
+    - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=HEAD
+    - name: 'Python v3.6 - Linting (flake8)'
+      python: '3.6'
+      env:
+        - TOXENV=py27-flake8
   allow_failures:
-  - python: '3.6'
-    env: TOXENV=py36 VAULT_BRANCH=head
+    - name: 'Python v2.7, Vault HEAD ref - Integration/Unit Tests'
+      python: '2.7'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=HEAD
+    - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
+      python: '3.6'
+      env:
+        - TOXENV=py27
+        - VAULT_VERSION=HEAD
 install:
-- scripts/install-vault-${VAULT_BRANCH}.sh
-- pip install tox
+  - scripts/install-vault.sh ${VAULT_VERSION}
+  - pip install tox
 script:
-- export PATH=$HOME/bin:$PATH
-- make test
+  - export PATH=$HOME/bin:$PATH
+  - make test
