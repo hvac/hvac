@@ -430,3 +430,10 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
                 container=audit_hash_response['data']['hash'],
             )
         self.client.disable_audit_backend('tmpfile')
+
+    def test_get_secret_backend_tuning(self):
+        secret_backend_tuning = self.client.get_secret_backend_tuning('secret')
+        self.assertIn(
+            member='default_lease_ttl',
+            container=secret_backend_tuning['data'],
+        )
