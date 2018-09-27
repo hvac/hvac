@@ -1,8 +1,11 @@
 import binascii
+import logging
 import sys
 from base64 import b64decode
 from unittest import TestCase
 from uuid import UUID
+
+from parameterized import parameterized, param
 
 from hvac import exceptions
 from hvac.tests import utils
@@ -384,3 +387,46 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
         # Reset integration test state.
         self.disable_test_pki()
+
+    @parameterized.expand([
+        param(
+            'hash returned',
+        ),
+        param(
+            'audit backend not enabled',
+            enable_first=False,
+            raises=exceptions.InvalidRequest,
+            exception_message='unknown audit backend',
+        ),
+    ])
+    def test_audit_hash(self, label, enable_first=True, test_input='hvac-rox', raises=None, exception_message=''):
+        audit_backend_path = 'tmpfile'
+        self.client.disable_audit_backend('tmpfile')
+        if enable_first:
+            options = {
+                'path': '/tmp/vault.audit.log'
+            }
+            self.client.enable_audit_backend('file', options=options, name=audit_backend_path)
+
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.audit_hash(
+                    name=audit_backend_path,
+                    input=test_input
+                )
+            if exception_message is not None:
+                self.assertIn(
+                    member=exception_message,
+                    container=str(cm.exception),
+                )
+        else:
+            audit_hash_response = self.client.audit_hash(
+                name=audit_backend_path,
+                input=test_input,
+            )
+            logging.debug('audit_hash_response: %s' % audit_hash_response)
+            self.assertIn(
+                member='hmac-sha256:',
+                container=audit_hash_response['data']['hash'],
+            )
+        self.client.disable_audit_backend('tmpfile')
