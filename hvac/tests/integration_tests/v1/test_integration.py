@@ -5,6 +5,8 @@ from unittest import TestCase
 from uuid import UUID
 
 from hvac import exceptions
+from unittest import skipIf
+
 from hvac.tests import utils
 
 
@@ -1125,10 +1127,10 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         # Assert our new root token is properly formed and authenticated
         self.client.token = new_root_token
         if self.client.is_authenticated():
-            self.root_token = new_root_token
+            self.manager.root_token = new_root_token
         else:
             # If our new token was unable to authenticate, set the test client's token back to the original value
-            self.client.token = self.root_token
+            self.client.token = self.manager.root_token
             self.fail('Unable to authenticate with the newly generated root token.')
 
     def test_start_generate_root_then_cancel(self):
@@ -1264,6 +1266,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
+    @skipIf(utils.skip_if_vault_version('0.10.0'), "not supported in this vault version")
     def test_kv2_secret_backend(self):
         if 'test/' in self.client.list_secret_backends():
             self.client.disable_secret_backend('test')

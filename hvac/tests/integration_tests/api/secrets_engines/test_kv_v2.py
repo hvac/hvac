@@ -1,5 +1,6 @@
 import logging
 from unittest import TestCase
+from unittest import skipIf
 
 from parameterized import parameterized
 
@@ -7,6 +8,7 @@ from hvac import exceptions
 from hvac.tests import utils
 
 
+@skipIf(utils.skip_if_vault_version_lt('0.10.0'), "KV version 2 secret engine not available before Vault version 0.10.0")
 class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = 'kvv2'
 
