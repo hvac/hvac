@@ -651,20 +651,18 @@ class Client(object):
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/mounts/<mount point>/tune
 
-        :param backend_type:
-        :type backend_type:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param backend_type: Name of the secret engine. E.g. "aws".
+        :type backend_type: str | unicode
+        :param mount_point: Alternate argument for backend_type.
+        :type mount_point: str | unicode
+        :return: The specified mount's configuration.
+        :rtype: dict
         """
         if not mount_point:
             mount_point = backend_type
 
-        data = self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        read_config_response = self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return read_config_response['data']
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
