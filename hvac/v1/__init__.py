@@ -749,6 +749,7 @@ class Client(object):
         params = {
             'rules': rules,
         }
+
         self._adapter.put('/v1/sys/policy/{0}'.format(name), json=params)
 
     def delete_policy(self, name):
