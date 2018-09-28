@@ -698,13 +698,12 @@ class Client(object):
     def list_policies(self):
         """GET /sys/policy
 
-        :return:
-        :rtype:
+        :return: List of configured policies.
+        :rtype: list
         """
-        data = self._adapter.get('/v1/sys/policy').json()
-        if data.get('policies'):
-            return data.get('policies')
-        return data['data'].get('policies')
+        list_policies_response = self._adapter.get('/v1/sys/policy').json()
+        policies = list_policies_response['data']['policies']
+        return policies
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
