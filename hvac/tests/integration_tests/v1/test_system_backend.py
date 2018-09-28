@@ -124,17 +124,14 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
     def test_json_policy_manipulation(self):
         self.assertIn('root', self.client.list_policies())
 
-        policy = {
-            "path": {
-                "sys": {
-                    "policy": "deny"
-                },
-                "secret": {
-                    "policy": "write"
-                }
+        policy = '''
+            path "sys" {
+                policy = "deny"
             }
-        }
-
+            path "secret" {
+                policy = "write"
+            }
+        '''
         self.client.set_policy('test', policy)
         self.assertIn('test', self.client.list_policies())
 
