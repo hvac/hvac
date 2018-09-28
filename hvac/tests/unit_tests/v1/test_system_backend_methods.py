@@ -16,21 +16,12 @@ class TestSystemBackendMethods(TestCase):
     def test_read_lease(self, test_label, test_lease_id, requests_mocker):
         test_path = 'http://localhost:8200/v1/sys/leases/lookup'
         mock_response = {
-            'lease_id': '',
-            'request_id': '34cd8d7c-e59f-7166-49c9-1e65149ff676',
-            'auth': None,
-            'data': {
-                'issue_time': '2018-07-15T08:35:34.775859245-05:00',
-                'renewable': False,
-                'id': test_lease_id,
-                'ttl': 259199,
-                'expire_time': '2018-07-18T08:35:34.00004241-05:00',
-                'last_renewal': None
-            },
-            'warnings': None,
-            'wrap_info': None,
-            'lease_duration': 0,
-            'renewable': False
+            'issue_time': '2018-07-15T08:35:34.775859245-05:00',
+            'renewable': False,
+            'id': test_lease_id,
+            'ttl': 259199,
+            'expire_time': '2018-07-18T08:35:34.00004241-05:00',
+            'last_renewal': None
         }
         requests_mocker.register_uri(
             method='PUT',

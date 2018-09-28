@@ -92,7 +92,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         super(TestLdap, self).tearDown()
-        for mount_point, configuration in self.client.list_auth_backends()['data'].items():
+        for mount_point, configuration in self.client.list_auth_backends().items():
             if configuration.get('type') == 'ldap':
                 self.client.disable_auth_backend(
                     mount_point=mount_point,

@@ -124,17 +124,14 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
     def test_json_policy_manipulation(self):
         self.assertIn('root', self.client.list_policies())
 
-        policy = {
-            "path": {
-                "sys": {
-                    "policy": "deny"
-                },
-                "secret": {
-                    "policy": "write"
-                }
+        policy = '''
+            path "sys" {
+                policy = "deny"
             }
-        }
-
+            path "secret" {
+                policy = "write"
+            }
+        '''
         self.client.set_policy('test', policy)
         self.assertIn('test', self.client.list_policies())
 
@@ -427,7 +424,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
             logging.debug('audit_hash_response: %s' % audit_hash_response)
             self.assertIn(
                 member='hmac-sha256:',
-                container=audit_hash_response['data']['hash'],
+                container=audit_hash_response['hash'],
             )
         self.client.disable_audit_backend('tmpfile')
 
@@ -435,7 +432,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         secret_backend_tuning = self.client.get_secret_backend_tuning('secret')
         self.assertIn(
             member='default_lease_ttl',
-            container=secret_backend_tuning['data'],
+            container=secret_backend_tuning,
         )
 
     def test_get_backed_up_keys(self):

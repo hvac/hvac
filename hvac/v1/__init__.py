@@ -377,10 +377,12 @@ class Client(object):
     def key_status(self):
         """GET /sys/key-status
 
-        :return:
-        :rtype:
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/key-status').json()
+        key_status_response = self._adapter.get('/v1/sys/key-status').json()
+        key_status = key_status_response['data']
+        return key_status
 
     def rotate(self):
         """PUT /sys/rotate
@@ -558,10 +560,12 @@ class Client(object):
     def list_secret_backends(self):
         """GET /sys/mounts
 
-        :return:
-        :rtype:
+        :return: List of all the mounted secrets engines.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/mounts').json()
+        list_secret_backends_response = self._adapter.get('/v1/sys/mounts').json()
+        secret_backends = list_secret_backends_response['data']
+        return secret_backends
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/mounts/<mount point>
@@ -647,17 +651,18 @@ class Client(object):
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/mounts/<mount point>/tune
 
-        :param backend_type:
-        :type backend_type:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param backend_type: Name of the secret engine. E.g. "aws".
+        :type backend_type: str | unicode
+        :param mount_point: Alternate argument for backend_type.
+        :type mount_point: str | unicode
+        :return: The specified mount's configuration.
+        :rtype: dict
         """
         if not mount_point:
             mount_point = backend_type
 
-        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        read_config_response = self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return read_config_response['data']
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
@@ -689,10 +694,12 @@ class Client(object):
     def list_policies(self):
         """GET /sys/policy
 
-        :return:
-        :rtype:
+        :return: List of configured policies.
+        :rtype: list
         """
-        return self._adapter.get('/v1/sys/policy').json()['policies']
+        list_policies_response = self._adapter.get('/v1/sys/policy').json()
+        policies = list_policies_response['data']['policies']
+        return policies
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
@@ -753,10 +760,14 @@ class Client(object):
     def list_audit_backends(self):
         """GET /sys/audit
 
-        :return:
-        :rtype:
+        List only the enabled audit devices (it does not list all available audit devices). This endpoint requires sudo
+            capability in addition to any path-specific capabilities.
+
+        :return: List of enabled audit devices.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/audit').json()
+        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
+        return list_audit_devices_response['data']
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
@@ -796,17 +807,18 @@ class Client(object):
     def audit_hash(self, name, input):
         """POST /sys/audit-hash
 
-        :param name:
-        :type name:
-        :param input:
-        :type input:
-        :return:
-        :rtype:
+        :param name: Specifies the path of the audit device to generate hashes for. This is part of the request URL.
+        :type name: str | unicode
+        :param input: Specifies the input string to hash.
+        :type input: str | unicode
+        :return: Dict containing a key of "hash" and the associated hash value.
+        :rtype: dict
         """
         params = {
             'input': input,
         }
-        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        audit_hash_response = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return audit_hash_response['data']
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -1740,10 +1752,11 @@ class Client(object):
     def list_auth_backends(self):
         """GET /sys/auth
 
-        :return:
-        :rtype:
+        :return: List of all enabled auth methods.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/auth').json()
+        list_auth_methods_response = self._adapter.get('/v1/sys/auth').json()
+        return list_auth_methods_response['data']
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
