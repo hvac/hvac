@@ -123,6 +123,39 @@ class KvV2(VaultApiBase):
         )
         return response.json()
 
+    def patch(self, path, secret, mount_point=DEFAULT_MOUNT_POINT):
+        """Set or update data in the KV store without overwriting.
+
+        :param path: Path
+        :type path: str | unicode
+        :param secret: The contents of the "secret" dict will be stored and returned on read.
+        :type secret: dict
+        :param mount_point: The "path" the secret engine was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the create_or_update_secret request.
+        :rtype: dict
+        """
+        # First, do a read.
+        try:
+            current_secret_version = self.read_secret_version(
+                path=path,
+                mount_point=mount_point,
+            )
+        except exceptions.InvalidPath:
+            raise exceptions.InvalidPath('No value found at "{path}"; patch only works on existing data.'.format(path=path))
+
+        # Update existing secret dict.
+        patched_secret = current_secret_version['data']['data']
+        patched_secret.update(secret)
+
+        # Write back updated secret.
+        return self.create_or_update_secret(
+            path=path,
+            cas=current_secret_version['data']['metadata']['version'],
+            secret=patched_secret,
+            mount_point=mount_point,
+        )
+
     def delete_latest_version_of_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
         """Issue a soft delete of the secret's latest version at the specified location.
 
