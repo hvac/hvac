@@ -1752,13 +1752,11 @@ class Client(object):
     def list_auth_backends(self):
         """GET /sys/auth
 
-        :return:
-        :rtype:
+        :return: List of all enabled auth methods.
+        :rtype: dict
         """
-        data = self._adapter.get('/v1/sys/auth').json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        list_auth_methods_response = self._adapter.get('/v1/sys/auth').json()
+        return list_auth_methods_response['data']
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
