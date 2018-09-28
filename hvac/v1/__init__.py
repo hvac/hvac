@@ -377,13 +377,12 @@ class Client(object):
     def key_status(self):
         """GET /sys/key-status
 
-        :return:
-        :rtype:
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
         """
-        data = self._adapter.get('/v1/sys/key-status').json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        key_status_response = self._adapter.get('/v1/sys/key-status').json()
+        key_status = key_status_response['data']
+        return key_status
 
     def rotate(self):
         """PUT /sys/rotate
