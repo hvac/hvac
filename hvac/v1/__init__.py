@@ -807,20 +807,18 @@ class Client(object):
     def audit_hash(self, name, input):
         """POST /sys/audit-hash
 
-        :param name:
-        :type name:
-        :param input:
-        :type input:
-        :return:
-        :rtype:
+        :param name: Specifies the path of the audit device to generate hashes for. This is part of the request URL.
+        :type name: str | unicode
+        :param input: Specifies the input string to hash.
+        :type input: str | unicode
+        :return: Dict containing a key of "hash" and the associated hash value.
+        :rtype: dict
         """
         params = {
             'input': input,
         }
-        data = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        audit_hash_response = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return audit_hash_response['data']
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
