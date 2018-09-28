@@ -2,7 +2,7 @@ import logging
 from unittest import TestCase
 from unittest import skipIf
 
-from parameterized import parameterized
+from parameterized import parameterized, param
 
 from hvac import exceptions
 from hvac.tests import utils
@@ -132,6 +132,70 @@ class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
                 first=expected_version,
                 second=create_or_update_secret_result['data']['version'],
             )
+
+    @parameterized.expand([
+        param(
+            'add new key to existing secret',
+            update_dict=dict(new_key='some secret')
+        ),
+        param(
+            'add new key to nonexistent secret',
+            update_dict=dict(new_key='some secret'),
+            write_secret_before_test=False,
+            raises=exceptions.InvalidPath,
+            exception_message='patch only works on existing data.',
+        ),
+        param(
+            'update existing key on existing secret',
+            update_dict=dict(pssst='some secret')
+        ),
+    ])
+    def test_patch(self, label, update_dict, mount_point=DEFAULT_MOUNT_POINT, write_secret_before_test=True, raises=None, exception_message=''):
+        path = 'hvac_kv_v2_test_patch'
+        test_secret = {
+            'pssst': 'hi',
+        }
+
+        if write_secret_before_test:
+            self.client.kv.v2.create_or_update_secret(
+                path=path,
+                secret=test_secret,
+                mount_point=mount_point,
+            )
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.kv.v2.patch(
+                    path=path,
+                    secret=update_dict,
+                    mount_point=mount_point,
+                )
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            patch_result = self.client.kv.v2.patch(
+                path=path,
+                secret=update_dict,
+                mount_point=mount_point,
+            )
+            expected_version = 2 if write_secret_before_test else 1
+            logging.debug('patch_result: %s' % patch_result)
+            self.assertEqual(
+                first=expected_version,
+                second=patch_result['data']['version'],
+            )
+
+            read_secret_result = self.client.kv.v2.read_secret_version(
+                path=path,
+                mount_point=mount_point,
+            )
+            logging.debug('read_secret_result: %s' % read_secret_result)
+            for k, v in update_dict.items():
+                self.assertEqual(
+                    first=v,
+                    second=read_secret_result['data']['data'][k]
+                )
 
     @parameterized.expand([
         ('successful delete one version written', 'hvac'),
