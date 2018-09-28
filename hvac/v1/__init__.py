@@ -560,13 +560,12 @@ class Client(object):
     def list_secret_backends(self):
         """GET /sys/mounts
 
-        :return:
-        :rtype:
+        :return: List of all the mounted secrets engines.
+        :rtype: dict
         """
-        data = self._adapter.get('/v1/sys/mounts').json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        list_secret_backends_response = self._adapter.get('/v1/sys/mounts').json()
+        secret_backends = list_secret_backends_response['data']
+        return secret_backends
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/mounts/<mount point>
