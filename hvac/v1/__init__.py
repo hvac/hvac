@@ -760,13 +760,14 @@ class Client(object):
     def list_audit_backends(self):
         """GET /sys/audit
 
-        :return:
-        :rtype:
+        List only the enabled audit devices (it does not list all available audit devices). This endpoint requires sudo
+            capability in addition to any path-specific capabilities.
+
+        :return: List of enabled audit devices.
+        :rtype: dict
         """
-        data = self._adapter.get('/v1/sys/audit').json()
-        if data.get("data"):
-            return data.get("data")
-        return data
+        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
+        return list_audit_devices_response['data']
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
