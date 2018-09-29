@@ -1987,17 +1987,20 @@ class Client(object):
         return self._adapter.post(url, json=params).json()
 
     def list_role_secrets(self, role_name, mount_point='approle'):
-        """GET /auth/<mount_point>/role/<role name>/secret-id?list=true
+        """LIST /auth/<mount_point>/role/<role name>/secret-id
 
-        :param role_name:
-        :type role_name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param role_name: Name of the AppRole.
+        :type role_name: str|unicode
+        :param mount_point: The "path" the AppRole auth backend was mounted on. Vault currently defaults to "approle".
+        :type mount_point: str|unicode
+        :return: The JSON response of the request.
+        :rtype: dict
         """
-        url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
-        return self._adapter.get(url).json()
+        url = '/v1/auth/{mount_point}/role/{name}/secret-id'.format(
+            mount_point=mount_point,
+            name=role_name
+        )
+        return self._adapter.list(url).json()
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
