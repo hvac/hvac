@@ -1,6 +1,8 @@
 System Backend
 ==============
 
+.. contents::
+
 Initialize and seal/unseal
 --------------------------
 
@@ -88,6 +90,24 @@ Manipulate policies
 
     # Requires pyhcl to automatically parse HCL into a Python dictionary
     policy = client.get_policy('mypolicy', parse=True)
+
+Using Python Variable(s) In Policy Rules
+````````````````````````````````````````
+
+.. code:: python
+
+    import hvac
+
+    client = hvac.Client()
+
+    key = 'some-key-string'
+
+    policy_body = """
+    path "transit/encrypt/%s" {
+        capabilities = "update"
+    }
+    """ % key
+    client.set_policy(name='my-policy-name', rules=policy_body)
 
 Manipulate audit backends
 -------------------------
