@@ -74,7 +74,7 @@ class TestApprole(utils.HvacIntegrationTestCase, TestCase):
         del result['request_id']
         del lib_result['request_id']
 
-        assert result == lib_result
+        self.assertEqual(result, lib_result)
 
     def test_delete_role(self):
         test_role_name = 'test-role'
@@ -105,13 +105,10 @@ class TestApprole(utils.HvacIntegrationTestCase, TestCase):
         create_result = self.client.create_role_secret_id('testrole', {'foo': 'bar'})
         secret_id = create_result['data']['secret_id']
         result = self.client.get_role_secret_id('testrole', secret_id)
-        assert result['data']['metadata']['foo'] == 'bar'
+        self.assertEqual(result['data']['metadata']['foo'], 'bar')
         self.client.delete_role_secret_id('testrole', secret_id)
-        try:
+        with self.assertRaises(ValueError):
             self.client.get_role_secret_id('testrole', secret_id)
-            assert False
-        except (exceptions.InvalidPath, ValueError):
-            assert True
 
     def test_auth_approle(self):
         self.client.create_role('testrole')
@@ -119,9 +116,9 @@ class TestApprole(utils.HvacIntegrationTestCase, TestCase):
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id)
-        assert result['auth']['metadata']['foo'] == 'bar'
-        assert self.client.token == result['auth']['client_token']
-        assert self.client.is_authenticated()
+        self.assertEqual(result['auth']['metadata']['foo'], 'bar')
+        self.assertEqual(self.client.token, result['auth']['client_token'])
+        self.assertTrue(self.client.is_authenticated())
 
     def test_auth_approle_dont_use_token(self):
         self.client.create_role('testrole')
@@ -129,5 +126,5 @@ class TestApprole(utils.HvacIntegrationTestCase, TestCase):
         secret_id = create_result['data']['secret_id']
         role_id = self.client.get_role_id('testrole')
         result = self.client.auth_approle(role_id, secret_id, use_token=False)
-        assert result['auth']['metadata']['foo'] == 'bar'
-        assert self.client.token != result['auth']['client_token']
+        self.assertEqual(result['auth']['metadata']['foo'], 'bar')
+        self.assertNotEqual(self.client.token, result['auth']['client_token'])
