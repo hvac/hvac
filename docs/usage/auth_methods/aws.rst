@@ -104,7 +104,7 @@ Lambda and/or EC2 Instance
 Caveats For Non-Default AWS Regions
 ```````````````````````````````````
 
-I.e., calling :py:meth:`hvac.v1.Client.auth_aws_iam` with a `region` argument other than its default of "**us-east-1**". For additional background / context on this matter, please review the comment at: `vault-ruby#161`_.
+I.e., calling :py:meth:`hvac.v1.Client.auth_aws_iam` with a `region` argument other than its default of "**us-east-1**". For additional background / context on this matter, see the comments at `hvac#251`_ and/or `vault-ruby#161`_.
 
 The following code snippets are for authenticating hosts in the **us-west-1** region:
 
@@ -300,4 +300,5 @@ Authentication using EC2 instance role credentials and the EC2 metadata service
 
     authenticated_vault_client = get_vault_client()
 
+.. _hvac#251: https://github.com/hvac/hvac/issues/251
 .. _vault-ruby#161: https://github.com/hashicorp/vault-ruby/pull/161#issuecomment-355723269
