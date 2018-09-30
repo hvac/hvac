@@ -377,10 +377,12 @@ class Client(object):
     def key_status(self):
         """GET /sys/key-status
 
-        :return:
-        :rtype:
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/key-status').json()
+        key_status_response = self._adapter.get('/v1/sys/key-status').json()
+        key_status = key_status_response['data']
+        return key_status
 
     def rotate(self):
         """PUT /sys/rotate
@@ -403,16 +405,21 @@ class Client(object):
                     backup=False):
         """PUT /sys/rekey/init
 
-        :param secret_shares:
-        :type secret_shares:
-        :param secret_threshold:
-        :type secret_threshold:
-        :param pgp_keys:
-        :type pgp_keys:
-        :param backup:
-        :type backup:
-        :return:
-        :rtype:
+        :param secret_shares: Specifies the number of shares to split the master key into.
+        :type secret_shares: int
+        :param secret_threshold: Specifies the number of shares required to reconstruct the master key. This must be
+            less than or equal to secret_shares.
+        :type secret_threshold: int
+        :param pgp_keys: List of PGP public keys used to encrypt the output unseal keys. Ordering is preserved. The keys
+            must be base64-encoded from their original binary representation. The size of this array must be the same as
+            secret_shares.
+        :type pgp_keys: list
+        :param backup: Specifies if using PGP-encrypted keys, whether Vault should also store a plaintext backup of the
+            PGP-encrypted keys at core/unseal-keys-backup in the physical storage backend. These can then be retrieved
+            and removed via the sys/rekey/backup endpoint.
+        :type backup: bool
+        :return: The full response object if an empty body is received, otherwise the JSON dict of the response.
+        :rtype: dict | request.Response
         """
         params = {
             'secret_shares': secret_shares,
@@ -573,10 +580,12 @@ class Client(object):
     def list_secret_backends(self):
         """GET /sys/mounts
 
-        :return:
-        :rtype:
+        :return: List of all the mounted secrets engines.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/mounts').json()
+        list_secret_backends_response = self._adapter.get('/v1/sys/mounts').json()
+        secret_backends = list_secret_backends_response['data']
+        return secret_backends
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/mounts/<mount point>
@@ -636,8 +645,8 @@ class Client(object):
             to the backend.
         :type passthrough_request_headers: str
 
-        :return: The JSON response from Vault
-        :rtype: dict.
+        :return: The response from Vault
+        :rtype: request.Response
         """
 
         if not mount_point:
@@ -662,17 +671,18 @@ class Client(object):
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/mounts/<mount point>/tune
 
-        :param backend_type:
-        :type backend_type:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param backend_type: Name of the secret engine. E.g. "aws".
+        :type backend_type: str | unicode
+        :param mount_point: Alternate argument for backend_type.
+        :type mount_point: str | unicode
+        :return: The specified mount's configuration.
+        :rtype: dict
         """
         if not mount_point:
             mount_point = backend_type
 
-        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        read_config_response = self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return read_config_response['data']
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
@@ -704,10 +714,12 @@ class Client(object):
     def list_policies(self):
         """GET /sys/policy
 
-        :return:
-        :rtype:
+        :return: List of configured policies.
+        :rtype: list
         """
-        return self._adapter.get('/v1/sys/policy').json()['policies']
+        list_policies_response = self._adapter.get('/v1/sys/policy').json()
+        policies = list_policies_response['data']['policies']
+        return policies
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
@@ -768,10 +780,14 @@ class Client(object):
     def list_audit_backends(self):
         """GET /sys/audit
 
-        :return:
-        :rtype:
+        List only the enabled audit devices (it does not list all available audit devices). This endpoint requires sudo
+            capability in addition to any path-specific capabilities.
+
+        :return: List of enabled audit devices.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/audit').json()
+        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
+        return list_audit_devices_response['data']
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
@@ -811,17 +827,18 @@ class Client(object):
     def audit_hash(self, name, input):
         """POST /sys/audit-hash
 
-        :param name:
-        :type name:
-        :param input:
-        :type input:
-        :return:
-        :rtype:
+        :param name: Specifies the path of the audit device to generate hashes for. This is part of the request URL.
+        :type name: str | unicode
+        :param input: Specifies the input string to hash.
+        :type input: str | unicode
+        :return: Dict containing a key of "hash" and the associated hash value.
+        :rtype: dict
         """
         params = {
             'input': input,
         }
-        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        audit_hash_response = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return audit_hash_response['data']
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -1755,10 +1772,11 @@ class Client(object):
     def list_auth_backends(self):
         """GET /sys/auth
 
-        :return:
-        :rtype:
+        :return: List of all enabled auth methods.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/auth').json()
+        list_auth_methods_response = self._adapter.get('/v1/sys/auth').json()
+        return list_auth_methods_response['data']
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
@@ -1989,17 +2007,20 @@ class Client(object):
         return self._adapter.post(url, json=params).json()
 
     def list_role_secrets(self, role_name, mount_point='approle'):
-        """GET /auth/<mount_point>/role/<role name>/secret-id?list=true
+        """LIST /auth/<mount_point>/role/<role name>/secret-id
 
-        :param role_name:
-        :type role_name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param role_name: Name of the AppRole.
+        :type role_name: str|unicode
+        :param mount_point: The "path" the AppRole auth backend was mounted on. Vault currently defaults to "approle".
+        :type mount_point: str|unicode
+        :return: The JSON response of the request.
+        :rtype: dict
         """
-        url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
-        return self._adapter.get(url).json()
+        url = '/v1/auth/{mount_point}/role/{name}/secret-id'.format(
+            mount_point=mount_point,
+            name=role_name
+        )
+        return self._adapter.list(url).json()
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
