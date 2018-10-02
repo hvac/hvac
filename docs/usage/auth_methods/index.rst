@@ -6,6 +6,7 @@ Auth Methods
 
    approle
    aws
+   azure
    gcp
    github
    kubernetes
