@@ -1,0 +1,14 @@
+import binascii
+import sys
+import warnings
+from base64 import b64decode
+from unittest import TestCase
+from uuid import UUID
+
+from hvac import exceptions
+from hvac.tests import utils
+
+warnings.simplefilter('always', DeprecationWarning)  # turn off filter
+
+
+class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):

@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""{{ class_name }} methods module"""
+from hvac.api import base
+
+
+class {{ class_name }}(base.Endpoint):
+    """{{ class_docstring }}
+    Reference: {{ reference_url }}
+    """
+    {% for name, method_details in methods.items() %}
+
+    def {{ name }}(self{% for param_name, param_details in method_details.params.items() %}, {{ param_name }}{% if param_details.default %}={{ param_details.default }}{% endif %}{% endfor %}{% if method_details.routes|length > 1 %}, method='{{ method_details.routes[0].method}}'{% endif %}, mount_point='{{ default_mount_point }}'):
+        """{{ method_details.route }}
+        {{ method_details.docstring|join('\n')|indent(width=8) }}
+        {% if method_details.routes|length <= 1 %}
+        Supported methods:
+        {% for route in method_details.routes %}
+            {{ route.method }}: {{ route.path }}. Produces: {{ route.response }}
+        {%- endfor %}
+    {% endif %}
+        {% for param_name, param_details in method_details.params.items() %}
+        :param {{ param_name }}: {{ param_details.description|indent(width=12) }}
+        :type {{ param_name }}: {{ param_details.type }}
+        {%- endfor %}
+        {%- if method_details.routes|length > 1 %}
+        :param method: Supported methods:
+            {%- for route in method_details.routes %}
+            {{ route.method }}: {{ route.path }}. Produces: {{ route.response }}
+            {%- endfor %}
+        :type method: str | unicode
+        {%- endif %}
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the {{ name }} request.
+        :rtype: requests.Response
+        """
+        {%- if method_details.params|length >= 2 or 'path' not in method_details.params and method_details.params %}
+        params = {
+            {%- for param_name in method_details.params.keys() if param_name != 'path' %}
+            '{{ param_name }}': {{ param_name }},
+            {%- endfor %}
+        }
+        {%- endif %}
+        {%- if method_details.routes|length > 1 %}
+        {%- for route in method_details.routes %}
+        {% if loop.first %}
+        if method == '{{ route.method }}':
+        {%- else %}
+        elif method == '{{ route.method }}':
+        {%- endif %}
+            return self._adapter.{{ method_details.routes[0].method|lower }}(
+                path='/v1{{ method_details.routes[0].path }}'.format(mount_point=mount_point{% if 'path' in method_details.params %}, path=path{% endif %}),
+                {%- if method_details.params|length >= 2 or 'path' not in method_details.params and method_details.params %}
+                json=params,
+                {%- endif %}
+            )
+        {%- endfor %}
+        {% else %}
+        return self._adapter.{{ method_details.routes[0].method|lower }}(
+            path='/v1{{ method_details.routes[0].path }}'.format(mount_point=mount_point {% if 'path' in method_details.params %}, path=path{% endif %}),
+            {%- if method_details.params|length >= 2 or 'path' not in method_details.params and method_details.params %}
+            json=params,
+            {%- endif %}
+        )
+{% endif %}
+{%- endfor %}
