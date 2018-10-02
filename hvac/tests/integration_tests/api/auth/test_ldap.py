@@ -2,7 +2,7 @@ import logging
 from unittest import TestCase
 
 from ldap_test import LdapServer
-from parameterized import parameterized
+from parameterized import parameterized, param
 
 from hvac import exceptions
 from hvac.tests import utils
@@ -92,7 +92,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         super(TestLdap, self).tearDown()
-        for mount_point, configuration in self.client.list_auth_backends()['data'].items():
+        for mount_point, configuration in self.client.list_auth_backends().items():
             if configuration.get('type') == 'ldap':
                 self.client.disable_auth_backend(
                     mount_point=mount_point,
@@ -319,13 +319,36 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ('working creds with policy', LDAP_USER_NAME, LDAP_USER_PASSWORD, True),
-        ('working creds no membership', LDAP_USER_NAME, LDAP_USER_PASSWORD, False, exceptions.InvalidRequest,
-         'user is not a member of any authorized group'),
-        ('invalid creds', 'not_your_dude_pal', 'some other dudes password', False, exceptions.InvalidRequest,
-         'ldap operation failed'),
+        param(
+            label='working creds with policy'
+        ),
+        param(
+            label='invalid creds',
+            username='not_your_dude_pal',
+            password='some other dudes password',
+            attach_policy=False,
+            raises=exceptions.InvalidRequest,
+        ),
+        # The following two test cases cover either side of the associated changelog entry for LDAP auth here:
+        # https://github.com/hashicorp/vault/blob/master/CHANGELOG.md#0103-june-20th-2018
+        param(
+            label='working creds no membership with Vault version >= 0.10.3',
+            attach_policy=False,
+            skip_due_to_vault_version=utils.skip_if_vault_version_lt('0.10.3'),
+        ),
+        param(
+            label='working creds no membership with Vault version < 0.10.3',
+            attach_policy=False,
+            raises=exceptions.InvalidRequest,
+            exception_message='user is not a member of any authorized group',
+            skip_due_to_vault_version=utils.skip_if_vault_version_ge('0.10.3'),
+        ),
     ])
-    def test_login(self, test_label, username, password, attach_policy, raises=None, exception_message=''):
+    def test_login(self, label, username=LDAP_USER_NAME, password=LDAP_USER_PASSWORD, attach_policy=True, raises=None,
+                   exception_message='', skip_due_to_vault_version=False):
+        if skip_due_to_vault_version:
+            self.skipTest(reason='test case does not apply to Vault version under test')
+
         test_policy_name = 'test-ldap-policy'
         self.client.ldap.configure(
             url=self.mock_ldap_url,
@@ -361,10 +384,6 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
                 username=username,
                 password=password,
             )
-            self.assertEqual(
-                first=['default', test_policy_name],
-                second=login_response['auth']['policies']
-            )
             self.assertDictEqual(
                 d1=dict(username=username),
                 d2=login_response['auth']['metadata'],
@@ -372,4 +391,12 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
             self.assertEqual(
                 first=login_response['auth']['client_token'],
                 second=self.client.token,
+            )
+            if attach_policy:
+                expected_policies = ['default', test_policy_name]
+            else:
+                expected_policies = ['default']
+            self.assertEqual(
+                first=expected_policies,
+                second=login_response['auth']['policies']
             )

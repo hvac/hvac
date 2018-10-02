@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.5 (Unreleased)
+
+IMPROVEMENTS:
+
+* Support for Vault Namespaces. 
+
 ## 0.6.4 (September 5th, 2018)
 
 IMPROVEMENTS:
