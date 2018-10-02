@@ -8,6 +8,7 @@ Source Reference
    source/hvac_api
    source/hvac_api_auth
    source/hvac_api_secrets_engines
+   source/hvac_api_azure
    source/hvac_utils
    source/hvac_aws_utils
    source/hvac_adapters
