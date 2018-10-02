@@ -5,7 +5,7 @@ from parameterized import parameterized, param
 
 from hvac.api.azure import Azure
 from hvac.api.auth import azure as azure_auth_method
-# from hvac.api.secrets_engines import azure as azure_secret_engine
+from hvac.api.secrets_engines import azure as azure_secret_engine
 from hvac.tests import utils
 
 
@@ -22,8 +22,10 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
     def test_secret_property(self):
         mock_adapter = MagicMock()
         azure = Azure(adapter=mock_adapter)
-        with self.assertRaises(NotImplementedError):
-            assert azure.secret
+        self.assertIsInstance(
+            obj=azure.secret,
+            cls=azure_secret_engine.Azure,
+        )
 
     @parameterized.expand([
         param(
@@ -35,7 +37,6 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
             'secret engine method',
             method='generate_credentials',
             expected_property='secret',
-            raises=AttributeError
         ),
     ])
     def test_getattr(self, label, method, expected_property, raises=None):
