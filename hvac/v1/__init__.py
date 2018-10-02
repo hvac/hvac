@@ -66,6 +66,7 @@ class Client(object):
         self._github = api.auth.Github(adapter=self._adapter)
         self._ldap = api.auth.Ldap(adapter=self._adapter)
         self._mfa = api.auth.Mfa(adapter=self._adapter)
+        self._azure = api.Azure(adapter=self._adapter)
 
         # Secret engine attributes / properties.
         self._kv = api.secrets_engines.Kv(adapter=self._adapter)
@@ -145,6 +146,15 @@ class Client(object):
         :rtype: hvac.api.secrets_engines.Kv
         """
         return self._kv
+
+    @property
+    def azure(self):
+        """Accessor for the Client instance's Azure methods. Provided via the :py:class:`hvac.api.Azure` class.
+
+        :return: This Client instance's associated Azure instance.
+        :rtype: hvac.api.Azure
+        """
+        return self._azure
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
