@@ -10,7 +10,7 @@ from hvac.api.secrets_engines.azure import Azure, DEFAULT_MOUNT_POINT
 from hvac.tests import utils
 
 
-@skipIf(utils.skip_if_vault_version_lt('0.10.0'), "Azure secret engine not available before Vault version 0.10.0")
+@skipIf(utils.skip_if_vault_version_lt('0.11.0'), "Azure secret engine not available before Vault version 0.11.0")
 class TestAzure(TestCase):
     @parameterized.expand([
         ('create role', None),
