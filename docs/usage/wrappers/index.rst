@@ -5,3 +5,4 @@ Wrappers
    :maxdepth: 2
 
    kv
+   azure
