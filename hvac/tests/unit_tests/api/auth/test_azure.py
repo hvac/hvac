@@ -1,13 +1,16 @@
 import logging
 from unittest import TestCase
+from unittest import skipIf
 
 import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
 from hvac.api.auth import Azure
+from hvac.tests import utils
 
 
+@skipIf(utils.skip_if_vault_version_lt('0.10.0'), "Azure auth method not available before Vault version 0.10.0")
 class TestAzure(TestCase):
     TEST_MOUNT_POINT = 'azure-test'
 
