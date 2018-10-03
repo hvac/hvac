@@ -2,7 +2,7 @@
 set -eux
 
 DEFAULT_VAULT_VERSION=0.11.2
-VAULT_VERSION=${1:-$DEFAULT_VAULT_VERSION}
+HVAC_VAULT_VERSION=${1:-$DEFAULT_VAULT_VERSION}
 
 function build_and_install_vault_head_ref() {
     mkdir -p $HOME/bin
@@ -29,12 +29,12 @@ function install_vault_release() {
 
     cd /tmp
 
-    curl -sOL https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
-    unzip vault_${VAULT_VERSION}_linux_amd64.zip
+    curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+    unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
     mv vault $HOME/bin
 }
 
-if [[ "$(tr [A-Z] [a-z] <<<"$VAULT_VERSION")" == "head" ]]; then
+if [[ "$(tr [A-Z] [a-z] <<<"$HVAC_VAULT_VERSION")" == "head" ]]; then
     build_and_install_vault_head_ref
 else
     install_vault_release

@@ -33,7 +33,7 @@ def get_installed_vault_version():
 
 
 def skip_if_vault_version(supported_version, comparison=operator.lt):
-    current_version = os.getenv('VAULT_VERSION')
+    current_version = os.getenv('HVAC_VAULT_VERSION')
     if current_version is None or current_version.lower() == 'head':
         current_version = get_installed_vault_version()
 
