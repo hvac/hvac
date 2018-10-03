@@ -1,3 +1,4 @@
+import logging
 from unittest import TestCase
 
 import requests_mock
@@ -5,87 +6,61 @@ from parameterized import parameterized
 
 from hvac.adapters import Request
 from hvac.api.auth import Gcp
-from hvac.api.auth.gcp import DEFAULT_MOUNT_POINT
+from hvac.tests import utils
 
 
 class TestGcp(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestGcp, cls).setUpClass()
-
-    def setUp(self):
-        super(TestGcp, self).setUp()
-
-    def tearDown(self):
-        super(TestGcp, self).tearDown()
+    TEST_MOUNT_POINT = 'gcp-test'
 
     @parameterized.expand([
-        ('some_test',),
+        ('success', dict(), None,),
     ])
     @requests_mock.Mocker()
-    def test_configure(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_read_config(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_delete_config(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_create_role(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_edit_service_accounts_on_iam_role(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_edit_labels_on_gce_role(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_read_role(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_list_roles(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_delete_role(self, test_label, requests_mocker):
-        raise NotImplementedError
-
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_login(self, test_label, requests_mocker):
-        raise NotImplementedError
+    def test_login(self, label, test_params, raises, requests_mocker):
+        role_name = 'hvac'
+        credentials = utils.load_test_data('example.jwt.json')
+        test_policies = [
+            "default",
+            "dev",
+            "prod",
+        ]
+        expected_status_code = 200
+        mock_url = 'http://localhost:8200/v1/auth/{mount_point}/login'.format(
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        mock_response = {
+            "auth": {
+                "client_token": "f33f8c72-924e-11f8-cb43-ac59d697597c",
+                "accessor": "0e9e354a-520f-df04-6867-ee81cae3d42d",
+                "policies": test_policies,
+                "lease_duration": 2764800,
+                "renewable": True,
+            },
+        }
+        requests_mocker.register_uri(
+            method='POST',
+            url=mock_url,
+            status_code=expected_status_code,
+            json=mock_response,
+        )
+        gcp = Gcp(adapter=Request())
+        if raises is not None:
+            with self.assertRaises(raises):
+                gcp.login(
+                    role=role_name,
+                    jwt=credentials,
+                    mount_point=self.TEST_MOUNT_POINT,
+                    **test_params
+                )
+        else:
+            login_response = gcp.login(
+                role=role_name,
+                jwt=credentials,
+                mount_point=self.TEST_MOUNT_POINT,
+                **test_params
+            )
+            logging.debug('login_response: %s' % login_response)
+            self.assertEqual(
+                first=login_response['auth']['policies'],
+                second=test_policies,
+            )
