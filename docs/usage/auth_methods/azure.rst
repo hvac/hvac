@@ -41,7 +41,7 @@ Configure
     import hvac
     client = hvac.Client()
 
-    client.azure.configure(
+    client.azure.auth.configure(
         tenant_id='my-tenant-id'
         resource='my-resource',
         client_id=os.environ.get('AZURE_CLIENT_ID'),
@@ -58,7 +58,7 @@ Read Config
     import hvac
     client = hvac.Client()
 
-    read_config = client.azure.read_config()
+    read_config = client.azure.auth.read_config()
     print('The configured tenant_id is: {id}'.format(id=read_config['tenant_id'))
 
 Delete Config
@@ -71,7 +71,7 @@ Delete Config
     import hvac
     client = hvac.Client()
 
-    client.azure.delete_config()
+    client.azure.auth.delete_config()
 
 Create a Role
 -------------
@@ -83,7 +83,7 @@ Create a Role
     import hvac
     client = hvac.Client()
 
-    client.azure.create_role(
+    client.azure.auth.create_role(
         name='my-role',
         policies=policies,
         bound_service_principal_ids=bound_service_principal_ids,
@@ -102,7 +102,6 @@ Read A Role
     role_name = 'my-role'
     read_role_response = client.azure.auth.read_role(
         name=role_name,
-        mount_point=self.TEST_MOUNT_POINT,
     )
     print('Policies for role "{name}": {policies}'.format(
         name='my-role',
@@ -119,7 +118,7 @@ List Roles
     import hvac
     client = hvac.Client()
 
-    roles = client.azure.list_roles()
+    roles = client.azure.auth.list_roles()
     print('The following Azure auth roles are configured: {roles}'.format(
         roles=','.join(roles['keys']),
     ))
@@ -135,7 +134,7 @@ Delete A Role
     import hvac
     client = hvac.Client()
 
-    client.azure.delete_role(
+    client.azure.auth.delete_role(
         name='my-role',
     )
 
