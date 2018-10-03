@@ -114,10 +114,10 @@ class Client(object):
 
     @property
     def gcp(self):
-        """Accessor for the Client instance's GCP methods. Provided via the :py:class:`hvac.api.auth.Gcp` class.
+        """Accessor for the Client instance's GCP methods. Provided via the :py:class:`hvac.api.Gcp` class.
 
         :return: This Client instance's associated GCP instance.
-        :rtype: hvac.api.auth.Gcp
+        :rtype: hvac.api.Gcp
         """
         return self._gcp
 
