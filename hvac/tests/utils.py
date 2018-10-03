@@ -119,15 +119,21 @@ def decode_generated_root_token(encoded_token, otp):
     :return: The decoded root token.
     :rtype: str | unicode
     """
-    command = [
-        'vault',
-        'operator',
-        'generate-root',
-        '-address', 'https://127.0.0.1:8200',
-        '-tls-skip-verify',
-        '-decode', encoded_token,
-        '-otp', otp,
-    ]
+    command = ['vault']
+    if skip_if_vault_version_ge('0.9.6'):
+        # before Vault ~0.9.6, the generate-root command was the first positional argument
+        # afterwards, it was moved under the "operator" category
+        command.append('operator')
+
+    command.extend(
+        [
+            'generate-root',
+            '-address', 'https://127.0.0.1:8200',
+            '-tls-skip-verify',
+            '-decode', encoded_token,
+            '-otp', otp,
+        ]
+    )
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
