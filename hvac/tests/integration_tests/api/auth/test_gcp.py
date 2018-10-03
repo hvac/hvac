@@ -195,9 +195,13 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 **extra_params
             )
             logging.debug('create_role_response: %s' % create_role_response)
+            if utils.skip_if_vault_version_lt('0.10.0'):
+                expected_status_code = 204
+            else:
+                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
                 first=create_role_response.status_code,
-                second=200,  # TODO => figure out why this isn't a 204?
+                second=expected_status_code,
             )
 
     @parameterized.expand([
@@ -240,16 +244,20 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_role_response = self.client.gcp.auth.edit_service_accounts_on_iam_role(
+            edit_sa_on_iam_response = self.client.gcp.auth.edit_service_accounts_on_iam_role(
                 name=role_name,
                 add=add,
                 remove=remove,
                 mount_point=self.TEST_MOUNT_POINT,
             )
-            logging.debug('create_role_response: %s' % create_role_response)
+            logging.debug('create_role_response: %s' % edit_sa_on_iam_response)
+            if utils.skip_if_vault_version_lt('0.10.0'):
+                expected_status_code = 204
+            else:
+                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
-                first=create_role_response.status_code,
-                second=200,  # TODO => figure out why this isn't a 204?
+                first=edit_sa_on_iam_response.status_code,
+                second=expected_status_code,
             )
 
     @parameterized.expand([
@@ -292,16 +300,20 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_role_response = self.client.gcp.auth.edit_labels_on_gce_role(
+            edit_labled_response = self.client.gcp.auth.edit_labels_on_gce_role(
                 name=role_name,
                 add=add,
                 remove=remove,
                 mount_point=self.TEST_MOUNT_POINT,
             )
-            logging.debug('create_role_response: %s' % create_role_response)
+            logging.debug('create_role_response: %s' % edit_labled_response)
+            if utils.skip_if_vault_version_lt('0.10.0'):
+                expected_status_code = 204
+            else:
+                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
-                first=create_role_response.status_code,
-                second=200,  # TODO => figure out why this isn't a 204?
+                first=edit_labled_response.status_code,
+                second=expected_status_code,
             )
 
     @parameterized.expand([
