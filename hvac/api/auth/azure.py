@@ -260,7 +260,7 @@ class Azure(VaultApiBase):
         :type use_token: bool
         :param mount_point: The "path" the azure auth method was mounted on.
         :type mount_point: str | unicode
-        :return: The "data" key containing the resulting token from the JSON response of the request.
+        :return: The JSON response of the request.
         :rtype: dict
         """
         params = {
