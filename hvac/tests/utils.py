@@ -155,6 +155,10 @@ class ServerManager(object):
     def stop(self):
         """Stop the vault server process being managed by this class."""
         self._process.kill()
+        if os.getenv('HVAC_OUTPUT_VAULT_STDERR', False):
+            _, stderr_lines = self._process.communicate()
+            with open(get_test_data_path('vault_stderr.log'), 'w') as f:
+                f.writelines(stderr_lines)
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
