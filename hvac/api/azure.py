@@ -3,7 +3,7 @@
 import logging
 
 from hvac.api.auth import azure as azure_auth_method
-# from hvac.api.secrets_engines import azure as azure_secret_engine
+from hvac.api.secrets_engines import azure as azure_secret_engine
 from hvac.api.vault_api_base import VaultApiBase
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class Azure(VaultApiBase):
         super(Azure, self).__init__(adapter=adapter)
 
         self._azure_auth = azure_auth_method.Azure(adapter=self._adapter)
-        # self._azure_secret = azure_secret_engine.Azure(adapter=self._adapter)
+        self._azure_secret = azure_secret_engine.Azure(adapter=self._adapter)
 
     @property
     def auth(self):
@@ -39,14 +39,11 @@ class Azure(VaultApiBase):
     @property
     def secret(self):
         """Accessor for Azure secret engine instance. Provided via the :py:class:`hvac.api.secrets_engines.Azure` class.
-        .. warning::
-
-            Note: Not currently implemented.
 
         :return: This Azure instance's associated secrets_engines.Azure instance.
         :rtype: hvac.api.secrets_engines.Azure
         """
-        raise NotImplementedError
+        return self._azure_secret
 
     def __getattr__(self, item):
         """Overridden magic method used to direct method calls to the appropriate auth or secret Azure instance.
@@ -58,7 +55,7 @@ class Azure(VaultApiBase):
         """
         if hasattr(self._azure_auth, item):
             return getattr(self._azure_auth, item)
-        # elif hasattr(self._azure_secret, item):
-        #     return getattr(self._azure_secret, item)
+        elif hasattr(self._azure_secret, item):
+            return getattr(self._azure_secret, item)
 
         raise AttributeError
