@@ -1,9 +1,5 @@
-import binascii
 import logging
-import sys
-from base64 import b64decode
 from unittest import TestCase
-from uuid import UUID
 
 from parameterized import parameterized, param
 
@@ -276,36 +272,31 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
 
         self.assertFalse(self.client.generate_root_status['started'])
-        response = self.client.start_generate_root(
+        start_generate_root_response = self.client.start_generate_root(
             key=test_otp,
             otp=True,
         )
+        logging.debug('generate_root_response: %s' % start_generate_root_response)
         self.assertTrue(self.client.generate_root_status['started'])
 
-        nonce = response['nonce']
+        nonce = start_generate_root_response['nonce']
+
+        last_generate_root_response = {}
         for key in self.manager.keys[0:3]:
-            response = self.client.generate_root(
+            last_generate_root_response = self.client.generate_root(
                 key=key,
                 nonce=nonce,
             )
+        logging.debug('last_generate_root_response: %s' % last_generate_root_response)
         self.assertFalse(self.client.generate_root_status['started'])
 
-        # Decode the token provided in the last response. Root token decoding logic derived from:
-        # https://github.com/hashicorp/vault/blob/284600fbefc32d8ab71b6b9d1d226f2f83b56b1d/command/operator_generate_root.go#L289
-        b64decoded_root_token = b64decode(response['encoded_root_token'])
-        if sys.version_info > (3, 0):
-            # b64decoding + bytes XOR'ing to decode the new root token in python 3.x
-            int_encoded_token = int.from_bytes(b64decoded_root_token, sys.byteorder)
-            int_otp = int.from_bytes(b64decode(test_otp), sys.byteorder)
-            xord_otp_and_token = int_otp ^ int_encoded_token
-            token_hex_string = xord_otp_and_token.to_bytes(len(b64decoded_root_token), sys.byteorder).hex()
-        else:
-            # b64decoding + bytes XOR'ing to decode the new root token in python 2.7
-            otp_and_token = zip(b64decode(test_otp), b64decoded_root_token)
-            xord_otp_and_token = ''.join(chr(ord(y) ^ ord(x)) for (x, y) in otp_and_token)
-            token_hex_string = binascii.hexlify(xord_otp_and_token)
-
-        new_root_token = str(UUID(token_hex_string))
+        new_root_token = utils.decode_generated_root_token(
+            encoded_token=last_generate_root_response['encoded_root_token'],
+            otp=test_otp,
+        )
+        logging.debug('new_root_token: %s' % new_root_token)
+        token_lookup_resp = self.client.lookup_token(token=new_root_token)
+        logging.debug('token_lookup_resp: %s' % token_lookup_resp)
 
         # Assert our new root token is properly formed and authenticated
         self.client.token = new_root_token
