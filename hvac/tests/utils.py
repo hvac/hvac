@@ -109,6 +109,39 @@ def get_test_data_path(filename):
     return os.path.join(os.path.abspath(relative_path), filename)
 
 
+def decode_generated_root_token(encoded_token, otp):
+    """Decode a newly generated root token via Vault CLI.
+
+    :param encoded_token: The token to decode.
+    :type encoded_token: str | unicode
+    :param otp: OTP code to use when decoding the token.
+    :type otp: str | unicode
+    :return: The decoded root token.
+    :rtype: str | unicode
+    """
+    command = [
+        'vault',
+        'operator',
+        'generate-root',
+        '-address', 'https://127.0.0.1:8200',
+        '-tls-skip-verify',
+        '-decode', encoded_token,
+        '-otp', otp,
+    ]
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    stdout, stderr = process.communicate()
+    logging.debug('decode_generated_root_token stdout: %s' % str(stdout))
+    if stderr != '':
+        logging.error('decode_generated_root_token stderr: %s' % stderr)
+
+    return stdout
+
+
 class ServerManager(object):
     """Runs vault process running with test configuration and associates a hvac Client instance with this process."""
 
