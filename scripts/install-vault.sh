@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-DEFAULT_VAULT_VERSION=0.11.1
+DEFAULT_VAULT_VERSION=0.11.2
 VAULT_VERSION=${1:-$DEFAULT_VAULT_VERSION}
 
 function build_and_install_vault_head_ref() {
