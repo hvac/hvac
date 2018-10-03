@@ -21,7 +21,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 VERSION_REGEX = re.compile('Vault v([\d\.]+)')
-LATEST_VAULT_VERSION = '0.11.1'
+LATEST_VAULT_VERSION = '0.11.2'
 
 
 def get_installed_vault_version():
@@ -33,7 +33,7 @@ def get_installed_vault_version():
 
 
 def skip_if_vault_version(supported_version, comparison=operator.lt):
-    current_version = os.getenv('VAULT_VERSION')
+    current_version = os.getenv('HVAC_VAULT_VERSION')
     if current_version is None or current_version.lower() == 'head':
         current_version = get_installed_vault_version()
 
@@ -109,6 +109,47 @@ def get_test_data_path(filename):
     return os.path.join(os.path.abspath(relative_path), filename)
 
 
+def decode_generated_root_token(encoded_token, otp):
+    """Decode a newly generated root token via Vault CLI.
+
+    :param encoded_token: The token to decode.
+    :type encoded_token: str | unicode
+    :param otp: OTP code to use when decoding the token.
+    :type otp: str | unicode
+    :return: The decoded root token.
+    :rtype: str | unicode
+    """
+    command = ['vault']
+    if skip_if_vault_version_ge('0.9.6'):
+        # before Vault ~0.9.6, the generate-root command was the first positional argument
+        # afterwards, it was moved under the "operator" category
+        command.append('operator')
+
+    command.extend(
+        [
+            'generate-root',
+            '-address', 'https://127.0.0.1:8200',
+            '-tls-skip-verify',
+            '-decode', encoded_token,
+            '-otp', otp,
+        ]
+    )
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    stdout, stderr = process.communicate()
+    logging.debug('decode_generated_root_token stdout: "%s"' % str(stdout))
+    if stderr != '':
+        logging.error('decode_generated_root_token stderr: %s' % stderr)
+
+    new_token = stdout.replace('Root token:', '')
+    new_token = new_token.strip()
+    return new_token
+
+
 class ServerManager(object):
     """Runs vault process running with test configuration and associates a hvac Client instance with this process."""
 
@@ -155,6 +196,10 @@ class ServerManager(object):
     def stop(self):
         """Stop the vault server process being managed by this class."""
         self._process.kill()
+        if os.getenv('HVAC_OUTPUT_VAULT_STDERR', False):
+            _, stderr_lines = self._process.communicate()
+            with open(get_test_data_path('vault_stderr.log'), 'w') as f:
+                f.writelines(stderr_lines)
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
