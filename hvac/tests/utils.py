@@ -141,11 +141,13 @@ def decode_generated_root_token(encoded_token, otp):
     )
 
     stdout, stderr = process.communicate()
-    logging.debug('decode_generated_root_token stdout: %s' % str(stdout))
+    logging.debug('decode_generated_root_token stdout: "%s"' % str(stdout))
     if stderr != '':
         logging.error('decode_generated_root_token stderr: %s' % stderr)
 
-    return stdout
+    new_token = stdout.replace('Root token:', '')
+    new_token = new_token.strip()
+    return new_token
 
 
 class ServerManager(object):
