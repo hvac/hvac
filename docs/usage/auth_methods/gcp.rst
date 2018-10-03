@@ -1,11 +1,10 @@
+.. _gcp-auth-method:
+
 GCP
 ===
-=======
-Gcp Auth Method
-==================
 
 .. note::
-    Every method under the :py:attr:`Client class's gcp attribute<hvac.v1.Client.gcp>` includes a `mount_point` parameter that can be used to address the Gcp auth method under a custom mount path. E.g., If enabling the Gcp auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
+    Every method under the :py:attr:`Client class's gcp.auth attribute<hvac.api.Gcp.auth>` includes a `mount_point` parameter that can be used to address the GCP auth method under a custom mount path. E.g., If enabling the GCP auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
 
 Enabling the Auth Method
 ------------------------
@@ -31,8 +30,8 @@ Enabling the Auth Method
         )
 
 
-configure
--------------------------------
+Configure
+---------
 
 :py:meth:`hvac.api.auth.Gcp.configure`
 
@@ -41,11 +40,12 @@ configure
     import hvac
     client = hvac.Client()
 
-    client.gcp.configure(
+    client.gcp.auth.configure(
+        credentials='some signed JSON web token for the Vault server...'
     )
 
-read-config
--------------------------------
+Read Config
+-----------
 
 :py:meth:`hvac.api.auth.Gcp.read_config`
 
@@ -54,11 +54,11 @@ read-config
     import hvac
     client = hvac.Client()
 
-    client.gcp.read_config(
-    )
+    read_config = client.gcp.auth.read_config()
+    print('The configured project_id is: {id}'.format(id=read_config['project_id'))
 
-delete-config
--------------------------------
+Delete Config
+-------------
 
 :py:meth:`hvac.api.auth.Gcp.delete_config`
 
@@ -67,8 +67,7 @@ delete-config
     import hvac
     client = hvac.Client()
 
-    client.gcp.delete_config(
-    )
+    client.gcp.auth.delete_config()
 
 create-role
 -------------------------------
@@ -80,11 +79,15 @@ create-role
     import hvac
     client = hvac.Client()
 
-    client.gcp.create_role(
-    )
+	client.gcp.auth.create_role(
+		name='some-gcp-role-name',
+		role_type='iam',
+		project_id='some-gcp-project-id',
+		bound_service_accounts=['*'],
+	)
 
-edit-service-accounts-on-iam-role
--------------------------------
+Edit Service Accounts On IAM Role
+---------------------------------
 
 :py:meth:`hvac.api.auth.Gcp.edit_service_accounts_on_iam_role`
 
@@ -94,10 +97,17 @@ edit-service-accounts-on-iam-role
     client = hvac.Client()
 
     client.gcp.edit_service_accounts_on_iam_role(
+		name='some-gcp-role-name',
+        add=['hvac@appspot.gserviceaccount.com'],
     )
 
-edit-labels-on-gce-role
--------------------------------
+    client.gcp.edit_service_accounts_on_iam_role(
+		name='some-gcp-role-name',
+        remove=['disallowed-service-account@appspot.gserviceaccount.com'],
+    )
+
+Edit Labels On GCE Role
+-----------------------
 
 :py:meth:`hvac.api.auth.Gcp.edit_labels_on_gce_role`
 
@@ -107,10 +117,17 @@ edit-labels-on-gce-role
     client = hvac.Client()
 
     client.gcp.edit_labels_on_gce_role(
+		name='some-gcp-role-name',
+        add=['some-key:some-value'],
     )
 
-read-role
--------------------------------
+    client.gcp.edit_labels_on_gce_role(
+		name='some-gcp-role-name',
+        remove=['some-bad-key:some-bad-value'],
+    )
+
+Read A Role
+-----------
 
 :py:meth:`hvac.api.auth.Gcp.read_role`
 
@@ -119,11 +136,17 @@ read-role
     import hvac
     client = hvac.Client()
 
-    client.gcp.read_role(
+    read_role_response = client.gcp.read_role(
+        name=role_name,
     )
 
-list-roles
--------------------------------
+    print('Policies for role "{name}": {policies}'.format(
+        name='my-role',
+        policies=','.join(read_role_response['policies']),
+    ))
+
+List Roles
+----------
 
 :py:meth:`hvac.api.auth.Gcp.list_roles`
 
@@ -132,11 +155,13 @@ list-roles
     import hvac
     client = hvac.Client()
 
-    client.gcp.list_roles(
-    )
+    roles = client.gcp.auth.list_roles()
+    print('The following GCP auth roles are configured: {roles}'.format(
+        roles=','.join(roles['keys']),
+    ))
 
-delete-role
--------------------------------
+Delete A Role
+-------------
 
 :py:meth:`hvac.api.auth.Gcp.delete_role`
 
@@ -148,8 +173,8 @@ delete-role
     client.gcp.delete_role(
     )
 
-login
--------------------------------
+Login
+-----
 
 :py:meth:`hvac.api.auth.Gcp.login`
 
@@ -159,4 +184,7 @@ login
     client = hvac.Client()
 
     client.gcp.login(
+        role=role_name,
+        jwt='some signed JSON web token...',
     )
+    client.is_authenticated  # ==> returns True
