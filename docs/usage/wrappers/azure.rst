@@ -1,12 +1,14 @@
 Azure
 =====
 
-The :py:class:`hvac.api.azure.Azure` instance under the :py:attr:`Client class's azure attribute<hvac.v1.Client.azure>` is a wrapper to expose either the :py:class:`Azure auth method class<hvac.api.auth.Azure>` or the :py:class:`Azure secret engine class<hvac.api.secrets_engines.Azure>`. The instances of these classes are under the :py:meth:`auth<hvac.v1.api.azure.Azure.auth>` and :py:meth:`secret<hvac.v1.api.azure.Azure.secret>` attributes respectively.
+The :py:class:`hvac.api.azure.Azure` instance under the :py:attr:`Client class's azure attribute<hvac.v1.Client.azure>` is a wrapper to expose either the :py:class:`Azure auth method class<hvac.api.auth.Azure>` or the :py:class:`Azure secret engine class<hvac.api.secrets_engines.Azure>`. The instances of these classes are under the :py:meth:`auth<hvac.api.azure.Azure.auth>` and :py:meth:`secret<hvac.api.azure.Azure.secret>` attributes respectively.
 
 Auth Method
 -----------
 
-:ref:`azure-auth-method`.
+.. note::
+
+	Additional examples available at: :ref:`Azure Auth Method Usage<azure-auth-method>`.
 
 Calling a Azure auth method:
 
@@ -30,7 +32,9 @@ Calling a Azure auth method:
 Secret Engine
 -------------
 
-:ref:`azure-secret-engine`.
+.. note::
+
+	Additional examples available at: :ref:`Azure Secret Engine Usage<azure-secret-engine>`.
 
 Calling a Azure secret engine method:
 
@@ -43,10 +47,10 @@ Calling a Azure secret engine method:
 	client.azure.secret.configure(
 		# [...]
 	)
-	client.azure.auth.create_or_update_role(
+	client.azure.secret.create_or_update_role(
 		name='some-azure-role-name',
 	)
-	azure_creds = client.azure.auth.generate_credentials(
+	azure_creds = client.azure.secret.generate_credentials(
 		name='some-azure-role-name',
 	)
 	azure_spc = ServicePrincipalCredentials(
