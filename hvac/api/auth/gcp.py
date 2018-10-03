@@ -164,8 +164,6 @@ class Gcp(VaultApiBase):
             },
         }
 
-        # if bound_service_accounts is None and role_type is 'iam':
-
         list_of_strings_params = {
             'policies': policies,
             'bound_service_accounts': bound_service_accounts,
