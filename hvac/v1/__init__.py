@@ -63,7 +63,7 @@ class Client(object):
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
-        self._gcp = api.auth.Gcp(adapter=self._adapter)
+        self._gcp = api.Gcp(adapter=self._adapter)
         self._github = api.auth.Github(adapter=self._adapter)
         self._ldap = api.auth.Ldap(adapter=self._adapter)
         self._mfa = api.auth.Mfa(adapter=self._adapter)
@@ -2685,7 +2685,7 @@ class Client(object):
         new_method=api.auth.Gcp.login,
     )
     def auth_gcp(self, *args, **kwargs):
-        return self.gcp.login(*args, **kwargs)
+        return self.gcp.auth.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
