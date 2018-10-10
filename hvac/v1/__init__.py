@@ -183,7 +183,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._adapter.get('/v1/{}'.format(path), params=payload).json()
+            return self._adapter.get('/v1/{0}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
