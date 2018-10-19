@@ -1470,16 +1470,31 @@ class Client(object):
     def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/client
 
-        :param access_key:
-        :type access_key:
-        :param secret_key:
-        :type secret_key:
-        :param endpoint:
-        :type endpoint:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        Configure the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS APIs.
+        The instance identity document fetched from the PKCS#7 signature will provide the EC2 instance ID. The
+        credentials configured using this endpoint will be used to query the status of the instances via
+        DescribeInstances API. If static credentials are not provided using this endpoint, then the credentials will be
+        retrieved from the environment variables AWS_ACCESS_KEY, AWS_SECRET_KEY and AWS_REGION respectively. If the
+        credentials are still not found and if the method is configured on an EC2 instance with metadata querying
+        capabilities, the credentials are fetched automatically
+
+        :param access_key: AWS Access key with permissions to query AWS APIs. The permissions required depend on the
+            specific configurations. If using the iam auth method without inferencing, then no credentials are
+            necessary. If using the ec2 auth method or using the iam auth method with inferencing, then these
+            credentials need access to ec2:DescribeInstances. If additionally a bound_iam_role is specified, then these
+            credentials also need access to iam:GetInstanceProfile. If, however, an alternate sts configuration is set
+            for the target account, then the credentials must be permissioned to call sts:AssumeRole on the configured
+            role, and that role must have the permissions described here.
+        :type access_key: str|unicode
+        :param secret_key: AWS Secret key with permissions to query AWS APIs.
+        :type secret_key: str|unicode
+        :param endpoint: URL to override the default generated endpoint for making AWS EC2 API calls.
+        :type endpoint: str|unicode
+        :param mount_point: The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws". "aws-ec2"
+            is the default argument for backwards comparability within this module.
+        :type mount_point: str|unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         params = {
             'access_key': access_key,

@@ -149,6 +149,23 @@ Create/Update Secret
         cas=0,
     )  # => Raises hvac.exceptions.InvalidRequest
 
+Patch Existing Secret
+---------------------
+
+Method (similar to the Vault CLI command `vault kv patch`) to update an existing path. Either to add a new key/value to the secret and/or update the value for an existing key. Raises an :py:class:`hvac.exceptions.InvalidRequest` if the path hasn't been written to previously.
+
+:py:meth:`hvac.api.secrets_engines.KvV2.patch`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.kv.v2.patch(
+        path='hvac',
+        secret=dict(pssst='this is a patched secret'),
+    )
+
 
 Delete Latest Version of Secret
 -------------------------------
