@@ -20,7 +20,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-VERSION_REGEX = re.compile('Vault v([\d\.]+)')
+VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
 LATEST_VAULT_VERSION = '0.11.2'
 
 
