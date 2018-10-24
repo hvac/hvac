@@ -19,7 +19,7 @@ class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None, adapter=None, namespace=None):
-        """Creates a new hvac client instnace.
+        """Creates a new hvac client instance.
 
         :param url: Base URL for the Vault instance being addressed.
         :type url: str
@@ -33,7 +33,7 @@ class Client(object):
         :type verify: Union[bool,str]
         :param timeout: The timeout value for requests sent to Vault.
         :type timeout: int
-        :param proxies: Proxies to use when preforming requests.
+        :param proxies: Proxies to use when performing requests.
             See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         :type proxies: dict
         :param allow_redirects: Whether to follow redirects when sending requests to Vault.
@@ -628,7 +628,7 @@ class Client(object):
         :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd by audit
             devices in the response data object.
         :type audit_non_hmac_response_keys: list
-        :param listing_visibility: Speficies whether to show this mount in the UI-specific listing endpoint. Valid
+        :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint. Valid
             values are "unauth" or "".
         :type listing_visibility: str
         :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request
