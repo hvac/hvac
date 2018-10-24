@@ -23,11 +23,11 @@ matrix:
       env:
         - TOXENV=py27
         - HVAC_VAULT_VERSION=0.11.0
-    - name: 'Python v2.7, Vault v0.11.2 - Integration/Unit Tests'
+    - name: 'Python v2.7, Vault v0.11.4 - Integration/Unit Tests'
       python: '2.7'
       env:
         - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.11.2
+        - HVAC_VAULT_VERSION=0.11.4
     - name: 'Python v2.7, Vault HEAD ref - Integration/Unit Tests'
       python: '2.7'
       env:
@@ -57,11 +57,11 @@ matrix:
       env:
         - TOXENV=py27
         - HVAC_VAULT_VERSION=0.11.0
-    - name: 'Python v3.6, Vault v0.11.2 - Integration/Unit Tests'
+    - name: 'Python v3.6, Vault v0.11.4 - Integration/Unit Tests'
       python: '3.6'
       env:
         - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.11.2
+        - HVAC_VAULT_VERSION=0.11.4
     - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
       python: '3.6'
       env:
