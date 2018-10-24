@@ -63,6 +63,7 @@ class Client(object):
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
+        self._gcp = api.Gcp(adapter=self._adapter)
         self._github = api.auth.Github(adapter=self._adapter)
         self._ldap = api.auth.Ldap(adapter=self._adapter)
         self._mfa = api.auth.Mfa(adapter=self._adapter)
@@ -110,6 +111,15 @@ class Client(object):
     @allow_redirects.setter
     def allow_redirects(self, allow_redirects):
         self._adapter.allow_redirects = allow_redirects
+
+    @property
+    def gcp(self):
+        """Accessor for the Client instance's GCP methods. Provided via the :py:class:`hvac.api.Gcp` class.
+
+        :return: This Client instance's associated GCP instance.
+        :rtype: hvac.api.Gcp
+        """
+        return self._gcp
 
     @property
     def github(self):
@@ -1223,30 +1233,6 @@ class Client(object):
             params['nonce'] = nonce
         if role:
             params['role'] = role
-
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
-
-    def auth_gcp(self, role, jwt, mount_point='gcp', use_token=True):
-        """
-        POST /auth/<mount point>/login
-
-        :param role: identifier for the GCP auth backend role being requested
-        :type role: str.
-        :param jwt: JSON Web Token from the GCP metadata service
-        :type jwt: str.
-        :param mount_point: The "path" the GCP auth backend was mounted on. Vault currently defaults to "gcp".
-        :type mount_point: str.
-        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the current Client class instance.
-        :type use_token: bool.
-        :return: parsed JSON response from the auth POST request
-        :rtype: dict.
-        """
-
-        params = {
-            'role': role,
-            'jwt': jwt
-        }
 
         return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
@@ -2708,6 +2694,13 @@ class Client(object):
     )
     def auth_ldap(self, *args, **kwargs):
         return self.ldap.login(*args, **kwargs)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.8.0',
+        new_method=api.auth.Gcp.login,
+    )
+    def auth_gcp(self, *args, **kwargs):
+        return self.gcp.auth.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',

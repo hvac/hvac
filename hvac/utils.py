@@ -94,3 +94,37 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
             new_func.__doc__ = message
         return new_func
     return decorator
+
+
+def validate_list_of_strings_param(param_name, param_argument):
+    """Validate that an argument is a list of strings.
+
+    :param param_name: The name of the parameter being validated. Used in any resulting exception messages.
+    :type param_name: str | unicode
+    :param param_argument: The argument to validate.
+    :type param_argument: list
+    :return: True if the argument is validated, False otherwise.
+    :rtype: bool
+    """
+    if param_argument is None:
+        param_argument = []
+    if not isinstance(param_argument, list) or not all([isinstance(p, str) for p in param_argument]):
+        error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]"'
+        raise exceptions.ParamValidationError(error_msg.format(
+            param=param_name,
+            arg=param_argument,
+            arg_type=type(param_argument),
+        ))
+
+
+def list_to_comma_delimited(list_param):
+    """Convert a list of strings into a comma-delimited list / string.
+
+    :param list_param: A list of strings.
+    :type list_param: list
+    :return: Comma-delimited string.
+    :rtype: str
+    """
+    if list_param is None:
+        list_param = []
+    return ','.join(list_param)

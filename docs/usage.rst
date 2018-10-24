@@ -14,4 +14,6 @@ Wrappers
 .. toctree::
    :maxdepth: 3
 
-   usage/wrappers/index
+   usage/wrappers/azure
+   usage/wrappers/gcp
+   usage/wrappers/kv
