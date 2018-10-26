@@ -7,6 +7,7 @@ import re
 import socket
 import subprocess
 import time
+import sys
 from distutils.version import StrictVersion
 
 from hvac import Client
@@ -26,7 +27,7 @@ LATEST_VAULT_VERSION = '0.11.4'
 
 def get_installed_vault_version():
     command = ['vault', '-version']
-    process = subprocess.Popen(args=command, stdout=subprocess.PIPE)
+    process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version = output.strip().split()[1].lstrip('v')
     return version
@@ -134,11 +135,11 @@ def decode_generated_root_token(encoded_token, otp):
             '-otp', otp,
         ]
     )
-    process = subprocess.Popen(
-        command,
+    process = subprocess.Popen(**get_popen_kwargs(
+        args=command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
-    )
+    ))
 
     stdout, stderr = process.communicate()
     logging.debug('decode_generated_root_token stdout: "%s"' % str(stdout))
@@ -148,6 +149,19 @@ def decode_generated_root_token(encoded_token, otp):
     new_token = stdout.replace('Root token:', '')
     new_token = new_token.strip()
     return new_token
+
+
+def get_popen_kwargs(**popen_kwargs):
+    """Helper method to add `encoding='utf-8'` to subprocess.Popen when we're in Python 3.x.
+
+    :param popen_kwargs: List of keyword arguments to conditionally mutate
+    :type popen_kwargs: **kwargs
+    :return: Conditionally updated list of keyword arguments
+    :rtype: dict
+    """
+    if sys.version_info[0] >= 3:
+        popen_kwargs['encoding'] = 'utf-8'
+    return popen_kwargs
 
 
 class ServerManager(object):
