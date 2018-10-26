@@ -20,7 +20,7 @@ Read a Secret
     mount_point = 'secretz'
     secret_path = 'hvac'
 
-    client.kv.v1.read_secret(
+    read_secret_result = client.kv.v1.read_secret(
         path=secret_path,
         mount_point=mount_point,
     )
