@@ -171,31 +171,24 @@ class Transit(VaultApiBase):
 
     def rotate_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint rotates the version of the named key. After rotation, new
-        plaintext requests will be encrypted with the new version of the key. To upgrade
-        ciphertext to be encrypted with the latest version of the key, use the rewrap
-        endpoint. This is only supported with keys that support encryption and
-        decryption operations.
+        This endpoint rotates the version of the named key. After rotation, new plaintext requests will be encrypted with the new version of the key. To
+        upgrade ciphertext to be encrypted with the latest version of the key, use the rewrap endpoint. This is only supported with keys that support
+        encryption and decryption operations.
 
         Supported methods:
             POST: /{mount_point}/keys/:name/rotate. Produces: 204 (empty body)
 
 
-        :param name: Specifies the name of the key to read
-            information about. This is specified as part of the URL.
+        :param name: Specifies the name of the key to read information about. This is specified as part of the URL.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the rotate_key request.
         :rtype: requests.Response
         """
-        params = {
-            'name': name,
-        }
-        api_path = '/v1/{mount_point}/keys/:name/rotate'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}/rotate'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
-            json=params,
         )
 
     def export_key(self, key_type, name, version="", mount_point=DEFAULT_MOUNT_POINT):
