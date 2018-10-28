@@ -70,18 +70,15 @@ class Transit(VaultApiBase):
 
     def read_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns information about a named encryption key. The keys
-        object shows the creation time of each key version; the values are not the keys
-        themselves. Depending on the type of key, different information may be returned,
-        e.g. an asymmetric key will return its public key in a standard format for the
-        type.
+        This endpoint returns information about a named encryption key. The keys object shows the creation time of each key version; the values are not the
+        keys themselves. Depending on the type of key, different information may be returned, e.g. an asymmetric key will return its public key in a standard
+        format for the type.
 
         Supported methods:
             GET: /{mount_point}/keys/:name. Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            read. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to read. This is specified as part of the URL.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -91,7 +88,7 @@ class Transit(VaultApiBase):
         params = {
             'name': name,
         }
-        api_path = '/v1/{mount_point}/keys/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.get(
             url=api_path,
             json=params,
