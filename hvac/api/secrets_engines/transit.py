@@ -55,7 +55,6 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
             'convergent_encryption': convergent_encryption,
             'derived': derived,
             'exportable': exportable,
@@ -85,13 +84,9 @@ class Transit(VaultApiBase):
         :return: The response of the read_key request.
         :rtype: requests.Response
         """
-        params = {
-            'name': name,
-        }
         api_path = '/v1/{mount_point}/keys/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.get(
             url=api_path,
-            json=params,
         )
 
     def list_keys(self, mount_point=DEFAULT_MOUNT_POINT):
