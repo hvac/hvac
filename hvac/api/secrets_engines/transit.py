@@ -577,42 +577,32 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def verify_signed_data(self, name, hash_input, hash_algorithm="sha2-256", signature="", hmac="", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
+    def verify_signed_data(self, name, hash_input, hash_algorithm="sha2-256", signature="", hmac="", context="", prehashed=False, signature_algorithm="pss",
+                           mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns whether the provided signature is valid for the given
-        data.
+        This endpoint returns whether the provided signature is valid for the given data.
 
         Supported methods:
             POST: /{mount_point}/verify/:name(/:hash_algorithm). Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key that
-            was used to generate the signature or HMAC.
+        :param name: Specifies the name of the encryption key that was used to generate the signature or HMAC.
         :type name: str | unicode
-        :param hash_input: data.
+        :param hash_input: Specifies the base64 encoded input data.
         :type input: str | unicode
-        :param pss:
-        :type pss: unknown
-        :param pkcs1v15:
-        :type pkcs1v15: unknown
-        :param hash_algorithm: Specifies the hash algorithm to use. This
-            can also be specified as part of the URL. Currently-supported algorithms are:
+        :param hash_algorithm: Specifies the hash algorithm to use. This can also be specified as part of the URL. Currently-supported algorithms are:
             sha2-224, sha2-256, sha2-384, sha2-512
         :type hash_algorithm: str | unicode
-        :param signature: be
-            supplied.
+        :param signature: Specifies the signature output from the /transit/sign function. Either this must be supplied or hmac must be supplied.
         :type signature: str | unicode
-        :param hmac: be
-            supplied.
+        :param hmac: Specifies the signature output from the /transit/hmac function. Either this must be supplied or signature must be supplied.
         :type hmac: str | unicode
-        :param context: Base64 encoded context for key derivation.
-            Required if key derivation is enabled; currently only available with ed25519
-            keys.
+        :param context: Base64 encoded context for key derivation. Required if key derivation is enabled; currently only available with ed25519 keys.
         :type context: str | unicode
-        :param prehashed:
+        :param prehashed: Set to true when the input is already hashed. If the key type is rsa-2048 or rsa-4096, then the algorithm used to hash the input
+            should be indicated by the hash_algorithm parameter.
         :type prehashed: bool
-        :param signature_algorithm: using a RSA key, specifies the RSA
-            signature algorithm to use for signature verification. Supported signature types
+        :param signature_algorithm: When using a RSA key, specifies the RSA signature algorithm to use for signature verification. Supported signature types
             are: pss, pkcs1v15
         :type signature_algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -630,7 +620,9 @@ class Transit(VaultApiBase):
             'prehashed': prehashed,
             'signature_algorithm': signature_algorithm,
         }
-        api_path = '/v1/{mount_point}/verify/:name(/:hash_algorithm)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/verify/{name}'.format(mount_point=mount_point, name=name)
+        if hash_algorithm != 'sha2-256':
+            api_path += '/:hash_algorithm'.format(hash_algorithm=hash_algorithm)
         return self._adapter.post(
             url=api_path,
             json=params,
