@@ -630,10 +630,8 @@ class Transit(VaultApiBase):
 
     def backup_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns a plaintext backup of a named key. The backup contains all
-        the configuration data and keys of all the versions along with the HMAC key.
-        The response from this endpoint can be used with the /restore endpoint to
-        restore the key.
+        This endpoint returns a plaintext backup of a named key. The backup contains all the configuration data and keys of all the versions along with the
+        HMAC key. The response from this endpoint can be used with the /restore endpoint to restore the key.
 
         Supported methods:
             GET: /{mount_point}/backup/:name. Produces: 200 application/json
@@ -646,13 +644,9 @@ class Transit(VaultApiBase):
         :return: The response of the backup_key request.
         :rtype: requests.Response
         """
-        params = {
-            'name': name,
-        }
-        api_path = '/v1/{mount_point}/backup/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/backup/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.get(
             url=api_path,
-            json=params,
         )
 
     def restore_key(self, backup, name, force=False, mount_point=DEFAULT_MOUNT_POINT):
