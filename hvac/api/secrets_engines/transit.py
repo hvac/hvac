@@ -4,7 +4,7 @@
 from hvac.api.vault_api_base import VaultApiBase
 
 
-DEFAULT_MOUNT_POINT = ''
+DEFAULT_MOUNT_POINT = 'transit'
 
 
 class Transit(VaultApiBase):
@@ -13,7 +13,7 @@ class Transit(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/transit/index.html
     """
 
-    def create_key(self, name, aes256-gcm96, chacha20-poly1305, ed25519, ecdsa-p256, rsa-2048, rsa-4096, convergent_encryption=False, derived=False, exportable=False, allow_plaintext_backup=False, type="aes256-gcm96", mount_point=DEFAULT_MOUNT_POINT):
+    def create_key(self, name, convergent_encryption=False, derived=False, exportable=False, allow_plaintext_backup=False, key_type="aes256-gcm96", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint creates a new named encryption key of the specified type. The
         values set here cannot be changed after key creation.
@@ -25,20 +25,6 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key to
             create. This is specified as part of the URL.
         :type name: str | unicode
-        :param aes256-gcm96: AES-256 wrapped with GCM using a 96-bit nonce size AEAD
-            (symmetric, supports derivation and convergent encryption)
-        :type aes256-gcm96: unknown
-        :param chacha20-poly1305: ChaCha20-Poly1305 AEAD (symmetric, supports
-            derivation and convergent encryption)
-        :type chacha20-poly1305: unknown
-        :param ed25519:
-        :type ed25519: convergent_encryption
-        :param ecdsa-p256: ECDSA using the P-256 elliptic curve (asymmetric)
-        :type ecdsa-p256: unknown
-        :param rsa-2048: RSA with bit size of 2048 (asymmetric)
-        :type rsa-2048: unknown
-        :param rsa-4096: RSA with bit size of 4096 (asymmetric)
-        :type rsa-4096: unknown
         :param convergent_encryption: than randomly generate it.
         :type convergent_encryption: bool
         :param derived: if key derivation is to be used. If
@@ -52,8 +38,21 @@ class Transit(VaultApiBase):
         :param allow_plaintext_backup: If set, enables taking backup of
             named key in the plaintext format. Once set, this cannot be disabled.
         :type allow_plaintext_backup: bool
-        :param type: the type of key to create. The
+        :param key_type: the type of key to create. The
             currently-supported types are:
+
+            aes256-gcm96: AES-256 wrapped with GCM using a 96-bit nonce size AEAD
+                (symmetric, supports derivation and convergent encryption)
+            chacha20-poly1305: ChaCha20-Poly1305 AEAD (symmetric, supports
+                derivation and convergent encryption)
+            ed25519: ED25519 (asymmetric, supports derivation). When using
+                derivation, a sign operation with the same context will derive
+                the same key and signature; this is a signing analogue to
+                convergent_encryption.
+            ecdsa-p256: ECDSA using the P-256 elliptic curve (asymmetric)
+            rsa-2048: RSA with bit size of 2048 (asymmetric)
+            rsa-4096: RSA with bit size of 4096 (asymmetric)
+
         :type type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -62,17 +61,11 @@ class Transit(VaultApiBase):
         """
         params = {
             'name': name,
-            'aes256-gcm96': aes256-gcm96,
-            'chacha20-poly1305': chacha20-poly1305,
-            'ed25519': ed25519,
-            'ecdsa-p256': ecdsa-p256,
-            'rsa-2048': rsa-2048,
-            'rsa-4096': rsa-4096,
             'convergent_encryption': convergent_encryption,
             'derived': derived,
             'exportable': exportable,
             'allow_plaintext_backup': allow_plaintext_backup,
-            'type': type,
+            'type': key_type,
         }
         api_path = '/v1/{mount_point}/keys/:name'.format(mount_point=mount_point)
         return self._adapter.post(
@@ -209,7 +202,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def rotate_key(self, key_type, encryption-key, signing-key, hmac-key, name, version="", mount_point=DEFAULT_MOUNT_POINT):
+    def rotate_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint rotates the version of the named key. After rotation, new
         plaintext requests will be encrypted with the new version of the key. To upgrade
@@ -221,32 +214,16 @@ class Transit(VaultApiBase):
             POST: /{mount_point}/keys/:name/rotate. Produces: 204 (empty body)
 
 
-        :param key_type: the type of the key to export.
-            This is specified as part of the URL. Valid values are:
-        :type key_type: str | unicode
-        :param encryption-key:
-        :type encryption-key: unknown
-        :param signing-key:
-        :type signing-key: unknown
-        :param hmac-key:
-        :type hmac-key: unknown
         :param name: Specifies the name of the key to read
             information about. This is specified as part of the URL.
         :type name: str | unicode
-        :param version: the current key will be returned.
-        :type version: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the rotate_key request.
         :rtype: requests.Response
         """
         params = {
-            'key_type': key_type,
-            'encryption-key': encryption-key,
-            'signing-key': signing-key,
-            'hmac-key': hmac-key,
             'name': name,
-            'version': version,
         }
         api_path = '/v1/{mount_point}/keys/:name/rotate'.format(mount_point=mount_point)
         return self._adapter.post(
@@ -254,7 +231,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def export_key(self, key_type, encryption-key, signing-key, hmac-key, name, version="", mount_point=DEFAULT_MOUNT_POINT):
+    def export_key(self, key_type, name, version="", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns the named key. The keys object shows the value of the
         key for each version. If version is specified, the specific version will be
@@ -269,13 +246,11 @@ class Transit(VaultApiBase):
 
         :param key_type: the type of the key to export.
             This is specified as part of the URL. Valid values are:
-        :type key_type: str | unicode
-        :param encryption-key:
-        :type encryption-key: unknown
-        :param signing-key:
-        :type signing-key: unknown
-        :param hmac-key:
-        :type hmac-key: unknown
+
+            encryption-key
+            signing-key
+            hmac-key
+
         :param name: Specifies the name of the key to read
             information about. This is specified as part of the URL.
         :type name: str | unicode
@@ -288,9 +263,6 @@ class Transit(VaultApiBase):
         """
         params = {
             'key_type': key_type,
-            'encryption-key': encryption-key,
-            'signing-key': signing-key,
-            'hmac-key': hmac-key,
             'name': name,
             'version': version,
         }
@@ -300,7 +272,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def encrypt_data(self, name, plaintext, context="", key_version=0, nonce="", batch_input=nil, type="aes256-gcm96", convergent_encryption="", mount_point=DEFAULT_MOUNT_POINT):
+    def encrypt_data(self, name, plaintext, context="", key_version=0, nonce="", batch_input=None, type="aes256-gcm96", convergent_encryption="", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint encrypts the provided plaintext using the named key. This path
         supports the create and update policy capabilities as follows: if the user
@@ -361,7 +333,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def decrypt_data(self, name, ciphertext, context="", nonce="", batch_input=nil, mount_point=DEFAULT_MOUNT_POINT):
+    def decrypt_data(self, name, ciphertext, context="", nonce="", batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint decrypts the provided ciphertext using the named key.
 
@@ -405,7 +377,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def rewrap_data(self, name, ciphertext, context="", key_version=0, nonce="", batch_input=nil, mount_point=DEFAULT_MOUNT_POINT):
+    def rewrap_data(self, name, ciphertext, context="", key_version=0, nonce="", batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint rewraps the provided ciphertext using the latest version of the
         named key. Because this never returns plaintext, it is possible to delegate this
@@ -527,7 +499,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def hash_data(self, sha2-224, sha2-256, sha2-384, sha2-512, input, algorithm="sha2-256", format="hex", mount_point=DEFAULT_MOUNT_POINT):
+    def hash_data(self, hash_input, algorithm="sha2-256", output_format="hex", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns the cryptographic hash of given data using the specified
         algorithm.
@@ -536,34 +508,23 @@ class Transit(VaultApiBase):
             POST: /{mount_point}/hash(/:algorithm). Produces: 200 application/json
 
 
-        :param sha2-224:
-        :type sha2-224: unknown
-        :param sha2-256:
-        :type sha2-256: unknown
-        :param sha2-384:
-        :type sha2-384: unknown
-        :param sha2-512:
-        :type sha2-512: unknown
         :param input: data.
         :type input: str | unicode
         :param algorithm: Specifies the hash algorithm to use. This
             can also be specified as part of the URL. Currently-supported algorithms are:
+            sha2-224, sha2-256, sha2-384, sha2-512
         :type algorithm: str | unicode
-        :param format:
-        :type format: str | unicode
+        :param output_format:
+        :type output_format: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the hash_data request.
         :rtype: requests.Response
         """
         params = {
-            'sha2-224': sha2-224,
-            'sha2-256': sha2-256,
-            'sha2-384': sha2-384,
-            'sha2-512': sha2-512,
-            'input': input,
+            'input': hash_input,
             'algorithm': algorithm,
-            'format': format,
+            'format': output_format,
         }
         api_path = '/v1/{mount_point}/hash(/:algorithm)'.format(mount_point=mount_point)
         return self._adapter.post(
@@ -571,7 +532,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def generate_hmac(self, name, sha2-224, sha2-256, sha2-384, sha2-512, input, key_version=0, algorithm="sha2-256", mount_point=DEFAULT_MOUNT_POINT):
+    def generate_hmac(self, name, hash_input, key_version=0, algorithm="sha2-256", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns the digest of given data using the specified hash
         algorithm and the named key. The key can be of any type supported by transit;
@@ -586,20 +547,13 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key to
             generate hmac against. This is specified as part of the URL.
         :type name: str | unicode
-        :param sha2-224:
-        :type sha2-224: unknown
-        :param sha2-256:
-        :type sha2-256: unknown
-        :param sha2-384:
-        :type sha2-384: unknown
-        :param sha2-512:
-        :type sha2-512: unknown
-        :param input: data.
+        :param hash_input: data.
         :type input: str | unicode
         :param key_version: if set.
         :type key_version: int
         :param algorithm: Specifies the hash algorithm to use. This
             can also be specified as part of the URL. Currently-supported algorithms are:
+            sha2-224, sha2-256, sha2-384, sha2-512
         :type algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -608,11 +562,7 @@ class Transit(VaultApiBase):
         """
         params = {
             'name': name,
-            'sha2-224': sha2-224,
-            'sha2-256': sha2-256,
-            'sha2-384': sha2-384,
-            'sha2-512': sha2-512,
-            'input': input,
+            'input': hash_input,
             'key_version': key_version,
             'algorithm': algorithm,
         }
@@ -622,7 +572,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def sign_data(self, name, sha2-224, sha2-256, sha2-384, sha2-512, input, pss, pkcs1v15, key_version=0, hash_algorithm="sha2-256", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
+    def sign_data(self, name, hash_input, key_version=0, hash_algorithm="sha2-256", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns the cryptographic signature of the given data using the
         named key and the specified hash algorithm. The key must be of a type that
@@ -635,16 +585,7 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key to
             use for signing. This is specified as part of the URL.
         :type name: str | unicode
-        :param sha2-224:
-        :type sha2-224: unknown
-        :param sha2-256:
-        :type sha2-256: unknown
-        :param sha2-384:
-        :type sha2-384: unknown
-        :param sha2-512:
-        :type sha2-512: unknown
-        :param input: data.
-        :type input: str | unicode
+        :type hash_input: str | unicode
         :param pss:
         :type pss: unknown
         :param pkcs1v15:
@@ -653,7 +594,7 @@ class Transit(VaultApiBase):
         :type key_version: int
         :param hash_algorithm: specifies its
             own hash algorithm). This can also be specified as part of the URL.
-            Currently-supported algorithms are:
+            Currently-supported algorithms are: sha2-224, sha2-256, sha2-384, sha2-512
         :type hash_algorithm: str | unicode
         :param context: Base64 encoded context for key derivation.
             Required if key derivation is enabled; currently only available with ed25519
@@ -662,7 +603,7 @@ class Transit(VaultApiBase):
         :param prehashed:
         :type prehashed: bool
         :param signature_algorithm: using a RSA key, specifies the RSA
-            signature algorithm to use for signing. Supported signature types are:
+            signature algorithm to use for signing. Supported signature types are: pss, pkcs1v15
         :type signature_algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -671,13 +612,7 @@ class Transit(VaultApiBase):
         """
         params = {
             'name': name,
-            'sha2-224': sha2-224,
-            'sha2-256': sha2-256,
-            'sha2-384': sha2-384,
-            'sha2-512': sha2-512,
-            'input': input,
-            'pss': pss,
-            'pkcs1v15': pkcs1v15,
+            'input': hash_input,
             'key_version': key_version,
             'hash_algorithm': hash_algorithm,
             'context': context,
@@ -690,7 +625,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def verify_signed_data(self, name, sha2-224, sha2-256, sha2-384, sha2-512, input, pss, pkcs1v15, hash_algorithm="sha2-256", signature="", hmac="", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
+    def verify_signed_data(self, name, hash_input, hash_algorithm="sha2-256", signature="", hmac="", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns whether the provided signature is valid for the given
         data.
@@ -702,15 +637,7 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key that
             was used to generate the signature or HMAC.
         :type name: str | unicode
-        :param sha2-224:
-        :type sha2-224: unknown
-        :param sha2-256:
-        :type sha2-256: unknown
-        :param sha2-384:
-        :type sha2-384: unknown
-        :param sha2-512:
-        :type sha2-512: unknown
-        :param input: data.
+        :param hash_input: data.
         :type input: str | unicode
         :param pss:
         :type pss: unknown
@@ -718,6 +645,7 @@ class Transit(VaultApiBase):
         :type pkcs1v15: unknown
         :param hash_algorithm: Specifies the hash algorithm to use. This
             can also be specified as part of the URL. Currently-supported algorithms are:
+            sha2-224, sha2-256, sha2-384, sha2-512
         :type hash_algorithm: str | unicode
         :param signature: be
             supplied.
@@ -733,7 +661,7 @@ class Transit(VaultApiBase):
         :type prehashed: bool
         :param signature_algorithm: using a RSA key, specifies the RSA
             signature algorithm to use for signature verification. Supported signature types
-            are:
+            are: pss, pkcs1v15
         :type signature_algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -742,13 +670,7 @@ class Transit(VaultApiBase):
         """
         params = {
             'name': name,
-            'sha2-224': sha2-224,
-            'sha2-256': sha2-256,
-            'sha2-384': sha2-384,
-            'sha2-512': sha2-512,
-            'input': input,
-            'pss': pss,
-            'pkcs1v15': pkcs1v15,
+            'input': hash_input,
             'hash_algorithm': hash_algorithm,
             'signature': signature,
             'hmac': hmac,

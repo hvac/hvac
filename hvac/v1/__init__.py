@@ -71,6 +71,7 @@ class Client(object):
 
         # Secret engine attributes / properties.
         self._kv = api.secrets_engines.Kv(adapter=self._adapter)
+        self._transit = api.secrets_engines.Transit(adapter=self._adapter)
 
     @property
     def adapter(self):
@@ -156,6 +157,15 @@ class Client(object):
         :rtype: hvac.api.secrets_engines.Kv
         """
         return self._kv
+
+    @property
+    def transit(self):
+        """Accessor for the Client instance's Transit methods. Provided via the :py:class:`hvac.api.secrets_engines.Transit` class.
+
+        :return: This Client instance's associated Transit instance.
+        :rtype: hvac.api.secrets_engines.Transit
+        """
+        return self._transit
 
     @property
     def azure(self):
