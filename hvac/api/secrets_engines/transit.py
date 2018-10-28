@@ -94,7 +94,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def list_keys(self, name, mount_point=DEFAULT_MOUNT_POINT):
+    def list_keys(self, mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns a list of keys. Only the key names are returned (not the
         actual keys themselves).
@@ -103,21 +103,14 @@ class Transit(VaultApiBase):
             LIST: /{mount_point}/keys. Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            delete. This is specified as part of the URL.
-        :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the list_keys request.
         :rtype: requests.Response
         """
-        params = {
-            'name': name,
-        }
         api_path = '/v1/{mount_point}/keys'.format(mount_point=mount_point)
         return self._adapter.list(
-            url=api_path,
-            json=params,
+            url=api_path
         )
 
     def delete_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
