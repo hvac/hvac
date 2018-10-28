@@ -388,32 +388,28 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def generate_data_key(self, type, name, context="", nonce="", bits=256, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_data_key(self, key_type, name, context="", nonce="", bits=256, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint generates a new high-entropy key and the value encrypted with the
-        named key. Optionally return the plaintext of the key as well. Whether plaintext
-        is returned depends on the path; as a result, you can use Vault ACL policies to
-        control whether a user is allowed to retrieve the plaintext value of a key. This
-        is useful if you want an untrusted user or operation to generate keys that are
-        then made available to trusted users.
+        This endpoint generates a new high-entropy key and the value encrypted with the named key. Optionally return the plaintext of the key as well. Whether
+        plaintext is returned depends on the path; as a result, you can use Vault ACL policies to control whether a user is allowed to retrieve the plaintext
+        value of a key. This is useful if you want an untrusted user or operation to generate keys that are then made available to trusted users.
 
         Supported methods:
             POST: /{mount_point}/datakey/:type/:name. Produces: 200 application/json
 
 
-        :param type: only the ciphertext value will be returned. This is specified as
-            part of the URL.
-        :type type: str | unicode
-        :param name: Specifies the name of the encryption key to
-            use to encrypt the datakey. This is specified as part of the URL.
+        :param key_type: Specifies the type of key to generate. If plaintext, the plaintext key will be returned along with the ciphertext. If wrapped, only the
+            ciphertext value will be returned. This is specified as part of the URL.
+        :type key_type: str | unicode
+        :param name: Specifies the name of the encryption key to use to encrypt the datakey. This is specified as part of the URL.
         :type name: str | unicode
-        :param context: the key derivation context, provided as a
-            base64-encoded string. This must be provided if derivation is enabled.
+        :param context: Specifies the key derivation context, provided as a base64-encoded string. This must be provided if derivation is enabled.
         :type context: str | unicode
-        :param nonce:
+        :param nonce: Specifies a nonce value, provided as base64 encoded. Must be provided if convergent encryption is enabled for this key and the key was
+            generated with Vault 0.6.1. Not required for keys created in 0.6.2+. The value must be exactly 96 bits (12 bytes) long and the user must ensure
+            that for any given context (and thus, any given encryption key) this nonce value is never reused.
         :type nonce: str | unicode
-        :param bits: the number of bits in the desired key. Can be
-            128, 256, or 512.
+        :param bits: Specifies the number of bits in the desired key. Can be 128, 256, or 512.
         :type bits: int
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -421,13 +417,11 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'type': type,
-            'name': name,
             'context': context,
             'nonce': nonce,
             'bits': bits,
         }
-        api_path = '/v1/{mount_point}/datakey/:type/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/datakey/{key_type}/{name}'.format(mount_point=mount_point, key_type=key_type, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
