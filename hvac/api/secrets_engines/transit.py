@@ -96,8 +96,7 @@ class Transit(VaultApiBase):
 
     def list_keys(self, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns a list of keys. Only the key names are returned (not the
-        actual keys themselves).
+        This endpoint returns a list of keys. Only the key names are returned (not the actual keys themselves).
 
         Supported methods:
             LIST: /{mount_point}/keys. Produces: 200 application/json
