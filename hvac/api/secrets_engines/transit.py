@@ -683,16 +683,18 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def trim_key(self, min_version, mount_point=DEFAULT_MOUNT_POINT):
+    def trim_key(self, name, min_version, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint trims older key versions setting a minimum version for the
-        keyring. Once trimmed, previous versions of the key cannot be recovered.
+        This endpoint trims older key versions setting a minimum version for the keyring. Once trimmed, previous versions of the key cannot be recovered.
 
         Supported methods:
             POST: /{mount_point}/keys/:name/trim. Produces: 200 application/json
 
-
-        :param min_version: set to zero.
+        :param name: Specifies the name of the key to be trimmed.
+        :type name: str | unicode
+        :param min_version: The minimum version for the key ring. All versions before this version will be permanently deleted. This value can at most be equal
+            to the lesser of min_decryption_version and min_encryption_version. This is not allowed to be set when either min_encryption_version or
+            min_decryption_version is set to zero.
         :type min_version: int
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -702,7 +704,7 @@ class Transit(VaultApiBase):
         params = {
             'min_version': min_version,
         }
-        api_path = '/v1/{mount_point}/keys/:name/trim'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}/trim'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
