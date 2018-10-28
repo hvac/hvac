@@ -338,33 +338,37 @@ class Transit(VaultApiBase):
 
     def rewrap_data(self, name, ciphertext, context="", key_version=0, nonce="", batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint rewraps the provided ciphertext using the latest version of the
-        named key. Because this never returns plaintext, it is possible to delegate this
-        functionality to untrusted users or scripts.
+        This endpoint rewraps the provided ciphertext using the latest version of the named key. Because this never returns plaintext, it is possible to
+        delegate this functionality to untrusted users or scripts.
 
         Supported methods:
             POST: /{mount_point}/rewrap/:name. Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            re-encrypt against. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to re-encrypt against. This is specified as part of the URL.
         :type name: str | unicode
-        :param ciphertext: the ciphertext to re-encrypt.
+        :param ciphertext: Specifies the ciphertext to re-encrypt.
         :type ciphertext: str | unicode
-        :param context: for key
-            derivation. This is required if key derivation is enabled.
+        :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is enabled.
         :type context: str | unicode
-        :param key_version: if set.
+        :param key_version: Specifies the version of the key to use for the operation. If not set, uses the latest version. Must be greater than or equal to
+            the key's min_encryption_version, if set.
         :type key_version: int
-        :param nonce: a base64 encoded nonce value used during
-            encryption. Must be provided if convergent encryption is enabled for this key
-            and the key was generated with Vault 0.6.1. Not required for keys created in
-            0.6.2+.
+        :param nonce: Specifies a base64 encoded nonce value used during encryption. Must be provided if convergent encryption is enabled for this key and the
+            key was generated with Vault 0.6.1. Not required for keys created in 0.6.2+.
         :type nonce: str | unicode
-        :param batch_input: a list of items to be
-            decrypted in a single batch. When this parameter is set, if the parameters
-            'ciphertext', 'context' and 'nonce' are also set, they will be ignored. Format
-            for the input goes like this:
+        :param batch_input: Specifies a list of items to be decrypted in a single batch. When this parameter is set, if the parameters 'ciphertext', 'context'
+            and 'nonce' are also set, they will be ignored. Format for the input goes like this:
+            [
+                {
+                    "context": "c2FtcGxlY29udGV4dA==",
+                    "ciphertext": "vault:v1:/DupSiSbX/ATkGmKAmhqD0tvukByrx6gmps7dVI="
+                },
+                {
+                    "context": "YW5vdGhlcnNhbXBsZWNvbnRleHQ=",
+                    "ciphertext": "vault:v1:XjsPWPjqPrBi1N2Ms2s1QM798YyFWnO4TR4lsFA="
+                },
+            ]
         :type batch_input: array<object>
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -372,14 +376,13 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
             'ciphertext': ciphertext,
             'context': context,
             'key_version': key_version,
             'nonce': nonce,
             'batch_input': batch_input,
         }
-        api_path = '/v1/{mount_point}/rewrap/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/rewrap/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
