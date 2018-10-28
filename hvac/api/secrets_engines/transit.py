@@ -651,21 +651,20 @@ class Transit(VaultApiBase):
 
     def restore_key(self, backup, name, force=False, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint restores the backup as a named key. This will restore the key
-        configurations and all the versions of the named key along with HMAC keys. The
-        input to this endpoint should be the output of /backup endpoint.
+        This endpoint restores the backup as a named key. This will restore the key configurations and all the versions of the named key along with HMAC keys.
+        The input to this endpoint should be the output of /backup endpoint.
+        For safety, by default the backend will refuse to restore to an existing key. If you want to reuse a key name, it is recommended you delete the key
+        before restoring. It is a good idea to attempt restoring to a different key name first to verify that the operation successfully completes.
 
         Supported methods:
             POST: /{mount_point}/restore(/:name). Produces: 204 (empty body)
 
 
-        :param backup:
+        :param backup: Backed up key data to be restored. This should be the output from the /backup endpoint.
         :type backup: str | unicode
-        :param name: If set, this will be the name of the
-            restored key.
+        :param name: If set, this will be the name of the restored key.
         :type name: str | unicode
-        :param force: If set, force the restore to proceed even if a key
-            by this name already exists.
+        :param force: If set, force the restore to proceed even if a key by this name already exists.
         :type force: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -674,10 +673,11 @@ class Transit(VaultApiBase):
         """
         params = {
             'backup': backup,
-            'name': name,
             'force': force,
         }
-        api_path = '/v1/{mount_point}/restore(/:name)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/restore'.format(mount_point=mount_point)
+        if name != '':
+            api_path += '/:name'.format(name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
