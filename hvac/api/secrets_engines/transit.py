@@ -193,43 +193,34 @@ class Transit(VaultApiBase):
 
     def export_key(self, key_type, name, version="", mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns the named key. The keys object shows the value of the
-        key for each version. If version is specified, the specific version will be
-        returned. If latest is provided as the version, the current key will be
-        provided. Depending on the type of key, different information may be returned.
-        The key must be exportable to support this operation and the version must still
-        be valid.
+        This endpoint returns the named key. The keys object shows the value of the key for each version. If version is specified, the specific version will be
+        returned. If latest is provided as the version, the current key will be provided. Depending on the type of key, different information may be returned.
+        The key must be exportable to support this operation and the version must still be valid.
 
         Supported methods:
             GET: /{mount_point}/export/:key_type/:name(/:version). Produces: 200 application/json
 
 
-        :param key_type: the type of the key to export.
-            This is specified as part of the URL. Valid values are:
-
+        :param key_type: Specifies the type of the key to export. This is specified as part of the URL. Valid values are:
             encryption-key
             signing-key
             hmac-key
-
-        :param name: Specifies the name of the key to read
-            information about. This is specified as part of the URL.
+        :type key_type: str | unicode
+        :param name: Specifies the name of the key to read information about. This is specified as part of the URL.
         :type name: str | unicode
-        :param version: the current key will be returned.
+        :param version: Specifies the version of the key to read. If omitted, all versions of the key will be returned. This is specified as part of the URL.
+            If the version is set to latest, the current key will be returned.
         :type version: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the export_key request.
         :rtype: requests.Response
         """
-        params = {
-            'key_type': key_type,
-            'name': name,
-            'version': version,
-        }
-        api_path = '/v1/{mount_point}/export/:key_type/:name(/:version)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/export/{key_type}/{name}'.format(mount_point=mount_point, key_type=key_type, name=name)
+        if version != "":
+            api_path += '/:version'.format(version=version)
         return self._adapter.get(
             url=api_path,
-            json=params,
         )
 
     def encrypt_data(self, name, plaintext, context="", key_version=0, nonce="", batch_input=None, type="aes256-gcm96", convergent_encryption="", mount_point=DEFAULT_MOUNT_POINT):
