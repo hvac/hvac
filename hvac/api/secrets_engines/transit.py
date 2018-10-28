@@ -457,20 +457,18 @@ class Transit(VaultApiBase):
 
     def hash_data(self, hash_input, algorithm="sha2-256", output_format="hex", mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns the cryptographic hash of given data using the specified
-        algorithm.
+        This endpoint returns the cryptographic hash of given data using the specified algorithm.
 
         Supported methods:
             POST: /{mount_point}/hash(/:algorithm). Produces: 200 application/json
 
 
-        :param input: data.
+        :param input: Specifies the base64 encoded input data.
         :type input: str | unicode
-        :param algorithm: Specifies the hash algorithm to use. This
-            can also be specified as part of the URL. Currently-supported algorithms are:
+        :param algorithm: Specifies the hash algorithm to use. This can also be specified as part of the URL. Currently-supported algorithms are:
             sha2-224, sha2-256, sha2-384, sha2-512
         :type algorithm: str | unicode
-        :param output_format:
+        :param output_format: Specifies the output encoding. This can be either hex or base64.
         :type output_format: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -482,7 +480,9 @@ class Transit(VaultApiBase):
             'algorithm': algorithm,
             'format': output_format,
         }
-        api_path = '/v1/{mount_point}/hash(/:algorithm)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/hash'.format(mount_point=mount_point)
+        if algorithm != 'sha2-256':
+            api_path += '/:algorithm'.format(algorithm=algorithm)
         return self._adapter.post(
             url=api_path,
             json=params,
