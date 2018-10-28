@@ -526,38 +526,35 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def sign_data(self, name, hash_input, key_version=0, hash_algorithm="sha2-256", context="", prehashed=False, signature_algorithm="pss", mount_point=DEFAULT_MOUNT_POINT):
+    def sign_data(self, name, hash_input, key_version=0, hash_algorithm="sha2-256", context="", prehashed=False, signature_algorithm="pss",
+                  mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns the cryptographic signature of the given data using the
-        named key and the specified hash algorithm. The key must be of a type that
-        supports signing.
+        This endpoint returns the cryptographic signature of the given data using the named key and the specified hash algorithm. The key must be of a type
+        that supports signing.
 
         Supported methods:
             POST: /{mount_point}/sign/:name(/:hash_algorithm). Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            use for signing. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to use for signing. This is specified as part of the URL.
         :type name: str | unicode
+        :param hash_input: Specifies the base64 encoded input data.
         :type hash_input: str | unicode
-        :param pss:
-        :type pss: unknown
-        :param pkcs1v15:
-        :type pkcs1v15: unknown
-        :param key_version: if set.
+        :param key_version: Specifies the version of the key to use for signing. If not set, uses the latest version. Must be greater than or equal to the
+            key's min_encryption_version, if set.
         :type key_version: int
-        :param hash_algorithm: specifies its
-            own hash algorithm). This can also be specified as part of the URL.
-            Currently-supported algorithms are: sha2-224, sha2-256, sha2-384, sha2-512
+        :param hash_algorithm: Specifies the hash algorithm to use for supporting key types (notably, not including ed25519 which specifies its own hash
+            algorithm). This can also be specified as part of the URL. Currently-supported algorithms are: sha2-224, sha2-256, sha2-384, sha2-512
         :type hash_algorithm: str | unicode
-        :param context: Base64 encoded context for key derivation.
-            Required if key derivation is enabled; currently only available with ed25519
-            keys.
+        :param context: Base64 encoded context for key derivation. Required if key derivation is enabled; currently only available with ed25519 keys.
         :type context: str | unicode
-        :param prehashed:
+        :param prehashed: Set to true when the input is already hashed. If the key type is rsa-2048 or rsa-4096, then the algorithm used to hash the input
+            should be indicated by the hash_algorithm parameter. Just as the value to sign should be the base64-encoded representation of the exact binary
+            data you want signed, when set, input is expected to be base64-encoded binary hashed data, not hex-formatted. (As an example, on the command line,
+            you could generate a suitable input via openssl dgst -sha256 -binary | base64.)
         :type prehashed: bool
-        :param signature_algorithm: using a RSA key, specifies the RSA
-            signature algorithm to use for signing. Supported signature types are: pss, pkcs1v15
+        :param signature_algorithm: When using a RSA key, specifies the RSA signature algorithm to use for signing.
+            Supported signature types are: pss, pkcs1v15
         :type signature_algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -565,7 +562,6 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
             'input': hash_input,
             'key_version': key_version,
             'hash_algorithm': hash_algorithm,
@@ -573,7 +569,9 @@ class Transit(VaultApiBase):
             'prehashed': prehashed,
             'signature_algorithm': signature_algorithm,
         }
-        api_path = '/v1/{mount_point}/sign/:name(/:hash_algorithm)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/sign/{name}'.format(mount_point=mount_point, name=name)
+        if hash_algorithm != 'sha2-256':
+            api_path += '/:hash_algorithm'.format(hash_algorithm=hash_algorithm)
         return self._adapter.post(
             url=api_path,
             json=params,
