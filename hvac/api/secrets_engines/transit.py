@@ -427,7 +427,7 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def generate_random_bytes(self, bytes=32, format="base64", mount_point=DEFAULT_MOUNT_POINT):
+    def generate_random_bytes(self, n_bytes=32, output_format="base64", mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint returns high-quality random bytes of the specified length.
 
@@ -435,21 +435,21 @@ class Transit(VaultApiBase):
             POST: /{mount_point}/random(/:bytes). Produces: 200 application/json
 
 
-        :param bytes: the number of bytes to return. This value can
-            be specified either in the request body, or as a part of the URL.
-        :type bytes: int
-        :param format:
-        :type format: str | unicode
+        :param n_bytes: Specifies the number of bytes to return. This value can be specified either in the request body, or as a part of the URL.
+        :type n_bytes: int
+        :param output_format: Specifies the output encoding. Valid options are hex or base64.
+        :type output_format: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the generate_random_bytes request.
         :rtype: requests.Response
         """
         params = {
-            'bytes': bytes,
-            'format': format,
+            'format': output_format,
         }
-        api_path = '/v1/{mount_point}/random(/:bytes)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/random'.format(mount_point=mount_point)
+        if n_bytes != 32:
+            api_path += '/{n_bytes}'.format(n_bytes=n_bytes)
         return self._adapter.post(
             url=api_path,
             json=params,
