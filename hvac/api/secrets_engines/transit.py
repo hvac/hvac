@@ -223,44 +223,50 @@ class Transit(VaultApiBase):
             url=api_path,
         )
 
-    def encrypt_data(self, name, plaintext, context="", key_version=0, nonce="", batch_input=None, type="aes256-gcm96", convergent_encryption="", mount_point=DEFAULT_MOUNT_POINT):
+    def encrypt_data(self, name, plaintext, context="", key_version=0, nonce="", batch_input=None, type="aes256-gcm96", convergent_encryption="",
+                     mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint encrypts the provided plaintext using the named key. This path
-        supports the create and update policy capabilities as follows: if the user
-        has the create capability for this endpoint in their policies, and the key
-        does not exist, it will be upserted with default values (whether the key
-        requires derivation depends on whether the context parameter is empty or not).
-        If the user only has update capability and the key does not exist, an error
-        will be returned.
+        This endpoint encrypts the provided plaintext using the named key. This path supports the create and update policy capabilities as follows: if the user
+        has the create capability for this endpoint in their policies, and the key does not exist, it will be upserted with default values (whether the key
+        requires derivation depends on whether the context parameter is empty or not). If the user only has update capability and the key does not exist, an
+        error will be returned.
 
         Supported methods:
             POST: /{mount_point}/encrypt/:name. Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            encrypt against. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to encrypt against. This is specified as part of the URL.
         :type name: str | unicode
-        :param plaintext: to
-            be encoded.
+        :param plaintext: Specifies base64 encoded plaintext to be encoded.
         :type plaintext: str | unicode
-        :param context: for key
-            derivation. This is required if key derivation is enabled for this key.
+        :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is enabled for this key.
         :type context: str | unicode
-        :param key_version: if set.
+        :param key_version: Specifies the version of the key to use for encryption. If not set, uses the latest version. Must be greater than or equal to the
+            key's min_encryption_version, if set.
         :type key_version: int
-        :param nonce:
+        :param nonce: Specifies the base64 encoded nonce value. This must be provided if convergent encryption is enabled for this key and the key was
+            generated with Vault 0.6.1. Not required for keys created in 0.6.2+. The value must be exactly 96 bits (12 bytes) long and the user must ensure
+            that for any given context (and thus, any given encryption key) this nonce value is never reused.
         :type nonce: str | unicode
-        :param batch_input: a list of items to be
-            encrypted in a single batch. When this parameter is set, if the parameters
-            'plaintext', 'context' and 'nonce' are also set, they will be ignored. The
-            format for the input is:
+        :param batch_input: Specifies a list of items to be encrypted in a single batch. When this parameter is set, if the parameters 'plaintext', 'context'
+            and 'nonce' are also set, they will be ignored. The format for the input is:
+            [
+                {
+                    "context": "c2FtcGxlY29udGV4dA==",
+                    "plaintext": "dGhlIHF1aWNrIGJyb3duIGZveA=="
+                },
+                {
+                    "context": "YW5vdGhlcnNhbXBsZWNvbnRleHQ=",
+                    "plaintext": "dGhlIHF1aWNrIGJyb3duIGZveA=="
+                },
+            ]
         :type batch_input: array<object>
-        :param type: parameter is required when encryption
-            key is expected to be created. When performing an upsert operation, the type
-            of key to create.
+        :param type: This parameter is required when encryption key is expected to be created. When performing an upsert operation, the type of key to create.
         :type type: str | unicode
-        :param convergent_encryption: using this mode that you ensure that
-            all nonces are unique for a given context.  Failing to do so will severely
+        :param convergent_encryption: This parameter will only be used when a key is expected to be created. Whether to support convergent encryption. This is
+            only supported when using a key with key derivation enabled and will require all requests to carry both a context and 96-bit (12-byte) nonce. The
+            given nonce will be used in place of a randomly generated nonce. As a result, when the same context and nonce are supplied, the same ciphertext is
+            generated. It is very important when using this mode that you ensure that all nonces are unique for a given context. Failing to do so will severely
             impact the ciphertext's security.
         :type convergent_encryption: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -269,7 +275,6 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
             'plaintext': plaintext,
             'context': context,
             'key_version': key_version,
@@ -278,7 +283,7 @@ class Transit(VaultApiBase):
             'type': type,
             'convergent_encryption': convergent_encryption,
         }
-        api_path = '/v1/{mount_point}/encrypt/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/encrypt/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
