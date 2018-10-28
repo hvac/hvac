@@ -109,30 +109,23 @@ class Transit(VaultApiBase):
 
     def delete_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint deletes a named encryption key. It will no longer be possible to
-        decrypt any data encrypted with the named key. Because this is a potentially
-        catastrophic operation, the deletion_allowed tunable must be set in the key's
-        /config endpoint.
+        This endpoint deletes a named encryption key. It will no longer be possible to decrypt any data encrypted with the named key. Because this is a
+        potentially catastrophic operation, the deletion_allowed tunable must be set in the key's /config endpoint.
 
         Supported methods:
             DELETE: /{mount_point}/keys/:name. Produces: 204 (empty body)
 
 
-        :param name: Specifies the name of the encryption key to
-            delete. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to delete. This is specified as part of the URL.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the delete_key request.
         :rtype: requests.Response
         """
-        params = {
-            'name': name,
-        }
-        api_path = '/v1/{mount_point}/keys/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
-            json=params,
         )
 
     def update_key_configuration(self, min_decryption_version=0, min_encryption_version=0, deletion_allowed=False, exportable=False, allow_plaintext_backup=False, mount_point=DEFAULT_MOUNT_POINT):
