@@ -128,33 +128,28 @@ class Transit(VaultApiBase):
             url=api_path,
         )
 
-    def update_key_configuration(self, min_decryption_version=0, min_encryption_version=0, deletion_allowed=False, exportable=False, allow_plaintext_backup=False, mount_point=DEFAULT_MOUNT_POINT):
+    def update_key_configuration(self, name, min_decryption_version=0, min_encryption_version=0, deletion_allowed=False, exportable=False,
+                                 allow_plaintext_backup=False, mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint allows tuning configuration values for a given key. (These values
-        are returned during a read operation on the named key.)
+        This endpoint allows tuning configuration values for a given key. (These values are returned during a read operation on the named key.)
 
         Supported methods:
             POST: /{mount_point}/keys/:name/config. Produces: 204 (empty body)
 
 
-        :param min_decryption_version: the minimum version of
-            ciphertext allowed to be decrypted. Adjusting this as part of a key rotation
-            policy can prevent old copies of ciphertext from being decrypted, should they
-            fall into the wrong hands. For signatures, this value controls the minimum
-            version of signature that can be verified against. For HMACs, this controls
-            the minimum version of a key allowed to be used as the key for verification.
+        :param min_decryption_version: Specifies the minimum version of ciphertext allowed to be decrypted. Adjusting this as part of a key rotation policy
+            can prevent old copies of ciphertext from being decrypted, should they fall into the wrong hands. For signatures, this value controls the minimum
+            version of signature that can be verified against. For HMACs, this controls the minimum version of a key allowed to be used as the key for
+            verification.
         :type min_decryption_version: int
-        :param min_encryption_version:
+        :param min_encryption_version: Specifies the minimum version of the key that can be used to encrypt plaintext, sign payloads, or generate HMACs. Must
+            be 0 (which will use the latest version) or a value greater or equal to min_decryption_version.
         :type min_encryption_version: int
-        :param deletion_allowed: Specifies if the key is allowed to be
-            deleted.
+        :param deletion_allowed: Specifies if the key is allowed to be deleted.
         :type deletion_allowed: bool
-        :param exportable:  Enables keys to be exportable. This
-            allows for all the valid keys in the key ring to be exported. Once set, this
-            cannot be disabled.
+        :param exportable: Enables keys to be exportable. This allows for all the valid keys in the key ring to be exported. Once set, this cannot be disabled.
         :type exportable: bool
-        :param allow_plaintext_backup: If set, enables taking backup of
-            named key in the plaintext format. Once set, this cannot be disabled.
+        :param allow_plaintext_backup: If set, enables taking backup of named key in the plaintext format. Once set, this cannot be disabled.
         :type allow_plaintext_backup: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -168,7 +163,7 @@ class Transit(VaultApiBase):
             'exportable': exportable,
             'allow_plaintext_backup': allow_plaintext_backup,
         }
-        api_path = '/v1/{mount_point}/keys/:name/config'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}/config'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
