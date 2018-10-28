@@ -13,7 +13,8 @@ class Transit(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/transit/index.html
     """
 
-    def create_key(self, name, convergent_encryption=False, derived=False, exportable=False, allow_plaintext_backup=False, key_type="aes256-gcm96", mount_point=DEFAULT_MOUNT_POINT):
+    def create_key(self, name, convergent_encryption=False, derived=False, exportable=False, allow_plaintext_backup=False, key_type="aes256-gcm96",
+                   mount_point=DEFAULT_MOUNT_POINT):
         """
         This endpoint creates a new named encryption key of the specified type. The
         values set here cannot be changed after key creation.
@@ -22,25 +23,20 @@ class Transit(VaultApiBase):
             POST: /{mount_point}/keys/:name. Produces: 204 (empty body)
 
 
-        :param name: Specifies the name of the encryption key to
-            create. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to create. This is specified as part of the URL.
         :type name: str | unicode
-        :param convergent_encryption: than randomly generate it.
+        :param convergent_encryption: If enabled, the key will support convergent encryption, where the same plaintext creates the same ciphertext. This
+            requires derived to be set to true. When enabled, each encryption(/decryption/rewrap/datakey) operation will derive a nonce value rather than
+            randomly generate it.
         :type convergent_encryption: bool
-        :param derived: if key derivation is to be used. If
-            enabled, all encrypt/decrypt requests to this named key must provide a context
-            which is used for key derivation.
+        :param derived: Specifies if key derivation is to be used. If enabled, all encrypt/decrypt requests to this named key must provide a context which is
+            used for key derivation.
         :type derived: bool
-        :param exportable:  Enables keys to be exportable. This
-            allows for all the valid keys in the key ring to be exported. Once set, this
-            cannot be disabled.
+        :param exportable: Enables keys to be exportable. This allows for all the valid keys in the key ring to be exported. Once set, this cannot be disabled.
         :type exportable: bool
-        :param allow_plaintext_backup: If set, enables taking backup of
-            named key in the plaintext format. Once set, this cannot be disabled.
+        :param allow_plaintext_backup: If set, enables taking backup of named key in the plaintext format. Once set, this cannot be disabled.
         :type allow_plaintext_backup: bool
-        :param key_type: the type of key to create. The
-            currently-supported types are:
-
+        :param key_type: Specifies the type of key to create. The currently-supported types are:
             aes256-gcm96: AES-256 wrapped with GCM using a 96-bit nonce size AEAD
                 (symmetric, supports derivation and convergent encryption)
             chacha20-poly1305: ChaCha20-Poly1305 AEAD (symmetric, supports
@@ -52,7 +48,6 @@ class Transit(VaultApiBase):
             ecdsa-p256: ECDSA using the P-256 elliptic curve (asymmetric)
             rsa-2048: RSA with bit size of 2048 (asymmetric)
             rsa-4096: RSA with bit size of 4096 (asymmetric)
-
         :type type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -67,7 +62,7 @@ class Transit(VaultApiBase):
             'allow_plaintext_backup': allow_plaintext_backup,
             'type': key_type,
         }
-        api_path = '/v1/{mount_point}/keys/:name'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/keys/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
