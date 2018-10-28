@@ -490,25 +490,22 @@ class Transit(VaultApiBase):
 
     def generate_hmac(self, name, hash_input, key_version=0, algorithm="sha2-256", mount_point=DEFAULT_MOUNT_POINT):
         """
-        This endpoint returns the digest of given data using the specified hash
-        algorithm and the named key. The key can be of any type supported by transit;
-        the raw key will be marshaled into bytes to be used for the HMAC function. If
-        the key is of a type that supports rotation, the latest (current) version will
-        be used.
+        This endpoint returns the digest of given data using the specified hash algorithm and the named key. The key can be of any type supported by transit;
+        the raw key will be marshaled into bytes to be used for the HMAC function. If the key is of a type that supports rotation, the latest (current) version
+        will be used.
 
         Supported methods:
             POST: /{mount_point}/hmac/:name(/:algorithm). Produces: 200 application/json
 
 
-        :param name: Specifies the name of the encryption key to
-            generate hmac against. This is specified as part of the URL.
+        :param name: Specifies the name of the encryption key to generate hmac against. This is specified as part of the URL.
         :type name: str | unicode
-        :param hash_input: data.
+        :param hash_input: Specifies the base64 encoded input data.
         :type input: str | unicode
-        :param key_version: if set.
+        :param key_version: Specifies the version of the key to use for the operation. If not set, uses the latest version. Must be greater than or equal to
+            the key's min_encryption_version, if set.
         :type key_version: int
-        :param algorithm: Specifies the hash algorithm to use. This
-            can also be specified as part of the URL. Currently-supported algorithms are:
+        :param algorithm: Specifies the hash algorithm to use. This can also be specified as part of the URL. Currently-supported algorithms are:
             sha2-224, sha2-256, sha2-384, sha2-512
         :type algorithm: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -517,12 +514,13 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
             'input': hash_input,
             'key_version': key_version,
             'algorithm': algorithm,
         }
-        api_path = '/v1/{mount_point}/hmac/:name(/:algorithm)'.format(mount_point=mount_point)
+        api_path = '/v1/{mount_point}/hmac/{name}'.format(mount_point=mount_point, name=name)
+        if algorithm != 'sha2-256':
+            api_path += '/:algorithm'.format(algorithm=algorithm)
         return self._adapter.post(
             url=api_path,
             json=params,
