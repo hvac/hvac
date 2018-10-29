@@ -79,5 +79,5 @@ class TestAudit(utils.HvacIntegrationTestCase, TestCase):
             logging.debug('audit_hash_response: %s' % audit_hash_response)
             self.assertIn(
                 member='hmac-sha256:',
-                container=audit_hash_response['hash'],
+                container=audit_hash_response['data']['hash'],
             )

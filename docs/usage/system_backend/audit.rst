@@ -83,4 +83,4 @@ Calculate Hash
 		input_to_hash=input_to_hash,
 	)
 
-	print('The hash for the provided input is: %s' % audit_hash['hash'])
+	print('The hash for the provided input is: %s' % audit_hash['data']['hash'])
