@@ -4,8 +4,8 @@
 import logging
 
 from hvac import exceptions
-from hvac.api.constants import VALID_AZURE_ENVIRONMENTS
 from hvac.api.vault_api_base import VaultApiBase
+from hvac.constants.azure import VALID_ENVIRONMENTS
 
 DEFAULT_MOUNT_POINT = 'azure'
 logger = logging.getLogger(__name__)
@@ -43,11 +43,11 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if environment not in VALID_AZURE_ENVIRONMENTS:
+        if environment not in VALID_ENVIRONMENTS:
             error_msg = 'invalid environment argument provided: "{arg}"; supported environments: "{environments}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=environment,
-                environments=','.join(VALID_AZURE_ENVIRONMENTS),
+                environments=','.join(VALID_ENVIRONMENTS),
             ))
         params = {
             'tenant_id': tenant_id,
