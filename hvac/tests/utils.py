@@ -6,9 +6,12 @@ import os
 import re
 import socket
 import subprocess
-import time
 import sys
+import time
+import warnings
 from distutils.version import StrictVersion
+
+from mock import patch
 
 from hvac import Client
 
@@ -234,6 +237,7 @@ class HvacIntegrationTestCase(object):
 
     manager = None
     client = None
+    mock_warnings = None
 
     @classmethod
     def setUpClass(cls):
@@ -254,6 +258,11 @@ class HvacIntegrationTestCase(object):
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
         self.client = create_client(token=self.manager.root_token)
+
+        # Squelch deprecating warnings during tests as we may want to deliberately call deprecated methods and/or verify
+        # warnings invocations.
+        warnings_patcher = patch('hvac.utils.warnings', spec=warnings)
+        self.mock_warnings = warnings_patcher.start()
 
     def tearDown(self):
         """Ensure the hvac Client instance's root token is reset after any auth method tests that may have modified it.
