@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Constants related to Azure auth methods and/or secrets engines."""
+"""Constants related to the Azure auth method and/or secrets engine."""
 
 VALID_ENVIRONMENTS = [
     'AzurePublicCloud',

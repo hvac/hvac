@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Constants related to GCP auth methods and/or secrets engines."""
+"""Constants related to the GCP auth method and/or secrets engine."""
 
 DEFAULT_MOUNT_POINT = 'gcp'
 ALLOWED_ROLE_TYPES = ['iam', 'gce']
