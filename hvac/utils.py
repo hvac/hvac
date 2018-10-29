@@ -72,6 +72,68 @@ def generate_method_deprecation_message(to_be_removed_in_version, old_method_nam
     return message
 
 
+def generate_property_deprecation_message(to_be_removed_in_version, old_name, new_name, new_attribute,
+                                          module_name='Client'):
+    """Generate a message to be used when warning about the use of deprecated properties.
+
+    :param to_be_removed_in_version: Version of this module the deprecated property will be removed in.
+    :type to_be_removed_in_version: str
+    :param old_name: Deprecated property name.
+    :type old_name: str
+    :param new_name: Name of the new property name to use.
+    :type new_name: str
+    :param new_attribute: The new attribute where the new property can be found.
+    :type new_attribute: str
+    :param module_name: Name of the module containing the new method to use.
+    :type module_name: str
+    :return: Full deprecation warning message for the indicated property.
+    :rtype: str
+    """
+    message = "Call to deprecated property '{name}'. This property will be removed in version '{version}'".format(
+        name=old_name,
+        version=to_be_removed_in_version,
+    )
+    message += " Please use the '{new_name}' property on the '{module_name}.{new_attribute}' attribute moving forward.".format(
+        new_name=new_name,
+        module_name=module_name,
+        new_attribute=new_attribute,
+    )
+    return message
+
+
+def getattr_with_deprecated_properties(obj, item, deprecated_properties):
+    """Helper method to use in the getattr method of a class with deprecated properties.
+
+    :param obj: Instance of the Class containing the deprecated properties in question.
+    :type obj: object
+    :param item: Name of the attribute being requested.
+    :type item: str
+    :param deprecated_properties: List of deprecated properties. Each item in the list is a dict with at least a
+        "to_be_removed_in_version" and "client_property" key to be used in the displayed deprecation warning.
+    :type deprecated_properties: List[dict]
+    :return: The new property indicated where available.
+    :rtype: object
+    """
+    if item in deprecated_properties:
+        deprecation_message = generate_property_deprecation_message(
+            to_be_removed_in_version=deprecated_properties[item]['to_be_removed_in_version'],
+            old_name=item,
+            new_name=deprecated_properties[item].get('new_property', item),
+            new_attribute=deprecated_properties[item]['client_property'],
+        )
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn(
+            message=deprecation_message,
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        warnings.simplefilter('default', DeprecationWarning)
+        client_property = getattr(obj, deprecated_properties[item]['client_property'])
+        return getattr(client_property, deprecated_properties[item].get('new_property', item))
+
+    raise AttributeError
+
+
 def deprecated_method(to_be_removed_in_version, new_method=None):
     """This is a decorator which can be used to mark methods as deprecated. It will result in a warning being emitted
     when the function is used.
