@@ -18,8 +18,10 @@ class VaultApiCategory(VaultApiBase):
         :type adapter: hvac.adapters.Adapter
         """
         self._adapter = adapter
+        self.implemented_class_names = []
         for implemented_class in self.implemented_classes:
             class_name = implemented_class.__name__.lower()
+            self.implemented_class_names.append(class_name)
             auth_method_instance = implemented_class(adapter=adapter)
             setattr(self, self.get_private_attr_name(class_name), auth_method_instance)
 
@@ -33,8 +35,8 @@ class VaultApiCategory(VaultApiBase):
         :return: The requested class instance where available.
         :rtype: hvac.api.VaultApiBase
         """
-        private_attr_name = self.get_private_attr_name(item)
-        if hasattr(self, private_attr_name):
+        if item in self.implemented_class_names:
+            private_attr_name = self.get_private_attr_name(item)
             return getattr(self, private_attr_name)
         if item in [u.lower() for u in self.unimplemented_classes]:
             raise NotImplementedError('"%s" auth method class not currently implemented.')
