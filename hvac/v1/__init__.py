@@ -1674,116 +1674,6 @@ class Client(object):
             **kwargs
         )
 
-    def list_auth_backends(self):
-        """GET /sys/auth
-
-        :return: List of all enabled auth methods.
-        :rtype: dict
-        """
-        list_auth_methods_response = self._adapter.get('/v1/sys/auth').json()
-        return list_auth_methods_response['data']
-
-    def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
-        """POST /sys/auth/<mount point>
-
-        :param backend_type:
-        :type backend_type:
-        :param description:
-        :type description:
-        :param mount_point:
-        :type mount_point:
-        :param config:
-        :type config:
-        :param plugin_name:
-        :type plugin_name:
-        :return:
-        :rtype:
-        """
-        if not mount_point:
-            mount_point = backend_type
-
-        params = {
-            'type': backend_type,
-            'description': description,
-            'config': config,
-            'plugin_name': plugin_name,
-        }
-        self._adapter.post('/v1/sys/auth/{0}'.format(mount_point), json=params)
-
-    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
-                          audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
-                          passthrough_request_headers=None):
-        """POST /sys/auth/<mount point>/tune
-
-        :param backend_type: Name of the auth backend to modify (e.g., token, approle, etc.)
-        :type backend_type: str.
-        :param mount_point: The path the associated auth backend is mounted under.
-        :type mount_point: str.
-        :param description: Specifies the description of the mount. This overrides the current stored value, if any.
-        :type description: str.
-        :param default_lease_ttl:
-        :type default_lease_ttl: int.
-        :param max_lease_ttl:
-        :type max_lease_ttl: int.
-        :param audit_non_hmac_request_keys: Specifies the comma-separated list of keys that will not be HMAC'd by
-            audit devices in the request data object.
-        :type audit_non_hmac_request_keys: list.
-        :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd
-            by audit devices in the response data object.
-        :type audit_non_hmac_response_keys: list.
-        :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint.
-            Valid values are "unauth" or "".
-        :type listing_visibility: str.
-        :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request
-            to the backend.
-        :type passthrough_request_headers: list.
-        :return: The JSON response from Vault
-        :rtype: dict.
-        """
-        if not mount_point:
-            mount_point = backend_type
-        # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
-        # parameters and add which parameters are set.
-        optional_parameters = [
-            'default_lease_ttl',
-            'max_lease_ttl',
-            'description',
-            'audit_non_hmac_request_keys',
-            'audit_non_hmac_response_keys',
-            'listing_visibility',
-            'passthrough_request_headers',
-        ]
-        params = {}
-        for optional_parameter in optional_parameters:
-            if locals().get(optional_parameter) is not None:
-                params[optional_parameter] = locals().get(optional_parameter)
-        return self._adapter.post('/v1/sys/auth/{0}/tune'.format(mount_point), json=params)
-
-    def get_auth_backend_tuning(self, backend_type, mount_point=None):
-        """GET /sys/auth/<mount point>/tune
-
-        :param backend_type: Name of the auth backend to modify (e.g., token, approle, etc.)
-        :type backend_type: str.
-        :param mount_point: The path the associated auth backend is mounted under.
-        :type mount_point: str.
-        :return: The JSON response from Vault
-        :rtype: dict.
-        """
-        if not mount_point:
-            mount_point = backend_type
-
-        return self._adapter.get('/v1/sys/auth/{0}/tune'.format(mount_point)).json()
-
-    def disable_auth_backend(self, mount_point):
-        """DELETE /sys/auth/<mount point>
-
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        self._adapter.delete('/v1/sys/auth/{0}'.format(mount_point))
-
     def create_role(self, role_name, mount_point='approle', **kwargs):
         """POST /auth/<mount_point>/role/<role name>
 
@@ -2601,6 +2491,74 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.list_auth_methods,
+    )
+    def list_auth_backends(self):
+        return self.sys.list_auth_methods()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.enable_auth_method,
+    )
+    def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
+        return self.sys.enable_auth_method(
+            method_type=backend_type,
+            description=description,
+            config=config,
+            path=mount_point,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.tune_auth_method,
+    )
+    def tune_auth_backend(self, backend_type, mount_point=None, default_lease_ttl=None, max_lease_ttl=None, description=None,
+                          audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility="",
+                          passthrough_request_headers=None):
+        if not mount_point:
+            mount_point = backend_type
+        return self.sys.tune_auth_method(
+            path=mount_point,
+            default_lease_ttl=default_lease_ttl,
+            max_lease_ttl=max_lease_ttl,
+            description=description,
+            audit_non_hmac_request_keys=audit_non_hmac_request_keys,
+            audit_non_hmac_response_keys=audit_non_hmac_response_keys,
+            listing_visibility=listing_visibility,
+            passthrough_request_headers=passthrough_request_headers,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.read_auth_method_tuning,
+    )
+    def get_auth_backend_tuning(self, backend_type, mount_point=None):
+        """GET /sys/auth/<mount point>/tune
+
+        :param backend_type: Name of the auth backend to modify (e.g., token, approle, etc.)
+        :type backend_type: str.
+        :param mount_point: The path the associated auth backend is mounted under.
+        :type mount_point: str.
+        :return: The JSON response from Vault
+        :rtype: dict.
+        """
+        if not mount_point:
+            mount_point = backend_type
+        return self.sys.read_auth_method_tuning(
+            path=mount_point,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.disable_auth_method,
+    )
+    def disable_auth_backend(self, mount_point):
+        return self.sys.disable_auth_method(
+            path=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',

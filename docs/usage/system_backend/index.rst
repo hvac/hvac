@@ -5,6 +5,7 @@ System Backend
    :maxdepth: 2
 
    audit
+   auth
 
 .. contents::
 
@@ -40,16 +41,6 @@ Initialize and seal/unseal
     client.seal()
 
     print(client.is_sealed()) # => True
-
-Manipulate auth backends
-------------------------
-
-.. code:: python
-
-    backends = client.list_auth_backends()
-
-    client.enable_auth_backend('userpass', mount_point='customuserpass')
-    client.disable_auth_backend('github')
 
 Manipulate secret backends
 --------------------------

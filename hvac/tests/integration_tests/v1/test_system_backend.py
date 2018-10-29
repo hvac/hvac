@@ -57,14 +57,14 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.client.disable_auth_backend("approle")
 
     def test_auth_backend_manipulation(self):
-        self.assertNotIn('github/', self.client.list_auth_backends())
+        self.assertNotIn('github/', self.client.list_auth_backends()['data'])
 
         self.client.enable_auth_backend('github')
-        self.assertIn('github/', self.client.list_auth_backends())
+        self.assertIn('github/', self.client.list_auth_backends()['data'])
 
         self.client.token = self.manager.root_token
         self.client.disable_auth_backend('github')
-        self.assertNotIn('github/', self.client.list_auth_backends())
+        self.assertNotIn('github/', self.client.list_auth_backends()['data'])
 
     def test_secret_backend_manipulation(self):
         self.assertNotIn('test/', self.client.list_secret_backends())
