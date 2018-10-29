@@ -390,7 +390,7 @@ class Gcp(VaultApiBase):
             'jwt': jwt,
         }
         api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
-        response = self._adapter.auth(
+        response = self._adapter.login(
             url=api_path,
             use_token=use_token,
             json=params,

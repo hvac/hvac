@@ -1125,7 +1125,7 @@ class Client(object):
             'user_id': user_id,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_tls(self, mount_point='cert', use_token=True):
         """POST /auth/<mount point>/login
@@ -1137,7 +1137,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """POST /auth/<mount point>/login/<username>
@@ -1161,7 +1161,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
@@ -1206,7 +1206,7 @@ class Client(object):
             'role': role,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """POST /auth/<mount point>/login
@@ -1234,7 +1234,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
@@ -1737,10 +1737,12 @@ class Client(object):
         :rtype:
         """
         self.token = token
-        return self.auth('/v1/sys/wrapping/unwrap')
+        return self.login('/v1/sys/wrapping/unwrap')
 
-    def auth(self, url, use_token=True, **kwargs):
-        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+    def login(self, url, use_token=True, **kwargs):
+        """Perform a login request.
+
+        Associated request is typically to a path prefixed with "/v1/auth") and optionally stores the client token sent
             in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
             Client attribute.
 
@@ -1754,7 +1756,7 @@ class Client(object):
         :return: The response of the auth request.
         :rtype: requests.Response
         """
-        return self._adapter.auth(
+        return self._adapter.login(
             url=url,
             use_token=use_token,
             **kwargs
@@ -2104,7 +2106,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_kubernetes_configuration(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
         """POST /auth/<mount_point>/config
@@ -2252,7 +2254,7 @@ class Client(object):
             'jwt': jwt
         }
         url = 'v1/auth/{0}/login'.format(mount_point)
-        return self.auth(url, json=params, use_token=use_token)
+        return self.login(url, json=params, use_token=use_token)
 
     def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
                            key_type=None, mount_point='transit'):
@@ -2687,6 +2689,17 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=login,
+    )
+    def auth(self, url, use_token=True, **kwargs):
+        return self.login(
+            url=url,
+            use_token=use_token,
+            **kwargs
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',

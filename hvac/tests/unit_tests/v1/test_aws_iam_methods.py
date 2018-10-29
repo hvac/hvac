@@ -12,7 +12,7 @@ class TestAwsIamMethods(TestCase):
     """Unit tests providing coverage for AWS (EC2) auth backend-related methods/routes."""
 
     @mock.patch('hvac.aws_utils.datetime')
-    @mock.patch('hvac.v1.Client.auth')
+    @mock.patch('hvac.v1.Client.login')
     def test_auth_aws_iam(self, auth_mock, datetime_mock):
         datetime_mock.utcnow.return_value = datetime(2015, 8, 30, 12, 36, 0)
         client = Client()
