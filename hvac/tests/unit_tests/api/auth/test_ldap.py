@@ -4,8 +4,8 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
-from hvac.api.auth import Ldap
-from hvac.api.auth.ldap import DEFAULT_MOUNT_POINT
+from hvac.api.auth_methods import Ldap
+from hvac.api.auth_methods.ldap import DEFAULT_MOUNT_POINT
 
 
 class TestLdap(TestCase):

@@ -3,14 +3,14 @@ from __future__ import unicode_literals
 import json
 from base64 import b64encode
 
+from hvac import aws_utils, exceptions, adapters, utils, api
+from hvac.constants.client import DEPRECATED_PROPERTIES
+
 try:
     import hcl
-
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
-
-from hvac import aws_utils, exceptions, adapters, utils, api
 
 
 class Client(object):
@@ -19,7 +19,7 @@ class Client(object):
     def __init__(self, url='http://localhost:8200', token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None, adapter=None, namespace=None):
-        """Creates a new hvac client instnace.
+        """Creates a new hvac client instance.
 
         :param url: Base URL for the Vault instance being addressed.
         :type url: str
@@ -33,7 +33,7 @@ class Client(object):
         :type verify: Union[bool,str]
         :param timeout: The timeout value for requests sent to Vault.
         :type timeout: int
-        :param proxies: Proxies to use when preforming requests.
+        :param proxies: Proxies to use when performing requests.
             See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         :type proxies: dict
         :param allow_redirects: Whether to follow redirects when sending requests to Vault.
@@ -63,13 +63,15 @@ class Client(object):
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
-        self._github = api.auth.Github(adapter=self._adapter)
-        self._ldap = api.auth.Ldap(adapter=self._adapter)
-        self._mfa = api.auth.Mfa(adapter=self._adapter)
+        self._auth = api.AuthMethods(adapter=self._adapter)
+        self._secrets = api.SecretsEngines(adapter=self._adapter)
 
-        # Secret engine attributes / properties.
-        self._kv = api.secrets_engines.Kv(adapter=self._adapter)
-        self._identity = api.secrets_engines.Identity(adapter=self._adapter)
+    def __getattr__(self, name):
+        return utils.getattr_with_deprecated_properties(
+            obj=self,
+            item=name,
+            deprecated_properties=DEPRECATED_PROPERTIES
+        )
 
     @property
     def adapter(self):
@@ -112,40 +114,21 @@ class Client(object):
         self._adapter.allow_redirects = allow_redirects
 
     @property
-    def github(self):
-        """Accessor for the Client instance's Github methods. Provided via the :py:class:`hvac.api.auth.Github` class.
-
-        :return: This Client instance's associated Github instance.
-        :rtype: hvac.api.auth.Github
+    def auth(self):
+        """Accessor for the Client instance's auth methods. Provided via the :py:class:`hvac.api.AuthMethods` class.
+        :return: This Client instance's associated Auth instance.
+        :rtype: hvac.api.AuthMethods
         """
-        return self._github
+        return self._auth
 
     @property
-    def ldap(self):
-        """Accessor for the Client instance's LDAP methods. Provided via the :py:class:`hvac.api.auth.Ldap` class.
+    def secrets(self):
+        """Accessor for the Client instance's secrets engines. Provided via the :py:class:`hvac.api.SecretsEngines` class.
 
-        :return: This Client instance's associated Ldap instance.
-        :rtype: hvac.api.auth.Ldap
+        :return: This Client instance's associated Auth instance.
+        :rtype: hvac.api.SecretsEngines
         """
-        return self._ldap
-
-    @property
-    def mfa(self):
-        """Accessor for the Client instance's MFA methods. Provided via the :py:class:`hvac.api.auth.mfa` class.
-
-        :return: This Client instance's associated MFA instance.
-        :rtype: hvac.api.auth.mfa
-        """
-        return self._mfa
-
-    @property
-    def kv(self):
-        """Accessor for the Client instance's KV methods. Provided via the :py:class:`hvac.api.secrets_engines.Kv` class.
-
-        :return: This Client instance's associated Kv instance.
-        :rtype: hvac.api.secrets_engines.Kv
-        """
-        return self._kv
+        return self._secrets
 
     @property
     def identity(self):
@@ -387,10 +370,12 @@ class Client(object):
     def key_status(self):
         """GET /sys/key-status
 
-        :return:
-        :rtype:
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/key-status').json()
+        key_status_response = self._adapter.get('/v1/sys/key-status').json()
+        key_status = key_status_response['data']
+        return key_status
 
     def rotate(self):
         """PUT /sys/rotate
@@ -413,16 +398,21 @@ class Client(object):
                     backup=False):
         """PUT /sys/rekey/init
 
-        :param secret_shares:
-        :type secret_shares:
-        :param secret_threshold:
-        :type secret_threshold:
-        :param pgp_keys:
-        :type pgp_keys:
-        :param backup:
-        :type backup:
-        :return:
-        :rtype:
+        :param secret_shares: Specifies the number of shares to split the master key into.
+        :type secret_shares: int
+        :param secret_threshold: Specifies the number of shares required to reconstruct the master key. This must be
+            less than or equal to secret_shares.
+        :type secret_threshold: int
+        :param pgp_keys: List of PGP public keys used to encrypt the output unseal keys. Ordering is preserved. The keys
+            must be base64-encoded from their original binary representation. The size of this array must be the same as
+            secret_shares.
+        :type pgp_keys: list
+        :param backup: Specifies if using PGP-encrypted keys, whether Vault should also store a plaintext backup of the
+            PGP-encrypted keys at core/unseal-keys-backup in the physical storage backend. These can then be retrieved
+            and removed via the sys/rekey/backup endpoint.
+        :type backup: bool
+        :return: The full response object if an empty body is received, otherwise the JSON dict of the response.
+        :rtype: dict | request.Response
         """
         params = {
             'secret_shares': secret_shares,
@@ -563,10 +553,12 @@ class Client(object):
     def list_secret_backends(self):
         """GET /sys/mounts
 
-        :return:
-        :rtype:
+        :return: List of all the mounted secrets engines.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/mounts').json()
+        list_secret_backends_response = self._adapter.get('/v1/sys/mounts').json()
+        secret_backends = list_secret_backends_response['data']
+        return secret_backends
 
     def enable_secret_backend(self, backend_type, description=None, mount_point=None, config=None, options=None):
         """POST /sys/mounts/<mount point>
@@ -619,15 +611,15 @@ class Client(object):
         :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd by audit
             devices in the response data object.
         :type audit_non_hmac_response_keys: list
-        :param listing_visibility: Speficies whether to show this mount in the UI-specific listing endpoint. Valid
+        :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint. Valid
             values are "unauth" or "".
         :type listing_visibility: str
         :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request
             to the backend.
         :type passthrough_request_headers: str
 
-        :return: The JSON response from Vault
-        :rtype: dict.
+        :return: The response from Vault
+        :rtype: request.Response
         """
 
         if not mount_point:
@@ -652,17 +644,18 @@ class Client(object):
     def get_secret_backend_tuning(self, backend_type, mount_point=None):
         """GET /sys/mounts/<mount point>/tune
 
-        :param backend_type:
-        :type backend_type:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param backend_type: Name of the secret engine. E.g. "aws".
+        :type backend_type: str | unicode
+        :param mount_point: Alternate argument for backend_type.
+        :type mount_point: str | unicode
+        :return: The specified mount's configuration.
+        :rtype: dict
         """
         if not mount_point:
             mount_point = backend_type
 
-        return self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        read_config_response = self._adapter.get('/v1/sys/mounts/{0}/tune'.format(mount_point)).json()
+        return read_config_response['data']
 
     def disable_secret_backend(self, mount_point):
         """DELETE /sys/mounts/<mount point>
@@ -694,10 +687,12 @@ class Client(object):
     def list_policies(self):
         """GET /sys/policy
 
-        :return:
-        :rtype:
+        :return: List of configured policies.
+        :rtype: list
         """
-        return self._adapter.get('/v1/sys/policy').json()['policies']
+        list_policies_response = self._adapter.get('/v1/sys/policy').json()
+        policies = list_policies_response['data']['policies']
+        return policies
 
     def get_policy(self, name, parse=False):
         """GET /sys/policy/<name>
@@ -758,10 +753,14 @@ class Client(object):
     def list_audit_backends(self):
         """GET /sys/audit
 
-        :return:
-        :rtype:
+        List only the enabled audit devices (it does not list all available audit devices). This endpoint requires sudo
+            capability in addition to any path-specific capabilities.
+
+        :return: List of enabled audit devices.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/audit').json()
+        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
+        return list_audit_devices_response['data']
 
     def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
         """POST /sys/audit/<name>
@@ -801,17 +800,18 @@ class Client(object):
     def audit_hash(self, name, input):
         """POST /sys/audit-hash
 
-        :param name:
-        :type name:
-        :param input:
-        :type input:
-        :return:
-        :rtype:
+        :param name: Specifies the path of the audit device to generate hashes for. This is part of the request URL.
+        :type name: str | unicode
+        :param input: Specifies the input string to hash.
+        :type input: str | unicode
+        :return: Dict containing a key of "hash" and the associated hash value.
+        :rtype: dict
         """
         params = {
             'input': input,
         }
-        return self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        audit_hash_response = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
+        return audit_hash_response['data']
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -1098,7 +1098,7 @@ class Client(object):
             'user_id': user_id,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_tls(self, mount_point='cert', use_token=True):
         """POST /auth/<mount point>/login
@@ -1110,7 +1110,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """POST /auth/<mount point>/login/<username>
@@ -1134,7 +1134,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
@@ -1179,7 +1179,7 @@ class Client(object):
             'role': role,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """POST /auth/<mount point>/login
@@ -1207,31 +1207,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
-
-    def auth_gcp(self, role, jwt, mount_point='gcp', use_token=True):
-        """
-        POST /auth/<mount point>/login
-
-        :param role: identifier for the GCP auth backend role being requested
-        :type role: str.
-        :param jwt: JSON Web Token from the GCP metadata service
-        :type jwt: str.
-        :param mount_point: The "path" the GCP auth backend was mounted on. Vault currently defaults to "gcp".
-        :type mount_point: str.
-        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the current Client class instance.
-        :type use_token: bool.
-        :return: parsed JSON response from the auth POST request
-        :rtype: dict.
-        """
-
-        params = {
-            'role': role,
-            'jwt': jwt
-        }
-
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
@@ -1467,16 +1443,31 @@ class Client(object):
     def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/client
 
-        :param access_key:
-        :type access_key:
-        :param secret_key:
-        :type secret_key:
-        :param endpoint:
-        :type endpoint:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        Configure the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS APIs.
+        The instance identity document fetched from the PKCS#7 signature will provide the EC2 instance ID. The
+        credentials configured using this endpoint will be used to query the status of the instances via
+        DescribeInstances API. If static credentials are not provided using this endpoint, then the credentials will be
+        retrieved from the environment variables AWS_ACCESS_KEY, AWS_SECRET_KEY and AWS_REGION respectively. If the
+        credentials are still not found and if the method is configured on an EC2 instance with metadata querying
+        capabilities, the credentials are fetched automatically
+
+        :param access_key: AWS Access key with permissions to query AWS APIs. The permissions required depend on the
+            specific configurations. If using the iam auth method without inferencing, then no credentials are
+            necessary. If using the ec2 auth method or using the iam auth method with inferencing, then these
+            credentials need access to ec2:DescribeInstances. If additionally a bound_iam_role is specified, then these
+            credentials also need access to iam:GetInstanceProfile. If, however, an alternate sts configuration is set
+            for the target account, then the credentials must be permissioned to call sts:AssumeRole on the configured
+            role, and that role must have the permissions described here.
+        :type access_key: str|unicode
+        :param secret_key: AWS Secret key with permissions to query AWS APIs.
+        :type secret_key: str|unicode
+        :param endpoint: URL to override the default generated endpoint for making AWS EC2 API calls.
+        :type endpoint: str|unicode
+        :param mount_point: The "path" the AWS auth backend was mounted on. Vault currently defaults to "aws". "aws-ec2"
+            is the default argument for backwards comparability within this module.
+        :type mount_point: str|unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         params = {
             'access_key': access_key,
@@ -1719,10 +1710,12 @@ class Client(object):
         :rtype:
         """
         self.token = token
-        return self.auth('/v1/sys/wrapping/unwrap')
+        return self.login('/v1/sys/wrapping/unwrap')
 
-    def auth(self, url, use_token=True, **kwargs):
-        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+    def login(self, url, use_token=True, **kwargs):
+        """Perform a login request.
+
+        Associated request is typically to a path prefixed with "/v1/auth") and optionally stores the client token sent
             in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
             Client attribute.
 
@@ -1736,7 +1729,7 @@ class Client(object):
         :return: The response of the auth request.
         :rtype: requests.Response
         """
-        return self._adapter.auth(
+        return self._adapter.login(
             url=url,
             use_token=use_token,
             **kwargs
@@ -1745,10 +1738,11 @@ class Client(object):
     def list_auth_backends(self):
         """GET /sys/auth
 
-        :return:
-        :rtype:
+        :return: List of all enabled auth methods.
+        :rtype: dict
         """
-        return self._adapter.get('/v1/sys/auth').json()
+        list_auth_methods_response = self._adapter.get('/v1/sys/auth').json()
+        return list_auth_methods_response['data']
 
     def enable_auth_backend(self, backend_type, description=None, mount_point=None, config=None, plugin_name=None):
         """POST /sys/auth/<mount point>
@@ -1979,17 +1973,20 @@ class Client(object):
         return self._adapter.post(url, json=params).json()
 
     def list_role_secrets(self, role_name, mount_point='approle'):
-        """GET /auth/<mount_point>/role/<role name>/secret-id?list=true
+        """LIST /auth/<mount_point>/role/<role name>/secret-id
 
-        :param role_name:
-        :type role_name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param role_name: Name of the AppRole.
+        :type role_name: str|unicode
+        :param mount_point: The "path" the AppRole auth backend was mounted on. Vault currently defaults to "approle".
+        :type mount_point: str|unicode
+        :return: The JSON response of the request.
+        :rtype: dict
         """
-        url = '/v1/auth/{0}/role/{1}/secret-id?list=true'.format(mount_point, role_name)
-        return self._adapter.get(url).json()
+        url = '/v1/auth/{mount_point}/role/{name}/secret-id'.format(
+            mount_point=mount_point,
+            name=role_name
+        )
+        return self._adapter.list(url).json()
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
@@ -2082,7 +2079,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_kubernetes_configuration(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
         """POST /auth/<mount_point>/config
@@ -2230,7 +2227,7 @@ class Client(object):
             'jwt': jwt
         }
         url = 'v1/auth/{0}/login'.format(mount_point)
-        return self.auth(url, json=params, use_token=use_token)
+        return self.login(url, json=params, use_token=use_token)
 
     def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
                            key_type=None, mount_point='transit'):
@@ -2668,17 +2665,24 @@ class Client(object):
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
-        new_method=api.auth.Ldap.login,
+        new_method=api.auth_methods.Ldap.login,
     )
     def auth_ldap(self, *args, **kwargs):
-        return self.ldap.login(*args, **kwargs)
+        return self.auth.ldap.login(*args, **kwargs)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.auth_methods.Gcp.login,
+    )
+    def auth_gcp(self, *args, **kwargs):
+        return self.auth.gcp.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
-        new_method=api.auth.Github.login,
+        new_method=api.auth_methods.Github.login,
     )
     def auth_github(self, *args, **kwargs):
-        return self.github.login(*args, **kwargs)
+        return self.auth.github.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',

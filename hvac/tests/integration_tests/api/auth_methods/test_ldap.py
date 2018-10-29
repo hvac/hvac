@@ -2,7 +2,7 @@ import logging
 from unittest import TestCase
 
 from ldap_test import LdapServer
-from parameterized import parameterized
+from parameterized import parameterized, param
 
 from hvac import exceptions
 from hvac.tests import utils
@@ -92,7 +92,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         super(TestLdap, self).tearDown()
-        for mount_point, configuration in self.client.list_auth_backends()['data'].items():
+        for mount_point, configuration in self.client.list_auth_backends().items():
             if configuration.get('type') == 'ldap':
                 self.client.disable_auth_backend(
                     mount_point=mount_point,
@@ -113,20 +113,20 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         })
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.configure(**parameters)
+                self.client.auth.ldap.configure(**parameters)
             self.assertIn(
                 member=exception_message,
                 container=str(cm.exception),
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.ldap.configure(**parameters)
+            configure_response = self.client.auth.ldap.configure(**parameters)
             self.assertEqual(
                 first=expected_status_code,
                 second=configure_response.status_code
             )
 
-            read_config_response = self.client.ldap.read_configuration()
+            read_config_response = self.client.auth.ldap.read_configuration()
             for parameter, argument in parameters.items():
                 self.assertIn(
                     member=argument,
@@ -134,7 +134,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
                 )
 
     def test_read_configuration(self):
-        response = self.client.ldap.read_configuration()
+        response = self.client.auth.ldap.read_configuration()
         self.assertIn(
             member='data',
             container=response,
@@ -149,7 +149,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
         if raises:
             with self.assertRaises(raises) as cm:
-                create_response = self.client.ldap.create_or_update_group(
+                create_response = self.client.auth.ldap.create_or_update_group(
                     name=name,
                     policies=policies,
                 )
@@ -159,7 +159,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
                     container=str(cm.exception),
                 )
         else:
-            create_response = self.client.ldap.create_or_update_group(
+            create_response = self.client.auth.ldap.create_or_update_group(
                 name=name,
                 policies=policies,
             )
@@ -174,17 +174,17 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_list_groups(self, test_label, name, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_group(name=name)
+            self.client.auth.ldap.create_or_update_group(name=name)
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.list_groups()
+                self.client.auth.ldap.list_groups()
             if exception_message is not None:
                 self.assertIn(
                     member=exception_message,
                     container=str(cm.exception),
                 )
         else:
-            list_groups_response = self.client.ldap.list_groups()
+            list_groups_response = self.client.auth.ldap.list_groups()
             # raise Exception(list_groups_response)
             self.assertDictEqual(
                 d1=dict(keys=[name]),
@@ -197,17 +197,17 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_read_group(self, test_label, name, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_group(name=name)
+            self.client.auth.ldap.create_or_update_group(name=name)
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.read_group(name=name)
+                self.client.auth.ldap.read_group(name=name)
             if exception_message is not None:
                 self.assertIn(
                     member=exception_message,
                     container=str(cm.exception),
                 )
         else:
-            read_group_response = self.client.ldap.read_group(name=name)
+            read_group_response = self.client.auth.ldap.read_group(name=name)
             self.assertIn(
                 member='policies',
                 container=read_group_response['data'],
@@ -225,7 +225,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.create_or_update_user(
+                self.client.auth.ldap.create_or_update_user(
                     username=username,
                     policies=policies,
                     groups=groups,
@@ -236,7 +236,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
                     container=str(cm.exception),
                 )
         else:
-            create_response = self.client.ldap.create_or_update_user(
+            create_response = self.client.auth.ldap.create_or_update_user(
                 username=username,
                 policies=policies,
                 groups=groups,
@@ -252,9 +252,9 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_delete_group(self, test_label, name, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_group(name=name)
+            self.client.auth.ldap.create_or_update_group(name=name)
         expected_status_code = 204
-        delete_group_response = self.client.ldap.delete_group(name=name)
+        delete_group_response = self.client.auth.ldap.delete_group(name=name)
         self.assertEqual(
             first=expected_status_code,
             second=delete_group_response.status_code
@@ -266,17 +266,17 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_list_users(self, test_label, username, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_user(username=username)
+            self.client.auth.ldap.create_or_update_user(username=username)
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.list_users()
+                self.client.auth.ldap.list_users()
             if exception_message is not None:
                 self.assertIn(
                     member=exception_message,
                     container=str(cm.exception),
                 )
         else:
-            list_users_response = self.client.ldap.list_users()
+            list_users_response = self.client.auth.ldap.list_users()
             self.assertDictEqual(
                 d1=dict(keys=[username]),
                 d2=list_users_response['data'],
@@ -288,17 +288,17 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_read_user(self, test_label, username, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_user(username=username)
+            self.client.auth.ldap.create_or_update_user(username=username)
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.read_user(username=username)
+                self.client.auth.ldap.read_user(username=username)
             if exception_message is not None:
                 self.assertIn(
                     member=exception_message,
                     container=str(cm.exception),
                 )
         else:
-            read_user_response = self.client.ldap.read_user(username=username)
+            read_user_response = self.client.auth.ldap.read_user(username=username)
             self.assertIn(
                 member='policies',
                 container=read_user_response['data'],
@@ -310,24 +310,47 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_delete_user(self, test_label, username, configure_first=True, raises=None, exception_message=None):
         if configure_first:
-            self.client.ldap.create_or_update_user(username=username)
+            self.client.auth.ldap.create_or_update_user(username=username)
         expected_status_code = 204
-        delete_user_response = self.client.ldap.delete_user(username=username)
+        delete_user_response = self.client.auth.ldap.delete_user(username=username)
         self.assertEqual(
             first=expected_status_code,
             second=delete_user_response.status_code
         )
 
     @parameterized.expand([
-        ('working creds with policy', LDAP_USER_NAME, LDAP_USER_PASSWORD, True),
-        ('working creds no membership', LDAP_USER_NAME, LDAP_USER_PASSWORD, False, exceptions.InvalidRequest,
-         'user is not a member of any authorized group'),
-        ('invalid creds', 'not_your_dude_pal', 'some other dudes password', False, exceptions.InvalidRequest,
-         'ldap operation failed'),
+        param(
+            label='working creds with policy'
+        ),
+        param(
+            label='invalid creds',
+            username='not_your_dude_pal',
+            password='some other dudes password',
+            attach_policy=False,
+            raises=exceptions.InvalidRequest,
+        ),
+        # The following two test cases cover either side of the associated changelog entry for LDAP auth here:
+        # https://github.com/hashicorp/vault/blob/master/CHANGELOG.md#0103-june-20th-2018
+        param(
+            label='working creds no membership with Vault version >= 0.10.3',
+            attach_policy=False,
+            skip_due_to_vault_version=utils.skip_if_vault_version_lt('0.10.3'),
+        ),
+        param(
+            label='working creds no membership with Vault version < 0.10.3',
+            attach_policy=False,
+            raises=exceptions.InvalidRequest,
+            exception_message='user is not a member of any authorized group',
+            skip_due_to_vault_version=utils.skip_if_vault_version_ge('0.10.3'),
+        ),
     ])
-    def test_login(self, test_label, username, password, attach_policy, raises=None, exception_message=''):
+    def test_login(self, label, username=LDAP_USER_NAME, password=LDAP_USER_PASSWORD, attach_policy=True, raises=None,
+                   exception_message='', skip_due_to_vault_version=False):
+        if skip_due_to_vault_version:
+            self.skipTest(reason='test case does not apply to Vault version under test')
+
         test_policy_name = 'test-ldap-policy'
-        self.client.ldap.configure(
+        self.client.auth.ldap.configure(
             url=self.mock_ldap_url,
             bind_dn=self.ldap_server.config['bind_dn'],
             bind_pass=self.ldap_server.config['password'],
@@ -340,14 +363,14 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
 
         if attach_policy:
             self.prep_policy(test_policy_name)
-            self.client.ldap.create_or_update_group(
+            self.client.auth.ldap.create_or_update_group(
                 name=LDAP_GROUP_NAME,
                 policies=[test_policy_name],
             )
 
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.ldap.login(
+                self.client.auth.ldap.login(
                     username=username,
                     password=password,
                 )
@@ -357,13 +380,9 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
                     container=str(cm.exception),
                 )
         else:
-            login_response = self.client.ldap.login(
+            login_response = self.client.auth.ldap.login(
                 username=username,
                 password=password,
-            )
-            self.assertEqual(
-                first=['default', test_policy_name],
-                second=login_response['auth']['policies']
             )
             self.assertDictEqual(
                 d1=dict(username=username),
@@ -372,4 +391,12 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
             self.assertEqual(
                 first=login_response['auth']['client_token'],
                 second=self.client.token,
+            )
+            if attach_policy:
+                expected_policies = ['default', test_policy_name]
+            else:
+                expected_policies = ['default']
+            self.assertEqual(
+                first=expected_policies,
+                second=login_response['auth']['policies']
             )

@@ -341,12 +341,12 @@ class TestApproleRoutes(TestCase):
             "wrap_info": None
         }
 
-        mock_url = 'http://localhost:8200/v1/auth/{0}/role/{1}/secret-id?list=true'.format(
+        mock_url = 'http://localhost:8200/v1/auth/{0}/role/{1}/secret-id'.format(
             'approle' if mount_point is None else mount_point,
             role_name,
         )
         requests_mocker.register_uri(
-            method='GET',
+            method='LIST',
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
