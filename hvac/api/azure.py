@@ -2,7 +2,7 @@
 
 import logging
 
-from hvac.api.auth import azure as azure_auth_method
+from hvac.api.auth_methods import azure as azure_auth_method
 from hvac.api.secrets_engines import azure as azure_secret_engine
 from hvac.api.vault_api_base import VaultApiBase
 

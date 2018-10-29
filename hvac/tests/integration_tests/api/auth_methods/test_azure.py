@@ -47,7 +47,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
         resource = 'my-resource'
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.azure.auth.configure(
+                self.client.auth.azure.configure(
                     tenant_id=tenant_id,
                     resource=resource,
                     client_id=client_id,
@@ -60,7 +60,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            configure_response = self.client.azure.auth.configure(
+            configure_response = self.client.auth.azure.configure(
                 tenant_id=tenant_id,
                 resource=resource,
                 client_id=client_id,
@@ -90,17 +90,17 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
             'resource': 'my-resource',
         }
         if write_config_first:
-            self.client.azure.auth.configure(
+            self.client.auth.azure.configure(
                 mount_point=self.TEST_MOUNT_POINT,
                 **expected_config
             )
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.azure.auth.read_config(
+                self.client.auth.azure.read_config(
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            read_config_response = self.client.azure.auth.read_config(
+            read_config_response = self.client.auth.azure.read_config(
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('read_config_response: %s' % read_config_response)
@@ -114,7 +114,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
         ('success',),
     ])
     def test_delete_config(self, label):
-        delete_config_response = self.client.azure.auth.delete_config(
+        delete_config_response = self.client.auth.azure.delete_config(
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('delete_config_response: %s' % delete_config_response)
@@ -144,7 +144,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
     def test_create_role(self, label, policies=None, bound_service_principal_ids=None, raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.azure.auth.create_role(
+                self.client.auth.azure.create_role(
                     name='my-role',
                     policies=policies,
                     bound_service_principal_ids=bound_service_principal_ids,
@@ -155,7 +155,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_role_response = self.client.azure.auth.create_role(
+            create_role_response = self.client.auth.azure.create_role(
                 name='my-role',
                 policies=policies,
                 bound_service_principal_ids=bound_service_principal_ids,
@@ -180,7 +180,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
     def test_read_role(self, label, role_name='hvac', configure_role_first=True, raises=None, exception_message=''):
         bound_service_principal_ids = ['some-dummy-sp-id']
         if configure_role_first:
-            create_role_response = self.client.azure.auth.create_role(
+            create_role_response = self.client.auth.azure.create_role(
                 name=role_name,
                 bound_service_principal_ids=bound_service_principal_ids,
                 mount_point=self.TEST_MOUNT_POINT,
@@ -189,12 +189,12 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
 
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.azure.read_role(
+                self.client.auth.azure.read_role(
                     name=role_name,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            read_role_response = self.client.azure.auth.read_role(
+            read_role_response = self.client.auth.azure.read_role(
                 name=role_name,
                 mount_point=self.TEST_MOUNT_POINT,
             )
@@ -221,7 +221,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_list_roles(self, label, num_roles_to_create=1, write_config_first=True, raises=None):
         if write_config_first:
-            self.client.azure.auth.configure(
+            self.client.auth.azure.configure(
                 tenant_id='my-tenant-id',
                 resource='my-resource',
                 mount_point=self.TEST_MOUNT_POINT,
@@ -230,7 +230,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
         bound_service_principal_ids = ['some-dummy-sp-id']
         logging.debug('roles_to_create: %s' % roles_to_create)
         for role_to_create in roles_to_create:
-            create_role_response = self.client.azure.auth.create_role(
+            create_role_response = self.client.auth.azure.create_role(
                 name=role_to_create,
                 bound_service_principal_ids=bound_service_principal_ids,
                 mount_point=self.TEST_MOUNT_POINT,
@@ -239,11 +239,11 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
 
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.azure.list_roles(
+                self.client.auth.azure.list_roles(
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            list_roles_response = self.client.azure.auth.list_roles(
+            list_roles_response = self.client.auth.azure.list_roles(
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('read_role_response: %s' % list_roles_response)
@@ -265,7 +265,7 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
         role_name = 'hvac'
         bound_service_principal_ids = ['some-dummy-sp-id']
         if configure_role_first:
-            create_role_response = self.client.azure.auth.create_role(
+            create_role_response = self.client.auth.azure.create_role(
                 name=role_name,
                 bound_service_principal_ids=bound_service_principal_ids,
                 mount_point=self.TEST_MOUNT_POINT,
@@ -274,12 +274,12 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
 
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.azure.delete_role(
+                self.client.auth.azure.delete_role(
                     name=role_name,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            delete_role_response = self.client.azure.delete_role(
+            delete_role_response = self.client.auth.azure.delete_role(
                 name=role_name,
                 mount_point=self.TEST_MOUNT_POINT,
             )

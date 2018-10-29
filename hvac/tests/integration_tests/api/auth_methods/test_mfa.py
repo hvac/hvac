@@ -50,7 +50,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     def test_configure(self, test_label, mount_point, mfa_type='duo', force=False, raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.mfa.configure(
+                self.client.auth.mfa.configure(
                     mount_point=mount_point,
                     mfa_type=mfa_type,
                     force=force,
@@ -61,7 +61,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.mfa.configure(
+            configure_response = self.client.auth.mfa.configure(
                 mount_point=mount_point,
                 mfa_type=mfa_type,
                 force=force,
@@ -71,7 +71,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
                 second=configure_response.status_code
             )
 
-            read_config_response = self.client.mfa.read_configuration(
+            read_config_response = self.client.auth.mfa.read_configuration(
                 mount_point=mount_point,
             )
             self.assertEqual(
@@ -84,11 +84,11 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_read_configuration(self, test_label, mount_point, add_configuration=True):
         if add_configuration:
-            self.client.mfa.configure(
+            self.client.auth.mfa.configure(
                 mount_point=mount_point,
             )
 
-        response = self.client.mfa.read_configuration(
+        response = self.client.auth.mfa.read_configuration(
             mount_point=mount_point,
         )
         self.assertIn(
@@ -102,7 +102,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     def test_configure_duo_access(self, test_label, mount_point, host='', integration_key='', secret_key='', raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.mfa.configure_duo_access(
+                self.client.auth.mfa.configure_duo_access(
                     mount_point=mount_point,
                     host=host,
                     integration_key=integration_key,
@@ -114,7 +114,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.mfa.configure_duo_access(
+            configure_response = self.client.auth.mfa.configure_duo_access(
                 mount_point=mount_point,
                 host=host,
                 integration_key=integration_key,
@@ -131,7 +131,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     def test_configure_duo_behavior(self, test_label, mount_point, push_info='', user_agent='', username_format='%s', raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.mfa.configure_duo_behavior(
+                self.client.auth.mfa.configure_duo_behavior(
                     mount_point=mount_point,
                     push_info=push_info,
                     user_agent=user_agent,
@@ -143,7 +143,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.mfa.configure_duo_behavior(
+            configure_response = self.client.auth.mfa.configure_duo_behavior(
                 mount_point=mount_point,
                 push_info=push_info,
                 user_agent=user_agent,
@@ -154,7 +154,7 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
                 second=configure_response.status_code
             )
 
-            read_config_response = self.client.mfa.read_duo_behavior_configuration(
+            read_config_response = self.client.auth.mfa.read_duo_behavior_configuration(
                 mount_point=mount_point,
             )
             self.assertEqual(
@@ -167,11 +167,11 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_read_duo_behavior_configuration(self, test_label, mount_point, add_configuration=True):
         if add_configuration:
-            self.client.mfa.configure(
+            self.client.auth.mfa.configure(
                 mount_point=mount_point,
             )
 
-        response = self.client.mfa.read_duo_behavior_configuration(
+        response = self.client.auth.mfa.read_duo_behavior_configuration(
             mount_point=mount_point,
         )
         self.assertIn(
@@ -186,11 +186,11 @@ class TestMfa(utils.HvacIntegrationTestCase, TestCase):
         username = 'somedude'
         password = 'myverygoodpassword'
 
-        self.client.mfa.configure(
+        self.client.auth.mfa.configure(
             mount_point=TEST_AUTH_PATH,
         )
         if configure_access:
-            self.client.mfa.configure_duo_access(
+            self.client.auth.mfa.configure_duo_access(
                 mount_point=TEST_AUTH_PATH,
                 host='localhost:{port}'.format(port=self.mock_server_port),
                 integration_key='an-integration-key',

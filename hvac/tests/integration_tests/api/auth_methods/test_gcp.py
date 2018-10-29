@@ -43,7 +43,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
     def test_configure(self, label, credentials='', raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.gcp.auth.configure(
+                self.client.auth.gcp.configure(
                     credentials=credentials,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
@@ -52,7 +52,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            configure_response = self.client.gcp.auth.configure(
+            configure_response = self.client.auth.gcp.configure(
                 credentials=credentials,
                 mount_point=self.TEST_MOUNT_POINT,
             )
@@ -76,17 +76,17 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
 
         credentials = utils.load_test_data('example.jwt.json')
         if write_config_first:
-            self.client.gcp.auth.configure(
+            self.client.auth.gcp.configure(
                 credentials=credentials,
                 mount_point=self.TEST_MOUNT_POINT,
             )
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.gcp.auth.read_config(
+                self.client.auth.gcp.read_config(
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            read_config_response = self.client.gcp.auth.read_config(
+            read_config_response = self.client.auth.gcp.read_config(
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('read_config_response: %s' % read_config_response)
@@ -116,16 +116,16 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
     def test_delete_config(self, label, write_config_first=True, raises=None):
 
         if write_config_first:
-            self.client.gcp.auth.configure(
+            self.client.auth.gcp.configure(
                 mount_point=self.TEST_MOUNT_POINT,
             )
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.gcp.auth.delete_config(
+                self.client.auth.gcp.delete_config(
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            delete_config_response = self.client.gcp.auth.delete_config(
+            delete_config_response = self.client.auth.gcp.delete_config(
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('delete_config_response: %s' % delete_config_response)
@@ -173,7 +173,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
             extra_params = {}
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.gcp.auth.create_role(
+                self.client.auth.gcp.create_role(
                     name=role_name,
                     role_type=role_type,
                     project_id=project_id,
@@ -186,7 +186,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_role_response = self.client.gcp.auth.create_role(
+            create_role_response = self.client.auth.gcp.create_role(
                 name=role_name,
                 role_type=role_type,
                 project_id=project_id,
@@ -224,7 +224,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
         if create_role_first:
-            self.client.gcp.auth.create_role(
+            self.client.auth.gcp.create_role(
                 name=role_name,
                 role_type='iam',
                 project_id=project_id,
@@ -233,7 +233,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.gcp.auth.edit_service_accounts_on_iam_role(
+                self.client.auth.gcp.edit_service_accounts_on_iam_role(
                     name=role_name,
                     add=add,
                     remove=remove,
@@ -244,7 +244,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            edit_sa_on_iam_response = self.client.gcp.auth.edit_service_accounts_on_iam_role(
+            edit_sa_on_iam_response = self.client.auth.gcp.edit_service_accounts_on_iam_role(
                 name=role_name,
                 add=add,
                 remove=remove,
@@ -280,7 +280,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
         if create_role_first:
-            self.client.gcp.auth.create_role(
+            self.client.auth.gcp.create_role(
                 name=role_name,
                 role_type='gce',
                 project_id=project_id,
@@ -289,7 +289,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.gcp.auth.edit_labels_on_gce_role(
+                self.client.auth.gcp.edit_labels_on_gce_role(
                     name=role_name,
                     add=add,
                     remove=remove,
@@ -300,7 +300,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            edit_labled_response = self.client.gcp.auth.edit_labels_on_gce_role(
+            edit_labled_response = self.client.auth.gcp.edit_labels_on_gce_role(
                 name=role_name,
                 add=add,
                 remove=remove,
@@ -330,7 +330,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
         if create_role_first:
-            self.client.gcp.auth.create_role(
+            self.client.auth.gcp.create_role(
                 name=role_name,
                 role_type='gce',
                 project_id=project_id,
@@ -339,7 +339,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.gcp.auth.read_role(
+                self.client.auth.gcp.read_role(
                     name=role_name,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
@@ -348,7 +348,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            read_role_response = self.client.gcp.auth.read_role(
+            read_role_response = self.client.auth.gcp.read_role(
                 name=role_name,
                 mount_point=self.TEST_MOUNT_POINT,
             )
@@ -377,7 +377,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         roles_to_create = ['hvac%s' % n for n in range(0, num_roles_to_create)]
         logging.debug('roles_to_create: %s' % roles_to_create)
         for role_to_create in roles_to_create:
-            create_role_response = self.client.gcp.auth.create_role(
+            create_role_response = self.client.auth.gcp.create_role(
                 name=role_to_create,
                 role_type='gce',
                 project_id=project_id,
@@ -388,11 +388,11 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
 
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.gcp.list_roles(
+                self.client.auth.gcp.list_roles(
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            list_roles_response = self.client.gcp.auth.list_roles(
+            list_roles_response = self.client.auth.gcp.list_roles(
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('list_roles_response: %s' % list_roles_response)
@@ -414,7 +414,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
         if configure_role_first:
-            create_role_response = self.client.gcp.auth.create_role(
+            create_role_response = self.client.auth.gcp.create_role(
                 name=role_name,
                 role_type='gce',
                 project_id=project_id,
@@ -425,12 +425,12 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
 
         if raises is not None:
             with self.assertRaises(raises):
-                self.client.gcp.delete_role(
+                self.client.auth.gcp.delete_role(
                     role=role_name,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
         else:
-            delete_role_response = self.client.gcp.delete_role(
+            delete_role_response = self.client.auth.gcp.delete_role(
                 role=role_name,
                 mount_point=self.TEST_MOUNT_POINT,
             )
