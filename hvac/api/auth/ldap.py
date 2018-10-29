@@ -379,7 +379,7 @@ class Ldap(VaultApiBase):
             mount_point=mount_point,
             username=username,
         )
-        return self._adapter.auth(
+        return self._adapter.login(
             url=api_path,
             use_token=use_token,
             json=params,

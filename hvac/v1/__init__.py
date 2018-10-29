@@ -1125,7 +1125,7 @@ class Client(object):
             'user_id': user_id,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_tls(self, mount_point='cert', use_token=True):
         """POST /auth/<mount point>/login
@@ -1137,7 +1137,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """POST /auth/<mount point>/login/<username>
@@ -1161,7 +1161,7 @@ class Client(object):
 
         params.update(kwargs)
 
-        return self.auth('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
@@ -1206,7 +1206,7 @@ class Client(object):
             'role': role,
         }
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """POST /auth/<mount point>/login
@@ -1234,7 +1234,7 @@ class Client(object):
         if role:
             params['role'] = role
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
@@ -1737,7 +1737,7 @@ class Client(object):
         :rtype:
         """
         self.token = token
-        return self.auth('/v1/sys/wrapping/unwrap')
+        return self.login('/v1/sys/wrapping/unwrap')
 
     def login(self, url, use_token=True, **kwargs):
         """Perform a login request.
@@ -2106,7 +2106,7 @@ class Client(object):
         if secret_id is not None:
             params['secret_id'] = secret_id
 
-        return self.auth('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
+        return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
     def create_kubernetes_configuration(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None, mount_point='kubernetes'):
         """POST /auth/<mount_point>/config
@@ -2254,7 +2254,7 @@ class Client(object):
             'jwt': jwt
         }
         url = 'v1/auth/{0}/login'.format(mount_point)
-        return self.auth(url, json=params, use_token=use_token)
+        return self.login(url, json=params, use_token=use_token)
 
     def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
                            key_type=None, mount_point='transit'):
