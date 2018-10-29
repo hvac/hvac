@@ -1739,8 +1739,10 @@ class Client(object):
         self.token = token
         return self.auth('/v1/sys/wrapping/unwrap')
 
-    def auth(self, url, use_token=True, **kwargs):
-        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+    def login(self, url, use_token=True, **kwargs):
+        """Perform a login request.
+
+        Associated request is typically to a path prefixed with "/v1/auth") and optionally stores the client token sent
             in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
             Client attribute.
 
@@ -1754,7 +1756,7 @@ class Client(object):
         :return: The response of the auth request.
         :rtype: requests.Response
         """
-        return self._adapter.auth(
+        return self._adapter.login(
             url=url,
             use_token=use_token,
             **kwargs
@@ -2687,6 +2689,17 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=login,
+    )
+    def auth(self, url, use_token=True, **kwargs):
+        return self.login(
+            url=url,
+            use_token=use_token,
+            **kwargs
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
