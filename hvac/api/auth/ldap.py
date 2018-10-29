@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """LDAP methods module."""
-from hvac.api.vault_api_base import VaultApiBase
 from hvac import exceptions
+from hvac.api.vault_api_base import VaultApiBase
+from hvac.constants.ldap import DEFAULT_GROUP_FILTER
 
 DEFAULT_MOUNT_POINT = 'ldap'
-DEFAULT_GROUP_FILTER = '(|(memberUid={{.Username}})(member={{.UserDN}})(uniqueMember={{.UserDN}}))'
 
 
 class Ldap(VaultApiBase):

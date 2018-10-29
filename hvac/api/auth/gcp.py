@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 """GCP methods module."""
 import logging
-from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
-from hvac.api.vault_api_base import VaultApiBase
+
 from hvac import exceptions
+from hvac.api.vault_api_base import VaultApiBase
+from hvac.constants.gcp import ALLOWED_ROLE_TYPES, GCP_CERTS_ENDPOINT
+from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
 
 DEFAULT_MOUNT_POINT = 'gcp'
-ALLOWED_ROLE_TYPES = ['iam', 'gce']
-GCP_CERTS_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/certs'
 
 logger = logging.getLogger(__name__)
 
