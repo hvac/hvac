@@ -100,11 +100,11 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         }
 
         self.client.enable_audit_backend('file', options=options, name='tmpfile')
-        self.assertIn('tmpfile/', self.client.list_audit_backends())
+        self.assertIn('tmpfile/', self.client.list_audit_backends()['data'])
 
         self.client.token = self.manager.root_token
         self.client.disable_audit_backend('tmpfile')
-        self.assertNotIn('tmpfile/', self.client.list_audit_backends())
+        self.assertNotIn('tmpfile/', self.client.list_audit_backends()['data'])
 
     def test_policy_manipulation(self):
         self.assertIn('root', self.client.list_policies())
@@ -415,7 +415,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
             logging.debug('audit_hash_response: %s' % audit_hash_response)
             self.assertIn(
                 member='hmac-sha256:',
-                container=audit_hash_response['hash'],
+                container=audit_hash_response['data']['hash'],
             )
         self.client.disable_audit_backend('tmpfile')
 

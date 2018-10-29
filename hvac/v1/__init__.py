@@ -65,6 +65,7 @@ class Client(object):
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
         self._auth = api.AuthMethods(adapter=self._adapter)
         self._secrets = api.SecretsEngines(adapter=self._adapter)
+        self._sys = api.SystemBackend(adapter=self._adapter)
 
     def __getattr__(self, name):
         return utils.getattr_with_deprecated_properties(
@@ -125,10 +126,20 @@ class Client(object):
     def secrets(self):
         """Accessor for the Client instance's secrets engines. Provided via the :py:class:`hvac.api.SecretsEngines` class.
 
-        :return: This Client instance's associated Auth instance.
+        :return: This Client instance's associated SecretsEngines instance.
         :rtype: hvac.api.SecretsEngines
         """
         return self._secrets
+
+    @property
+    def sys(self):
+        """Accessor for the Client instance's system backend methods.
+        Provided via the :py:class:`hvac.api.SystemBackend` class.
+
+        :return: This Client instance's associated SystemBackend instance.
+        :rtype: hvac.api.SystemBackend
+        """
+        return self._sys
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
@@ -740,69 +751,6 @@ class Client(object):
         :rtype:
         """
         self._adapter.delete('/v1/sys/policy/{0}'.format(name))
-
-    def list_audit_backends(self):
-        """GET /sys/audit
-
-        List only the enabled audit devices (it does not list all available audit devices). This endpoint requires sudo
-            capability in addition to any path-specific capabilities.
-
-        :return: List of enabled audit devices.
-        :rtype: dict
-        """
-        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
-        return list_audit_devices_response['data']
-
-    def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
-        """POST /sys/audit/<name>
-
-        :param backend_type:
-        :type backend_type:
-        :param description:
-        :type description:
-        :param options:
-        :type options:
-        :param name:
-        :type name:
-        :return:
-        :rtype:
-        """
-        if not name:
-            name = backend_type
-
-        params = {
-            'type': backend_type,
-            'description': description,
-            'options': options,
-        }
-
-        self._adapter.post('/v1/sys/audit/{0}'.format(name), json=params)
-
-    def disable_audit_backend(self, name):
-        """DELETE /sys/audit/<name>
-
-        :param name:
-        :type name:
-        :return:
-        :rtype:
-        """
-        self._adapter.delete('/v1/sys/audit/{0}'.format(name))
-
-    def audit_hash(self, name, input):
-        """POST /sys/audit-hash
-
-        :param name: Specifies the path of the audit device to generate hashes for. This is part of the request URL.
-        :type name: str | unicode
-        :param input: Specifies the input string to hash.
-        :type input: str | unicode
-        :return: Dict containing a key of "hash" and the associated hash value.
-        :rtype: dict
-        """
-        params = {
-            'input': input,
-        }
-        audit_hash_response = self._adapter.post('/v1/sys/audit-hash/{0}'.format(name), json=params).json()
-        return audit_hash_response['data']
 
     def create_token(self, role=None, token_id=None, policies=None, meta=None,
                      no_parent=False, lease=None, display_name=None,
@@ -2653,6 +2601,44 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.list_enabled_audit_devices,
+    )
+    def list_audit_backends(self):
+        return self.sys.list_enabled_audit_devices()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.enable_audit_device,
+    )
+    def enable_audit_backend(self, backend_type, description=None, options=None, name=None):
+        self.sys.enable_audit_device(
+            device_type=backend_type,
+            description=description,
+            options=options,
+            path=name,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.disable_audit_device,
+    )
+    def disable_audit_backend(self, name):
+        self.sys.disable_audit_device(
+            path=name,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.calculate_hash,
+    )
+    def audit_hash(self, name, input):
+        return self.sys.calculate_hash(
+            path=name,
+            input_to_hash=input,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
