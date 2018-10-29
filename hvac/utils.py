@@ -45,6 +45,33 @@ def raise_for_error(status_code, message=None, errors=None):
         raise exceptions.UnexpectedError(message)
 
 
+def generate_method_deprecation_message(to_be_removed_in_version, old_method_name, method_name=None, module_name=None):
+    """Generate a message to be used when warning about the use of deprecated methods.
+
+    :param to_be_removed_in_version: Version of this module the deprecated method will be removed in.
+    :type to_be_removed_in_version: str
+    :param old_method_name: Deprecated method name.
+    :type old_method_name:  str
+    :param method_name:  Method intended to replace the deprecated method indicated. This method's docstrings are
+        included in the decorated method's docstring.
+    :type method_name: str
+    :param module_name: Name of the module containing the new method to use.
+    :type module_name: str
+    :return: Full deprecation warning message for the indicated method.
+    :rtype: str
+    """
+    message = "Call to deprecated function '{old_method_name}'. This method will be removed in version '{version}'".format(
+        old_method_name=old_method_name,
+        version=to_be_removed_in_version,
+    )
+    if method_name is not None and module_name is not None:
+        message += " Please use the '{method_name}' method on the '{module_name}' class moving forward.".format(
+            method_name=method_name,
+            module_name=module_name,
+        )
+    return message
+
+
 def deprecated_method(to_be_removed_in_version, new_method=None):
     """This is a decorator which can be used to mark methods as deprecated. It will result in a warning being emitted
     when the function is used.
@@ -58,40 +85,36 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
     :rtype: types.FunctionType
     """
     def decorator(method):
-        message = "Call to deprecated function '{old_func}'. This method will be removed in version '{version}'".format(
-            old_func=method.__name__,
-            version=to_be_removed_in_version,
+        deprecation_message = generate_method_deprecation_message(
+            to_be_removed_in_version=to_be_removed_in_version,
+            old_method_name=method.__name__,
+            method_name=new_method.__name__,
+            module_name=inspect.getmodule(new_method).__name__,
         )
-        if new_method:
-            message += " Please use the '{method_name}' method on the '{module_name}' class moving forward.".format(
-                method_name=new_method.__name__,
-                module_name=inspect.getmodule(new_method).__name__
-            )
 
         @functools.wraps(method)
         def new_func(*args, **kwargs):
             warnings.simplefilter('always', DeprecationWarning)  # turn off filter
-
             warnings.warn(
-                message=message,
+                message=deprecation_message,
                 category=DeprecationWarning,
                 stacklevel=2,
             )
             warnings.simplefilter('default', DeprecationWarning)  # reset filter
             return method(*args, **kwargs)
+
         if new_method:
-            new_func.__doc__ = dedent(
-                """\
+            new_func.__doc__ = """\
                 {message}
                 Docstring content from this method's replacement copied below:
                 {new_docstring}
                 """.format(
-                    message=message,
-                    new_docstring=new_method.__doc__,
+                    message=deprecation_message,
+                    new_docstring=dedent(new_method.__doc__),
                 )
-            )
+
         else:
-            new_func.__doc__ = message
+            new_func.__doc__ = deprecation_message
         return new_func
     return decorator
 
