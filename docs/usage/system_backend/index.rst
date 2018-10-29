@@ -1,6 +1,11 @@
 System Backend
 ==============
 
+.. toctree::
+   :maxdepth: 2
+
+   audit
+
 .. contents::
 
 Initialize and seal/unseal
@@ -108,21 +113,6 @@ Using Python Variable(s) In Policy Rules
     }
     """ % key
     client.set_policy(name='my-policy-name', rules=policy_body)
-
-Manipulate audit backends
--------------------------
-
-.. code:: python
-
-    backends = client.list_audit_backends()
-
-    options = {
-        'path': '/tmp/vault.log',
-        'log_raw': True,
-    }
-
-    client.enable_audit_backend('file', options=options, name='somefile')
-    client.disable_audit_backend('oldfile')
 
 View and Manage Leases
 ----------------------
