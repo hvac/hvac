@@ -15,5 +15,4 @@ Wrappers
    :maxdepth: 3
 
    wrappers/azure
-   wrappers/gcp
    wrappers/kv

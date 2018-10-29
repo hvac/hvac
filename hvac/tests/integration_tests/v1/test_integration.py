@@ -799,7 +799,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
         # generic 'missing client token' response from Vault.
         with self.assertRaises(exceptions.InvalidRequest) as assertRaisesContext:
-            self.client.auth_gcp('example-role', jwt)
+            self.client.auth.gcp.login('example-role', jwt)
 
         expected_exception_message = 'missing client token'
         actual_exception_message = str(assertRaisesContext.exception)

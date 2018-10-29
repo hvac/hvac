@@ -12,6 +12,8 @@ except ImportError:
 
 from hvac import aws_utils, exceptions, adapters, utils, api
 
+from hvac.constants.client import DEPRECATED_PROPERTIES
+
 
 class Client(object):
     """The hvac Client class for HashiCorp's Vault."""
@@ -63,14 +65,19 @@ class Client(object):
             )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
-        self._gcp = api.Gcp(adapter=self._adapter)
-        self._github = api.auth.Github(adapter=self._adapter)
-        self._ldap = api.auth.Ldap(adapter=self._adapter)
-        self._mfa = api.auth.Mfa(adapter=self._adapter)
-        self._azure = api.Azure(adapter=self._adapter)
+        self._auth = api.AuthMethods(adapter=self._adapter)
 
         # Secret engine attributes / properties.
         self._kv = api.secrets_engines.Kv(adapter=self._adapter)
+
+        self._azure = api.Azure(adapter=self._adapter)
+
+    def __getattr__(self, name):
+        return utils.getattr_with_deprecated_properties(
+            obj=self,
+            item=name,
+            deprecated_properties=DEPRECATED_PROPERTIES
+        )
 
     @property
     def adapter(self):
@@ -113,40 +120,12 @@ class Client(object):
         self._adapter.allow_redirects = allow_redirects
 
     @property
-    def gcp(self):
-        """Accessor for the Client instance's GCP methods. Provided via the :py:class:`hvac.api.Gcp` class.
-
-        :return: This Client instance's associated GCP instance.
-        :rtype: hvac.api.Gcp
+    def auth(self):
+        """Accessor for the Client instance's auth methods. Provided via the :py:class:`hvac.api.AuthMethods` class.
+        :return: This Client instance's associated Auth instance.
+        :rtype: hvac.api.AuthMethods
         """
-        return self._gcp
-
-    @property
-    def github(self):
-        """Accessor for the Client instance's Github methods. Provided via the :py:class:`hvac.api.auth.Github` class.
-
-        :return: This Client instance's associated Github instance.
-        :rtype: hvac.api.auth.Github
-        """
-        return self._github
-
-    @property
-    def ldap(self):
-        """Accessor for the Client instance's LDAP methods. Provided via the :py:class:`hvac.api.auth.Ldap` class.
-
-        :return: This Client instance's associated Ldap instance.
-        :rtype: hvac.api.auth.Ldap
-        """
-        return self._ldap
-
-    @property
-    def mfa(self):
-        """Accessor for the Client instance's MFA methods. Provided via the :py:class:`hvac.api.auth.mfa` class.
-
-        :return: This Client instance's associated MFA instance.
-        :rtype: hvac.api.auth.mfa
-        """
-        return self._mfa
+        return self._auth
 
     @property
     def kv(self):
@@ -2691,33 +2670,22 @@ class Client(object):
         return self._adapter.post(url, json=params).json()
 
     @utils.deprecated_method(
-        to_be_removed_in_version='0.9.0',
-        new_method=login,
-    )
-    def auth(self, url, use_token=True, **kwargs):
-        return self.login(
-            url=url,
-            use_token=use_token,
-            **kwargs
-        )
-
-    @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
-        new_method=api.auth.Ldap.login,
+        new_method=api.auth_methods.Ldap.login,
     )
     def auth_ldap(self, *args, **kwargs):
         return self.ldap.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
-        new_method=api.auth.Gcp.login,
+        new_method=api.auth_methods.Gcp.login,
     )
     def auth_gcp(self, *args, **kwargs):
-        return self.gcp.auth.login(*args, **kwargs)
+        return self.auth.gcp.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',
-        new_method=api.auth.Github.login,
+        new_method=api.auth_methods.Github.login,
     )
     def auth_github(self, *args, **kwargs):
         return self.github.login(*args, **kwargs)

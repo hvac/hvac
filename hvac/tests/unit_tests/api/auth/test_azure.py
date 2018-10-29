@@ -6,7 +6,7 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
-from hvac.api.auth import Azure
+from hvac.api.auth_methods import Azure
 from hvac.tests import utils
 
 
