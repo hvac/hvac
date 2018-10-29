@@ -17,13 +17,13 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
             'pssst': 'hi',
         }
         if write_secret_before_test:
-            self.client.kv.v1.create_or_update_secret(
+            self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.kv.v1.read_secret(
+                self.client.secrets.kv.v1.read_secret(
                     path=path,
                 )
             self.assertIn(
@@ -32,7 +32,7 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
             )
         else:
 
-            read_secret_result = self.client.kv.v1.read_secret(
+            read_secret_result = self.client.secrets.kv.v1.read_secret(
                 path=path,
             )
             self.assertDictEqual(
@@ -51,13 +51,13 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
         test_path_prefix, test_key = path.split('/')[:2]
 
         if write_secret_before_test:
-            self.client.kv.v1.create_or_update_secret(
+            self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.kv.v1.list_secrets(
+                self.client.secrets.kv.v1.list_secrets(
                     path=test_path_prefix,
                 )
             self.assertIn(
@@ -65,7 +65,7 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            list_secrets_result = self.client.kv.v1.list_secrets(
+            list_secrets_result = self.client.secrets.kv.v1.list_secrets(
                 path=test_path_prefix,
             )
             self.assertEqual(
@@ -87,13 +87,13 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
         }
 
         if write_secret_before_test:
-            self.client.kv.v1.create_or_update_secret(
+            self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.kv.v1.create_or_update_secret(
+                self.client.secrets.kv.v1.create_or_update_secret(
                     path=path,
                     secret=test_secret,
                     method=method,
@@ -103,7 +103,7 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_or_update_secret_result = self.client.kv.v1.create_or_update_secret(
+            create_or_update_secret_result = self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
                 method=method,
@@ -123,13 +123,13 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
         }
 
         if write_secret_before_test:
-            self.client.kv.v1.create_or_update_secret(
+            self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
             )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.kv.v1.delete_secret(
+                self.client.secrets.kv.v1.delete_secret(
                     path=path,
                 )
             self.assertIn(
@@ -137,7 +137,7 @@ class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            delete_secret_result = self.client.kv.v1.delete_secret(
+            delete_secret_result = self.client.secrets.kv.v1.delete_secret(
                 path=path,
             )
             self.assertEqual(

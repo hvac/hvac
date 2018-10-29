@@ -40,15 +40,15 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
             configure_arguments['environment'] = environment
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.azure.secret.configure(**configure_arguments)
+                self.client.secrets.azure.configure(**configure_arguments)
             self.assertIn(
                 member=exception_message,
                 container=str(cm.exception),
             )
         else:
-            configure_response = self.client.azure.secret.configure(**configure_arguments)
+            configure_response = self.client.secrets.azure.configure(**configure_arguments)
             logging.debug('configure_response: %s' % configure_response)
-            read_configuration_response = self.client.azure.secret.read_config(
+            read_configuration_response = self.client.secrets.azure.read_config(
                 mount_point=self.DEFAULT_MOUNT_POINT,
             )
             logging.debug('read_configuration_response: %s' % read_configuration_response)
@@ -71,16 +71,16 @@ class TestAzure(utils.HvacIntegrationTestCase, TestCase):
         ('create and then delete config',),
     ])
     def test_delete_config(self, test_label):
-        configure_response = self.client.azure.secret.configure(
+        configure_response = self.client.secrets.azure.configure(
             subscription_id=self.SUBSCRIPTION_ID,
             tenant_id=self.TENANT_ID,
             mount_point=self.DEFAULT_MOUNT_POINT
         )
         logging.debug('configure_response: %s' % configure_response)
-        self.client.azure.secret.delete_config(
+        self.client.secrets.azure.delete_config(
             mount_point=self.DEFAULT_MOUNT_POINT,
         )
-        read_configuration_response = self.client.azure.secret.read_config(
+        read_configuration_response = self.client.secrets.azure.read_config(
             mount_point=self.DEFAULT_MOUNT_POINT,
         )
         logging.debug('read_configuration_response: %s' % read_configuration_response)

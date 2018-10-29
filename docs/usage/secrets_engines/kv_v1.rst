@@ -20,7 +20,7 @@ Read a Secret
     mount_point = 'secretz'
     secret_path = 'hvac'
 
-    read_secret_result = client.kv.v1.read_secret(
+    read_secret_result = client.secrets.kv.v1.read_secret(
         path=secret_path,
         mount_point=mount_point,
     )
@@ -38,7 +38,7 @@ List Secrets
     import hvac
     client = hvac.Client()
 
-    list_secrets_result = client.kv.v1.list_secrets(path='hvac')
+    list_secrets_result = client.secrets.kv.v1.list_secrets(path='hvac')
 
     print('The following keys found under the selected path ("/v1/secret/hvac"): {keys}'.format(
         keys=','.join(list_secrets_result['data']['keys']),
@@ -57,12 +57,12 @@ Create or Update a Secret
         'psst': 'this is so secret yall',
     }
 
-    client.kv.v1.create_or_update_secret(
+    client.secrets.kv.v1.create_or_update_secret(
         path='hvac',
         secret=hvac_secret,
     )
 
-    read_secret_result = client.kv.v1.read_secret(
+    read_secret_result = client.secrets.kv.v1.read_secret(
         path='hvac',
     )
     print('The "psst" key under the secret path ("/v1/secret/hvac") is: {psst}'.format(
@@ -79,11 +79,11 @@ Delete a Secret
     import hvac
     client = hvac.Client()
 
-    client.kv.v1.delete_secret(
+    client.secrets.kv.v1.delete_secret(
         path='hvac',
     )
 
     # The following will raise a :py:class:`hvac.exceptions.InvalidPath` exception.
-    read_secret_result = client.kv.v1.read_secret(
+    read_secret_result = client.secrets.kv.v1.read_secret(
         path='hvac',
     )
