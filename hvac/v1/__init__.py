@@ -3,16 +3,14 @@ from __future__ import unicode_literals
 import json
 from base64 import b64encode
 
+from hvac import aws_utils, exceptions, adapters, utils, api
+from hvac.constants.client import DEPRECATED_PROPERTIES
+
 try:
     import hcl
-
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
-
-from hvac import aws_utils, exceptions, adapters, utils, api
-
-from hvac.constants.client import DEPRECATED_PROPERTIES
 
 
 class Client(object):
@@ -66,11 +64,7 @@ class Client(object):
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
         self._auth = api.AuthMethods(adapter=self._adapter)
-
-        # Secret engine attributes / properties.
-        self._kv = api.secrets_engines.Kv(adapter=self._adapter)
-
-        self._azure = api.Azure(adapter=self._adapter)
+        self._secrets = api.SecretsEngines(adapter=self._adapter)
 
     def __getattr__(self, name):
         return utils.getattr_with_deprecated_properties(
@@ -128,22 +122,13 @@ class Client(object):
         return self._auth
 
     @property
-    def kv(self):
-        """Accessor for the Client instance's KV methods. Provided via the :py:class:`hvac.api.secrets_engines.Kv` class.
+    def secrets(self):
+        """Accessor for the Client instance's secrets engines. Provided via the :py:class:`hvac.api.SecretsEngines` class.
 
-        :return: This Client instance's associated Kv instance.
-        :rtype: hvac.api.secrets_engines.Kv
+        :return: This Client instance's associated Auth instance.
+        :rtype: hvac.api.SecretsEngines
         """
-        return self._kv
-
-    @property
-    def azure(self):
-        """Accessor for the Client instance's Azure methods. Provided via the :py:class:`hvac.api.Azure` class.
-
-        :return: This Client instance's associated Azure instance.
-        :rtype: hvac.api.Azure
-        """
-        return self._azure
+        return self._secrets
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
@@ -2674,10 +2659,10 @@ class Client(object):
         new_method=api.auth_methods.Ldap.login,
     )
     def auth_ldap(self, *args, **kwargs):
-        return self.ldap.login(*args, **kwargs)
+        return self.auth.ldap.login(*args, **kwargs)
 
     @utils.deprecated_method(
-        to_be_removed_in_version='0.8.0',
+        to_be_removed_in_version='0.9.0',
         new_method=api.auth_methods.Gcp.login,
     )
     def auth_gcp(self, *args, **kwargs):
@@ -2688,7 +2673,7 @@ class Client(object):
         new_method=api.auth_methods.Github.login,
     )
     def auth_github(self, *args, **kwargs):
-        return self.github.login(*args, **kwargs)
+        return self.auth.github.login(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.8.0',

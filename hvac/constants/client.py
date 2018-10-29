@@ -15,4 +15,8 @@ DEPRECATED_PROPERTIES = {
         to_be_removed_in_version='0.9.0',
         client_property='auth',
     ),
+    'kv': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='secrets',
+    ),
 }
