@@ -193,32 +193,6 @@ class Client(object):
         """
         self._adapter.delete('/v1/{0}'.format(path))
 
-    def unwrap(self, token=None):
-        """POST /sys/wrapping/unwrap
-
-        :param token:
-        :type token:
-        :return:
-        :rtype:
-        """
-        if token:
-            payload = {
-                'token': token
-            }
-            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json()
-        else:
-            return self._adapter.post('/v1/sys/wrapping/unwrap').json()
-
-    def revoke_secret_prefix(self, path_prefix):
-        """PUT /sys/revoke-prefix/<path prefix>
-
-        :param path_prefix:
-        :type path_prefix:
-        :return:
-        :rtype:
-        """
-        self._adapter.put('/v1/sys/revoke-prefix/{0}'.format(path_prefix))
-
     def revoke_self_token(self):
         """PUT /auth/token/revoke-self
 
@@ -1969,6 +1943,13 @@ class Client(object):
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.unwrap,
+    )
+    def unwrap(self, token=None):
+        return self.sys.unwrap(token=token)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
         new_method=api.SystemBackend.list_policies,
     )
     def list_policies(self):
@@ -2160,6 +2141,15 @@ class Client(object):
     def revoke_secret(self, lease_id):
         return self.sys.revoke_lease(
             lease_id=lease_id,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.revoke_lease,
+    )
+    def revoke_secret_prefix(self, path_prefix):
+        self.sys.revoke_prefix(
+            prefix=path_prefix,
         )
 
     @utils.deprecated_method(

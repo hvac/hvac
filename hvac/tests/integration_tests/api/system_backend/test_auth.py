@@ -11,6 +11,7 @@ class TestAuth(utils.HvacIntegrationTestCase, TestCase):
         self.client.sys.disable_auth_method(
             path=self.TEST_AUTH_METHOD_PATH
         )
+        super(TestAuth, self).tearDown()
 
     def test_auth_backend_manipulation(self):
         self.assertNotIn(

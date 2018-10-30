@@ -19,7 +19,7 @@ class Policy(SystemBackendMixin):
             GET: /sys/policy. Produces: 200 application/json
 
         :return: The JSON response of the request.
-        :rtype: list
+        :rtype: dict
         """
         api_path = '/v1/sys/policy'
         response = self._adapter.get(
