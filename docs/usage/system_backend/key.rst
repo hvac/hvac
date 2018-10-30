@@ -42,6 +42,8 @@ Cancel Root Generation
 	import hvac
 	client = hvac.Client()
 
+	client.sys.cancel_root_generation()
+
 
 Generate Root
 -------------
@@ -53,7 +55,10 @@ Generate Root
 	import hvac
 	client = hvac.Client()
 
-	client.sys.cancel_root_generation()
+	client.sys.generate_root(
+		key=key,
+		nonce=nonce,
+	)
 
 
 Get Encryption Key Status
@@ -66,6 +71,8 @@ Get Encryption Key Status
 	import hvac
 	client = hvac.Client()
 
+	print('Encryption key term is: %s' % client.sys.key_status['term'])
+
 
 Rotate Encryption Key
 ---------------------
@@ -76,6 +83,8 @@ Rotate Encryption Key
 
 	import hvac
 	client = hvac.Client()
+
+	client.sys.rotate_encryption_key()
 
 
 Read Rekey Progress
@@ -88,6 +97,8 @@ Read Rekey Progress
 	import hvac
 	client = hvac.Client()
 
+	print('Rekey "started" status is: %s' % client.sys.read_rekey_progress()['started'])
+
 
 Start Rekey
 -----------
@@ -98,6 +109,8 @@ Start Rekey
 
 	import hvac
 	client = hvac.Client()
+
+	client.sys.start_rekey()
 
 
 Cancel Rekey
@@ -110,6 +123,8 @@ Cancel Rekey
 	import hvac
 	client = hvac.Client()
 
+	client.sys.cancel_rekey()
+
 
 Rekey
 -----
@@ -120,6 +135,12 @@ Rekey
 
 	import hvac
 	client = hvac.Client()
+
+	client.sys.rekey(
+		key=key,
+		nonce=nonce,
+		recovery_key=recovery_key,
+	)
 
 
 Rekey Multi
@@ -132,15 +153,18 @@ Rekey Multi
 	import hvac
 	client = hvac.Client()
 
+	client.sys.rekey_multi(keys, nonce=nonce)
 
-Read Backup Key
----------------
 
-:py:meth:`hvac.api.system_backend.key.read_backup_key`
+Read Backup Keys
+----------------
+
+:py:meth:`hvac.api.system_backend.key.read_backup_keys`
 
 .. code:: python
 
 	import hvac
 	client = hvac.Client()
 
+	print('Backup keys are: %s' % client.sys.read_backup_keys()['keys'])
 

@@ -8,6 +8,19 @@ class Key(SystemBackendMixin):
     def generate_root_status(self):
         return self.read_root_generation_progress()
 
+    @property
+    def key_status(self):
+        """GET /sys/key-status
+
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
+        """
+        return self.get_encryption_key_status()['data']
+
+    @property
+    def rekey_status(self):
+        return self.read_rekey_progress()
+
     def read_root_generation_progress(self):
         """Read the configuration and process of the current root generation attempt.
 
@@ -107,14 +120,14 @@ class Key(SystemBackendMixin):
         Supported methods:
             GET: /sys/key-status. Produces: 200 application/json
 
-        :return: Information about the current encryption key used by Vault.
+        :return: JSON response with information regarding the current encryption key used by Vault.
         :rtype: dict
         """
         api_path = '/v1/sys/key-status'
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.json()
 
     def rotate_encryption_key(self):
         """Trigger a rotation of the backend encryption key.
@@ -137,28 +150,34 @@ class Key(SystemBackendMixin):
         )
         return response
 
-    def read_rekey_progress(self):
+    def read_rekey_progress(self, recovery_key=False):
         """Read the configuration and progress of the current rekey attempt.
 
         Supported methods:
             GET: /sys/rekey-recovery-key/init. Produces: 200 application/json
+            GET: /sys/rekey/init. Produces: 200 application/json
 
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rekey-recovery-key/init'
+        api_path = '/v1/sys/rekey/init'
+        if recovery_key:
+            api_path = '/v1/sys/rekey-recovery-key/init'
         response = self._adapter.get(
             url=api_path,
         )
         return response.json()
 
-    def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None, backup=False, require_verification=False):
+    def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None, backup=False, require_verification=False, recovery_key=False):
         """Initializes a new rekey attempt.
 
         Only a single recovery key rekeyattempt can take place at a time, and changing the parameters of a rekey
         requires canceling and starting a new rekey, which will also provide a new nonce.
 
         Supported methods:
+            PUT: /sys/rekey/init. Produces: 204 (empty body)
             PUT: /sys/rekey-recovery-key/init. Produces: 204 (empty body)
 
         :param secret_shares: Specifies the number of shares to split the master key into.
@@ -181,6 +200,8 @@ class Key(SystemBackendMixin):
             lost after rotation but before they can be persisted. This can be used with without pgp_keys, and when used
             with it, it allows ensuring that the returned keys can be successfully decrypted before committing to the
             new shares, which the backup functionality does not provide.
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :type require_verification: bool
         :return: The JSON dict of the response.
         :rtype: dict | request.Response
@@ -199,6 +220,8 @@ class Key(SystemBackendMixin):
             params['backup'] = backup
 
         api_path = '/v1/sys/rekey/init'
+        if recovery_key:
+            api_path = '/v1/sys/rekey-recovery-key/init'
         response = self._adapter.put(
             url=api_path,
             json=params,
@@ -206,7 +229,7 @@ class Key(SystemBackendMixin):
 
         return response.json()
 
-    def cancel_rekey(self):
+    def cancel_rekey(self, recovery_key=False):
         """Cancel any in-progress rekey.
 
         This clears the rekey settings as well as any progress made. This must be called to change the parameters of the
@@ -215,30 +238,38 @@ class Key(SystemBackendMixin):
             unseal keys remain valid.
 
         Supported methods:
+            DELETE: /sys/rekey/init. Produces: 204 (empty body)
             DELETE: /sys/rekey-recovery-key/init. Produces: 204 (empty body)
 
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :return: The response of the request.
         :rtype: requests.Response
         """
         api_path = '/v1/sys/rekey/init'
+        if recovery_key:
+            api_path = '/v1/sys/rekey-recovery-key/init'
         response = self._adapter.delete(
             url=api_path,
         )
         return response
 
-    def rekey(self, key, nonce=None):
+    def rekey(self, key, nonce=None, recovery_key=False):
         """Enter a single recovery key share to progress the rekey of the Vault.
         If the threshold number of recovery key shares is reached, Vault will complete the rekey. Otherwise, this API
         must be called multiple times until that threshold is met. The rekey nonce operation must be provided with each
         call.
 
         Supported methods:
+            PUT: /sys/rekey/update. Produces: 200 application/json
             PUT: /sys/rekey-recovery-key/update. Produces: 200 application/json
 
         :param key: Specifies a single recovery share key.
         :type key: str | unicode
         :param nonce: Specifies the nonce of the rekey operation.
         :type nonce: str | unicode
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :return: The JSON response of the request.
         :rtype: dict
         """
@@ -250,13 +281,15 @@ class Key(SystemBackendMixin):
             params['nonce'] = nonce
 
         api_path = '/v1/sys/rekey/update'
+        if recovery_key:
+            api_path = '/v1/sys/rekey-recovery-key/update'
         response = self._adapter.put(
             url=api_path,
             json=params,
         )
         return response.json()
 
-    def rekey_multi(self, keys, nonce=None):
+    def rekey_multi(self, keys, nonce=None, recovery_key=False):
         """Enter multiple recovery key shares to progress the rekey of the Vault.
 
         If the threshold number of recovery key shares is reached, Vault will complete the rekey.
@@ -265,19 +298,25 @@ class Key(SystemBackendMixin):
         :type keys: list
         :param nonce: Specifies the nonce of the rekey operation.
         :type nonce: str | unicode
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :return: The last response of the rekey request.
         :rtype: response.Request
         """
         result = None
 
         for key in keys:
-            result = self.rekey(key, nonce=nonce)
+            result = self.rekey(
+                key=key,
+                nonce=nonce,
+                recovery_key=recovery_key,
+            )
             if result.get('complete'):
                 break
 
         return result
 
-    def read_backup_key(self):
+    def read_backup_keys(self, recovery_key=False):
         """Retrieve the backup copy of PGP-encrypted unseal keys.
 
         The returned value is the nonce of the rekey operation and a map of PGP key fingerprint to hex-encoded
@@ -285,11 +324,16 @@ class Key(SystemBackendMixin):
 
         Supported methods:
             PUT: /sys/rekey/backup. Produces: 200 application/json
+            PUT: /sys/rekey-recovery-key/backup. Produces: 200 application/json
 
+        :param recovery_key: If true, send requests to "rekey-recovery-key" instead of "rekey" api path.
+        :type recovery_key: bool
         :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = '/v1/sys/rekey/backup'
+        if recovery_key:
+            api_path = '/v1/sys/rekey-recovery-key/backup'
         response = self._adapter.get(
             url=api_path,
         )

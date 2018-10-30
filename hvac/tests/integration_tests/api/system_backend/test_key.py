@@ -1,6 +1,6 @@
 import logging
 from unittest import TestCase
-
+from hvac import exceptions
 from hvac.tests import utils
 
 
@@ -55,3 +55,42 @@ class TestKey(utils.HvacIntegrationTestCase, TestCase):
 
         self.client.sys.cancel_root_generation()
         self.assertFalse(self.client.sys.read_root_generation_progress()['started'])
+
+    def test_rotate(self):
+        status = self.client.sys.key_status
+
+        self.client.sys.rotate_encryption_key()
+
+        self.assertGreater(
+            self.client.sys.key_status['term'],
+            status['term'],
+        )
+
+    def test_rekey_multi(self):
+        cls = type(self)
+
+        self.assertFalse(self.client.sys.rekey_status['started'])
+
+        self.client.sys.start_rekey()
+        self.assertTrue(self.client.sys.rekey_status['started'])
+
+        self.client.sys.cancel_rekey()
+        self.assertFalse(self.client.sys.rekey_status['started'])
+
+        result = self.client.sys.start_rekey()
+
+        keys = cls.manager.keys
+
+        result = self.client.sys.rekey_multi(keys, nonce=result['nonce'])
+        self.assertTrue(result['complete'])
+
+        cls.manager.keys = result['keys']
+        cls.manager.unseal()
+
+    def test_get_backed_up_keys(self):
+        with self.assertRaises(exceptions.InvalidRequest) as cm:
+            self.client.sys.read_backup_keys()
+            self.assertEqual(
+                first='no backed-up keys found',
+                second=str(cm.exception),
+            )
