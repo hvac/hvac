@@ -12,7 +12,7 @@ class Health(SystemBackendMixin):
     """
 
     def read_health_status(self, standby_ok=False, active_code=200, standby_code=429, dr_secondary_code=472,
-                    performance_standby_code=473, sealed_code=503, uninit_code=501, method='HEAD'):
+                           performance_standby_code=473, sealed_code=503, uninit_code=501, method='HEAD'):
         """Read the health status of Vault.
 
         This matches the semantics of a Consul HTTP health check and provides a simple way to monitor the health of a
