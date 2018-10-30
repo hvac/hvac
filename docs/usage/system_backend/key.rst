@@ -4,7 +4,7 @@ Key
 Read Root Generation Progress
 -----------------------------
 
-:py:meth:`hvac.api.system_backend.key.read_root_generation_progress`
+:py:meth:`hvac.api.system_backend.Key.read_root_generation_progress`
 
 .. code:: python
 
@@ -18,7 +18,7 @@ Read Root Generation Progress
 Start Root Token Generation
 ---------------------------
 
-:py:meth:`hvac.api.system_backend.key.start_root_token_generation`
+:py:meth:`hvac.api.system_backend.Key.start_root_token_generation`
 
 .. code:: python
 
@@ -35,7 +35,7 @@ Start Root Token Generation
 Cancel Root Generation
 ----------------------
 
-:py:meth:`hvac.api.system_backend.key.cancel_root_generation`
+:py:meth:`hvac.api.system_backend.Key.cancel_root_generation`
 
 .. code:: python
 
@@ -48,7 +48,7 @@ Cancel Root Generation
 Generate Root
 -------------
 
-:py:meth:`hvac.api.system_backend.key.generate_root`
+:py:meth:`hvac.api.system_backend.Key.generate_root`
 
 .. code:: python
 
@@ -64,7 +64,7 @@ Generate Root
 Get Encryption Key Status
 -------------------------
 
-:py:meth:`hvac.api.system_backend.key.get_encryption_key_status`
+:py:meth:`hvac.api.system_backend.Key.get_encryption_key_status`
 
 .. code:: python
 
@@ -77,7 +77,7 @@ Get Encryption Key Status
 Rotate Encryption Key
 ---------------------
 
-:py:meth:`hvac.api.system_backend.key.rotate_encryption_key`
+:py:meth:`hvac.api.system_backend.Key.rotate_encryption_key`
 
 .. code:: python
 
@@ -90,7 +90,7 @@ Rotate Encryption Key
 Read Rekey Progress
 -------------------
 
-:py:meth:`hvac.api.system_backend.key.read_rekey_progress`
+:py:meth:`hvac.api.system_backend.Key.read_rekey_progress`
 
 .. code:: python
 
@@ -103,7 +103,7 @@ Read Rekey Progress
 Start Rekey
 -----------
 
-:py:meth:`hvac.api.system_backend.key.start_rekey`
+:py:meth:`hvac.api.system_backend.Key.start_rekey`
 
 .. code:: python
 
@@ -116,7 +116,7 @@ Start Rekey
 Cancel Rekey
 ------------
 
-:py:meth:`hvac.api.system_backend.key.cancel_rekey`
+:py:meth:`hvac.api.system_backend.Key.cancel_rekey`
 
 .. code:: python
 
@@ -129,7 +129,7 @@ Cancel Rekey
 Rekey
 -----
 
-:py:meth:`hvac.api.system_backend.key.rekey`
+:py:meth:`hvac.api.system_backend.Key.rekey`
 
 .. code:: python
 
@@ -146,7 +146,7 @@ Rekey
 Rekey Multi
 -----------
 
-:py:meth:`hvac.api.system_backend.key.rekey_multi`
+:py:meth:`hvac.api.system_backend.Key.rekey_multi`
 
 .. code:: python
 
@@ -159,7 +159,7 @@ Rekey Multi
 Read Backup Keys
 ----------------
 
-:py:meth:`hvac.api.system_backend.key.read_backup_keys`
+:py:meth:`hvac.api.system_backend.Key.read_backup_keys`
 
 .. code:: python
 
