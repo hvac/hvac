@@ -10,6 +10,7 @@ System Backend
    init
    key
    leader
+   lease
 
 .. contents::
 

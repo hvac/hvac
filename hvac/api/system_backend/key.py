@@ -234,8 +234,9 @@ class Key(SystemBackendMixin):
 
         This clears the rekey settings as well as any progress made. This must be called to change the parameters of the
         rekey.
+
         Note: Verification is still a part of a rekey. If rekeying is canceled during the verification flow, the current
-            unseal keys remain valid.
+        unseal keys remain valid.
 
         Supported methods:
             DELETE: /sys/rekey/init. Produces: 204 (empty body)
@@ -256,6 +257,7 @@ class Key(SystemBackendMixin):
 
     def rekey(self, key, nonce=None, recovery_key=False):
         """Enter a single recovery key share to progress the rekey of the Vault.
+
         If the threshold number of recovery key shares is reached, Vault will complete the rekey. Otherwise, this API
         must be called multiple times until that threshold is met. The rekey nonce operation must be provided with each
         call.
