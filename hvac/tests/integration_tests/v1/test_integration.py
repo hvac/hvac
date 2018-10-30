@@ -26,7 +26,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.delete('secret/test-list/foo')
 
     def test_write_with_response(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -250,7 +250,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.disable_auth_backend('app-id')
 
     def test_transit_read_write(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -269,7 +269,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert not result['data']['exportable']
 
     def test_transit_list_keys(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -281,7 +281,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert result['data']['keys'] == ["foo1", "foo2", "foo3"]
 
     def test_transit_update_delete_keys(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -300,7 +300,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             assert False
 
     def test_transit_rotate_key(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -315,7 +315,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert '3' in response['data']['keys']
 
     def test_transit_export_key(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -324,7 +324,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert response is not None
 
     def test_transit_encrypt_data(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -334,7 +334,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert plaintext_resp == 'abbaabba'
 
     def test_transit_rewrap_data(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -347,7 +347,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert plaintext_resp == 'abbaabba'
 
     def test_transit_generate_data_key(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -361,7 +361,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert 'plaintext' not in response_ciphertext
 
     def test_transit_generate_rand_bytes(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -369,7 +369,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert response_data
 
     def test_transit_hash_data(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -380,7 +380,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert len(response_hash) == 128
 
     def test_transit_generate_verify_hmac(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -398,7 +398,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         assert verify_resp
 
     def test_transit_sign_verify_signature_data(self):
-        if 'transit/' in self.client.list_secret_backends():
+        if 'transit/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('transit')
         self.client.enable_secret_backend('transit')
 
@@ -811,11 +811,11 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
 
     @skipIf(utils.skip_if_vault_version('0.10.0'), "KV version 2 secret engine not available before Vault version 0.10.0")
     def test_kv2_secret_backend(self):
-        if 'test/' in self.client.list_secret_backends():
+        if 'test/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('test')
         self.client.enable_secret_backend('kv', mount_point='test', options={'version': '2'})
 
-        secret_backends = self.client.list_secret_backends()
+        secret_backends = self.client.list_secret_backends()['data']
 
         assert 'test/' in secret_backends
         self.assertDictEqual(secret_backends['test/']['options'], {'version': '2'})

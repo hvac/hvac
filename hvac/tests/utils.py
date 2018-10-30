@@ -322,7 +322,7 @@ class HvacIntegrationTestCase(object):
         self.client.set_policy(name, text)
         return text, obj
 
-    def configure_test_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
+    def configure_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
         """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
 
         :param common_name: Common name to configure in the pki backend
@@ -357,7 +357,7 @@ class HvacIntegrationTestCase(object):
             max_ttl='72h',
         )
 
-    def disable_test_pki(self, mount_point='pki'):
+    def disable_pki(self, mount_point='pki'):
         """Disable a previously configured pki backend.
 
         :param mount_point: The path the pki backend is mounted under.

@@ -67,30 +67,30 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         self.assertNotIn('github/', self.client.list_auth_backends()['data'])
 
     def test_secret_backend_manipulation(self):
-        self.assertNotIn('test/', self.client.list_secret_backends())
+        self.assertNotIn('test/', self.client.list_secret_backends()['data'])
 
         self.client.enable_secret_backend('generic', mount_point='test')
-        self.assertIn('test/', self.client.list_secret_backends())
+        self.assertIn('test/', self.client.list_secret_backends()['data'])
 
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
-        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 2764800)
-        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['data']['max_lease_ttl'], 2764800)
+        self.assertEqual(secret_backend_tuning['data']['default_lease_ttl'], 2764800)
 
         self.client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
         secret_backend_tuning = self.client.get_secret_backend_tuning('generic', mount_point='test')
 
-        self.assertIn('max_lease_ttl', secret_backend_tuning)
-        self.assertEqual(secret_backend_tuning['max_lease_ttl'], 8600)
-        self.assertIn('default_lease_ttl', secret_backend_tuning)
-        self.assertEqual(secret_backend_tuning['default_lease_ttl'], 3600)
+        self.assertIn('max_lease_ttl', secret_backend_tuning['data'])
+        self.assertEqual(secret_backend_tuning['data']['max_lease_ttl'], 8600)
+        self.assertIn('default_lease_ttl', secret_backend_tuning['data'])
+        self.assertEqual(secret_backend_tuning['data']['default_lease_ttl'], 3600)
 
         self.client.remount_secret_backend('test', 'foobar')
-        self.assertNotIn('test/', self.client.list_secret_backends())
-        self.assertIn('foobar/', self.client.list_secret_backends())
+        self.assertNotIn('test/', self.client.list_secret_backends()['data'])
+        self.assertIn('foobar/', self.client.list_secret_backends()['data'])
 
         self.client.token = self.manager.root_token
         self.client.disable_secret_backend('foobar')
-        self.assertNotIn('foobar/', self.client.list_secret_backends())
+        self.assertNotIn('foobar/', self.client.list_secret_backends()['data'])
 
     def test_audit_backend_manipulation(self):
         self.assertNotIn('tmpfile/', self.client.list_audit_backends())
@@ -358,7 +358,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
 
     def test_read_lease(self):
         # Set up a test pki backend and issue a cert against some role so we.
-        self.configure_test_pki()
+        self.configure_pki()
         pki_issue_response = self.client.write(
             path='pki/issue/my-role',
             common_name='test.hvac.com',
@@ -374,7 +374,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         )
 
         # Reset integration test state.
-        self.disable_test_pki()
+        self.disable_pki()
 
     @parameterized.expand([
         param(
@@ -423,7 +423,7 @@ class TestSystemBackend(utils.HvacIntegrationTestCase, TestCase):
         secret_backend_tuning = self.client.get_secret_backend_tuning('secret')
         self.assertIn(
             member='default_lease_ttl',
-            container=secret_backend_tuning,
+            container=secret_backend_tuning['data'],
         )
 
     def test_get_backed_up_keys(self):

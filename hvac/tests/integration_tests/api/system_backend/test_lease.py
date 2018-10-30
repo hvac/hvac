@@ -10,11 +10,11 @@ class TestLease(utils.HvacIntegrationTestCase, TestCase):
     def setUp(self):
         super(TestLease, self).setUp()
         # Set up a test pki backend and issue a cert against some role so we.
-        self.configure_test_pki()
+        self.configure_pki()
 
     def tearDown(self):
         # Reset integration test state.
-        self.disable_test_pki()
+        self.disable_pki()
         super(TestLease, self).tearDown()
 
     def test_read_lease(self):
