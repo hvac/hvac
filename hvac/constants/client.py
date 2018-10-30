@@ -19,4 +19,24 @@ DEPRECATED_PROPERTIES = {
         to_be_removed_in_version='0.9.0',
         client_property='secrets',
     ),
+    'generate_root_status': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='sys',
+    ),
+    'key_status': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='sys',
+    ),
+    'rekey_status': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='sys',
+    ),
+    'ha_status': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='sys',
+    ),
+    'seal_status': dict(
+        to_be_removed_in_version='0.9.0',
+        client_property='sys',
+    ),
 }

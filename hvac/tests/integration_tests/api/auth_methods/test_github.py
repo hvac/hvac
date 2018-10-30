@@ -1,10 +1,11 @@
+from threading import Thread
 from unittest import TestCase
 
 from parameterized import parameterized
+
 from hvac import exceptions
-from hvac.api.auth_methods.github import DEFAULT_MOUNT_POINT
 from hvac.tests import utils
-from threading import Thread
+
 try:
     # Python 2.7
     from http.server import HTTPServer
@@ -14,6 +15,7 @@ except ImportError:
 
 
 class TestGithub(utils.HvacIntegrationTestCase, TestCase):
+    TEST_GITHUB_PATH = 'test-github'
 
     @classmethod
     def setUpClass(cls):
@@ -30,21 +32,19 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestGithub, self).setUp()
-        if 'github/' not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type='github',
-            )
+        self.client.sys.enable_auth_method(
+            method_type='github',
+            path=self.TEST_GITHUB_PATH,
+        )
 
     def tearDown(self):
         super(TestGithub, self).tearDown()
-        for mount_point, configuration in self.client.list_auth_backends().items():
-            if configuration.get('type') == 'github':
-                self.client.disable_auth_backend(
-                    mount_point=mount_point,
-                )
+        self.client.sys.disable_auth_method(
+            path=self.TEST_GITHUB_PATH,
+        )
 
     @parameterized.expand([
-        ("just organization", 204, 'some-test-org', '', 0, 0, DEFAULT_MOUNT_POINT),
+        ("just organization", 204, 'some-test-org', '', 0, 0, TEST_GITHUB_PATH),
     ])
     def test_configure(self, test_label, expected_status_code, organization, base_url, ttl, max_ttl, mount_point):
         response = self.client.auth.github.configure(
@@ -60,7 +60,9 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
         )
 
     def test_read_configuration(self):
-        response = self.client.auth.github.read_configuration()
+        response = self.client.auth.github.read_configuration(
+            mount_point=self.TEST_GITHUB_PATH,
+        )
         self.assertIn(
             member='data',
             container=response,
@@ -80,13 +82,16 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
             base_url=base_url,
             ttl=ttl,
             max_ttl=max_ttl,
+            mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
             first=204,
             second=config_response.status_code
         )
 
-        read_config_response = self.client.auth.github.read_configuration()
+        read_config_response = self.client.auth.github.read_configuration(
+            mount_point=self.TEST_GITHUB_PATH,
+        )
         self.assertEqual(
             first=organization,
             second=read_config_response['data']['organization']
@@ -112,6 +117,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
         response = self.client.auth.github.map_team(
             team_name=team_name,
             policies=policies,
+            mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
             first=expected_status_code,
@@ -121,6 +127,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
     def test_read_team_mapping(self):
         response = self.client.auth.github.read_team_mapping(
             team_name='hvac',
+            mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertIn(
             member='data',
@@ -140,6 +147,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
                 self.client.auth.github.map_team(
                     team_name=team_name,
                     policies=policies,
+                    mount_point=self.TEST_GITHUB_PATH,
                 )
             self.assertIn(
                 member=exception_msg,
@@ -149,6 +157,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
             response = self.client.auth.github.map_team(
                 team_name=team_name,
                 policies=policies,
+                mount_point=self.TEST_GITHUB_PATH,
             )
             self.assertEqual(
                 first=expected_status_code,
@@ -157,6 +166,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
 
             response = self.client.auth.github.read_team_mapping(
                 team_name=team_name,
+                mount_point=self.TEST_GITHUB_PATH,
             )
             if policies is None:
                 expected_policies = ''
@@ -176,6 +186,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
         response = self.client.auth.github.map_user(
             user_name=user_name,
             policies=policies,
+            mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
             first=expected_status_code,
@@ -185,6 +196,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
     def test_read_user_mapping(self):
         response = self.client.auth.github.read_user_mapping(
             user_name='hvac',
+            mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertIn(
             member='data',
@@ -204,6 +216,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
                 self.client.auth.github.map_user(
                     user_name=user_name,
                     policies=policies,
+                    mount_point=self.TEST_GITHUB_PATH,
                 )
             self.assertIn(
                 member=exception_msg,
@@ -213,6 +226,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
             response = self.client.auth.github.map_user(
                 user_name=user_name,
                 policies=policies,
+                mount_point=self.TEST_GITHUB_PATH,
             )
             self.assertEqual(
                 first=expected_status_code,
@@ -221,6 +235,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
 
             response = self.client.auth.github.read_user_mapping(
                 user_name=user_name,
+                mount_point=self.TEST_GITHUB_PATH,
             )
             if policies is None:
                 expected_policies = ''
@@ -239,16 +254,19 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
     def test_login(self, test_label, test_token, exceptions_raised, exception_msg):
         self.client.auth.github.configure(
             organization='hvac',
-            base_url='http://localhost:{port}/'.format(port=self.mock_server_port)
+            base_url='http://localhost:{port}/'.format(port=self.mock_server_port),
+            mount_point=self.TEST_GITHUB_PATH,
         )
         if exceptions_raised is None:
             self.client.auth.github.login(
-                token=test_token
+                token=test_token,
+                mount_point=self.TEST_GITHUB_PATH,
             )
         else:
             with self.assertRaises(exceptions_raised) as cm:
                 self.client.auth.github.login(
-                    token=test_token
+                    token=test_token,
+                    mount_point=self.TEST_GITHUB_PATH,
                 )
             self.assertIn(
                 member=exception_msg,

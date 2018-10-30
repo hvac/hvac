@@ -144,6 +144,19 @@ class Adapter(object):
         """
         return self.request('list', url, **kwargs)
 
+    def head(self, url, **kwargs):
+        """Performs a HEAD request.
+
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: str | unicode
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        return self.request('head', url, **kwargs)
+
     def login(self, url, use_token=True, **kwargs):
         """Perform a login request.
 

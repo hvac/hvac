@@ -6,9 +6,12 @@ import os
 import re
 import socket
 import subprocess
-import time
 import sys
+import time
+import warnings
 from distutils.version import StrictVersion
+
+from mock import patch
 
 from hvac import Client
 
@@ -195,7 +198,7 @@ class ServerManager(object):
         last_exception = None
         while attempts_left > 0:
             try:
-                self.client.is_initialized()
+                self.client.sys.is_initialized()
                 return
             except Exception as ex:
                 logger.debug('Waiting for Vault to start')
@@ -217,16 +220,16 @@ class ServerManager(object):
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
-        assert not self.client.is_initialized()
+        assert not self.client.sys.is_initialized()
 
-        result = self.client.initialize()
+        result = self.client.sys.initialize()
 
         self.root_token = result['root_token']
         self.keys = result['keys']
 
     def unseal(self):
         """Unseal the vault server process."""
-        self.client.unseal_multi(self.keys)
+        self.client.sys.submit_unseal_keys(self.keys)
 
 
 class HvacIntegrationTestCase(object):
@@ -234,6 +237,7 @@ class HvacIntegrationTestCase(object):
 
     manager = None
     client = None
+    mock_warnings = None
 
     @classmethod
     def setUpClass(cls):
@@ -254,6 +258,11 @@ class HvacIntegrationTestCase(object):
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
         self.client = create_client(token=self.manager.root_token)
+
+        # Squelch deprecating warnings during tests as we may want to deliberately call deprecated methods and/or verify
+        # warnings invocations.
+        warnings_patcher = patch('hvac.utils.warnings', spec=warnings)
+        self.mock_warnings = warnings_patcher.start()
 
     def tearDown(self):
         """Ensure the hvac Client instance's root token is reset after any auth method tests that may have modified it.
@@ -313,7 +322,7 @@ class HvacIntegrationTestCase(object):
         self.client.set_policy(name, text)
         return text, obj
 
-    def configure_test_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
+    def configure_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
         """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
 
         :param common_name: Common name to configure in the pki backend
@@ -348,7 +357,7 @@ class HvacIntegrationTestCase(object):
             max_ttl='72h',
         )
 
-    def disable_test_pki(self, mount_point='pki'):
+    def disable_pki(self, mount_point='pki'):
         """Disable a previously configured pki backend.
 
         :param mount_point: The path the pki backend is mounted under.
