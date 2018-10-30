@@ -198,7 +198,7 @@ class ServerManager(object):
         last_exception = None
         while attempts_left > 0:
             try:
-                self.client.is_initialized()
+                self.client.sys.is_initialized()
                 return
             except Exception as ex:
                 logger.debug('Waiting for Vault to start')
@@ -220,9 +220,9 @@ class ServerManager(object):
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
-        assert not self.client.is_initialized()
+        assert not self.client.sys.is_initialized()
 
-        result = self.client.initialize()
+        result = self.client.sys.initialize()
 
         self.root_token = result['root_token']
         self.keys = result['keys']

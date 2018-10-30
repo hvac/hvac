@@ -215,39 +215,6 @@ class Client(object):
         else:
             return self._adapter.post('/v1/sys/wrapping/unwrap').json()
 
-    def is_initialized(self):
-        """GET /sys/init
-
-        :return:
-        :rtype:
-        """
-        return self._adapter.get('/v1/sys/init').json()['initialized']
-
-    def initialize(self, secret_shares=5, secret_threshold=3, pgp_keys=None):
-        """PUT /sys/init
-
-        :param secret_shares:
-        :type secret_shares:
-        :param secret_threshold:
-        :type secret_threshold:
-        :param pgp_keys:
-        :type pgp_keys:
-        :return:
-        :rtype:
-        """
-        params = {
-            'secret_shares': secret_shares,
-            'secret_threshold': secret_threshold,
-        }
-
-        if pgp_keys:
-            if len(pgp_keys) != secret_shares:
-                raise ValueError('Length of pgp_keys must equal secret shares')
-
-            params['pgp_keys'] = pgp_keys
-
-        return self._adapter.put('/v1/sys/init', json=params).json()
-
     @property
     def seal_status(self):
         """GET /sys/seal-status
@@ -2491,6 +2458,24 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.is_initialized,
+    )
+    def is_initialized(self):
+        return self.sys.is_initialized()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.initialize,
+    )
+    def initialize(self, secret_shares=5, secret_threshold=3, pgp_keys=None):
+        return self.sys.initialize(
+            secret_shares=secret_shares,
+            secret_threshold=secret_threshold,
+            pgp_keys=pgp_keys,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
