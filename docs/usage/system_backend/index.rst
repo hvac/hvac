@@ -8,6 +8,7 @@ System Backend
    auth
    health
    init
+   key
 
 .. contents::
 
