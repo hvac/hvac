@@ -36,7 +36,7 @@ class TestLease(utils.HvacIntegrationTestCase, TestCase):
         )
 
     def test_list_leases(self):
-        pki_issue_response = self.client.write(
+        self.client.write(
             path='pki/issue/my-role',
             common_name='test.hvac.com',
         )
