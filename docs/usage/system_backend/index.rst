@@ -14,17 +14,17 @@ Initialize and seal/unseal
 
 .. code:: python
 
-    print(client.is_initialized()) # => False
+    print(client.sys.is_initialized()) # => False
 
     shares = 5
     threshold = 3
 
-    result = client.initialize(shares, threshold)
+    result = client.sys.initialize(shares, threshold)
 
     root_token = result['root_token']
     keys = result['keys']
 
-    print(client.is_initialized()) # => True
+    print(client.sys.is_initialized()) # => True
 
     print(client.is_sealed()) # => True
 
