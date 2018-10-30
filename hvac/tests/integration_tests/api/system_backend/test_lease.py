@@ -88,10 +88,6 @@ class TestLease(utils.HvacIntegrationTestCase, TestCase):
             first=revoke_prefix_response.status_code,
             second=204,
         )
-        with self.assertRaises(exceptions.InvalidPath):
-            self.client.sys.list_leases(
-                prefix='pki',
-            )
 
     def test_revoke_force(self):
         pki_issue_response = self.client.write(
@@ -107,7 +103,3 @@ class TestLease(utils.HvacIntegrationTestCase, TestCase):
             first=revoke_force_response.status_code,
             second=204,
         )
-        with self.assertRaises(exceptions.InvalidPath):
-            self.client.sys.list_leases(
-                prefix='pki',
-            )
