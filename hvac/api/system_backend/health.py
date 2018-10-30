@@ -11,7 +11,7 @@ class Health(SystemBackendMixin):
     Reference: https://www.vaultproject.io/api/system/index.html
     """
 
-    def read_status(self, standby_ok=False, active_code=200, standby_code=429, dr_secondary_code=472,
+    def read_health_status(self, standby_ok=False, active_code=200, standby_code=429, dr_secondary_code=472,
                     performance_standby_code=473, sealed_code=503, uninit_code=501, method='HEAD'):
         """Read the health status of Vault.
 

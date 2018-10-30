@@ -17,8 +17,8 @@ class TestAuth(utils.HvacIntegrationTestCase, TestCase):
             method='GET'
         ),
     ])
-    def test_read_status(self, label, method='HEAD'):
-        read_status_response = self.client.sys.read_status(
+    def test_read_health_status(self, label, method='HEAD'):
+        read_status_response = self.client.sys.read_health_status(
             method=method,
         )
         logging.debug('read_status_response: %s' % read_status_response)
