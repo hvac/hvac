@@ -12,7 +12,7 @@ Init
 Read Status
 -----------
 
-:py:meth:`hvac.api.system_backend.Auth.list_auth_methods`
+:py:meth:`hvac.api.system_backend.Init.read_init_status`
 
 .. code:: python
 
@@ -26,7 +26,7 @@ Read Status
 Is Initialized
 --------------
 
-:py:meth:`hvac.api.system_backend.Auth.list_auth_methods`
+:py:meth:`hvac.api.system_backend.Init.is_initialized`
 
 .. code:: python
 
@@ -39,7 +39,7 @@ Is Initialized
 Initialize
 ----------
 
-:py:meth:`hvac.api.system_backend.Auth.list_auth_methods`
+:py:meth:`hvac.api.system_backend.Init.initialize`
 
 .. code:: python
 

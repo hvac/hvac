@@ -6,6 +6,8 @@ System Backend
 
    audit
    auth
+   health
+   init
 
 .. contents::
 
