@@ -11,6 +11,7 @@ System Backend
    key
    leader
    lease
+   policy
 
 .. contents::
 

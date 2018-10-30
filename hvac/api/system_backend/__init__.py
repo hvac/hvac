@@ -9,6 +9,7 @@ from hvac.api.system_backend.key import Key
 from hvac.api.system_backend.leader import Leader
 from hvac.api.system_backend.lease import Lease
 from hvac.api.system_backend.mount import Mount
+from hvac.api.system_backend.policy import Policy
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.api.vault_api_category import VaultApiCategory
 
@@ -21,6 +22,7 @@ __all__ = (
     'Leader',
     'Lease',
     'Mount',
+    'Policy',
     'SystemBackend',
     'SystemBackendMixin',
 )
@@ -29,7 +31,7 @@ __all__ = (
 logger = logging.getLogger(__name__)
 
 
-class SystemBackend(VaultApiCategory, Audit, Auth, Health, Init, Key, Leader, Lease, Mount):
+class SystemBackend(VaultApiCategory, Audit, Auth, Health, Init, Key, Leader, Lease, Mount, Policy):
     implemented_classes = [
         Audit,
         Auth,
@@ -39,6 +41,7 @@ class SystemBackend(VaultApiCategory, Audit, Auth, Health, Init, Key, Leader, Le
         Leader,
         Lease,
         Mount,
+        Policy,
     ]
     unimplemented_classes = []
 
