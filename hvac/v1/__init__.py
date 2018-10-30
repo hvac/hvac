@@ -193,22 +193,6 @@ class Client(object):
         """
         self._adapter.delete('/v1/{0}'.format(path))
 
-    def unwrap(self, token=None):
-        """POST /sys/wrapping/unwrap
-
-        :param token:
-        :type token:
-        :return:
-        :rtype:
-        """
-        if token:
-            payload = {
-                'token': token
-            }
-            return self._adapter.post('/v1/sys/wrapping/unwrap', json=payload).json()
-        else:
-            return self._adapter.post('/v1/sys/wrapping/unwrap').json()
-
     def revoke_secret_prefix(self, path_prefix):
         """PUT /sys/revoke-prefix/<path prefix>
 
@@ -1966,6 +1950,13 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.unwrap,
+    )
+    def unwrap(self, token=None):
+        return self.sys.unwrap(token=token)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',

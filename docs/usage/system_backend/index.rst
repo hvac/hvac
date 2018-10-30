@@ -14,3 +14,4 @@ System Backend
    mount
    policy
    seal
+   wrapping
