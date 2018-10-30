@@ -2057,10 +2057,27 @@ class Client(object):
         new_method=api.SystemBackend.create_or_update_policy,
     )
     def set_policy(self, name, rules):
-        self.sys.create_or_update_policy(
+        """Add a new or update an existing policy.
+
+        Once a policy is updated, it takes effect immediately to all associated users.
+
+        Supported methods:
+            PUT: /sys/policy/{name}. Produces: 204 (empty body)
+
+        :param name: Specifies the name of the policy to create.
+        :type name: str | unicode
+        :param policy: Specifies the policy document.
+        :type policy: str | unicode | dict
+        """
+        if isinstance(rules, dict):
+            rules = json.dumps(rules)
+        params = {
+            'rules': rules,
+        }
+        api_path = '/v1/sys/policy/{name}'.format(
             name=name,
-            policy=rules,
         )
+        self._adapter.put(api_path, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',

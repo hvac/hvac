@@ -1,8 +1,10 @@
 from unittest import TestCase
+from unittest import skipIf
 
 from hvac.tests import utils
 
 
+@skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Policy class uses new parameters added >= Vault 0.9.0")
 class TestPolicy(utils.HvacIntegrationTestCase, TestCase):
 
     def test_policy_manipulation(self):
