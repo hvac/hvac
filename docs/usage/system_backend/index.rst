@@ -50,55 +50,6 @@ Initialize and seal/unseal
 
     print(client.is_sealed()) # => True
 
-
-Manipulate policies
--------------------
-
-.. code:: python
-
-    policies = client.list_policies() # => ['root']
-
-    policy = """
-    path "sys" {
-      policy = "deny"
-    }
-
-    path "secret" {
-      policy = "write"
-    }
-
-    path "secret/foo" {
-      policy = "read"
-    }
-    """
-
-    client.set_policy('myapp', policy)
-
-    client.delete_policy('oldthing')
-
-    policy = client.get_policy('mypolicy')
-
-    # Requires pyhcl to automatically parse HCL into a Python dictionary
-    policy = client.get_policy('mypolicy', parse=True)
-
-Using Python Variable(s) In Policy Rules
-````````````````````````````````````````
-
-.. code:: python
-
-    import hvac
-
-    client = hvac.Client()
-
-    key = 'some-key-string'
-
-    policy_body = """
-    path "transit/encrypt/%s" {
-        capabilities = "update"
-    }
-    """ % key
-    client.set_policy(name='my-policy-name', rules=policy_body)
-
 View and Manage Leases
 ----------------------
 
