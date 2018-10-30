@@ -50,20 +50,6 @@ Initialize and seal/unseal
 
     print(client.is_sealed()) # => True
 
-Manipulate secret backends
---------------------------
-
-.. code:: python
-
-    backends = client.list_secret_backends()
-
-    client.enable_secret_backend('aws', mount_point='aws-us-east-1')
-    client.disable_secret_backend('mysql')
-
-    client.tune_secret_backend('generic', mount_point='test', default_lease_ttl='3600s', max_lease_ttl='8600s')
-    client.get_secret_backend_tuning('generic', mount_point='test')
-
-    client.remount_secret_backend('aws-us-east-1', 'aws-east')
 
 Manipulate policies
 -------------------
