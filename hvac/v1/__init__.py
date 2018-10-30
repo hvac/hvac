@@ -282,45 +282,6 @@ class Client(object):
 
         return result
 
-    def read_lease(self, lease_id):
-        """PUT /sys/leases/lookup
-
-        :param lease_id: Specifies the ID of the lease to lookup.
-        :type lease_id: str.
-        :return: Parsed JSON response from the leases PUT request
-        :rtype: dict.
-        """
-        params = {
-            'lease_id': lease_id
-        }
-        return self._adapter.put('/v1/sys/leases/lookup', json=params).json()
-
-    def renew_secret(self, lease_id, increment=None):
-        """PUT /sys/leases/renew
-
-        :param lease_id:
-        :type lease_id:
-        :param increment:
-        :type increment:
-        :return:
-        :rtype:
-        """
-        params = {
-            'lease_id': lease_id,
-            'increment': increment,
-        }
-        return self._adapter.put('/v1/sys/leases/renew', json=params).json()
-
-    def revoke_secret(self, lease_id):
-        """PUT /sys/revoke/<lease id>
-
-        :param lease_id:
-        :type lease_id:
-        :return:
-        :rtype:
-        """
-        self._adapter.put('/v1/sys/revoke/{0}'.format(lease_id))
-
     def revoke_secret_prefix(self, path_prefix):
         """PUT /sys/revoke-prefix/<path prefix>
 
@@ -2278,6 +2239,34 @@ class Client(object):
         params['signature_algorithm'] = signature_algorithm
 
         return self._adapter.post(url, json=params).json()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.read_lease,
+    )
+    def read_lease(self, lease_id):
+        return self.sys.read_lease(
+            lease_id=lease_id,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.renew_lease,
+    )
+    def renew_secret(self, lease_id, increment=None):
+        return self.sys.renew_lease(
+            lease_id=lease_id,
+            increment=increment,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.revoke_lease,
+    )
+    def revoke_secret(self, lease_id):
+        return self.sys.revoke_lease(
+            lease_id=lease_id,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
