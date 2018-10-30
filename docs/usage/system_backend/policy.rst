@@ -1,11 +1,62 @@
 Policy
 ======
 
+Manipulate policies
+-------------------
+
+.. code:: python
+
+	policies = client.sys.list_policies()['data']['policies'] # => ['root']
+
+	policy = """
+	path "sys" {
+	  policy = "deny"
+	}
+
+	path "secret" {
+	  policy = "write"
+	}
+
+	path "secret/foo" {
+	  policy = "read"
+	}
+	"""
+
+	client.sys.create_or_update_policy(
+		name='secret-writer',
+		policy=policy,
+	)
+
+	client.sys.delete_policy('oldthing')
+
+	policy = client.sys.get_policy('mypolicy')
+
+	# Requires pyhcl to automatically parse HCL into a Python dictionary
+	policy = client.sys.get_policy('mypolicy', parse=True)
+
+Using Python Variable(s) In Policy Rules
+````````````````````````````````````````
+
+.. code:: python
+
+	import hvac
+
+	client = hvac.Client()
+
+	key = 'some-key-string'
+
+	policy_body = """
+	path "transit/encrypt/%s" {
+		capabilities = "update"
+	}
+	""" % key
+	client.sys.create_or_update_policy(name='my-policy-name', rules=policy_body)
+
 
 List Policies
 -------------
 
-:py:meth:`hvac.api.system_backend.policy.list_policies`
+:py:meth:`hvac.api.system_backend.Policy.list_policies`
 
 .. code:: python
 
@@ -19,7 +70,7 @@ List Policies
 Read Policy
 -----------
 
-:py:meth:`hvac.api.system_backend.policy.read_policy`
+:py:meth:`hvac.api.system_backend.Policy.read_policy`
 
 .. code:: python
 
@@ -33,7 +84,7 @@ Read Policy
 Get Policy
 ----------
 
-:py:meth:`hvac.api.system_backend.policy.create_or_update_policy`
+:py:meth:`hvac.api.system_backend.Policy.get_policy`
 
 .. code:: python
 
@@ -48,7 +99,7 @@ Get Policy
 Create Or Update Policy
 -----------------------
 
-:py:meth:`hvac.api.system_backend.policy.read_status`
+:py:meth:`hvac.api.system_backend.Policy.create_or_update_policy`
 
 .. code:: python
 
@@ -72,7 +123,7 @@ Create Or Update Policy
 Delete Policy
 -------------
 
-:py:meth:`hvac.api.system_backend.policy.delete_policy`
+:py:meth:`hvac.api.system_backend.Policy.delete_policy`
 
 .. code:: python
 
