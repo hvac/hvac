@@ -12,6 +12,7 @@ System Backend
    leader
    lease
    policy
+   seal
 
 .. contents::
 

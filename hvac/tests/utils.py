@@ -229,7 +229,7 @@ class ServerManager(object):
 
     def unseal(self):
         """Unseal the vault server process."""
-        self.client.unseal_multi(self.keys)
+        self.client.sys.submit_unseal_keys(self.keys)
 
 
 class HvacIntegrationTestCase(object):
