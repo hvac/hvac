@@ -6,7 +6,7 @@ from parameterized import parameterized, param
 from hvac.tests import utils
 
 
-class TestAuth(utils.HvacIntegrationTestCase, TestCase):
+class TestHealth(utils.HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand([
         param(
