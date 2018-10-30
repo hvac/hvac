@@ -5,7 +5,7 @@ Health
 Read Status
 -----------
 
-:py:meth:`hvac.api.system_backend.health.read_health_status`
+:py:meth:`hvac.api.system_backend.Health.read_health_status`
 
 .. code:: python
 

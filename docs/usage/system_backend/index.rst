@@ -9,6 +9,7 @@ System Backend
    health
    init
    key
+   leader
 
 .. contents::
 
