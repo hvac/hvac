@@ -209,73 +209,6 @@ class Client(object):
         else:
             return self._adapter.post('/v1/sys/wrapping/unwrap').json()
 
-    @property
-    def seal_status(self):
-        """GET /sys/seal-status
-
-        :return:
-        :rtype:
-        """
-        return self._adapter.get('/v1/sys/seal-status').json()
-
-    def is_sealed(self):
-        """
-
-        :return:
-        :rtype:
-        """
-        return self.seal_status['sealed']
-
-    def seal(self):
-        """PUT /sys/seal
-
-        :return:
-        :rtype:
-        """
-        self._adapter.put('/v1/sys/seal')
-
-    def unseal_reset(self):
-        """PUT /sys/unseal
-
-        :return:
-        :rtype:
-        """
-        params = {
-            'reset': True,
-        }
-        return self._adapter.put('/v1/sys/unseal', json=params).json()
-
-    def unseal(self, key):
-        """PUT /sys/unseal
-
-        :param key:
-        :type key:
-        :return:
-        :rtype:
-        """
-        params = {
-            'key': key,
-        }
-
-        return self._adapter.put('/v1/sys/unseal', json=params).json()
-
-    def unseal_multi(self, keys):
-        """
-
-        :param keys:
-        :type keys:
-        :return:
-        :rtype:
-        """
-        result = None
-
-        for key in keys:
-            result = self.unseal(key)
-            if not result['sealed']:
-                break
-
-        return result
-
     def revoke_secret_prefix(self, path_prefix):
         """PUT /sys/revoke-prefix/<path prefix>
 
@@ -2085,6 +2018,41 @@ class Client(object):
     )
     def delete_policy(self, name):
         self.sys.delete_policy(name=name)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.is_sealed,
+    )
+    def is_sealed(self):
+        return self.sys.is_sealed()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.seal,
+    )
+    def seal(self):
+        self.sys.seal()
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.submit_unseal_key,
+    )
+    def unseal_reset(self):
+        return self.sys.submit_unseal_key(reset=True)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.submit_unseal_key,
+    )
+    def unseal(self, key):
+        return self.sys.submit_unseal_key(key=key)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.submit_unseal_keys,
+    )
+    def unseal_multi(self, keys):
+        return self.sys.submit_unseal_keys(keys=keys)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
