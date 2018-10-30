@@ -5,6 +5,7 @@ from hvac.api.system_backend.audit import Audit
 from hvac.api.system_backend.auth import Auth
 from hvac.api.system_backend.health import Health
 from hvac.api.system_backend.init import Init
+from hvac.api.system_backend.key import Key
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.api.vault_api_category import VaultApiCategory
 
@@ -12,6 +13,8 @@ __all__ = (
     'Audit',
     'Auth',
     'Health',
+    'Init',
+    'Key',
     'SystemBackend',
     'SystemBackendMixin',
 )
@@ -20,12 +23,13 @@ __all__ = (
 logger = logging.getLogger(__name__)
 
 
-class SystemBackend(VaultApiCategory, Audit, Auth, Health, Init):
+class SystemBackend(VaultApiCategory, Audit, Auth, Health, Init, Key):
     implemented_classes = [
         Audit,
         Auth,
         Health,
         Init,
+        Key,
     ]
     unimplemented_classes = []
 

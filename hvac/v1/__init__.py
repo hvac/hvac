@@ -283,59 +283,6 @@ class Client(object):
         return result
 
     @property
-    def generate_root_status(self):
-        """GET /sys/generate-root/attempt
-
-        :return:
-        :rtype:
-        """
-        return self._adapter.get('/v1/sys/generate-root/attempt').json()
-
-    def start_generate_root(self, key, otp=False):
-        """PUT /sys/generate-root/attempt
-
-        :param key:
-        :type key:
-        :param otp:
-        :type otp:
-        :return:
-        :rtype:
-        """
-        params = {}
-        if otp:
-            params['otp'] = key
-        else:
-            params['pgp_key'] = key
-
-        return self._adapter.put('/v1/sys/generate-root/attempt', json=params).json()
-
-    def generate_root(self, key, nonce):
-        """PUT /sys/generate-root/update
-
-        :param key:
-        :type key:
-        :param nonce:
-        :type nonce:
-        :return:
-        :rtype:
-        """
-        params = {
-            'key': key,
-            'nonce': nonce,
-        }
-
-        return self._adapter.put('/v1/sys/generate-root/update', json=params).json()
-
-    def cancel_generate_root(self):
-        """DELETE /sys/generate-root/attempt
-
-        :return:
-        :rtype:
-        """
-
-        return self._adapter.delete('/v1/sys/generate-root/attempt').status_code == 204
-
-    @property
     def key_status(self):
         """GET /sys/key-status
 
@@ -2476,6 +2423,35 @@ class Client(object):
             secret_threshold=secret_threshold,
             pgp_keys=pgp_keys,
         )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.start_root_token_generation,
+    )
+    def start_generate_root(self, key, otp=False):
+        params = {}
+        if otp:
+            params['otp'] = key
+        else:
+            params['pgp_key'] = key
+        return self.sys.start_root_token_generation(**params)
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.generate_root,
+    )
+    def generate_root(self, key, nonce):
+        return self.sys.generate_root(
+            key=key,
+            nonce=nonce,
+        )
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.SystemBackend.cancel_root_generation,
+    )
+    def cancel_generate_root(self):
+        return self.sys.cancel_root_generation().status_code == 204
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
