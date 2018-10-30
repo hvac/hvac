@@ -282,15 +282,6 @@ class Client(object):
 
         return result
 
-    @property
-    def ha_status(self):
-        """GET /sys/leader
-
-        :return:
-        :rtype:
-        """
-        return self._adapter.get('/v1/sys/leader').json()
-
     def read_lease(self, lease_id):
         """PUT /sys/leases/lookup
 
