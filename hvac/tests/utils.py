@@ -34,6 +34,8 @@ def get_installed_vault_version():
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version = output.strip().split()[1].lstrip('v')
+    # replace any '-beta1' type substrings with a StrictVersion parsable version. E.g., 1.0.0-beta1 => 1.0.0b1
+    version = version.replace('-', '').replace('beta', 'b')
     return version
 
 
