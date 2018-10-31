@@ -10,7 +10,6 @@ from hvac.tests import utils
 
 @skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Identity secrets engine open sourced in Vault version >=0.9.0")
 class TestIdentity(utils.HvacIntegrationTestCase, TestCase):
-    # TEST_MOUNT_POINT = 'identity-test'
     TEST_APPROLE_PATH = 'identity-test-approle'
     TEST_MOUNT_POINT = 'identity'
     TEST_ENTITY_NAME = 'test-entity'

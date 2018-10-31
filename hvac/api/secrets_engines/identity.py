@@ -47,7 +47,6 @@ class Identity(VaultApiBase):
             ))
         params = {
             'name': name,
-            # 'id': entity_id,
             'metadata': metadata,
             'policies': policies,
             'disabled': disabled,
