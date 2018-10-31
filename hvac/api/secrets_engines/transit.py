@@ -588,8 +588,11 @@ class Transit(VaultApiBase):
             'key_version': key_version,
             'algorithm': algorithm,
         }
-        api_path = '/v1/{mount_point}/hmac/{name}'.format(mount_point=mount_point, name=name)
-        resposne =self._adapter.post(
+        api_path = '/v1/{mount_point}/hmac/{name}'.format(
+            mount_point=mount_point,
+            name=name,
+        )
+        resposne = self._adapter.post(
             url=api_path,
             json=params,
         )

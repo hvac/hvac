@@ -537,7 +537,8 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
             exception_message='invalid signature_algorithm argument provided',
         ),
     ])
-    def test_sign_data(self, label, hash_input='hash this ish', hash_algorithm='sha2-256', signature_algorithm='pss', raises=False, exception_message=''):
+    def test_sign_data(self, label, hash_input='hash this ish', hash_algorithm='sha2-256', signature_algorithm='pss',
+                       raises=False, exception_message=''):
         hash_input = utils.base64ify(hash_input)
         key_name = 'testkey'
         key_type = 'ed25519'
@@ -591,7 +592,8 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
             exception_message='invalid signature_algorithm argument provided',
         ),
     ])
-    def test_verify_signed_data(self, label, hash_input='hash this ish', hash_algorithm='sha2-256', signature_algorithm='pss', raises=False, exception_message=''):
+    def test_verify_signed_data(self, label, hash_input='hash this ish', hash_algorithm='sha2-256', signature_algorithm='pss',
+                                raises=False, exception_message=''):
         hash_input = utils.base64ify(hash_input)
         key_name = 'testkey'
         key_type = 'ed25519'
