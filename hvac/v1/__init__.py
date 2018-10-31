@@ -1579,86 +1579,36 @@ class Client(object):
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.create_key,
     )
-    def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
-                           key_type=None, mount_point='transit'):
-        """POST /<mount_point>/keys/<name>
-
-        :param name:
-        :type name:
-        :param convergent_encryption:
-        :type convergent_encryption:
-        :param derived:
-        :type derived:
-        :param exportable:
-        :type exportable:
-        :param key_type:
-        :type key_type:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        params = {}
-        if convergent_encryption is not None:
-            params['convergent_encryption'] = convergent_encryption
-        if derived is not None:
-            params['derived'] = derived
-        if exportable is not None:
-            params['exportable'] = exportable
-        if key_type is not None:
-            params['type'] = key_type
-
-        return self._adapter.post(url, json=params)
+    def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None, key_type=None, mount_point='transit'):
+        return self.secrets.transit.create_key(
+            name=name,
+            convergent_encryption=convergent_encryption,
+            derived=derived,
+            exportable=exportable,
+            key_type=key_type,
+            mount_point=mount_point
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.read_key,
     )
-    def transit_read_key(self, name, mount_point='transit'):
-        """GET /<mount_point>/keys/<name>
-
-        :param name:
-        :type name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        return self._adapter.get(url).json()
+    def transit_read_key(self, *args, **kwargs):
+        return self.secrets.transit.read_key(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.list_keys,
     )
-    def transit_list_keys(self, mount_point='transit'):
-        """GET /<mount_point>/keys?list=true
-
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys?list=true'.format(mount_point)
-        return self._adapter.get(url).json()
+    def transit_list_keys(self, *args, **kwargs):
+        return self.secrets.transit.list_keys(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.delete_key,
     )
-    def transit_delete_key(self, name, mount_point='transit'):
-        """DELETE /<mount_point>/keys/<name>
-
-        :param name:
-        :type name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        return self._adapter.delete(url)
+    def transit_delete_key(self, *args, **kwargs):
+        return self.secrets.transit.delete_key(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1666,72 +1616,27 @@ class Client(object):
     )
     def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
                            mount_point='transit'):
-        """POST /<mount_point>/keys/<name>/config
-
-        :param name:
-        :type name:
-        :param min_decryption_version:
-        :type min_decryption_version:
-        :param min_encryption_version:
-        :type min_encryption_version:
-        :param deletion_allowed:
-        :type deletion_allowed:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys/{1}/config'.format(mount_point, name)
-        params = {}
-        if min_decryption_version is not None:
-            params['min_decryption_version'] = min_decryption_version
-        if min_encryption_version is not None:
-            params['min_encryption_version'] = min_encryption_version
-        if deletion_allowed is not None:
-            params['deletion_allowed'] = deletion_allowed
-
-        return self._adapter.post(url, json=params)
+        return self.secrets.transit.update_key_configuration(
+            name=name,
+            min_decryption_version=min_decryption_version,
+            min_encryption_version=min_encryption_version,
+            deletion_allowed=deletion_allowed,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.rotate_key,
     )
-    def transit_rotate_key(self, name, mount_point='transit'):
-        """POST /<mount_point>/keys/<name>/rotate
-
-        :param name:
-        :type name:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
-        return self._adapter.post(url)
+    def transit_rotate_key(self, *args, **kwargs):
+        return self.secrets.transit.rotate_key(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.export_key,
     )
-    def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
-        """GET /<mount_point>/export/<key_type>/<name>(/<version>)
-
-        :param name:
-        :type name:
-        :param key_type:
-        :type key_type:
-        :param version:
-        :type version:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        if version is not None:
-            url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
-        else:
-            url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
-        return self._adapter.get(url).json()
+    def transit_export_key(self, *args, **kwargs):
+        return self.secrets.transit.export_key(*args, **kwargs)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1739,245 +1644,95 @@ class Client(object):
     )
     def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
                              key_type=None, convergent_encryption=None, mount_point='transit'):
-        """POST /<mount_point>/encrypt/<name>
-
-        :param name:
-        :type name:
-        :param plaintext:
-        :type plaintext:
-        :param context:
-        :type context:
-        :param key_version:
-        :type key_version:
-        :param nonce:
-        :type nonce:
-        :param batch_input:
-        :type batch_input:
-        :param key_type:
-        :type key_type:
-        :param convergent_encryption:
-        :type convergent_encryption:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/encrypt/{1}'.format(mount_point, name)
-        params = {
-            'plaintext': plaintext
-        }
-        if context is not None:
-            params['context'] = context
-        if key_version is not None:
-            params['key_version'] = key_version
-        if nonce is not None:
-            params['nonce'] = nonce
-        if batch_input is not None:
-            params['batch_input'] = batch_input
-        if key_type is not None:
-            params['type'] = key_type
-        if convergent_encryption is not None:
-            params['convergent_encryption'] = convergent_encryption
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.encrypt_data(
+            name=name,
+            plaintext=plaintext,
+            context=context,
+            key_version=key_version,
+            nonce=nonce,
+            batch_input=batch_input,
+            key_type=key_type,
+            convergent_encryption=convergent_encryption,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.decrypt_data,
     )
     def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
-        """POST /<mount_point>/decrypt/<name>
-
-        :param name:
-        :type name:
-        :param ciphertext:
-        :type ciphertext:
-        :param context:
-        :type context:
-        :param nonce:
-        :type nonce:
-        :param batch_input:
-        :type batch_input:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/decrypt/{1}'.format(mount_point, name)
-        params = {
-            'ciphertext': ciphertext
-        }
-        if context is not None:
-            params['context'] = context
-        if nonce is not None:
-            params['nonce'] = nonce
-        if batch_input is not None:
-            params['batch_input'] = batch_input
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.decrypt_data(
+            name=name,
+            ciphertext=ciphertext,
+            context=context,
+            nonce=nonce,
+            batch_input=batch_input,
+            mount_point=mount_point
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.rewrap_data,
     )
-    def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
-                            mount_point='transit'):
-        """POST /<mount_point>/rewrap/<name>
-
-        :param name:
-        :type name:
-        :param ciphertext:
-        :type ciphertext:
-        :param context:
-        :type context:
-        :param key_version:
-        :type key_version:
-        :param nonce:
-        :type nonce:
-        :param batch_input:
-        :type batch_input:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/rewrap/{1}'.format(mount_point, name)
-        params = {
-            'ciphertext': ciphertext
-        }
-        if context is not None:
-            params['context'] = context
-        if key_version is not None:
-            params['key_version'] = key_version
-        if nonce is not None:
-            params['nonce'] = nonce
-        if batch_input is not None:
-            params['batch_input'] = batch_input
-
-        return self._adapter.post(url, json=params).json()
+    def transit_rewrap_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
+        return self.transit.rewrap_data(
+            name=name,
+            ciphertext=ciphertext,
+            context=context,
+            nonce=nonce,
+            batch_input=batch_input,
+            mount_point=mount_point
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.generate_data_key,
     )
     def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
-        """POST /<mount_point>/datakey/<type>/<name>
-
-        :param name:
-        :type name:
-        :param key_type:
-        :type key_type:
-        :param context:
-        :type context:
-        :param nonce:
-        :type nonce:
-        :param bits:
-        :type bits:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        url = '/v1/{0}/datakey/{1}/{2}'.format(mount_point, key_type, name)
-        params = {}
-        if context is not None:
-            params['context'] = context
-        if nonce is not None:
-            params['nonce'] = nonce
-        if bits is not None:
-            params['bits'] = bits
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.generate_data_key(
+            name=name,
+            key_type=key_type,
+            context=context,
+            nonce=nonce,
+            bits=bits,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.generate_random_bytes,
     )
     def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
-        """POST /<mount_point>/random(/<data_bytes>)
-
-        :param data_bytes:
-        :type data_bytes:
-        :param output_format:
-        :type output_format:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        if data_bytes is not None:
-            url = '/v1/{0}/random/{1}'.format(mount_point, data_bytes)
-        else:
-            url = '/v1/{0}/random'.format(mount_point)
-
-        params = {}
-        if output_format is not None:
-            params["format"] = output_format
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.generate_random_bytes(
+            n_bytes=data_bytes,
+            output_format=output_format,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.hash_data,
     )
     def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
-        """POST /<mount_point>/hash(/<algorithm>)
-
-        :param hash_input:
-        :type hash_input:
-        :param algorithm:
-        :type algorithm:
-        :param output_format:
-        :type output_format:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        if algorithm is not None:
-            url = '/v1/{0}/hash/{1}'.format(mount_point, algorithm)
-        else:
-            url = '/v1/{0}/hash'.format(mount_point)
-
-        params = {
-            'input': hash_input
-        }
-        if output_format is not None:
-            params['format'] = output_format
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.hash_data(
+            hash_input=hash_input,
+            algorithm=algorithm,
+            output_format=output_format,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
         new_method=api.secrets_engines.Transit.generate_hmac,
     )
     def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
-        """POST /<mount_point>/hmac/<name>(/<algorithm>)
-
-        :param name:
-        :type name:
-        :param hmac_input:
-        :type hmac_input:
-        :param key_version:
-        :type key_version:
-        :param algorithm:
-        :type algorithm:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
-        """
-        if algorithm is not None:
-            url = '/v1/{0}/hmac/{1}/{2}'.format(mount_point, name, algorithm)
-        else:
-            url = '/v1/{0}/hmac/{1}'.format(mount_point, name)
-        params = {
-            'input': hmac_input
-        }
-        if key_version is not None:
-            params['key_version'] = key_version
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.generate_hmac(
+            name=name,
+            hash_input=hmac_input,
+            key_version=key_version,
+            algorithm=algorithm,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1985,44 +1740,16 @@ class Client(object):
     )
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
                           mount_point='transit', signature_algorithm='pss'):
-        """POST /<mount_point>/sign/<name>(/<algorithm>)
-
-        :param name:
-        :type name:
-        :param input_data:
-        :type input_data:
-        :param key_version:
-        :type key_version:
-        :param algorithm:
-        :type algorithm:
-        :param context:
-        :type context:
-        :param prehashed:
-        :type prehashed:
-        :param mount_point:
-        :type mount_point:
-        :param signature_algorithm:
-        :type signature_algorithm:
-        :return:
-        :rtype:
-        """
-        if algorithm is not None:
-            url = '/v1/{0}/sign/{1}/{2}'.format(mount_point, name, algorithm)
-        else:
-            url = '/v1/{0}/sign/{1}'.format(mount_point, name)
-
-        params = {
-            'input': input_data
-        }
-        if key_version is not None:
-            params['key_version'] = key_version
-        if context is not None:
-            params['context'] = context
-        if prehashed is not None:
-            params['prehashed'] = prehashed
-        params['signature_algorithm'] = signature_algorithm
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.sign_data(
+            name=name,
+            hash_input=input_data,
+            key_version=key_version,
+            algorithm=algorithm,
+            context=context,
+            prehashed=prehashed,
+            signature_algorithm=signature_algorithm,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -2030,48 +1757,18 @@ class Client(object):
     )
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
                                    prehashed=None, mount_point='transit', signature_algorithm='pss'):
-        """POST /<mount_point>/verify/<name>(/<algorithm>)
 
-        :param name:
-        :type name:
-        :param input_data:
-        :type input_data:
-        :param algorithm:
-        :type algorithm:
-        :param signature:
-        :type signature:
-        :param hmac:
-        :type hmac:
-        :param context:
-        :type context:
-        :param prehashed:
-        :type prehashed:
-        :param mount_point:
-        :type mount_point:
-        :param signature_algorithm:
-        :type signature_algorithm:
-        :return:
-        :rtype:
-        """
-        if algorithm is not None:
-            url = '/v1/{0}/verify/{1}/{2}'.format(mount_point, name, algorithm)
-        else:
-            url = '/v1/{0}/verify/{1}'.format(mount_point, name)
-
-        params = {
-            'input': input_data
-        }
-        if signature is not None:
-            params['signature'] = signature
-        if hmac is not None:
-            params['hmac'] = hmac
-        if context is not None:
-            params['context'] = context
-        if prehashed is not None:
-            params['prehashed'] = prehashed
-        params['signature_algorithm'] = signature_algorithm
-
-        return self._adapter.post(url, json=params).json()
+        return self.secrets.transit.verify_signed_data(
+            name=name,
+            hash_input=input_data,
+            signature=signature,
+            hmac=hmac,
+            algorithm=algorithm,
+            context=context,
+            prehashed=prehashed,
+            signature_algorithm=signature_algorithm,
+            mount_point=mount_point,
+        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
