@@ -649,6 +649,7 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
             exception_message='plaintext backup is disallowed on the policy',
         ),
     ])
+    @skipIf(utils.skip_if_vault_version_lt('0.9.1'), "transit key export/restore added in Vault versions >=0.9.1")
     def test_backup_key(self, label, allow_plaintext_backup=True, raises=False, exception_message=''):
         key_name = 'testkey'
         create_key_response = self.client.secrets.transit.create_key(
@@ -699,6 +700,7 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
             exception_message='already exists',
         ),
     ])
+    @skipIf(utils.skip_if_vault_version_lt('0.9.1'), "transit key export/restore added in Vault versions >=0.9.1")
     def test_restore_key(self, label, name='new_test_ky', force=False, raises=False, exception_message=''):
         key_name = 'testkey'
         create_key_response = self.client.secrets.transit.create_key(
