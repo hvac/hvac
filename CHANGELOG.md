@@ -1,10 +1,23 @@
 # Changelog
 
-## 0.6.5 (Unreleased)
+## 0.7.0 (November 1st, 2018)
+
+DEPRECATION NOTICES:
+
+* All auth method classes are now accessible under the `auth` property on the `hvac.Client` class. [GH-310](https://github.com/hvac/hvac/pull/310). (E.g. the `github`, `ldap`, and `mfa` Client properties' methods are now accessible under `Client.auth.github`, etc.)
+* All secrets engines classes are now accessible under the `secrets` property on the `hvac.Client` class. [GH-311](https://github.com/hvac/hvac/pull/311) (E.g. the `kv`, Client property's methods is now accessible under `Client.secrets.kv`)
+* All system backend classes are now accessible under the `sys` property on the `hvac.Client` class. [GH-314](https://github.com/hvac/hvac/pull/314) ([GH-314] through [GH-325] (E.g. methods such as `enable_secret_backend()` under the Client class are now accessible under `Client.sys.enable_secrets_engine()`, etc.)
 
 IMPROVEMENTS:
 
-* Support for Vault Namespaces. 
+* Support for Vault Namespaces. [GH-268](https://github.com/hvac/hvac/pull/268)
+* Support for the Identity secrets engine. [GH-269](https://github.com/hvac/hvac/pull/269)
+* Support for the GCP auth method. [GH-240](https://github.com/hvac/hvac/pull/240)
+* Support for the Azure auth method. [GH-286](https://github.com/hvac/hvac/pull/286)
+* Support for the Azure secrets engine. [GH-287](https://github.com/hvac/hvac/pull/287)
+* Expanded Transit secrets engine support. [GH-303](https://github.com/hvac/hvac/pull/303)
+
+Thanks to @tiny-dancer, @jacquat, @deejay1, @MJ111, @jasonarewhy, and @alexandernst for their lovely contributions.
 
 ## 0.6.4 (September 5th, 2018)
 
