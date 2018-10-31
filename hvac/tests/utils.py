@@ -1,4 +1,5 @@
 """Collection of classes and methods used by various hvac test cases."""
+import base64
 import json
 import logging
 import operator
@@ -167,6 +168,26 @@ def get_popen_kwargs(**popen_kwargs):
     if sys.version_info[0] >= 3:
         popen_kwargs['encoding'] = 'utf-8'
     return popen_kwargs
+
+
+def base64ify(bytes_or_str):
+    """Helper method to perform base64 encoding across Python 2.7 and Python 3.X
+
+    :param bytes_or_str:
+    :type bytes_or_str:
+    :return:
+    :rtype:
+    """
+    if sys.version_info[0] >= 3 and isinstance(bytes_or_str, str):
+        input_bytes = bytes_or_str.encode('utf8')
+    else:
+        input_bytes = bytes_or_str
+
+    output_bytes = base64.urlsafe_b64encode(input_bytes)
+    if sys.version_info[0] >= 3:
+        return output_bytes.decode('ascii')
+    else:
+        return output_bytes
 
 
 class ServerManager(object):

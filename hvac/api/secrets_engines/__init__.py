@@ -7,6 +7,7 @@ from hvac.api.secrets_engines.azure import Azure
 from hvac.api.secrets_engines.kv import Kv
 from hvac.api.secrets_engines.kv_v1 import KvV1
 from hvac.api.secrets_engines.kv_v2 import KvV2
+from hvac.api.secrets_engines.transit import Transit
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
@@ -14,6 +15,7 @@ __all__ = (
     'Kv',
     'KvV1',
     'KvV2',
+    'Transit',
     'SecretsEngines',
 )
 
@@ -24,6 +26,7 @@ class SecretsEngines(VaultApiCategory):
     implemented_classes = [
         Azure,
         Kv,
+        Transit,
     ]
     unimplemented_classes = [
         'Ad',
@@ -40,7 +43,6 @@ class SecretsEngines(VaultApiCategory):
         'RabbitMq',
         'Ssh',
         'TOTP',
-        'Transit',
         'Cassandra',
         'MongoDb',
         'Mssql',
