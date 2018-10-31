@@ -236,7 +236,6 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
                 first=export_key_response['data']['name'],
                 second=key_name,
             )
-            raise Exception()
 
     @parameterized.expand([
         param(
