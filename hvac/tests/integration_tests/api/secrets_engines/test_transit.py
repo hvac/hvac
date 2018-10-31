@@ -201,15 +201,10 @@ class TestTransit(utils.HvacIntegrationTestCase, TestCase):
         key_name = 'testkey'
         create_key_response = self.client.secrets.transit.create_key(
             name=key_name,
-            mount_point=self.TEST_MOUNT_POINT,
-        )
-        logging.debug('create_key_response: %s' % create_key_response)
-        update_key_configuration_response = self.client.secrets.transit.update_key_configuration(
-            name=key_name,
             exportable=True,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug('update_key_configuration_response: %s' % update_key_configuration_response)
+        logging.debug('create_key_response: %s' % create_key_response)
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.secrets.transit.export_key(
