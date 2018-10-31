@@ -40,7 +40,7 @@ Configure
     import hvac
     client = hvac.Client()
 
-    client.gcp.auth.configure(
+    client.auth.gcp.configure(
         credentials='some signed JSON web token for the Vault server...'
     )
 
@@ -54,7 +54,7 @@ Read Config
     import hvac
     client = hvac.Client()
 
-    read_config = client.gcp.auth.read_config()
+    read_config = client.auth.gcp.read_config()
     print('The configured project_id is: {id}'.format(id=read_config['project_id'))
 
 Delete Config
@@ -67,7 +67,7 @@ Delete Config
     import hvac
     client = hvac.Client()
 
-    client.gcp.auth.delete_config()
+    client.auth.gcp.delete_config()
 
 create-role
 -------------------------------
@@ -79,7 +79,7 @@ create-role
     import hvac
     client = hvac.Client()
 
-	client.gcp.auth.create_role(
+	client.auth.gcp.create_role(
 		name='some-gcp-role-name',
 		role_type='iam',
 		project_id='some-gcp-project-id',
@@ -155,7 +155,7 @@ List Roles
     import hvac
     client = hvac.Client()
 
-    roles = client.gcp.auth.list_roles()
+    roles = client.auth.gcp.list_roles()
     print('The following GCP auth roles are configured: {roles}'.format(
         roles=','.join(roles['keys']),
     ))

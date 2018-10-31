@@ -144,8 +144,23 @@ class Adapter(object):
         """
         return self.request('list', url, **kwargs)
 
-    def auth(self, url, use_token=True, **kwargs):
-        """Performs a request (typically to a path prefixed with "/v1/auth") and optionaly stores the client token sent
+    def head(self, url, **kwargs):
+        """Performs a HEAD request.
+
+        :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
+            attribute.
+        :type url: str | unicode
+        :param kwargs: Additional keyword arguments to include in the requests call.
+        :type kwargs: dict
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        return self.request('head', url, **kwargs)
+
+    def login(self, url, use_token=True, **kwargs):
+        """Perform a login request.
+
+        Associated request is typically to a path prefixed with "/v1/auth") and optionally stores the client token sent
             in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
             Client attribute.
 
@@ -165,6 +180,17 @@ class Adapter(object):
             self.token = response['auth']['client_token']
 
         return response
+
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=login,
+    )
+    def auth(self, url, use_token=True, **kwargs):
+        return self.login(
+            url=url,
+            use_token=use_token,
+            **kwargs
+        )
 
     @abstractmethod
     def request(self, method, url, headers=None, **kwargs):

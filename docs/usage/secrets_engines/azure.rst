@@ -17,7 +17,7 @@ Configure
     import hvac
     client = hvac.Client()
 
-    client.azure.secret.configure(
+    client.secrets.azure.configure(
         subscription_id='my-subscription-id',
         tenant_id='my-tenant-id',
     )
@@ -32,7 +32,7 @@ Read Config
     import hvac
     client = hvac.Client()
 
-    azure_secret_config = client.azure.secret.read_config()
+    azure_secret_config = client.secrets.azure.read_config()
     print('The Azure secret engine is configured with a subscription ID of {id}'.format(
         id=azure_secret_config['subscription_id'],
     ))
@@ -47,7 +47,7 @@ Delete Config
     import hvac
     client = hvac.Client()
 
-    client.azure.secret.delete_config()
+    client.secrets.azure.delete_config()
 
 Create Or Update A Role
 -----------------------
@@ -66,7 +66,7 @@ Create Or Update A Role
             'scope': "/subscriptions/95e675fa-307a-455e-8cdf-0a66aeaa35ae",
         },
     ]
-    client.azure.secret.create_or_update_role(
+    client.secrets.azure.create_or_update_role(
         name='my-azure-secret-role',
         azure_roles=azure_roles,
     )
@@ -81,7 +81,7 @@ List Roles
     import hvac
     client = hvac.Client()
 
-    azure_secret_engine_roles = client.azure.secret.list_roles()
+    azure_secret_engine_roles = client.secrets.azure.list_roles()
     print('The following Azure secret roles are configured: {roles}'.format(
         roles=','.join(roles['keys']),
     ))
@@ -98,7 +98,7 @@ Generate Credentials
     from azure.common.credentials import ServicePrincipalCredentials
 
     client = hvac.Client()
-    azure_creds = client.azure.secret.secret.generate_credentials(
+    azure_creds = client.secrets.azure.secret.generate_credentials(
         name='some-azure-role-name',
     )
     azure_spc = ServicePrincipalCredentials(

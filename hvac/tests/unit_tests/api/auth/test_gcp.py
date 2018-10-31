@@ -5,7 +5,7 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
-from hvac.api.auth import Gcp
+from hvac.api.auth_methods import Gcp
 from hvac.tests import utils
 
 
