@@ -6,6 +6,12 @@ from base64 import b64encode
 from hvac import aws_utils, exceptions, adapters, utils, api
 from hvac.constants.client import DEPRECATED_PROPERTIES
 
+try:
+    import hcl
+    has_hcl_parser = True
+except ImportError:
+    has_hcl_parser = False
+
 
 class Client(object):
     """The hvac Client class for HashiCorp's Vault."""
@@ -135,6 +141,46 @@ class Client(object):
         """
         return self._sys
 
+    @property
+    def generate_root_status(self):
+        return self.sys.read_root_generation_progress()
+
+    @property
+    def key_status(self):
+        """GET /sys/key-status
+
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
+        """
+        return self.sys.get_encryption_key_status()['data']
+
+    @property
+    def rekey_status(self):
+        return self.sys.read_rekey_progress()
+
+    @property
+    def ha_status(self):
+        """Read the high availability status and current leader instance of Vault.
+
+        :return: The JSON response returned by read_leader_status()
+        :rtype: dict
+        """
+        return self.sys.read_leader_status()
+
+    @property
+    def seal_status(self):
+        """Read the seal status of the Vault.
+
+        This is an unauthenticated endpoint.
+
+        Supported methods:
+            GET: /sys/seal-status. Produces: 200 application/json
+
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        return self.read_seal_status()
+
     def read(self, path, wrap_ttl=None):
         """GET /<path>
 
@@ -192,6 +238,28 @@ class Client(object):
         :rtype:
         """
         self._adapter.delete('/v1/{0}'.format(path))
+
+    def get_policy(self, name, parse=False):
+        """Retrieve the policy body for the named policy.
+
+        :param name: The name of the policy to retrieve.
+        :type name: str | unicode
+        :param parse: Specifies whether to parse the policy body using pyhcl or not.
+        :type parse: bool
+        :return: The (optionally parsed) policy body for the specified policy.
+        :rtype: str | dict
+        """
+        try:
+            policy = self.sys.read_policy(name=name)['data']['rules']
+        except exceptions.InvalidPath:
+            return None
+
+        if parse:
+            if not has_hcl_parser:
+                raise ImportError('pyhcl is required for policy parsing')
+            policy = hcl.loads(policy)
+
+        return policy
 
     def revoke_self_token(self):
         """PUT /auth/token/revoke-self
@@ -1955,16 +2023,6 @@ class Client(object):
     def list_policies(self):
         policies = self.sys.list_policies()['data']['policies']
         return policies
-
-    @utils.deprecated_method(
-        to_be_removed_in_version='0.9.0',
-        new_method=api.SystemBackend.get_policy,
-    )
-    def get_policy(self, name, parse=False):
-        return self.sys.get_policy(
-            name=name,
-            parse=parse,
-        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',

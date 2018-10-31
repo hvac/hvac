@@ -1,13 +1,6 @@
 import json
 
-from hvac import exceptions
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
-
-try:
-    import hcl
-    has_hcl_parser = True
-except ImportError:
-    has_hcl_parser = False
 
 
 class Policy(SystemBackendMixin):
@@ -43,28 +36,6 @@ class Policy(SystemBackendMixin):
             url=api_path,
         )
         return response.json()
-
-    def get_policy(self, name, parse=False):
-        """Retrieve the policy body for the named policy.
-
-        :param name: The name of the policy to retrieve.
-        :type name: str | unicode
-        :param parse: Specifies whether to parse the policy body using pyhcl or not.
-        :type parse: bool
-        :return: The (optionally parsed) policy body for the specified policy.
-        :rtype: str | dict
-        """
-        try:
-            policy = self.read_policy(name=name)['data']['rules']
-        except exceptions.InvalidPath:
-            return None
-
-        if parse:
-            if not has_hcl_parser:
-                raise ImportError('pyhcl is required for policy parsing')
-            policy = hcl.loads(policy)
-
-        return policy
 
     def create_or_update_policy(self, name, policy):
         """Add a new or update an existing policy.
