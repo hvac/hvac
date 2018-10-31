@@ -1,9 +1,6 @@
-"""
-Vault secrets engines endpoints
-
-"""
-
+"""Vault secrets engines endpoints"""
 from hvac.api.secrets_engines.azure import Azure
+from hvac.api.secrets_engines.identity import Identity
 from hvac.api.secrets_engines.kv import Kv
 from hvac.api.secrets_engines.kv_v1 import KvV1
 from hvac.api.secrets_engines.kv_v2 import KvV2
@@ -12,6 +9,7 @@ from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
     'Azure',
+    'Identity',
     'Kv',
     'KvV1',
     'KvV2',
@@ -25,6 +23,7 @@ class SecretsEngines(VaultApiCategory):
 
     implemented_classes = [
         Azure,
+        Identity,
         Kv,
         Transit,
     ]
@@ -37,7 +36,6 @@ class SecretsEngines(VaultApiCategory):
         'Database',
         'Gcp',
         'GcpKms',
-        'Identity',
         'Nomad',
         'Pki',
         'RabbitMq',
