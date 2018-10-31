@@ -74,7 +74,7 @@ class Identity(VaultApiBase):
         :param name: Name of the entity.
         :type name: str | unicode
         :param metadata: Metadata to be associated with the entity.
-        :type metadata: key-value-map
+        :type metadata: dict
         :param policies: Policies to be tied to the entity.
         :type policies: str | unicode
         :param disabled: Whether the entity is disabled. Disabled
@@ -165,7 +165,7 @@ class Identity(VaultApiBase):
         :param name: Name of the entity.
         :type name: str | unicode
         :param metadata: Metadata to be associated with the entity.
-        :type metadata: key-value-map
+        :type metadata: dict
         :param policies: Policies to be tied to the entity.
         :type policies: str | unicode
         :param disabled: Whether the entity is disabled. Disabled entities' associated tokens cannot be used, but
@@ -495,7 +495,7 @@ class Identity(VaultApiBase):
         :param group_type: Type of the group, internal or external. Defaults to internal.
         :type group_type: str | unicode
         :param metadata: Metadata to be associated with the group.
-        :type metadata: key-value-map
+        :type metadata: dict
         :param policies: Policies to be tied to the group.
         :type policies: str | unicode
         :param member_group_ids:  Group IDs to be assigned as group members.
@@ -581,7 +581,7 @@ class Identity(VaultApiBase):
         :param group_type: Type of the group, internal or external. Defaults to internal.
         :type group_type: str | unicode
         :param metadata: Metadata to be associated with the group.
-        :type metadata: key-value-map
+        :type metadata: dict
         :param policies: Policies to be tied to the group.
         :type policies: str | unicode
         :param member_group_ids:  Group IDs to be assigned as group members.
@@ -725,7 +725,7 @@ class Identity(VaultApiBase):
         :param group_type: Type of the group, internal or external. Defaults to internal.
         :type group_type: str | unicode
         :param metadata: Metadata to be associated with the group.
-        :type metadata: key-value-map
+        :type metadata: dict
         :param policies: Policies to be tied to the group.
         :type policies: str | unicode
         :param member_group_ids: Group IDs to be assigned as group members.
