@@ -135,6 +135,46 @@ class Client(object):
         """
         return self._sys
 
+    @property
+    def generate_root_status(self):
+        return self.sys.read_root_generation_progress()
+
+    @property
+    def key_status(self):
+        """GET /sys/key-status
+
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
+        """
+        return self.sys.get_encryption_key_status()['data']
+
+    @property
+    def rekey_status(self):
+        return self.sys.read_rekey_progress()
+
+    @property
+    def ha_status(self):
+        """Read the high availability status and current leader instance of Vault.
+
+        :return: The JSON response returned by read_leader_status()
+        :rtype: dict
+        """
+        return self.sys.read_leader_status()
+
+    @property
+    def seal_status(self):
+        """Read the seal status of the Vault.
+
+        This is an unauthenticated endpoint.
+
+        Supported methods:
+            GET: /sys/seal-status. Produces: 200 application/json
+
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        return self.read_seal_status()
+
     def read(self, path, wrap_ttl=None):
         """GET /<path>
 

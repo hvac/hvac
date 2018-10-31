@@ -3,20 +3,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 class Seal(SystemBackendMixin):
 
-    @property
-    def seal_status(self):
-        """Read the seal status of the Vault.
-
-        This is an unauthenticated endpoint.
-
-        Supported methods:
-            GET: /sys/seal-status. Produces: 200 application/json
-
-        :return: The JSON response of the request.
-        :rtype: dict
-        """
-        return self.read_seal_status()
-
     def is_sealed(self):
         """Determine if  Vault is sealed.
 
