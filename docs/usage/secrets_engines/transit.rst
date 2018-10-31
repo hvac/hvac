@@ -1,276 +1,297 @@
-Transit Secret Engine
-==================
+Transit
+=======
 
-.. note::
-    Every method under the :py:attr:`Client class's transit attribute<hvac.v1.Client.transit>` includes a `mount_point` parameter that can be used to address the Transit secret engine under a custom mount path. E.g., If enabling the Transit secret engine using Vault's CLI commands via `vault secret enable -path=my-transit transit`", the `mount_point` parameter in :py:meth:`hvac.api.secrets_engines.Transit` methods would be set to "my-transit".
-
-Enabling the Secret Engine
-------------------------
-
-:py:meth:`hvac.v1.Client.enable_secret_backend`
-
-.. code:: python
-
-    import hvac
-    client = hvac.Client()
-
-    transit_secret_path = 'company-transit'
-    description = 'Secret Engine for use by team members in our company's Transit organization'
-
-    if '%s/' % transit_secret_path not in vault_client.list_secret_backends():
-        print('Enabling the transit secret backend at mount_point: {path}'.format(
-            path=transit_secret_path,
-        ))
-        client.enable_secret_backend(
-            backend_type='transit',
-            description=description,
-            mount_point=transit_secret_path,
-        )
-
-
-create-key
--------------------------------
+Create Key
+----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.create_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.create_key(
-    )
+	client.secrets.transit.create_key(name='hvac-key')
 
-read-key
--------------------------------
+Read Key
+--------
 
 :py:meth:`hvac.api.secrets_engines.Transit.read_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.read_key(
-    )
+	read_key_response = client.secrets.transit.read_key(name='hvac-key')
+	latest_version = read_key_response['data']['latest_version']
+	print('Latest version for key "hvac-key" is: {ver}'.format(ver=latest_version))
 
-list-keys
--------------------------------
+
+List Keys
+---------
 
 :py:meth:`hvac.api.secrets_engines.Transit.list_keys`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.list_keys(
-    )
+	list_keys_response = client.secrets.transit.read_key(name='hvac-key')
+	keys = list_keys_response['data']['keys']
+	print('Currently configured keys: {keys}'.format(keys=keys))
 
-delete-key
--------------------------------
+
+Delete Key
+----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.delete_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
+	client.secrets.transit.delete_key(name='hvac-key')
 
-    client.transit.delete_key(
-    )
 
-update-key-configuration
--------------------------------
+Update Key Configuration
+------------------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.update_key_configuration`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.update_key_configuration(
-    )
+	# allow key "hvac-key" to be exported in subsequent requests
+	client.secrets.transit.update_key_configuration(
+		name='hvac-key',
+		exportable=True,
+	)
 
-rotate-key
--------------------------------
+
+Rotate Key
+----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.rotate_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
+	client.secrets.transit.rotate_key(name='hvac-key')
 
-    client.transit.rotate_key(
-    )
+Export Key
+----------
 
-export-key
--------------------------------
-
-:py:meth:`hvac.api.secrets_engines.Transit.export_key`
+:py:meth:`hvac.api.secrets_engines.Transit.encrypt_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
+	export_key_response = client.secrets.transit.export_key(name='hvac-key')
 
-    client.transit.export_key(
-    )
+	first_key = export_key_response['keys']['1']
 
-encrypt-data
--------------------------------
-
-:py:meth:`hvac.api.secrets_engines.Transit.encrypt_data`
-
-.. code:: python
-
-    import hvac
-    client = hvac.Client()
-
-    client.transit.encrypt_data(
-    )
-
-decrypt-data
--------------------------------
+Encrypt Data
+------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.decrypt_data`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import base64
+	import hvac
+	client = hvac.Client()
 
-    client.transit.decrypt_data(
-    )
+	encrypt_data_response = client.secrets.transit.encrypt_data(
+		name='hvac-key',
+		plaintext=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+	)
+	ciphertext = encrypt_data_response['data']['ciphertext']
+	print('Encrypted plaintext ciphertext is: {cipher}'.format(cipher=ciphertext))
 
-rewrap-data
--------------------------------
+
+Decrypt Data
+------------
+
+:py:meth:`hvac.api.secrets_engines.Transit.decrypt_data`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	decrypt_data_response = client.secrets.transit.decrypt_data(
+		name='hvac-key',
+		ciphertext=ciphertext,
+	)
+	plaintext = decrypt_data_response['data']['plaintext']
+	print('Encrypted plaintext is: {text}'.format(text=plaintext))
+
+
+Rewrap Data
+-----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.rewrap_data`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.rewrap_data(
-    )
+	encrypt_data_response = client.secrets.transit.rewrap_data(
+		name='hvac-key',
+		ciphertext=ciphertext,
+	)
+	rewrapped_ciphertext = encrypt_data_response['data']['ciphertext']
+	print('Rewrapped ciphertext is: {cipher}'.format(cipher=rewrapped_ciphertext))
 
-generate-data-key
--------------------------------
+
+Generate Data Key
+-----------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.generate_data_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
+	gen_key_response = client.secrets.transit.generate_data_key(name='hvac-key')
+	ciphertext = gen_data_key_response['data']
+	print('Generated data key is: {cipher}'.format(cipher=ciphertext))
 
-    client.transit.generate_data_key(
-    )
 
-generate-random-bytes
--------------------------------
+Generate Random Bytes
+---------------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.generate_random_bytes`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.generate_random_bytes(
-    )
+	gen_bytes_response = client.secrets.transit.generate_random_bytes(n_bytes=32)
+	random_bytes = gen_bytes_response['data']['random_bytes']
+	print('Here are some random bytes: {bytes}'.format(bytes=random_bytes))
 
-hash-data
--------------------------------
+
+
+Hash Data
+---------
 
 :py:meth:`hvac.api.secrets_engines.Transit.hash_data`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.hash_data(
-    )
+	hash_data_response = client.secrets.transit.hash_data(
+		name='hvac-key',
+		hash_input=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+	)
+	sum = hash_data_response['data']['sum']
+	print('Hashed data is: {sum}'.format(sum=sum))
 
-generate-hmac
--------------------------------
+
+Generate Hmac
+-------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.generate_hmac`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.generate_hmac(
-    )
+	generate_hmac_response = client.secrets.transit.hash_data(
+		name='hvac-key',
+		hash_input=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+	)
+	hmac = generate_hmac_response['data']['sum']
+	print('HMAC'd data is: {hmac}'.format(hmac=hmac))
 
-sign-data
--------------------------------
+
+Sign Data
+---------
 
 :py:meth:`hvac.api.secrets_engines.Transit.sign_data`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.sign_data(
-    )
+	sign_data_response = client.secrets.transit.sign_data(
+		name='hvac-key',
+		hash_input=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+	)
+	signature = sign_data_response['data']['signature']
+	print('Signature is: {signature}'.format(signature=signature))
 
-verify-signed-data
--------------------------------
+
+Verify Signed Data
+------------------
 
 :py:meth:`hvac.api.secrets_engines.Transit.verify_signed_data`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.verify_signed_data(
-    )
+	verify_signed_data_response = client.secrets.transit.verify_signed_data(
+		name='hvac-key',
+		hash_input=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+	)
+	valid = verify_signed_data_response['data']['valid']
+	print('Signature is valid?: {valid}'.format(valid=valid))
 
-backup-key
--------------------------------
+
+Backup Key
+----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.backup_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.backup_key(
-    )
+	backup_key_response = client.secrets.transit.backup_key(
+		name='hvac-key',
+		mount_point=TEST_MOUNT_POINT,
+	)
+	backed_up_key = backup_key_response['data']['backup']
 
-restore-key
--------------------------------
+Restore Key
+-----------
 
 :py:meth:`hvac.api.secrets_engines.Transit.restore_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
+	client.secrets.transit.restore_key(backup=backed_up_key)
 
-    client.transit.restore_key(
-    )
 
-trim-key
--------------------------------
+Trim Key
+--------
 
 :py:meth:`hvac.api.secrets_engines.Transit.trim_key`
 
 .. code:: python
 
-    import hvac
-    client = hvac.Client()
+	import hvac
+	client = hvac.Client()
 
-    client.transit.trim_key(
-    )
+	client.secrets.transit.trim_key(
+		name='hvac-key',
+		min_version=3,
+	)
