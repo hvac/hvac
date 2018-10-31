@@ -16,7 +16,7 @@ Setting the default `max_versions` for a key/value engine version 2 under a path
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.configure(
+    client.secrets.kv.v2.configure(
         max_versions=20,
         mount_point='kv',
     )
@@ -28,7 +28,7 @@ Setting the default `cas_required` (check-and-set required) flag under the impli
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.configure(
+    client.secrets.kv.v2.configure(
         cas_required=True,
     )
 
@@ -44,7 +44,7 @@ Reading the configuration of a KV version 2 engine mounted under a path of `kv`:
     import hvac
     client = hvac.Client()
 
-    kv_configuration = client.kv.v2.read_configuration(
+    kv_configuration = client.secrets.kv.v2.read_configuration(
         mount_point='kv',
     )
     print('Config under path "kv": max_versions set to "{max_ver}"'.format(
@@ -67,7 +67,7 @@ Read the latest version of a given secret/path ("hvac"):
     import hvac
     client = hvac.Client()
 
-    secret_version_response = client.kv.v2.read_secret_version(
+    secret_version_response = client.secrets.kv.v2.read_secret_version(
         path='hvac',
     )
     print('Latest version of secret under path "hvac" contains the following keys: {data}.format(
@@ -88,7 +88,7 @@ Read specific version (1) of a given secret/path ("hvac"):
     import hvac
     client = hvac.Client()
 
-    secret_version_response = client.kv.v2.read_secret_version(
+    secret_version_response = client.secrets.kv.v2.read_secret_version(
         path='hvac',
         version=1,
     )
@@ -111,7 +111,7 @@ Create/Update Secret
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac',
         secret=dict(pssst='this is secret'),
     )
@@ -124,7 +124,7 @@ Create/Update Secret
     client = hvac.Client()
 
     # Assuming a current version of "6" for the path "hvac" =>
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac',
         secret=dict(pssst='this is secret'),
         cas=5,
@@ -137,17 +137,34 @@ Create/Update Secret
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac',
         secret=dict(pssst='this is secret #1'),
         cas=0,
     )
 
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac',
         secret=dict(pssst='this is secret #2'),
         cas=0,
     )  # => Raises hvac.exceptions.InvalidRequest
+
+Patch Existing Secret
+---------------------
+
+Method (similar to the Vault CLI command `vault kv patch`) to update an existing path. Either to add a new key/value to the secret and/or update the value for an existing key. Raises an :py:class:`hvac.exceptions.InvalidRequest` if the path hasn't been written to previously.
+
+:py:meth:`hvac.api.secrets_engines.KvV2.patch`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.kv.v2.patch(
+        path='hvac',
+        secret=dict(pssst='this is a patched secret'),
+    )
 
 
 Delete Latest Version of Secret
@@ -160,7 +177,7 @@ Delete Latest Version of Secret
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.delete_latest_version_of_secret(
+    client.secrets.kv.v2.delete_latest_version_of_secret(
         path=hvac,
     )
 
@@ -176,7 +193,7 @@ Marking the first 3 versions of a secret deleted under path "hvac":
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.delete_secret_versions(
+    client.secrets.kv.v2.delete_secret_versions(
         path='hvac',
         versions=[1, 2, 3],
     )
@@ -193,7 +210,7 @@ Marking the last 3 versions of a secret deleted under path "hvac" as "undeleted"
     import hvac
     client = hvac.Client()
 
-    hvac_path_metadata = client.kv.v2.read_secret_metadata(
+    hvac_path_metadata = client.secrets.kv.v2.read_secret_metadata(
         path='hvac',
     )
 
@@ -201,7 +218,7 @@ Marking the last 3 versions of a secret deleted under path "hvac" as "undeleted"
     current_version = hvac_path_metadata['data']['current_version']
     versions_to_undelete = range(max(oldest_version, current_version - 2), current_version + 1)
 
-    client.kv.v2.undelete_secret_versions(
+    client.secrets.kv.v2.undelete_secret_versions(
         path='hvac',
         versions=versions_to_undelete,
     )
@@ -218,7 +235,7 @@ Destroying the first three versions of a secret under path 'hvac':
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.destroy_secret_versions(
+    client.secrets.kv.v2.destroy_secret_versions(
         path='hvac',
         versions=[1, 2, 3],
     )
@@ -235,17 +252,17 @@ Listing secrets under the 'hvac' path prefix:
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac/big-ole-secret',
         secret=dict(pssst='this is a large secret'),
     )
 
-    client.kv.v2.create_or_update_secret(
+    client.secrets.kv.v2.create_or_update_secret(
         path='hvac/lil-secret',
         secret=dict(pssst='this secret... not so big'),
     )
 
-    list_response = client.kv.v2.list_secrets(
+    list_response = client.secrets.kv.v2.list_secrets(
         path='hvac',
     )
 
@@ -264,7 +281,7 @@ Read Secret Metadata
     import hvac
     client = hvac.Client()
 
-    hvac_path_metadata = client.kv.v2.read_secret_metadata(
+    hvac_path_metadata = client.secrets.kv.v2.read_secret_metadata(
         path='hvac',
     )
 
@@ -285,7 +302,7 @@ Set max versions for a given path ("hvac") to 3:
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.update_metadata(
+    client.secrets.kv.v2.update_metadata(
         path='hvac',
         max_versions=3,
     )
@@ -297,7 +314,7 @@ Set cas (check-and-set) parameter as required for a given path ("hvac"):
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.update_metadata(
+    client.secrets.kv.v2.update_metadata(
         path='hvac',
         cas_required=True,
     )
@@ -315,6 +332,6 @@ Delete all versions and metadata for a given path:
     import hvac
     client = hvac.Client()
 
-    client.kv.v2.delete_metadata_and_all_versions(
+    client.secrets.kv.v2.delete_metadata_and_all_versions(
         path='hvac',
     )

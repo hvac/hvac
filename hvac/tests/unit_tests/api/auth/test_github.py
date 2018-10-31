@@ -4,8 +4,8 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
-from hvac.api.auth import Github
-from hvac.api.auth.github import DEFAULT_MOUNT_POINT
+from hvac.api.auth_methods import Github
+from hvac.api.auth_methods.github import DEFAULT_MOUNT_POINT
 
 
 class TestGithub(TestCase):

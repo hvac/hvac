@@ -16,7 +16,7 @@ class Kv(VaultApiBase):
     allowed_kv_versions = ['1', '2']
 
     def __init__(self, adapter, default_kv_version='2'):
-        """Create a new Kv instnace.
+        """Create a new Kv instance.
 
         :param adapter: Instance of :py:class:`hvac.adapters.Adapter`; used for performing HTTP requests.
         :type adapter: hvac.adapters.Adapter

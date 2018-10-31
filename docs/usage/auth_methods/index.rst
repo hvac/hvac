@@ -44,7 +44,7 @@ Authenticate to different auth backends
         'custom_param': 'MY_CUSTOM_PARAM',
     }
 
-    result = client.auth('/v1/auth/CUSTOM_AUTH/login', json=params)
+    result = client.login('/v1/auth/CUSTOM_AUTH/login', json=params)
 
     # Logout
     client.logout()

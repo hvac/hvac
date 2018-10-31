@@ -101,6 +101,46 @@ Lambda and/or EC2 Instance
     client = hvac.Client()
     client.auth_aws_iam(access_key_id, secret_access_key)
 
+Caveats For Non-Default AWS Regions
+```````````````````````````````````
+
+I.e., calling :py:meth:`hvac.v1.Client.auth_aws_iam` with a `region` argument other than its default of "**us-east-1**". For additional background / context on this matter, see the comments at `hvac#251`_ and/or `vault-ruby#161`_.
+
+The following code snippets are for authenticating hosts in the **us-west-1** region:
+
+.. note::
+    In order to authenticate to various regions, the AWS auth method configuration needs to be set up with an "endpoint URL" corresponding to the region in question. E.g.: "**https://sts.us-west-1.amazonaws.com**" in the case of this example. Vault defaults to an endpoint of "**https://sts.amazonaws.com**" if not configured with a different endpoint URL.
+
+.. code:: python
+
+    import boto3
+    import hvac
+
+    VAULT_ADDR = os.environ["VAULT_ADDR"]
+    VAULT_HEADER_VALUE = os.environ["VAULT_HEADER_VALUE"]
+
+    client = hvac.Client(url=VAULT_ADDR)
+
+    # One-time setup of the credentials / configuration for the Vault server to use.
+    # Note the explicit region subdomain bit included in the endpoint argument.
+    client.create_vault_ec2_client_configuration(
+        access_key='SOME_ACCESS_KEY_FOR_VAULTS_USE',
+        secret_key='SOME_ACCESS_KEY_FOR_VAULTS_USE',
+        endpoint='https://sts.us-west-1.amazonaws.com',
+    )
+
+    session = boto3.Session()
+    creds = session.get_credentials().get_frozen_credentials()
+    client.auth_aws_iam(
+        creds.access_key,
+        creds.secret_key,
+        creds.token,
+        region="us-west-1",
+        header_value=VAULT_HEADER_VALUE,
+        role='some-role,
+        use_token=True,
+    )
+
 
 EC2 Authentication
 ------------------
@@ -259,3 +299,6 @@ Authentication using EC2 instance role credentials and the EC2 metadata service
 
 
     authenticated_vault_client = get_vault_client()
+
+.. _hvac#251: https://github.com/hvac/hvac/issues/251
+.. _vault-ruby#161: https://github.com/hashicorp/vault-ruby/pull/161#issuecomment-355723269
