@@ -5,8 +5,8 @@
 DEPRECATION NOTICES:
 
 * All auth method classes are now accessible under the `auth` property on the `hvac.Client` class. [GH-310](https://github.com/hvac/hvac/pull/310). (E.g. the `github`, `ldap`, and `mfa` Client properties' methods are now accessible under `Client.auth.github`, etc.)
-* All secrets engines classes are now accessible under the `secrets` property on the `hvac.Client` class. [GH-311](https://github.com/hvac/hvac/pull/311) (E.g. the `kv`, Client property's methods is now accessible under `Client.secrets.kv`)
-* All system backend classes are now accessible under the `sys` property on the `hvac.Client` class. [GH-314](https://github.com/hvac/hvac/pull/314) ([GH-314] through [GH-325] (E.g. methods such as `enable_secret_backend()` under the Client class are now accessible under `Client.sys.enable_secrets_engine()`, etc.)
+* All secrets engines classes are now accessible under the `secrets` property on the `hvac.Client` class. [GH-311](https://github.com/hvac/hvac/pull/311) (E.g. the `kv`, Client property's methods are now accessible under `Client.secrets.kv`)
+* All system backend classes are now accessible under the `sys` property on the `hvac.Client` class. [GH-314](https://github.com/hvac/hvac/pull/314) ([GH-314] through [GH-325]) (E.g. methods such as `enable_secret_backend()` under the Client class are now accessible under `Client.sys.enable_secrets_engine()`, etc.)
 
 IMPROVEMENTS:
 
