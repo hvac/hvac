@@ -81,21 +81,6 @@ Read Policy
 	print('Rules for the hvac policy are: %s' % hvac_policy_rules)
 
 
-Get Policy
-----------
-
-:py:meth:`hvac.api.system_backend.Policy.get_policy`
-
-.. code:: python
-
-	import hvac
-	client = hvac.Client()
-
-	hvac_policy_rules = client.sys.get_policy(name='hvac-policy', parse=True)
-	print('Rules for the hvac policy are: %s' % hvac_policy_rules)
-
-
-
 Create Or Update Policy
 -----------------------
 

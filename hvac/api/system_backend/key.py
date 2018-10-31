@@ -4,23 +4,6 @@ from hvac.exceptions import ParamValidationError
 
 class Key(SystemBackendMixin):
 
-    @property
-    def generate_root_status(self):
-        return self.read_root_generation_progress()
-
-    @property
-    def key_status(self):
-        """GET /sys/key-status
-
-        :return: Information about the current encryption key used by Vault.
-        :rtype: dict
-        """
-        return self.get_encryption_key_status()['data']
-
-    @property
-    def rekey_status(self):
-        return self.read_rekey_progress()
-
     def read_root_generation_progress(self):
         """Read the configuration and process of the current root generation attempt.
 

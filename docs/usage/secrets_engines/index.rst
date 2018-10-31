@@ -9,3 +9,4 @@ Secrets Engines
    kv
    kv_v1
    kv_v2
+   transit

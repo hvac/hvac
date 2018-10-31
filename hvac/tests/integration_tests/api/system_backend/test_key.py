@@ -57,25 +57,25 @@ class TestKey(utils.HvacIntegrationTestCase, TestCase):
         self.assertFalse(self.client.sys.read_root_generation_progress()['started'])
 
     def test_rotate(self):
-        status = self.client.sys.key_status
+        status = self.client.key_status
 
         self.client.sys.rotate_encryption_key()
 
         self.assertGreater(
-            self.client.sys.key_status['term'],
+            self.client.key_status['term'],
             status['term'],
         )
 
     def test_rekey_multi(self):
         cls = type(self)
 
-        self.assertFalse(self.client.sys.rekey_status['started'])
+        self.assertFalse(self.client.rekey_status['started'])
 
         self.client.sys.start_rekey()
-        self.assertTrue(self.client.sys.rekey_status['started'])
+        self.assertTrue(self.client.rekey_status['started'])
 
         self.client.sys.cancel_rekey()
-        self.assertFalse(self.client.sys.rekey_status['started'])
+        self.assertFalse(self.client.rekey_status['started'])
 
         result = self.client.sys.start_rekey()
 

@@ -6,6 +6,12 @@ from base64 import b64encode
 from hvac import aws_utils, exceptions, adapters, utils, api
 from hvac.constants.client import DEPRECATED_PROPERTIES
 
+try:
+    import hcl
+    has_hcl_parser = True
+except ImportError:
+    has_hcl_parser = False
+
 
 class Client(object):
     """The hvac Client class for HashiCorp's Vault."""
@@ -135,6 +141,46 @@ class Client(object):
         """
         return self._sys
 
+    @property
+    def generate_root_status(self):
+        return self.sys.read_root_generation_progress()
+
+    @property
+    def key_status(self):
+        """GET /sys/key-status
+
+        :return: Information about the current encryption key used by Vault.
+        :rtype: dict
+        """
+        return self.sys.get_encryption_key_status()['data']
+
+    @property
+    def rekey_status(self):
+        return self.sys.read_rekey_progress()
+
+    @property
+    def ha_status(self):
+        """Read the high availability status and current leader instance of Vault.
+
+        :return: The JSON response returned by read_leader_status()
+        :rtype: dict
+        """
+        return self.sys.read_leader_status()
+
+    @property
+    def seal_status(self):
+        """Read the seal status of the Vault.
+
+        This is an unauthenticated endpoint.
+
+        Supported methods:
+            GET: /sys/seal-status. Produces: 200 application/json
+
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        return self.read_seal_status()
+
     def read(self, path, wrap_ttl=None):
         """GET /<path>
 
@@ -162,7 +208,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._adapter.get('/v1/{}'.format(path), params=payload).json()
+            return self._adapter.get('/v1/{0}'.format(path), params=payload).json()
         except exceptions.InvalidPath:
             return None
 
@@ -192,6 +238,28 @@ class Client(object):
         :rtype:
         """
         self._adapter.delete('/v1/{0}'.format(path))
+
+    def get_policy(self, name, parse=False):
+        """Retrieve the policy body for the named policy.
+
+        :param name: The name of the policy to retrieve.
+        :type name: str | unicode
+        :param parse: Specifies whether to parse the policy body using pyhcl or not.
+        :type parse: bool
+        :return: The (optionally parsed) policy body for the specified policy.
+        :rtype: str | dict
+        """
+        try:
+            policy = self.sys.read_policy(name=name)['data']['rules']
+        except exceptions.InvalidPath:
+            return None
+
+        if parse:
+            if not has_hcl_parser:
+                raise ImportError('pyhcl is required for policy parsing')
+            policy = hcl.loads(policy)
+
+        return policy
 
     def revoke_self_token(self):
         """PUT /auth/token/revoke-self
@@ -1507,6 +1575,10 @@ class Client(object):
         url = 'v1/auth/{0}/login'.format(mount_point)
         return self.login(url, json=params, use_token=use_token)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.create_key,
+    )
     def transit_create_key(self, name, convergent_encryption=None, derived=None, exportable=None,
                            key_type=None, mount_point='transit'):
         """POST /<mount_point>/keys/<name>
@@ -1539,6 +1611,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.read_key,
+    )
     def transit_read_key(self, name, mount_point='transit'):
         """GET /<mount_point>/keys/<name>
 
@@ -1552,6 +1628,10 @@ class Client(object):
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
         return self._adapter.get(url).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.list_keys,
+    )
     def transit_list_keys(self, mount_point='transit'):
         """GET /<mount_point>/keys?list=true
 
@@ -1563,6 +1643,10 @@ class Client(object):
         url = '/v1/{0}/keys?list=true'.format(mount_point)
         return self._adapter.get(url).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.delete_key,
+    )
     def transit_delete_key(self, name, mount_point='transit'):
         """DELETE /<mount_point>/keys/<name>
 
@@ -1576,6 +1660,10 @@ class Client(object):
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
         return self._adapter.delete(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.update_key_configuration,
+    )
     def transit_update_key(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
                            mount_point='transit'):
         """POST /<mount_point>/keys/<name>/config
@@ -1604,6 +1692,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.rotate_key,
+    )
     def transit_rotate_key(self, name, mount_point='transit'):
         """POST /<mount_point>/keys/<name>/rotate
 
@@ -1617,6 +1709,10 @@ class Client(object):
         url = '/v1/{0}/keys/{1}/rotate'.format(mount_point, name)
         return self._adapter.post(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.export_key,
+    )
     def transit_export_key(self, name, key_type, version=None, mount_point='transit'):
         """GET /<mount_point>/export/<key_type>/<name>(/<version>)
 
@@ -1637,6 +1733,10 @@ class Client(object):
             url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
         return self._adapter.get(url).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.encrypt_data,
+    )
     def transit_encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None,
                              key_type=None, convergent_encryption=None, mount_point='transit'):
         """POST /<mount_point>/encrypt/<name>
@@ -1681,6 +1781,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.decrypt_data,
+    )
     def transit_decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point='transit'):
         """POST /<mount_point>/decrypt/<name>
 
@@ -1712,6 +1816,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.rewrap_data,
+    )
     def transit_rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
                             mount_point='transit'):
         """POST /<mount_point>/rewrap/<name>
@@ -1748,6 +1856,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.generate_data_key,
+    )
     def transit_generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point='transit'):
         """POST /<mount_point>/datakey/<type>/<name>
 
@@ -1777,6 +1889,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.generate_random_bytes,
+    )
     def transit_generate_rand_bytes(self, data_bytes=None, output_format=None, mount_point='transit'):
         """POST /<mount_point>/random(/<data_bytes>)
 
@@ -1800,6 +1916,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.hash_data,
+    )
     def transit_hash_data(self, hash_input, algorithm=None, output_format=None, mount_point='transit'):
         """POST /<mount_point>/hash(/<algorithm>)
 
@@ -1827,6 +1947,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.generate_hmac,
+    )
     def transit_generate_hmac(self, name, hmac_input, key_version=None, algorithm=None, mount_point='transit'):
         """POST /<mount_point>/hmac/<name>(/<algorithm>)
 
@@ -1855,6 +1979,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.sign_data,
+    )
     def transit_sign_data(self, name, input_data, key_version=None, algorithm=None, context=None, prehashed=None,
                           mount_point='transit', signature_algorithm='pss'):
         """POST /<mount_point>/sign/<name>(/<algorithm>)
@@ -1896,6 +2024,10 @@ class Client(object):
 
         return self._adapter.post(url, json=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.9.0',
+        new_method=api.secrets_engines.Transit.verify_signed_data,
+    )
     def transit_verify_signed_data(self, name, input_data, algorithm=None, signature=None, hmac=None, context=None,
                                    prehashed=None, mount_point='transit', signature_algorithm='pss'):
         """POST /<mount_point>/verify/<name>(/<algorithm>)
@@ -1955,16 +2087,6 @@ class Client(object):
     def list_policies(self):
         policies = self.sys.list_policies()['data']['policies']
         return policies
-
-    @utils.deprecated_method(
-        to_be_removed_in_version='0.9.0',
-        new_method=api.SystemBackend.get_policy,
-    )
-    def get_policy(self, name, parse=False):
-        return self.sys.get_policy(
-            name=name,
-            parse=parse,
-        )
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
