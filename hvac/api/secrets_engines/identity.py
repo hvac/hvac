@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Identity secret engine module."""
+import logging
+
 from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.identity import ALLOWED_GROUP_TYPES
 
 DEFAULT_MOUNT_POINT = 'identity'
+
+logger = logging.getLogger(__name__)
 
 
 class Identity(VaultApiBase):
@@ -1028,4 +1032,8 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json()
+        if response.status_code == 204:
+            logger.debug('Identity.lookup_group: no groups found with params: {params}'.format(params=params))
+            return None
+        else:
+            return response.json()
