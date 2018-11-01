@@ -1294,27 +1294,36 @@ class TestIdentity(utils.HvacIntegrationTestCase, TestCase):
             'lookup entity alias',
             criteria=['alias_id'],
         ),
+        param(
+            'lookup missing entity',
+            criteria=['entity_id'],
+            create_first=False,
+        ),
     ])
-    def test_lookup_entity(self, label, criteria, raises=None, exception_message=''):
+    def test_lookup_entity(self, label, criteria, create_first=True, raises=None, exception_message=''):
         lookup_params = {}
-        create_entity_response = self.client.secrets.identity.create_or_update_entity(
-                name=self.TEST_ENTITY_NAME,
-                mount_point=self.TEST_MOUNT_POINT,
-            )
-        logging.debug('create_entity_response: %s' % create_entity_response)
-        entity_id = create_entity_response['data']['id']
-        create_alias_response = self.client.secrets.identity.create_or_update_entity_alias(
-                name=self.TEST_ALIAS_NAME,
-                canonical_id=entity_id,
-                mount_accessor=self.test_approle_accessor,
-                mount_point=self.TEST_MOUNT_POINT,
-            )
-        logging.debug('create_alias_response: %s' % create_alias_response)
-        alias_id = create_alias_response['data']['id']
-        if 'entity_id' in criteria:
-            lookup_params['entity_id'] = entity_id
-        elif 'alias_id' in criteria:
-            lookup_params['alias_id'] = alias_id
+        if create_first:
+            create_entity_response = self.client.secrets.identity.create_or_update_entity(
+                    name=self.TEST_ENTITY_NAME,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_entity_response: %s' % create_entity_response)
+            entity_id = create_entity_response['data']['id']
+            create_alias_response = self.client.secrets.identity.create_or_update_entity_alias(
+                    name=self.TEST_ALIAS_NAME,
+                    canonical_id=entity_id,
+                    mount_accessor=self.test_approle_accessor,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_alias_response: %s' % create_alias_response)
+            alias_id = create_alias_response['data']['id']
+            if 'entity_id' in criteria:
+                lookup_params['entity_id'] = entity_id
+            elif 'alias_id' in criteria:
+                lookup_params['alias_id'] = alias_id
+        else:
+            for key in criteria:
+                lookup_params[key] = key
         logging.debug('lookup_params: %s' % lookup_params)
         if raises:
             with self.assertRaises(raises) as cm:
@@ -1332,16 +1341,19 @@ class TestIdentity(utils.HvacIntegrationTestCase, TestCase):
                     **lookup_params
                 )
             logging.debug('lookup_entity_response: %s' % lookup_entity_response)
-            if 'entity_id' in criteria:
-                self.assertEqual(
-                    first=lookup_entity_response['data']['name'],
-                    second=self.TEST_ENTITY_NAME,
-                )
-            elif 'alias_id' in criteria:
-                self.assertEqual(
-                    first=lookup_entity_response['data']['aliases'][0]['name'],
-                    second=self.TEST_ALIAS_NAME,
-                )
+            if create_first:
+                if 'entity_id' in criteria:
+                    self.assertEqual(
+                        first=lookup_entity_response['data']['name'],
+                        second=self.TEST_ENTITY_NAME,
+                    )
+                elif 'alias_id' in criteria:
+                    self.assertEqual(
+                        first=lookup_entity_response['data']['aliases'][0]['name'],
+                        second=self.TEST_ALIAS_NAME,
+                    )
+            else:
+                self.assertIsNone(obj=lookup_entity_response)
 
     @parameterized.expand([
         param(
