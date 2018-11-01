@@ -32,8 +32,10 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
   make distclean
   ```
-- [ ] Checkout a working branch:
+- [ ] Checkout a working branch based on the `develop` branch:
   ```
+  git checkout develop
+  git pull
   git checkout -b master_v0-6-2
   ```
 - [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff using the previous version's tag. E.g.: [https://github.com/hvac/hvac/compare/v0.6.1...master](https://github.com/hvac/hvac/compare/v0.6.1...master)
