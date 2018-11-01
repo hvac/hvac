@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Identity secret engine module."""
+import logging
+
 from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.identity import ALLOWED_GROUP_TYPES
 
 DEFAULT_MOUNT_POINT = 'identity'
+
+logger = logging.getLogger(__name__)
 
 
 class Identity(VaultApiBase):
@@ -970,8 +974,8 @@ class Identity(VaultApiBase):
         :type alias_mount_accessor: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the request.
-        :rtype: dict
+        :return: The JSON response of the request if a entity / entity alias is found in the lookup, None otherwise.
+        :rtype: dict | None
         """
         params = {}
         if name is not None:
@@ -988,7 +992,11 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json()
+        if response.status_code == 204:
+            logger.debug('Identity.lookup_entity: no entities found with params: {params}'.format(params=params))
+            return None
+        else:
+            return response.json()
 
     def lookup_group(self, name=None, group_id=None, alias_id=None, alias_name=None, alias_mount_accessor=None, mount_point=DEFAULT_MOUNT_POINT):
         """Query a group based on the given criteria.
@@ -1010,8 +1018,8 @@ class Identity(VaultApiBase):
         :type alias_mount_accessor: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the request.
-        :rtype: dict
+        :return: The JSON response of the request if a group / group alias is found in the lookup, None otherwise.
+        :rtype: dict | None
         """
         params = {}
         if name is not None:
@@ -1028,4 +1036,8 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json()
+        if response.status_code == 204:
+            logger.debug('Identity.lookup_group: no groups found with params: {params}'.format(params=params))
+            return None
+        else:
+            return response.json()
