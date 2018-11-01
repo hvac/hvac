@@ -992,7 +992,11 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json()
+        if response.status_code == 204:
+            logger.debug('Identity.lookup_entity: no entities found with params: {params}'.format(params=params))
+            return None
+        else:
+            return response.json()
 
     def lookup_group(self, name=None, group_id=None, alias_id=None, alias_name=None, alias_mount_accessor=None, mount_point=DEFAULT_MOUNT_POINT):
         """Query a group based on the given criteria.
