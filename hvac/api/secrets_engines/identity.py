@@ -974,8 +974,8 @@ class Identity(VaultApiBase):
         :type alias_mount_accessor: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the request.
-        :rtype: dict
+        :return: The JSON response of the request if a entity / entity alias is found in the lookup, None otherwise.
+        :rtype: dict | None
         """
         params = {}
         if name is not None:
@@ -1018,8 +1018,8 @@ class Identity(VaultApiBase):
         :type alias_mount_accessor: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the request.
-        :rtype: dict
+        :return: The JSON response of the request if a group / group alias is found in the lookup, None otherwise.
+        :rtype: dict | None
         """
         params = {}
         if name is not None:
