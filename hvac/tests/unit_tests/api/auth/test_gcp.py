@@ -18,7 +18,7 @@ class TestGcp(TestCase):
     @requests_mock.Mocker()
     def test_login(self, label, test_params, raises, requests_mocker):
         role_name = 'hvac'
-        credentials = utils.load_test_data('example.jwt.json')
+        credentials = utils.load_config_file('example.jwt.json')
         test_policies = [
             "default",
             "dev",

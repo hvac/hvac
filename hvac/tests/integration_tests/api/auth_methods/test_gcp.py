@@ -31,7 +31,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
         ),
         param(
             'set valid credentials',
-            credentials=utils.load_test_data('example.jwt.json'),
+            credentials=utils.load_config_file('example.jwt.json'),
         ),
         param(
             'set invalid credentials',
@@ -74,7 +74,7 @@ class TestGcp(utils.HvacIntegrationTestCase, TestCase):
     ])
     def test_read_config(self, label, write_config_first=True, raises=None):
 
-        credentials = utils.load_test_data('example.jwt.json')
+        credentials = utils.load_config_file('example.jwt.json')
         if write_config_first:
             self.client.auth.gcp.configure(
                 credentials=credentials,

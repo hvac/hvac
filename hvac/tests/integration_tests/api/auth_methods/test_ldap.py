@@ -102,7 +102,7 @@ class TestLdap(utils.HvacIntegrationTestCase, TestCase):
         ('update url', dict(url=LDAP_URL)),
         ('update binddn', dict(url=LDAP_URL, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
         ('update upn_domain', dict(url=LDAP_URL, upn_domain='hvac.network')),
-        ('update certificate', dict(url=LDAP_URL, certificate=utils.load_test_data('server-cert.pem'))),
+        ('update certificate', dict(url=LDAP_URL, certificate=utils.load_config_file('server-cert.pem'))),
         ('incorrect tls version', dict(url=LDAP_URL, tls_min_version='cats'), exceptions.InvalidRequest,
          "invalid 'tls_min_version'"),
     ])
