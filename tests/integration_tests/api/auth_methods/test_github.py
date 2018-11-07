@@ -4,7 +4,7 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 try:
     # Python 2.7

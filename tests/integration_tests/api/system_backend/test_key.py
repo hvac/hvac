@@ -1,7 +1,7 @@
 import logging
 from unittest import TestCase
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 
 class TestKey(utils.HvacIntegrationTestCase, TestCase):

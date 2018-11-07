@@ -5,7 +5,7 @@ from unittest import skipIf
 from parameterized import parameterized
 
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.11.0'), "Azure secret engine not available before Vault version 0.11.0")

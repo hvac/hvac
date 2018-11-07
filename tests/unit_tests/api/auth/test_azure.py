@@ -7,7 +7,7 @@ from parameterized import parameterized
 
 from hvac.adapters import Request
 from hvac.api.auth_methods import Azure
-from hvac.tests import utils
+from tests import utils
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.10.0'), "Azure auth method not available before Vault version 0.10.0")

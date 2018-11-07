@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest import skipIf
 
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 
 class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):

@@ -5,7 +5,7 @@ from ldap_test import LdapServer
 from parameterized import parameterized, param
 
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 LDAP_URL = 'ldap://ldap.hvac.network'
 LDAP_GROUP_NAME = 'vault-users'

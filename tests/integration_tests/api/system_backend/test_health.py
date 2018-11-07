@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from parameterized import parameterized, param
 
-from hvac.tests import utils
+from tests import utils
 
 
 class TestHealth(utils.HvacIntegrationTestCase, TestCase):

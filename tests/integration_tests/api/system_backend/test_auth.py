@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from hvac.tests import utils
+from tests import utils
 
 
 class TestAuth(utils.HvacIntegrationTestCase, TestCase):

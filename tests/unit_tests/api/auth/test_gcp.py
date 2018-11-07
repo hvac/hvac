@@ -6,7 +6,7 @@ from parameterized import parameterized
 
 from hvac.adapters import Request
 from hvac.api.auth_methods import Gcp
-from hvac.tests import utils
+from tests import utils
 
 
 class TestGcp(TestCase):

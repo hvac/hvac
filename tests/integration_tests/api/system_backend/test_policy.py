@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest import skipIf
 
-from hvac.tests import utils
+from tests import utils
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Policy class uses new parameters added >= Vault 0.9.0")

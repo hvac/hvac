@@ -3,7 +3,7 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from hvac import exceptions
-from hvac.tests import utils
+from tests import utils
 
 
 class TestKvV1(utils.HvacIntegrationTestCase, TestCase):

@@ -113,7 +113,7 @@ def get_config_file_path(filename):
     :rtype: str | unicode
     """
     # Use __file__ to derive a path relative to this module's location which points to the tests data directory.
-    relative_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'tests', 'config_files')
+    relative_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config_files')
     return os.path.join(os.path.abspath(relative_path), filename)
 
 

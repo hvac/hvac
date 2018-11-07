@@ -7,7 +7,7 @@ from parameterized import parameterized
 
 from hvac.adapters import Request
 from hvac.api.secrets_engines.azure import Azure, DEFAULT_MOUNT_POINT
-from hvac.tests import utils
+from tests import utils
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.11.0'), "Azure secret engine not available before Vault version 0.11.0")
