@@ -461,7 +461,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
     def test_tls_auth(self):
         self.client.enable_auth_backend('cert')
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
 
         self.client.write('auth/cert/certs/test', display_name='test',
@@ -737,7 +737,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.token = None
 
         # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
-        with open('test/identity_document.p7b') as fp:
+        with open(utils.get_test_data_path('identity_document.p7b')) as fp:
             pkcs7 = fp.read()
 
         # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
@@ -765,7 +765,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.token = None
 
         # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
-        with open('test/identity_document.p7b') as fp:
+        with open(utils.get_test_data_path('identity_document.p7b')) as fp:
             pkcs7 = fp.read()
 
         # If our custom path is respected, we'll still end up with Vault's inability to decrypt our dummy PKCS7 string.
@@ -793,7 +793,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         self.client.token = None
 
         # Load a mock JWT stand in for a real document from GCP.
-        with open('test/example.jwt') as fp:
+        with open(utils.get_test_data_path('example.jwt')) as fp:
             jwt = fp.read()
 
         # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
@@ -831,7 +831,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             response = self.client.create_kubernetes_configuration(
                 kubernetes_host='127.0.0.1:80',
@@ -854,7 +854,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         if '{0}/'.format(test_mount_point) in self.client.list_auth_backends()['data']:
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host=test_host,
@@ -888,7 +888,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host='127.0.0.1:80',
@@ -921,7 +921,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host='127.0.0.1:80',
@@ -961,7 +961,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host='127.0.0.1:80',
@@ -1000,7 +1000,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
 
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host='127.0.0.1:80',
@@ -1036,7 +1036,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         if '{0}/'.format(test_mount_point) in self.client.list_auth_backends()['data']:
             self.client.disable_auth_backend(test_mount_point)
         self.client.enable_auth_backend('kubernetes', mount_point=test_mount_point)
-        with open('test/client-cert.pem') as fp:
+        with open(utils.get_test_data_path('client-cert.pem')) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
                 kubernetes_host=test_host,
@@ -1052,7 +1052,7 @@ class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
         )
 
         # Test that we can authenticate
-        with open('test/example.jwt') as fp:
+        with open(utils.get_test_data_path('example.jwt')) as fp:
             test_jwt = fp.read()
             with self.assertRaises(exceptions.InternalServerError) as assertRaisesContext:
                 # we don't actually have a valid JWT to provide, so this method will throw an exception
