@@ -5,6 +5,7 @@ from parameterized import parameterized
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.mock_github_request_handler import MockGithubRequestHandler
 
 try:
     # Python 2.7
@@ -22,7 +23,7 @@ class TestGithub(utils.HvacIntegrationTestCase, TestCase):
         super(TestGithub, cls).setUpClass()
         # Configure mock server.
         cls.mock_server_port = utils.get_free_port()
-        cls.mock_server = HTTPServer(('localhost', cls.mock_server_port), utils.MockGithubRequestHandler)
+        cls.mock_server = HTTPServer(('localhost', cls.mock_server_port), MockGithubRequestHandler)
 
         # Start running mock server in a separate thread.
         # Daemon threads automatically shut down when the main process exits.
