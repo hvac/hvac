@@ -4,7 +4,9 @@ import re
 import warnings
 
 from mock import patch
-from tests.utils import ServerManager, get_config_file_path, create_client
+
+from tests.utils import get_config_file_path, create_client
+from tests.utils.server_manager import ServerManager
 
 
 class HvacIntegrationTestCase(object):
