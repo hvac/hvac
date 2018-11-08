@@ -1,10 +1,10 @@
 import logging
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestInit(utils.HvacIntegrationTestCase, TestCase):
+class TestInit(HvacIntegrationTestCase, TestCase):
     def test_read_init_status(self):
         read_response = self.client.sys.read_init_status()
         logging.debug('read_response: %s' % read_response)

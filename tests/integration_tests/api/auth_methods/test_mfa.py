@@ -3,13 +3,13 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from hvac import exceptions
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 TEST_AUTH_PATH = 'userpass-with-mfa'
 UNSUPPORTED_AUTH_PATH = 'approle-that-can-not-have-mfa'
 
 
-class TestMfa(utils.HvacIntegrationTestCase, TestCase):
+class TestMfa(HvacIntegrationTestCase, TestCase):
     mock_server_port = None
 
     @classmethod

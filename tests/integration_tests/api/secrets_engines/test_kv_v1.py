@@ -3,10 +3,10 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from hvac import exceptions
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestKvV1(utils.HvacIntegrationTestCase, TestCase):
+class TestKvV1(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand([
         ('nonexistent secret', 'no-secret-here', False, exceptions.InvalidPath),

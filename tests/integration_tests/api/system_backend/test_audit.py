@@ -4,10 +4,10 @@ from unittest import TestCase
 from parameterized import parameterized, param
 
 from hvac import exceptions
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestAudit(utils.HvacIntegrationTestCase, TestCase):
+class TestAudit(HvacIntegrationTestCase, TestCase):
     TEST_AUDIT_DEVICE_PATH = 'test-tempfile'
 
     def tearDown(self):

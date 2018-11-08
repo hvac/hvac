@@ -5,6 +5,7 @@ from parameterized import parameterized
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 from tests.utils.mock_github_request_handler import MockGithubRequestHandler
 
 try:
@@ -15,7 +16,7 @@ except ImportError:
     from BaseHTTPServer import HTTPServer
 
 
-class TestGithub(utils.HvacIntegrationTestCase, TestCase):
+class TestGithub(HvacIntegrationTestCase, TestCase):
     TEST_GITHUB_PATH = 'test-github'
 
     @classmethod

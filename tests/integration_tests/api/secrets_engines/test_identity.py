@@ -6,10 +6,11 @@ from parameterized import parameterized, param
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Identity secrets engine open sourced in Vault version >=0.9.0")
-class TestIdentity(utils.HvacIntegrationTestCase, TestCase):
+class TestIdentity(HvacIntegrationTestCase, TestCase):
     TEST_APPROLE_PATH = 'identity-test-approle'
     TEST_MOUNT_POINT = 'identity'
     TEST_ENTITY_NAME = 'test-entity'

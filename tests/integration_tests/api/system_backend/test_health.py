@@ -3,10 +3,10 @@ from unittest import TestCase
 
 from parameterized import parameterized, param
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestHealth(utils.HvacIntegrationTestCase, TestCase):
+class TestHealth(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand([
         param(

@@ -2,10 +2,10 @@ import logging
 from unittest import TestCase
 
 from hvac import exceptions
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestLease(utils.HvacIntegrationTestCase, TestCase):
+class TestLease(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestLease, self).setUp()

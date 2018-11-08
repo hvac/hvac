@@ -3,9 +3,10 @@ from unittest import skipIf
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class IntegrationTest(utils.HvacIntegrationTestCase, TestCase):
+class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
     def test_generic_secret_backend(self):
         self.client.write('secret/foo', zap='zip')

@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestSeal(utils.HvacIntegrationTestCase, TestCase):
+class TestSeal(HvacIntegrationTestCase, TestCase):
 
     def test_unseal_multi(self):
         cls = type(self)

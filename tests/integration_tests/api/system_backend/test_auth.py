@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestAuth(utils.HvacIntegrationTestCase, TestCase):
+class TestAuth(HvacIntegrationTestCase, TestCase):
     TEST_AUTH_METHOD_TYPE = 'github'
     TEST_AUTH_METHOD_PATH = 'test-github'
 

@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestLeader(utils.HvacIntegrationTestCase, TestCase):
+class TestLeader(HvacIntegrationTestCase, TestCase):
 
     def test_read_health_status(self):
         self.assertIn(

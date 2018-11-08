@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestMount(utils.HvacIntegrationTestCase, TestCase):
+class TestMount(HvacIntegrationTestCase, TestCase):
 
     def test_secret_backend_manipulation(self):
         self.assertNotIn(

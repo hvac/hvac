@@ -1,10 +1,10 @@
 import logging
 from unittest import TestCase
 
-from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestWrapping(utils.HvacIntegrationTestCase, TestCase):
+class TestWrapping(HvacIntegrationTestCase, TestCase):
     TEST_AUTH_METHOD_TYPE = 'approle'
     TEST_AUTH_METHOD_PATH = 'test-approle'
 

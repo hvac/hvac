@@ -6,6 +6,7 @@ from parameterized import parameterized, param
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 LDAP_URL = 'ldap://ldap.hvac.network'
 LDAP_GROUP_NAME = 'vault-users'
@@ -53,7 +54,7 @@ LDAP_ENTRIES = [
 ]
 
 
-class TestLdap(utils.HvacIntegrationTestCase, TestCase):
+class TestLdap(HvacIntegrationTestCase, TestCase):
     TEST_LDAP_PATH = 'test-ldap'
     ldap_server = None
     mock_server_port = None

@@ -6,10 +6,11 @@ from parameterized import parameterized
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.11.0'), "Azure secret engine not available before Vault version 0.11.0")
-class TestAzure(utils.HvacIntegrationTestCase, TestCase):
+class TestAzure(HvacIntegrationTestCase, TestCase):
     TENANT_ID = '00000000-0000-0000-0000-000000000000'
     SUBSCRIPTION_ID = '00000000-0000-0000-0000-000000000000'
     DEFAULT_MOUNT_POINT = 'azure-integration-test'

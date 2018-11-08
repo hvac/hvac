@@ -6,9 +6,10 @@ from parameterized import parameterized, param
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestTransit(utils.HvacIntegrationTestCase, TestCase):
+class TestTransit(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = 'transit-integration-test'
 
     def setUp(self):

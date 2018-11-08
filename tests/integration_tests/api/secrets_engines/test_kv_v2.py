@@ -6,10 +6,11 @@ from parameterized import parameterized, param
 
 from hvac import exceptions
 from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 @skipIf(utils.skip_if_vault_version_lt('0.10.0'), "KV version 2 secret engine not available before Vault version 0.10.0")
-class TestKvV2(utils.HvacIntegrationTestCase, TestCase):
+class TestKvV2(HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = 'kvv2'
 
     def setUp(self):
