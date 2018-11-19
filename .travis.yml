@@ -83,7 +83,7 @@ matrix:
         - TOXENV=py27
         - HVAC_VAULT_VERSION=HEAD
 install:
-  - scripts/install-vault.sh ${HVAC_VAULT_VERSION}
+  - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION}
   - pip install tox
 script:
   - export PATH=$HOME/bin:$PATH
