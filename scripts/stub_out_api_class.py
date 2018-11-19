@@ -87,7 +87,7 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from hvac.api.secrets_engines.{{ class_name|lower }} import DEFAULT_MOUNT_POINT
+from hvac.api.auth_methods.{{ class_name|lower }} import DEFAULT_MOUNT_POINT
 from hvac.tests import utils
 
 
@@ -119,8 +119,8 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import Request
-from hvac.api.secrets_engines import {{ class_name }}
-from hvac.api.secrets_engines.{{ class_name|lower }} import DEFAULT_MOUNT_POINT
+from hvac.api.auth_methods import {{ class_name }}
+from hvac.api.auth_methods.{{ class_name|lower }} import DEFAULT_MOUNT_POINT
 
 
 class Test{{ class_name }}(TestCase):
@@ -150,7 +150,7 @@ USAGE_DOCS = '''\
 ==================
 
 .. note::
-    Every method under the :py:attr:`Client class's {{ class_name|lower }} attribute<hvac.v1.Client.{{ class_name|lower }}>` includes a `mount_point` parameter that can be used to address the {{ class_name }} secret engine under a custom mount path. E.g., If enabling the {{ class_name }} secret engine using Vault's CLI commands via `vault secret enable -path=my-{{ class_name|lower }} {{ class_name|lower }}`", the `mount_point` parameter in :py:meth:`hvac.api.secrets_engines.{{ class_name }}` methods would be set to "my-{{ class_name|lower }}".
+    Every method under the :py:attr:`Client class's {{ class_name|lower }} attribute<hvac.v1.Client.{{ class_name|lower }}>` includes a `mount_point` parameter that can be used to address the {{ class_name }} auth method under a custom mount path. E.g., If enabling the {{ class_name }} auth method using Vault's CLI commands via `vault secret enable -path=my-{{ class_name|lower }} {{ class_name|lower }}`", the `mount_point` parameter in :py:meth:`hvac.api.auth_methods.{{ class_name }}` methods would be set to "my-{{ class_name|lower }}".
 
 Enabling the Auth Method
 ------------------------
@@ -179,7 +179,7 @@ Enabling the Auth Method
 {{ method_details.original_id }}
 -------------------------------
 
-:py:meth:`hvac.api.secrets_engines.{{ class_name }}.{{ name }}`
+:py:meth:`hvac.api.auth_methods.{{ class_name }}.{{ name }}`
 
 .. code:: python
 
@@ -194,10 +194,14 @@ Enabling the Auth Method
 
 def main():
     urls = {
-        'Azure': {
-            'docs_url': 'https://www.vaultproject.io/api/secret/azure/index.html',
-            'default_mount_point': 'azure',
+        'Okta': {
+            'docs_url': 'https://www.vaultproject.io/api/auth/okta/index.html',
+            'default_mount_point': 'okta',
         },
+        # 'Azure': {
+        #     'docs_url': 'https://www.vaultproject.io/api/secret/azure/index.html',
+        #     'default_mount_point': 'azure',
+        # },
         # 'Gcp': {
         #     'docs_url': 'https://www.vaultproject.io/api/auth/gcp/index.html',
         #     'default_mount_point': 'secret',
@@ -366,7 +370,7 @@ def main():
             methods=methods,
         )
         with open(class_source_filename, 'w') as f:
-            f.writelines(class_source.encode('utf-8'))
+            f.writelines(class_source)
 
         integration_source_filename = 'test_integration_%s.py' % class_name.lower()
         t = Template(API_INTEGRATION_CLASS)
@@ -378,7 +382,7 @@ def main():
             methods=methods,
         )
         with open(integration_source_filename, 'w') as f:
-            f.writelines(integration_source.encode('utf-8'))
+            f.writelines(integration_source)
 
         unit_source_filename = 'test_unit_%s.py' % class_name.lower()
         t = Template(API_UNIT_CLASS)
@@ -390,7 +394,7 @@ def main():
             methods=methods,
         )
         with open(unit_source_filename, 'w') as f:
-            f.writelines(unit_source.encode('utf-8'))
+            f.writelines(unit_source)
 
         usage_filename = '%s.rst' % class_name.lower()
         t = Template(USAGE_DOCS)
@@ -402,7 +406,7 @@ def main():
             methods=methods,
         )
         with open(usage_filename, 'w') as f:
-            f.writelines(usage_docs_source.encode('utf-8'))
+            f.writelines(usage_docs_source)
         # renderer = VaultDocsHvacApiClassRenderer(
         #     class_name=class_name,
         #     reference_url=url,
