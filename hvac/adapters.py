@@ -258,7 +258,7 @@ class Request(Adapter):
 
         if response.status_code >= 400 and response.status_code < 600:
             text = errors = None
-            if response.headers.get('Content-Type') == 'application/json':
+            if response.headers.get('Content-Type') == 'application/json' and len(response.content) > 0:
                 errors = response.json().get('errors')
             if errors is None:
                 text = response.text
