@@ -69,8 +69,8 @@ Delete Config
 
     client.auth.gcp.delete_config()
 
-create-role
--------------------------------
+Create Role
+-----------
 
 :py:meth:`hvac.api.auth.Gcp.create_role`
 
