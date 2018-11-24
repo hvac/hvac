@@ -12,6 +12,7 @@ Auth Methods
    kubernetes
    ldap
    mfa
+   okta
    token
 
 Authenticate to different auth backends
