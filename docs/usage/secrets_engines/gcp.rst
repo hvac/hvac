@@ -1,31 +1,5 @@
-Gcp Auth Method
-==================
-
-.. note::
-    Every method under the :py:attr:`Client class's gcp attribute<hvac.v1.Client.gcp>` includes a `mount_point` parameter that can be used to address the Gcp secret engine under a custom mount path. E.g., If enabling the Gcp secret engine using Vault's CLI commands via `vault secret enable -path=my-gcp gcp`", the `mount_point` parameter in :py:meth:`hvac.api.secrets_engines.Gcp` methods would be set to "my-gcp".
-
-Enabling the Auth Method
-------------------------
-
-:py:meth:`hvac.v1.Client.enable_secret_backend`
-
-.. code:: python
-
-    import hvac
-    client = hvac.Client()
-
-    gcp_secret_path = 'company-gcp'
-    description = 'Auth method for use by team members in our company's Gcp organization'
-
-    if '%s/' % gcp_secret_path not in vault_client.list_secret_backends():
-        print('Enabling the gcp secret backend at mount_point: {path}'.format(
-            path=gcp_secret_path,
-        ))
-        client.enable_secret_backend(
-            backend_type='gcp',
-            description=description,
-            mount_point=gcp_secret_path,
-        )
+GCP
+===
 
 
 write-config
@@ -38,7 +12,7 @@ write-config
     import hvac
     client = hvac.Client()
 
-    client.gcp.write_config(
+    client.secrets.gcp.write_config(
     )
 
 read-config
@@ -51,7 +25,7 @@ read-config
     import hvac
     client = hvac.Client()
 
-    client.gcp.read_config(
+    client.secrets.gcp.read_config(
     )
 
 create-update-roleset
@@ -64,7 +38,7 @@ create-update-roleset
     import hvac
     client = hvac.Client()
 
-    client.gcp.create_or_update_roleset(
+    client.secrets.gcp.create_or_update_roleset(
     )
 
 rotate-roleset-account
@@ -77,7 +51,7 @@ rotate-roleset-account
     import hvac
     client = hvac.Client()
 
-    client.gcp.rotate_roleset_account(
+    client.secrets.gcp.rotate_roleset_account(
     )
 
 rotate-roleset-account-key-access_token-roleset-only-
@@ -90,7 +64,7 @@ rotate-roleset-account-key-access_token-roleset-only-
     import hvac
     client = hvac.Client()
 
-    client.gcp.rotate_roleset_account_key_access_token_roleset_only(
+    client.secrets.gcp.rotate_roleset_account_key_access_token_roleset_only(
     )
 
 read-roleset
@@ -103,7 +77,7 @@ read-roleset
     import hvac
     client = hvac.Client()
 
-    client.gcp.read_roleset(
+    client.secrets.gcp.read_roleset(
     )
 
 list-rolesets
@@ -116,7 +90,7 @@ list-rolesets
     import hvac
     client = hvac.Client()
 
-    client.gcp.list_rolesets(
+    client.secrets.gcp.list_rolesets(
     )
 
 generate-secret-iam-service-account-creds-oauth2-access-token
@@ -129,7 +103,7 @@ generate-secret-iam-service-account-creds-oauth2-access-token
     import hvac
     client = hvac.Client()
 
-    client.gcp.generate_secret_iam_service_account_creds_oauth2_access_token(
+    client.secrets.gcp.generate_secret_iam_service_account_creds_oauth2_access_token(
     )
 
 generate-secret-iam-service-account-creds-service-account-key
@@ -142,5 +116,5 @@ generate-secret-iam-service-account-creds-service-account-key
     import hvac
     client = hvac.Client()
 
-    client.gcp.generate_secret_iam_service_account_creds_service_account_key(
+    client.secrets.gcp.generate_secret_iam_service_account_creds_service_account_key(
     )

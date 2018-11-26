@@ -6,6 +6,7 @@ Secrets Engines
 
    aws
    azure
+   gcp
    identity
    kv
    kv_v1
