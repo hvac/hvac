@@ -245,7 +245,7 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def generate_secret_iam_service_account_creds_service_account_key(self, roleset, key_algorithm="KEY_ALG_RSA_2048", key_type="TYPE_GOOGLE_CREDENTIALS_FILE, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_secret_iam_service_account_creds_service_account_key(self, roleset, key_algorithm="KEY_ALG_RSA_2048", key_type=TYPE_GOOGLE_CREDENTIALS_FILE, mount_point=DEFAULT_MOUNT_POINT):
         """
         If using GET ('read'), the  optional parameters will be set to their defaults. Use POST if you
         want to specify different values for these params.
