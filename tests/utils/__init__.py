@@ -43,6 +43,10 @@ def skip_if_vault_version_ge(supported_version):
     return skip_if_vault_version(supported_version, comparison=operator.ge)
 
 
+def skip_if_vault_version_eq(supported_version):
+    return skip_if_vault_version(supported_version, comparison=operator.eq)
+
+
 def create_client(**kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
