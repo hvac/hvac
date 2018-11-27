@@ -37,7 +37,7 @@ class Policy(SystemBackendMixin):
         )
         return response.json()
 
-    def create_or_update_policy(self, name, policy):
+    def create_or_update_policy(self, name, policy, pretty_print=True):
         """Add a new or update an existing policy.
 
         Once a policy is updated, it takes effect immediately to all associated users.
@@ -49,11 +49,17 @@ class Policy(SystemBackendMixin):
         :type name: str | unicode
         :param policy: Specifies the policy document.
         :type policy: str | unicode | dict
+        :param pretty_print: If True, and provided a dict for the policy argument, send the policy JSON to Vault with
+            "pretty" formatting.
+        :type pretty_print: bool
         :return: The response of the request.
         :rtype: requests.Response
         """
         if isinstance(policy, dict):
-            policy = json.dumps(policy)
+            if pretty_print:
+                policy = json.dumps(policy, indent=4, sort_keys=True)
+            else:
+                policy = json.dumps(policy)
         params = {
             'policy': policy,
         }
