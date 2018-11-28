@@ -1,5 +1,5 @@
-Aws Auth Method
-==================
+Aws
+===
 
 .. note::
     Every method under the :py:attr:`Client class's aws attribute<hvac.v1.Client.aws>` includes a `mount_point` parameter that can be used to address the Aws secret engine under a custom mount path. E.g., If enabling the Aws secret engine using Vault's CLI commands via `vault secret enable -path=my-aws aws`", the `mount_point` parameter in :py:meth:`hvac.api.secrets_engines.Aws` methods would be set to "my-aws".
