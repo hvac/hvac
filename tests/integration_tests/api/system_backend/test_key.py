@@ -9,7 +9,7 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 class TestKey(HvacIntegrationTestCase, TestCase):
 
     def test_start_generate_root_with_completion(self):
-        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+        test_otp = utils.get_generate_root_otp()
 
         self.assertFalse(self.client.sys.read_root_generation_progress()['started'])
         start_generate_root_response = self.client.sys.start_root_token_generation(
@@ -47,7 +47,7 @@ class TestKey(HvacIntegrationTestCase, TestCase):
             self.fail('Unable to authenticate with the newly generated root token.')
 
     def test_start_generate_root_then_cancel(self):
-        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+        test_otp = utils.get_generate_root_otp()
 
         self.assertFalse(self.client.sys.read_root_generation_progress()['started'])
         self.client.sys.start_root_token_generation(

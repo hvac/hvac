@@ -10,7 +10,7 @@ from hvac.api.auth_methods import Azure
 from tests import utils
 
 
-@skipIf(utils.skip_if_vault_version_lt('0.10.0'), "Azure auth method not available before Vault version 0.10.0")
+@skipIf(utils.vault_version_lt('0.10.0'), "Azure auth method not available before Vault version 0.10.0")
 class TestAzure(TestCase):
     TEST_MOUNT_POINT = 'azure-test'
 

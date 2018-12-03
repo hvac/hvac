@@ -8,7 +8,7 @@ from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-@skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Policy class uses new parameters added >= Vault 0.9.0")
+@skipIf(utils.vault_version_lt('0.9.0'), "Policy class uses new parameters added >= Vault 0.9.0")
 class TestPolicy(HvacIntegrationTestCase, TestCase):
     TEST_POLICY_NAME = 'test-policy-policy'
 
@@ -27,7 +27,7 @@ class TestPolicy(HvacIntegrationTestCase, TestCase):
             pretty_print=False,
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_eq('0.11.0'), "Policy parsing broken in Vault version 0.11.0")
+    @skipIf(utils.vault_version_eq('0.11.0'), "Policy parsing broken in Vault version 0.11.0")
     def test_create_or_update_policy(self, label, pretty_print=True):
         test_policy = {
             'path': {

@@ -390,14 +390,14 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         param(
             label='working creds no membership with Vault version >= 0.10.3',
             attach_policy=False,
-            skip_due_to_vault_version=utils.skip_if_vault_version_lt('0.10.3'),
+            skip_due_to_vault_version=utils.vault_version_lt('0.10.3'),
         ),
         param(
             label='working creds no membership with Vault version < 0.10.3',
             attach_policy=False,
             raises=exceptions.InvalidRequest,
             exception_message='user is not a member of any authorized group',
-            skip_due_to_vault_version=utils.skip_if_vault_version_ge('0.10.3'),
+            skip_due_to_vault_version=utils.vault_version_ge('0.10.3'),
         ),
     ])
     def test_login(self, label, username=LDAP_USER_NAME, password=LDAP_USER_PASSWORD, attach_policy=True, raises=None,
