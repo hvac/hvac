@@ -356,11 +356,13 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             logging.debug('create_role_response: %s' % read_role_response)
             if utils.skip_if_vault_version_ge('1.0.0'):
                 returned_project_id = read_role_response['bound_projects']
+                expected_project_id = [project_id]
             else:
                 returned_project_id = read_role_response['project_id']
+                expected_project_id = project_id
             self.assertEqual(
                 first=returned_project_id,
-                second=project_id
+                second=expected_project_id
             )
 
     @parameterized.expand([
