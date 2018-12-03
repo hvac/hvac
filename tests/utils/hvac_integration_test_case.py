@@ -75,18 +75,21 @@ class HvacIntegrationTestCase(object):
         :return: The provided TTL value in the form returned by the Vault API.
         :rtype: int
         """
-        expected_ttl = ttl_value
+        expected_ttl = 0
         if not isinstance(ttl_value, int) and ttl_value != '':
-            regexp_matches = re.match(r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$', ttl_value)
+            regexp_matches = re.findall(r'(?P<duration>[0-9]+)(?P<unit>[smh])', ttl_value)
             if regexp_matches:
-                fields = regexp_matches.groupdict()
-                expected_ttl = int(fields['duration'])
-                if fields['unit'] == 'm':
-                    # convert minutes to seconds
-                    expected_ttl = expected_ttl * 60
-                elif fields['unit'] == 'h':
-                    # convert hours to seconds
-                    expected_ttl = expected_ttl * 60 * 60
+                for regexp_match in regexp_matches:
+                    duration, unit = regexp_match
+                    if unit == 'm':
+                        # convert minutes to seconds
+                        expected_ttl += int(duration) * 60
+                    elif unit == 'h':
+                        # convert hours to seconds
+                        expected_ttl += int(duration) * 60 * 60
+                    else:
+                        expected_ttl += int(duration)
+
         elif ttl_value == '':
             expected_ttl = 0
         return expected_ttl
