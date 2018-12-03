@@ -40,32 +40,32 @@ matrix:
     - name: 'Python v3.6, Vault v0.8.3 - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=0.8.3
     - name: 'Python v3.6, Vault v0.9.6 - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=0.9.6
     - name: 'Python v3.6, Vault v0.10.4 - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=0.10.4
     - name: 'Python v3.6, Vault v0.11.0 - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=0.11.0
     - name: 'Python v3.6, Vault v0.11.4 - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=0.11.4
     - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
       python: '3.6'
       env:
-        - TOXENV=py27
+        - TOXENV=py36
         - HVAC_VAULT_VERSION=HEAD
     - name: 'Python v3.6 - Linting (flake8)'
       python: '3.6'
