@@ -9,7 +9,7 @@ from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-@skipIf(utils.skip_if_vault_version_lt('0.9.0'), "Identity secrets engine open sourced in Vault version >=0.9.0")
+@skipIf(utils.vault_version_lt('0.9.0'), "Identity secrets engine open sourced in Vault version >=0.9.0")
 class TestIdentity(HvacIntegrationTestCase, TestCase):
     TEST_APPROLE_PATH = 'identity-test-approle'
     TEST_MOUNT_POINT = 'identity'
@@ -167,7 +167,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             create_first=True,
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_create_or_update_entity_by_name(self, label, metadata=None, create_first=False, raises=None, exception_message=''):
         entity_id = None
         if create_first:
@@ -263,7 +263,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             raises=exceptions.InvalidPath
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_read_entity_by_name(self, label, create_first=True, raises=None, exception_message=''):
         entity_id = None
         if create_first:
@@ -393,7 +393,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             create_first=False,
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_delete_entity_by_name(self, label, create_first=True, raises=None, exception_message=''):
         if create_first:
             create_first_response = self.client.secrets.identity.create_or_update_entity(
@@ -480,7 +480,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             exception_message='"method" parameter provided invalid value',
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_list_entities_by_name(self, label, method='LIST', raises=None, exception_message=''):
         create_response = self.client.secrets.identity.create_or_update_entity(
                 name=self.TEST_ENTITY_NAME,
@@ -986,7 +986,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             exception_message='"method" parameter provided invalid value',
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_list_groups_by_name(self, label, method='LIST', raises=None, exception_message=''):
         create_response = self.client.secrets.identity.create_or_update_group(
                 name=self.TEST_GROUP_NAME,
@@ -1045,7 +1045,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             create_first=True,
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_create_or_update_group_by_name(self, label, metadata=None, group_type='internal', create_first=True, raises=None, exception_message=''):
         if create_first:
             create_first_response = self.client.secrets.identity.create_or_update_group(
@@ -1090,7 +1090,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             raises=exceptions.InvalidPath
         ),
     ])
-    @skipIf(utils.skip_if_vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
+    @skipIf(utils.vault_version_lt('0.11.2'), '"by name" operations added in Vault v0.11.2')
     def test_read_group_by_name(self, label, create_first=True, raises=None, exception_message=''):
         group_id = None
         if create_first:

@@ -196,7 +196,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 **extra_params
             )
             logging.debug('create_role_response: %s' % create_role_response)
-            if utils.skip_if_vault_version_lt('0.10.0'):
+            if utils.vault_version_lt('0.10.0'):
                 expected_status_code = 204
             else:
                 expected_status_code = 200  # TODO => figure out why this isn't a 204?
@@ -252,7 +252,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % edit_sa_on_iam_response)
-            if utils.skip_if_vault_version_lt('0.10.0'):
+            if utils.vault_version_lt('0.10.0'):
                 expected_status_code = 204
             else:
                 expected_status_code = 200  # TODO => figure out why this isn't a 204?
@@ -308,7 +308,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % edit_labled_response)
-            if utils.skip_if_vault_version_lt('0.10.0'):
+            if utils.vault_version_lt('0.10.0'):
                 expected_status_code = 204
             else:
                 expected_status_code = 200  # TODO => figure out why this isn't a 204?
@@ -354,7 +354,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % read_role_response)
-            if utils.skip_if_vault_version_ge('1.0.0'):
+            if utils.vault_version_ge('1.0.0'):
                 returned_project_id = read_role_response['bound_projects']
                 expected_project_id = [project_id]
             else:
