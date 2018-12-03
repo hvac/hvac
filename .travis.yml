@@ -13,6 +13,7 @@ matrix:
       env:
         - TOXENV=py27
         - HVAC_VAULT_VERSION=0.10.4
+    # Leaving Vault v0.11.0 since it has some backwards-incompatible changes that were reverted in later versions.
     - name: 'Python v2.7, Vault v0.11.0 - Integration/Unit Tests'
       python: '2.7'
       env:
@@ -47,6 +48,7 @@ matrix:
       env:
         - TOXENV=py36
         - HVAC_VAULT_VERSION=0.10.4
+    # Leaving Vault v0.11.0 since it has some backwards-incompatible changes that were reverted in later versions.
     - name: 'Python v3.6, Vault v0.11.0 - Integration/Unit Tests'
       python: '3.6'
       env:
