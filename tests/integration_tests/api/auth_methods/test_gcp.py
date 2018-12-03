@@ -354,9 +354,13 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % read_role_response)
+            if utils.skip_if_vault_version_ge('1.0.0'):
+                returned_project_id = read_role_response['bound_projects']
+            else:
+                returned_project_id = read_role_response['project_id']
             self.assertEqual(
-                first=project_id,
-                second=read_role_response['project_id'],
+                first=returned_project_id,
+                second=project_id
             )
 
     @parameterized.expand([
