@@ -43,6 +43,19 @@ def skip_if_vault_version_ge(supported_version):
     return skip_if_vault_version(supported_version, comparison=operator.ge)
 
 
+def get_generate_root_otp():
+    """Get a appropriate OTP for the current Vault version under test.
+
+    :return: OTP to use in generate root operations
+    :rtype: str
+    """
+    if skip_if_vault_version_ge('1.0.0'):
+        test_otp = 'ygs0vL8GIxu0AjRVEmJ5jLCVq8'
+    else:
+        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+    return test_otp
+
+
 def create_client(**kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
