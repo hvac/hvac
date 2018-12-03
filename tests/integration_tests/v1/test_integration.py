@@ -810,7 +810,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.token = self.manager.root_token
         self.client.disable_auth_backend(mount_point=test_mount_point)
 
-    @skipIf(utils.skip_if_vault_version('0.10.0'), "KV version 2 secret engine not available before Vault version 0.10.0")
+    @skipIf(utils.if_vault_version('0.10.0'), "KV version 2 secret engine not available before Vault version 0.10.0")
     def test_kv2_secret_backend(self):
         if 'test/' in self.client.list_secret_backends()['data']:
             self.client.disable_secret_backend('test')

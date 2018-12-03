@@ -270,7 +270,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             self.client.lookup_token(result['auth']['client_token'])
 
     def test_start_generate_root_with_completion(self):
-        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+        test_otp = utils.get_generate_root_otp()
 
         self.assertFalse(self.client.generate_root_status['started'])
         start_generate_root_response = self.client.start_generate_root(
@@ -309,7 +309,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             self.fail('Unable to authenticate with the newly generated root token.')
 
     def test_start_generate_root_then_cancel(self):
-        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+        test_otp = utils.get_generate_root_otp()
 
         self.assertFalse(self.client.generate_root_status['started'])
         self.client.start_generate_root(

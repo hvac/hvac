@@ -27,7 +27,7 @@ def get_installed_vault_version():
     return version
 
 
-def skip_if_vault_version(supported_version, comparison=operator.lt):
+def if_vault_version(supported_version, comparison=operator.lt):
     current_version = os.getenv('HVAC_VAULT_VERSION')
     if current_version is None or current_version.lower() == 'head':
         current_version = get_installed_vault_version()
@@ -35,16 +35,29 @@ def skip_if_vault_version(supported_version, comparison=operator.lt):
     return comparison(StrictVersion(current_version), StrictVersion(supported_version))
 
 
-def skip_if_vault_version_lt(supported_version):
-    return skip_if_vault_version(supported_version, comparison=operator.lt)
+def vault_version_lt(supported_version):
+    return if_vault_version(supported_version, comparison=operator.lt)
 
 
-def skip_if_vault_version_ge(supported_version):
-    return skip_if_vault_version(supported_version, comparison=operator.ge)
+def vault_version_ge(supported_version):
+    return if_vault_version(supported_version, comparison=operator.ge)
 
 
-def skip_if_vault_version_eq(supported_version):
-    return skip_if_vault_version(supported_version, comparison=operator.eq)
+def vault_version_eq(supported_version):
+    return if_vault_version(supported_version, comparison=operator.eq)
+
+
+def get_generate_root_otp():
+    """Get a appropriate OTP for the current Vault version under test.
+
+    :return: OTP to use in generate root operations
+    :rtype: str
+    """
+    if vault_version_ge('1.0.0'):
+        test_otp = 'ygs0vL8GIxu0AjRVEmJ5jLCVq8'
+    else:
+        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+    return test_otp
 
 
 def create_client(**kwargs):
@@ -120,7 +133,7 @@ def decode_generated_root_token(encoded_token, otp):
     :rtype: str | unicode
     """
     command = ['vault']
-    if skip_if_vault_version_ge('0.9.6'):
+    if vault_version_ge('0.9.6'):
         # before Vault ~0.9.6, the generate-root command was the first positional argument
         # afterwards, it was moved under the "operator" category
         command.append('operator')
