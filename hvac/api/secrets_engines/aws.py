@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Aws methods module."""
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.constants.aws import DEFAULT_MOUNT_POINT, ALLOWED_CREDS_ENDPOINTS
+from hvac.constants.aws import DEFAULT_MOUNT_POINT, ALLOWED_CREDS_ENDPOINTS, ALLOWED_CREDS_TYPES
 from hvac import exceptions
 
 
@@ -134,7 +134,7 @@ class Aws(VaultApiBase):
         )
         return response.json()
 
-    def create_or_update_role(self, name, credential_type, policy_document, default_sts_ttl, max_sts_ttl,
+    def create_or_update_role(self, name, credential_type, policy_document=None, default_sts_ttl=None, max_sts_ttl=None,
                               role_arns=None, policy_arns=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create or update the role with the given name.
 
@@ -173,6 +173,12 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
+        if credential_type not in ALLOWED_CREDS_TYPES:
+            error_msg = 'invalid credential_type argument provided "{arg}", supported types: "{allowed_types}"'
+            raise exceptions.ParamValidationError(error_msg.format(
+                arg=credential_type,
+                allowed_types=', '.join(ALLOWED_CREDS_TYPES),
+            ))
         params = {
             'credential_type': credential_type,
             'policy_document': policy_document,
@@ -255,7 +261,7 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
-    def generate_credentials(self, name, role_arn, ttl="3600s", endpoint='creds', mount_point=DEFAULT_MOUNT_POINT):
+    def generate_credentials(self, name, role_arn=None, ttl="3600s", endpoint='creds', mount_point=DEFAULT_MOUNT_POINT):
         """Generates credential based on the named role.
 
         This role must be created before queried.
