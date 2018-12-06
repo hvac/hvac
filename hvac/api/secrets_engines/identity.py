@@ -532,12 +532,19 @@ class Identity(VaultApiBase):
         }
         if group_id is not None:
             params['id'] = group_id
-        if group_type == 'external' and member_entity_ids is not None:
-            # InvalidRequest: member entities can't be set manually for external groups
+
+        if group_type == 'external':
+            if member_entity_ids is not None:
+                logger.warning("InvalidRequest: member entities can't be set manually for external groupsl ignoring member_entity_ids argument.")
+        else:
             params['member_entity_ids'] = member_entity_ids
-        if group_type == 'external' and member_group_ids is not None:
-            # InvalidRequest: member groups can't be set for external groups
+
+        if group_type == 'external':
+            if member_group_ids is not None:
+                logger.warning("InvalidRequest: member groups can't be set for external groups; ignoring member_group_ids argument.")
+        else:
             params['member_group_ids'] = member_group_ids
+
         api_path = '/v1/{mount_point}/group'.format(mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
@@ -616,12 +623,19 @@ class Identity(VaultApiBase):
             'metadata': metadata,
             'policies': policies,
         }
-        if group_type == 'external' and member_entity_ids is not None:
-            # InvalidRequest: member entities can't be set manually for external groups
+
+        if group_type == 'external':
+            if member_entity_ids is not None:
+                logger.warning("InvalidRequest: member entities can't be set manually for external groupsl ignoring member_entity_ids argument.")
+        else:
             params['member_entity_ids'] = member_entity_ids
-        if group_type == 'external' and member_group_ids is not None:
-            # InvalidRequest: member groups can't be set for external groups
+
+        if group_type == 'external':
+            if member_group_ids is not None:
+                logger.warning("InvalidRequest: member groups can't be set for external groups; ignoring member_group_ids argument.")
+        else:
             params['member_group_ids'] = member_group_ids
+
         api_path = '/v1/{mount_point}/group/id/{id}'.format(
             mount_point=mount_point,
             id=group_id,
