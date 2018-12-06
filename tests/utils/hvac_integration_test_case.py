@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
 import re
 import warnings
 
@@ -7,6 +8,7 @@ from mock import patch
 
 from tests.utils import get_config_file_path, create_client
 from tests.utils.server_manager import ServerManager
+import distutils.spawn
 
 
 class HvacIntegrationTestCase(object):
@@ -15,13 +17,25 @@ class HvacIntegrationTestCase(object):
     manager = None
     client = None
     mock_warnings = None
+    enable_vault_ha = False
 
     @classmethod
     def setUpClass(cls):
         """Use the ServerManager class to launch a vault server process."""
+        config_paths = [get_config_file_path('vault-tls.hcl')]
+        if distutils.spawn.find_executable('consul') is None and cls.enable_vault_ha:
+            logging.warning('Unable to run Vault in HA mode, consul binary not found in path.')
+            cls.enable_vault_ha = False
+        if cls.enable_vault_ha:
+            config_paths = [
+                get_config_file_path('vault-ha-node1.hcl'),
+                get_config_file_path('vault-ha-node2.hcl'),
+            ]
+        logging.debug('Config file(s) being used for Vault processes: %s' % config_paths)
         cls.manager = ServerManager(
-            config_path=get_config_file_path('vault-tls.hcl'),
-            client=create_client()
+            config_paths=config_paths,
+            client=create_client(),
+            use_consul=cls.enable_vault_ha,
         )
         cls.manager.start()
         cls.manager.initialize()
