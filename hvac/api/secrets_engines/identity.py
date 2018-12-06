@@ -486,18 +486,21 @@ class Identity(VaultApiBase):
 
     @staticmethod
     def validate_member_id_params_for_group_type(group_type, params, member_group_ids, member_entity_ids):
-        """
+        """Determine whether member ID parameters can be sent with a group create / update request.
 
-        :param group_type:
-        :type group_type:
-        :param params:
-        :type params:
-        :param member_group_ids:
-        :type member_group_ids:
-        :param member_entity_ids:
-        :type member_entity_ids:
-        :return:
-        :rtype:
+        These parameters are only allowed for the internal group type. If they're set for an external group type, Vault
+        returns a "error" response.
+
+        :param group_type: Type of the group, internal or external
+        :type group_type: str | unicode
+        :param params: Params dict to conditionally add the member entity/group ID's to.
+        :type params: dict
+        :param member_group_ids:  Group IDs to be assigned as group members.
+        :type member_group_ids: str | unicode
+        :param member_entity_ids: Entity IDs to be assigned as  group members.
+        :type member_entity_ids: str | unicode
+        :return: Params dict with conditionally added member entity/group ID's.
+        :rtype: dict
         """
         if group_type == 'external':
             if member_entity_ids is not None:
