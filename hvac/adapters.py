@@ -247,14 +247,13 @@ class Request(Adapter):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        response = self.session.request(method, url, headers=headers,
-                                        allow_redirects=False, **_kwargs)
-
-        # NOTE(ianunruh): workaround for https://github.com/hvac/hvac/issues/51
-        while response.is_redirect and self.allow_redirects:
-            url = self.urljoin(self.base_uri, response.headers['Location'])
-            response = self.session.request(method, url, headers=headers,
-                                            allow_redirects=False, **_kwargs)
+        response = self.session.request(
+            method=method,
+            url=url,
+            headers=headers,
+            allow_redirects=self.allow_redirects,
+            **_kwargs,
+        )
 
         if 400 <= response.status_code < 600:
             text = errors = None
