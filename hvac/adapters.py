@@ -256,7 +256,7 @@ class Request(Adapter):
             response = self.session.request(method, url, headers=headers,
                                             allow_redirects=False, **_kwargs)
 
-        if response.status_code >= 400 and response.status_code < 600:
+        if 400 <= response.status_code < 600:
             text = errors = None
             if response.headers.get('Content-Type') == 'application/json':
                 errors = response.json().get('errors')
