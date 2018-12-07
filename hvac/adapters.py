@@ -205,7 +205,8 @@ class Adapter(object):
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
-        :param raise_exception: If True, raise an exception via utils.raise_for_error().
+        :param raise_exception: If True, raise an exception via utils.raise_for_error(). Set this parameter to False to
+            bypass this functionality.
         :type raise_exception: bool
         :return: The response of the request.
         :rtype: requests.Response
@@ -226,7 +227,8 @@ class Request(Adapter):
         :type url: str | unicode
         :param headers: Additional headers to include with the request.
         :type headers: dict
-        :param raise_exception: If True, raise an exception via utils.raise_for_error().
+        :param raise_exception: If True, raise an exception via utils.raise_for_error(). Set this parameter to False to
+            bypass this functionality.
         :type raise_exception: bool
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
