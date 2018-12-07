@@ -35,6 +35,7 @@ class TestRequest(TestCase):
         ),
     ])
     def test_get(self, label, url, path='v1/sys/health', redirect_url=None):
+        path = path.replace('//', '/')
         expected_status_code = 200
         mock_url = '{0}/{1}'.format(url, path)
         adapter = adapters.Request(base_uri=url)
