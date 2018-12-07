@@ -255,7 +255,7 @@ class Request(Adapter):
             url=url,
             headers=headers,
             allow_redirects=self.allow_redirects,
-            **_kwargs,
+            **_kwargs
         )
 
         if 400 <= response.status_code < 600:
