@@ -4,12 +4,12 @@ GCP
 ===
 
 .. note::
-    Every method under the :py:attr:`Client class's gcp.auth attribute<hvac.api.Gcp.auth>` includes a `mount_point` parameter that can be used to address the GCP auth method under a custom mount path. E.g., If enabling the GCP auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
+    Every method under the :py:attr:`Client class's gcp.auth attribute<hvac.api.Gcp.auth>` includes a `mount_point` parameter that can be used to address the GCP auth method under a custom mount path. E.g., If enabling the GCP auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in Source reference: :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
 
 Enabling the Auth Method
 ------------------------
 
-:py:meth:`hvac.v1.Client.enable_auth_backend`
+Source reference: :py:meth:`hvac.v1.Client.enable_auth_backend`
 
 .. code:: python
 
@@ -33,7 +33,7 @@ Enabling the Auth Method
 Configure
 ---------
 
-:py:meth:`hvac.api.auth.Gcp.configure`
+Source reference: :py:meth:`hvac.api.auth.Gcp.configure`
 
 .. code:: python
 
@@ -47,7 +47,7 @@ Configure
 Read Config
 -----------
 
-:py:meth:`hvac.api.auth.Gcp.read_config`
+Source reference: :py:meth:`hvac.api.auth.Gcp.read_config`
 
 .. code:: python
 
@@ -60,7 +60,7 @@ Read Config
 Delete Config
 -------------
 
-:py:meth:`hvac.api.auth.Gcp.delete_config`
+Source reference: :py:meth:`hvac.api.auth.Gcp.delete_config`
 
 .. code:: python
 
@@ -72,7 +72,7 @@ Delete Config
 Create Role
 -----------
 
-:py:meth:`hvac.api.auth.Gcp.create_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.create_role`
 
 .. code:: python
 
@@ -89,7 +89,7 @@ Create Role
 Edit Service Accounts On IAM Role
 ---------------------------------
 
-:py:meth:`hvac.api.auth.Gcp.edit_service_accounts_on_iam_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.edit_service_accounts_on_iam_role`
 
 .. code:: python
 
@@ -109,7 +109,7 @@ Edit Service Accounts On IAM Role
 Edit Labels On GCE Role
 -----------------------
 
-:py:meth:`hvac.api.auth.Gcp.edit_labels_on_gce_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.edit_labels_on_gce_role`
 
 .. code:: python
 
@@ -129,7 +129,7 @@ Edit Labels On GCE Role
 Read A Role
 -----------
 
-:py:meth:`hvac.api.auth.Gcp.read_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.read_role`
 
 .. code:: python
 
@@ -148,7 +148,7 @@ Read A Role
 List Roles
 ----------
 
-:py:meth:`hvac.api.auth.Gcp.list_roles`
+Source reference: :py:meth:`hvac.api.auth.Gcp.list_roles`
 
 .. code:: python
 
@@ -163,7 +163,7 @@ List Roles
 Delete A Role
 -------------
 
-:py:meth:`hvac.api.auth.Gcp.delete_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.delete_role`
 
 .. code:: python
 
@@ -176,7 +176,7 @@ Delete A Role
 Login
 -----
 
-:py:meth:`hvac.api.auth.Gcp.login`
+Source reference: :py:meth:`hvac.api.auth.Gcp.login`
 
 .. code:: python
 
