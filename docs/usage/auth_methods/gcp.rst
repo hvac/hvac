@@ -4,7 +4,7 @@ GCP
 ===
 
 .. note::
-    Every method under the :py:attr:`Client class's gcp.auth attribute<hvac.api.Gcp.auth>` includes a `mount_point` parameter that can be used to address the GCP auth method under a custom mount path. E.g., If enabling the GCP auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in Source reference: :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
+    Every method under the :py:attr:`Client class's gcp.auth attribute<hvac.api.Gcp.auth>` includes a `mount_point` parameter that can be used to address the GCP auth method under a custom mount path. E.g., If enabling the GCP auth method using Vault's CLI commands via `vault auth enable -path=my-gcp gcp`", the `mount_point` parameter in :py:meth:`hvac.api.auth.Gcp` methods would be set to "my-gcp".
 
 Enabling the Auth Method
 ------------------------
