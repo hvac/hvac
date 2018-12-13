@@ -123,7 +123,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}//entity/id/{id}'.format(
+        api_path = '/v1/{mount_point}/entity/id/{id}'.format(
             mount_point=mount_point,
             id=entity_id,
         )
