@@ -1073,6 +1073,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
     def test_seal_status(self):
         seal_status_property = self.client.seal_status
         logging.debug('seal_status_property: %s' % seal_status_property)
-        self.assertTrue(
-            expr=seal_status_property,
+        self.assertIn(
+            member='sealed',
+            container=seal_status_property,
         )
