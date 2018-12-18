@@ -31,7 +31,6 @@ class HvacIntegrationTestCase(object):
                 get_config_file_path('vault-ha-node1.hcl'),
                 get_config_file_path('vault-ha-node2.hcl'),
             ]
-        logging.debug('Config file(s) being used for Vault processes: %s' % config_paths)
         cls.manager = ServerManager(
             config_paths=config_paths,
             client=create_client(),
@@ -155,3 +154,15 @@ class HvacIntegrationTestCase(object):
         :type mount_point: str
         """
         self.client.disable_secret_backend(mount_point)
+
+    def get_standby_vault_addr(self):
+        """Get an address for a Vault HA node currently in standby.
+
+        :return: Standby Vault address.
+        :rtype: str
+        """
+        vault_addresses = self.manager.get_active_vault_addresses()
+        for vault_address in vault_addresses:
+            health_status = create_client(url=vault_address).sys.read_health_status(method='GET')
+            if health_status['standby']:
+                return vault_address
