@@ -16,6 +16,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
     TEST_ENTITY_NAME = 'test-entity'
     TEST_ALIAS_NAME = 'test-alias'
     TEST_GROUP_NAME = 'test-group'
+    TEST_MEMBER_GROUP_NAME = 'test-group-member'
     TEST_GROUP_ALIAS_NAME = 'test-group-alias'
 
     test_approle_accessor = None
@@ -834,6 +835,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
         param(
             'create success with group type',
             group_type='external',
+            add_members=False,
         ),
         param(
             'create failure with invalid group type',
@@ -846,8 +848,24 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             create_first=True,
         ),
     ])
-    def test_create_or_update_group(self, label, metadata=None, group_type='internal', create_first=False, raises=None, exception_message=''):
+    def test_create_or_update_group(self, label, metadata=None, group_type='internal', create_first=False,
+                                    add_members=True, raises=None, exception_message=''):
         group_id = None
+        member_entity_ids = None
+        member_group_ids = None
+        if add_members:
+            create_entity_response = self.client.secrets.identity.create_or_update_entity(
+                    name=self.TEST_ENTITY_NAME,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_entity_response: %s' % create_entity_response)
+            member_entity_ids = [create_entity_response['data']['id']]
+            create_member_group = self.client.secrets.identity.create_or_update_group(
+                    name=self.TEST_MEMBER_GROUP_NAME,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_member_group: %s' % create_member_group)
+            member_group_ids = [create_member_group['data']['id']]
         if create_first:
             create_first_response = self.client.secrets.identity.create_or_update_group(
                     name=self.TEST_GROUP_NAME,
@@ -864,6 +882,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     group_id=group_id,
                     group_type=group_type,
                     metadata=metadata,
+                    member_group_ids=member_group_ids,
+                    member_entity_ids=member_entity_ids,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -876,6 +896,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     group_id=group_id,
                     group_type=group_type,
                     metadata=metadata,
+                    member_group_ids=member_group_ids,
+                    member_entity_ids=member_entity_ids,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             logging.debug('create_or_update_response: %s' % create_or_update_response)
@@ -889,6 +911,20 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                         first=group_id,
                         second=create_or_update_response['data']['id'],
                     )
+                read_group_response = self.client.secrets.identity.read_group(
+                    group_id=create_or_update_response['data']['id'],
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+                logging.debug('read_group_response: %s' % read_group_response)
+                self.assertEqual(
+                    first=read_group_response['data']['member_group_ids'],
+                    second=member_group_ids,
+                )
+                expected_member_entity_ids = member_entity_ids if member_entity_ids is not None else []
+                self.assertEqual(
+                    first=read_group_response['data']['member_entity_ids'],
+                    second=expected_member_entity_ids,
+                )
             else:
                 self.assertEqual(
                     first=create_or_update_response.status_code,
@@ -926,8 +962,24 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             create_first=True,
         ),
     ])
-    def test_update_group_by_id(self, label, metadata=None, group_type='internal', create_first=True, raises=None, exception_message=''):
+    def test_update_group_by_id(self, label, metadata=None, group_type='internal', create_first=True,
+                                update_members=True, raises=None, exception_message=''):
         group_id = None
+        member_entity_ids = None
+        member_group_ids = None
+        if update_members:
+            create_entity_response = self.client.secrets.identity.create_or_update_entity(
+                    name=self.TEST_ENTITY_NAME,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_entity_response: %s' % create_entity_response)
+            member_entity_ids = [create_entity_response['data']['id']]
+            create_member_group = self.client.secrets.identity.create_or_update_group(
+                    name=self.TEST_MEMBER_GROUP_NAME,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            logging.debug('create_member_group: %s' % create_member_group)
+            member_group_ids = [create_member_group['data']['id']]
         if create_first:
             create_first_response = self.client.secrets.identity.create_or_update_group(
                     name=self.TEST_GROUP_NAME,
@@ -944,6 +996,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     group_id=group_id,
                     group_type=group_type,
                     metadata=metadata,
+                    member_group_ids=member_group_ids,
+                    member_entity_ids=member_entity_ids,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -956,6 +1010,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     group_id=group_id,
                     group_type=group_type,
                     metadata=metadata,
+                    member_group_ids=member_group_ids,
+                    member_entity_ids=member_entity_ids,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             logging.debug('update_response: %s' % update_response)
@@ -970,6 +1026,20 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     first=update_response.status_code,
                     second=204,
                 )
+            read_group_response = self.client.secrets.identity.read_group(
+                group_id=group_id,
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+            logging.debug('read_group_response: %s' % read_group_response)
+            self.assertEqual(
+                first=read_group_response['data']['member_group_ids'],
+                second=member_group_ids,
+            )
+            expected_member_entity_ids = member_entity_ids if member_entity_ids is not None else []
+            self.assertEqual(
+                first=read_group_response['data']['member_entity_ids'],
+                second=expected_member_entity_ids,
+            )
 
     @parameterized.expand([
         param(
