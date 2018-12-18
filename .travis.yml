@@ -85,6 +85,7 @@ matrix:
         - TOXENV=py36
         - HVAC_VAULT_VERSION=HEAD
 install:
+  - tests/scripts/install-consul.sh
   - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION}
   - pip install tox
 script:

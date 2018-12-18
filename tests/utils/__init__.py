@@ -60,9 +60,11 @@ def get_generate_root_otp():
     return test_otp
 
 
-def create_client(**kwargs):
+def create_client(url='https://localhost:8200', **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
+    :param url: Vault address to configure the client with.
+    :type url: str
     :param kwargs: Dictionary of additional keyword arguments to pass through to the Client instance being created.
     :type kwargs: dict
     :return: Instantiated :py:class:`hvac.v1.Client` class.
@@ -73,7 +75,7 @@ def create_client(**kwargs):
     server_cert_path = get_config_file_path('server-cert.pem')
 
     return Client(
-        url='https://localhost:8200',
+        url=url,
         cert=(client_cert_path, client_key_path),
         verify=server_cert_path,
         **kwargs

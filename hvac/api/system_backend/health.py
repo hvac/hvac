@@ -57,6 +57,7 @@ class Health(SystemBackendMixin):
             api_path = '/v1/sys/health'.format()
             response = self._adapter.head(
                 url=api_path,
+                raise_exception=False,
             )
             return response
         elif method == 'GET':
@@ -64,6 +65,7 @@ class Health(SystemBackendMixin):
             response = self._adapter.get(
                 url=api_path,
                 json=params,
+                raise_exception=False,
             )
             return response.json()
         else:
