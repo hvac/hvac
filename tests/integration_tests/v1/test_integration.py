@@ -1,5 +1,5 @@
-from unittest import TestCase
-from unittest import skipIf
+import logging
+from unittest import TestCase, skipIf
 
 from hvac import exceptions
 from tests import utils
@@ -1069,3 +1069,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # Reset integration test state
         self.client.disable_auth_backend(mount_point=test_mount_point)
+
+    def test_seal_status(self):
+        seal_status_property = self.client.seal_status
+        logging.debug('seal_status_property: %s' % seal_status_property)
+        self.assertIn(
+            member='sealed',
+            container=seal_status_property,
+        )

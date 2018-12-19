@@ -179,7 +179,7 @@ class Client(object):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        return self.read_seal_status()
+        return self.sys.read_seal_status()
 
     def read(self, path, wrap_ttl=None):
         """GET /<path>
