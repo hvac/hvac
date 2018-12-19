@@ -7,6 +7,7 @@ from hvac.api.auth_methods.gcp import Gcp
 from hvac.api.auth_methods.github import Github
 from hvac.api.auth_methods.ldap import Ldap
 from hvac.api.auth_methods.mfa import Mfa
+from hvac.api.auth_methods.okta import Okta
 from hvac.api.vault_api_category import VaultApiCategory
 from hvac.utils import generate_method_deprecation_message
 
@@ -17,6 +18,7 @@ __all__ = (
     'Github',
     'Ldap',
     'Mfa',
+    'Okta'
 )
 
 
@@ -28,6 +30,7 @@ class AuthMethods(VaultApiCategory):
         Gcp,
         Ldap,
         Mfa,
+        Okta
     ]
     unimplemented_classes = [
         'AppId',
@@ -36,7 +39,6 @@ class AuthMethods(VaultApiCategory):
         'Aws',
         'Jwt',
         'Kubernetes',
-        'Okta',
         'Radius',
         'Cert',
         'Token',

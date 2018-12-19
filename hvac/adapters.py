@@ -4,12 +4,12 @@ HTTP Client Library Adapters
 
 """
 import logging
+from abc import ABCMeta, abstractmethod
 
 import requests
 import requests.exceptions
 
 from hvac import utils
-from abc import ABCMeta, abstractmethod
 
 logger = logging.getLogger(__name__)
 
@@ -193,7 +193,7 @@ class Adapter(object):
         )
 
     @abstractmethod
-    def request(self, method, url, headers=None, **kwargs):
+    def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri. Intended to be implement by subclasses.
 
         :param method: HTTP method to use with the request. E.g., GET, POST, etc.
@@ -205,6 +205,9 @@ class Adapter(object):
         :type headers: dict
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
+        :param raise_exception: If True, raise an exception via utils.raise_for_error(). Set this parameter to False to
+            bypass this functionality.
+        :type raise_exception: bool
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -214,7 +217,7 @@ class Adapter(object):
 class Request(Adapter):
     """The Request adapter class"""
 
-    def request(self, method, url, headers=None, **kwargs):
+    def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.
 
         :param method: HTTP method to use with the request. E.g., GET, POST, etc.
@@ -224,11 +227,20 @@ class Request(Adapter):
         :type url: str | unicode
         :param headers: Additional headers to include with the request.
         :type headers: dict
+        :param raise_exception: If True, raise an exception via utils.raise_for_error(). Set this parameter to False to
+            bypass this functionality.
+        :type raise_exception: bool
         :param kwargs: Additional keyword arguments to include in the requests call.
         :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
+        if '//' in url:
+            # Vault CLI treats a double forward slash ('//') as a single forward slash for a given path.
+            # To avoid issues with the requests module's redirection logic, we perform the same translation here.
+            logger.warning('Replacing double-slashes ("//") in path with single slash ("/") to avoid Vault redirect response.')
+            url = url.replace('//', '/')
+
         url = self.urljoin(self.base_uri, url)
 
         if not headers:
@@ -247,16 +259,15 @@ class Request(Adapter):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        response = self.session.request(method, url, headers=headers,
-                                        allow_redirects=False, **_kwargs)
+        response = self.session.request(
+            method=method,
+            url=url,
+            headers=headers,
+            allow_redirects=self.allow_redirects,
+            **_kwargs
+        )
 
-        # NOTE(ianunruh): workaround for https://github.com/hvac/hvac/issues/51
-        while response.is_redirect and self.allow_redirects:
-            url = self.urljoin(self.base_uri, response.headers['Location'])
-            response = self.session.request(method, url, headers=headers,
-                                            allow_redirects=False, **_kwargs)
-
-        if response.status_code >= 400 and response.status_code < 600:
+        if raise_exception and 400 <= response.status_code < 600:
             text = errors = None
             if response.headers.get('Content-Type') == 'application/json':
                 errors = response.json().get('errors')

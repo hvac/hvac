@@ -7,7 +7,7 @@ Feel free to open pull requests with additional features or improvements!
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
-1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `VAULT_BRANCH=release scripts/install-vault-release.sh`
+1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `VAULT_BRANCH=release tests/scripts/install-vault-release.sh`
 2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
 3. Run tests: `make test`
 
@@ -32,8 +32,10 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
   make distclean
   ```
-- [ ] Checkout a working branch:
+- [ ] Checkout a working branch based on the `develop` branch:
   ```
+  git checkout develop
+  git pull
   git checkout -b master_v0-6-2
   ```
 - [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff using the previous version's tag. E.g.: [https://github.com/hvac/hvac/compare/v0.6.1...master](https://github.com/hvac/hvac/compare/v0.6.1...master)

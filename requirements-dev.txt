@@ -1,5 +1,6 @@
 codecov
 coverage
+ipaddress>=1.0.22
 mock
 nose
 parameterized

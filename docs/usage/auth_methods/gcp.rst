@@ -9,7 +9,7 @@ GCP
 Enabling the Auth Method
 ------------------------
 
-:py:meth:`hvac.v1.Client.enable_auth_backend`
+Source reference: :py:meth:`hvac.v1.Client.enable_auth_backend`
 
 .. code:: python
 
@@ -33,7 +33,7 @@ Enabling the Auth Method
 Configure
 ---------
 
-:py:meth:`hvac.api.auth.Gcp.configure`
+Source reference: :py:meth:`hvac.api.auth.Gcp.configure`
 
 .. code:: python
 
@@ -47,7 +47,7 @@ Configure
 Read Config
 -----------
 
-:py:meth:`hvac.api.auth.Gcp.read_config`
+Source reference: :py:meth:`hvac.api.auth.Gcp.read_config`
 
 .. code:: python
 
@@ -60,7 +60,7 @@ Read Config
 Delete Config
 -------------
 
-:py:meth:`hvac.api.auth.Gcp.delete_config`
+Source reference: :py:meth:`hvac.api.auth.Gcp.delete_config`
 
 .. code:: python
 
@@ -69,10 +69,10 @@ Delete Config
 
     client.auth.gcp.delete_config()
 
-create-role
--------------------------------
+Create Role
+-----------
 
-:py:meth:`hvac.api.auth.Gcp.create_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.create_role`
 
 .. code:: python
 
@@ -89,7 +89,7 @@ create-role
 Edit Service Accounts On IAM Role
 ---------------------------------
 
-:py:meth:`hvac.api.auth.Gcp.edit_service_accounts_on_iam_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.edit_service_accounts_on_iam_role`
 
 .. code:: python
 
@@ -109,7 +109,7 @@ Edit Service Accounts On IAM Role
 Edit Labels On GCE Role
 -----------------------
 
-:py:meth:`hvac.api.auth.Gcp.edit_labels_on_gce_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.edit_labels_on_gce_role`
 
 .. code:: python
 
@@ -129,7 +129,7 @@ Edit Labels On GCE Role
 Read A Role
 -----------
 
-:py:meth:`hvac.api.auth.Gcp.read_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.read_role`
 
 .. code:: python
 
@@ -148,7 +148,7 @@ Read A Role
 List Roles
 ----------
 
-:py:meth:`hvac.api.auth.Gcp.list_roles`
+Source reference: :py:meth:`hvac.api.auth.Gcp.list_roles`
 
 .. code:: python
 
@@ -163,7 +163,7 @@ List Roles
 Delete A Role
 -------------
 
-:py:meth:`hvac.api.auth.Gcp.delete_role`
+Source reference: :py:meth:`hvac.api.auth.Gcp.delete_role`
 
 .. code:: python
 
@@ -176,7 +176,7 @@ Delete A Role
 Login
 -----
 
-:py:meth:`hvac.api.auth.Gcp.login`
+Source reference: :py:meth:`hvac.api.auth.Gcp.login`
 
 .. code:: python
 
@@ -188,3 +188,48 @@ Login
         jwt='some signed JSON web token...',
     )
     client.is_authenticated  # ==> returns True
+
+
+Example with google-api-python-client Usage
+```````````````````````````````````````````
+
+.. code:: python
+
+    import time
+
+    import googleapiclient.discovery # pip install google-api-python-client
+    from google.oauth2 import service_account # pip install google-auth
+    import hvac # pip install hvac
+
+    # First load some previously generated GCP service account key
+    path_to_sa_json = 'some-service-account-path.json'
+    credentials = service_account.Credentials.from_service_account_file(path_to_sa_json)
+    with open(path_to_sa_json, 'r') as f:
+        creds = json.load(f)
+        project = creds['project_id']
+        service_account = creds['client_email']
+
+    # Generate a payload for subsequent "signJwt()" call
+    # Reference: https://google-auth.readthedocs.io/en/latest/reference/google.auth.jwt.html#google.auth.jwt.Credentials
+    now = int(time.time())
+    expires = now + 900  # 15 mins in seconds, can't be longer.
+    payload = {
+        'iat': now,
+        'exp': expires,
+        'sub': service_account,
+        'aud': 'vault/my-role'
+    }
+    body = {'payload': json.dumps(payload)}
+    name = f'projects/{project}/serviceAccounts/{service_account}'
+
+    # Perform the GCP API call
+    iam = googleapiclient.discovery.build('iam', 'v1', credentials=credentials)
+    request = iam.projects().serviceAccounts().signJwt(name=name, body=body)
+    resp = request.execute()
+    jwt = resp['signedJwt']
+
+    # Perform hvac call to configured GCP auth method
+    client.auth.gcp.login(
+        role='my-role',
+        jwt=jwt,
+    )
