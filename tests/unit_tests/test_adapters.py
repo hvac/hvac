@@ -38,6 +38,7 @@ class TestRequest(TestCase):
         path = path.replace('//', '/')
         expected_status_code = 200
         mock_url = '{0}/{1}'.format(url, path)
+        expected_request_urls = [mock_url]
         adapter = adapters.Request(base_uri=url)
         response_headers = {}
         response_status_code = 200
@@ -53,6 +54,7 @@ class TestRequest(TestCase):
                 status_code=response_status_code,
             )
             if redirect_url is not None:
+                expected_request_urls.append(redirect_url)
                 logging.debug('Registering "redirect_url": %s' % redirect_url)
                 requests_mocker.register_uri(
                     method='GET',
@@ -61,6 +63,13 @@ class TestRequest(TestCase):
 
             response = adapter.get(
                 url=path,
+            )
+
+        # Assert all our expected uri(s) were requested
+        for request_num, expected_request_url in enumerate(expected_request_urls):
+            self.assertEqual(
+                first=expected_request_url,
+                second=requests_mocker.request_history[request_num].url
             )
         self.assertEqual(
             first=expected_status_code,
