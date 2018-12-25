@@ -14,13 +14,13 @@ env:
 matrix:
   include:
     # Explicitly include our flake8 tox jobs so they're only run once per Python version and have independent results.
-    - name: 'Python v2.7 - Linting (flake8)'
+    - name: 'Linting (flake8) - Python v2.7'
       python: '2.7'
       env: TOXENV=flake8-py27
-    - name: 'Python v3.6 - Linting (flake8)'
+    - name: 'Linting (flake8) - Python v3.6'
       python: '3.6'
       env: TOXENV=flake8-py36
-    - name: 'Python v3.7 - Linting (flake8)'
+    - name: 'Linting (flake8) - Python v3.7'
       python: '3.7'
       env: TOXENV=flake8-py37
   allow_failures:
