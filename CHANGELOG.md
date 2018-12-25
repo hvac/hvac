@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.7.1 (December 19th, 2018)
+
+IMPROVEMENTS:
+
+* Support for the Okta auth method. [GH-341](https://github.com/hvac/hvac/pull/341)
+
+BUG FIXES:
+
+* Simplify redirect handling in `Adapter` class to fix issues following location headers with fully qualified URLs. Note: hvac now converts `//` to `/` within any paths. [GH-348](https://github.com/hvac/hvac/pull/348) 
+* Fixed a bug where entity and group member IDs were not being passed in to Identity secrets engine group creation / updates. [GH-346](https://github.com/hvac/hvac/pull/346)
+* Ensure all types of responses for the `read_health_status()` system backend method can be retrieved without exceptions being raised. [GH-347](https://github.com/hvac/hvac/pull/347)
+* Fix `read_seal_status()` in `Client` class's `seal_status` property. [GH-354](https://github.com/hvac/hvac/pull/354)
+
+DOCUMENTATION UPDATES:
+
+* Example GCP auth method `login()` call with google-api-python-client usage added: [Example with google-api-python-client Usage](https://hvac.readthedocs.io/en/latest/usage/auth_methods/gcp.html#example-with-google-api-python-client-usage). [GH-350](https://github.com/hvac/hvac/pull/350)
+
+MISCELLANEOUS:
+
+* Note: Starting after release 0.7.0, `develop` is the main integration branch for the hvac project. The `master` branch is now intended to capture the state of the most recent release.
+* Test cases for hvac are no longer included in the release artifacts published to PyPi. [GH-334](https://github.com/hvac/hvac/pull/334)
+* The `create_or_update_policy` system backend method now supports a "pretty_print" argument for different JSON formatting. This allows create more viewable policy documents when retrieve existing policies (e.g., from within the Vault UI interface). [GH-342](https://github.com/hvac/hvac/pull/342)
+* Explicit support for Vault v0.8.3 dropped. CI/CD tests updated to run against Vault v1.0.0. [GH-344](https://github.com/hvac/hvac/pull/344) 
+
 ## 0.7.0 (November 1st, 2018)
 
 DEPRECATION NOTICES:
