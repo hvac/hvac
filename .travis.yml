@@ -20,12 +20,8 @@ matrix:
       python: '3.6'
       env: TOXENV=flake8-py36
   allow_failures:
-    - python: '2.7'
-      env:
-        - HVAC_VAULT_VERSION=HEAD
-    - python: '3.6'
-      env:
-        - HVAC_VAULT_VERSION=HEAD
+    # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
+    - env: HVAC_VAULT_VERSION=HEAD
 install:
   - tests/scripts/install-consul.sh
   - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION}
