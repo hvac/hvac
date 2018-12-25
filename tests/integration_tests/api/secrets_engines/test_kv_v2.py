@@ -1,6 +1,6 @@
 import logging
-from unittest import TestCase
-from unittest import skipIf
+from time import sleep
+from unittest import TestCase, skipIf
 
 from parameterized import parameterized, param
 
@@ -20,6 +20,17 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             mount_point=self.DEFAULT_MOUNT_POINT,
             options=dict(version=2),
         )
+
+        # We occasionally see issues with the newly enabled secrets engine not becoming available in time for our test cases.
+        # So we wait for it to show up in the mounted secrets engines list here before proceeding.
+        path = '{mount_point}/'.format(mount_point=self.DEFAULT_MOUNT_POINT)
+        attempts = 0
+        while attempts < 25 and path not in self.client.sys.list_mounted_secrets_engines()['data']:
+            attempts += 1
+            logging.debug('Waiting 1 second for KV V2 secrets engine under path {path} to become available...'.format(
+                path=self.DEFAULT_MOUNT_POINT,
+            ))
+            sleep(1)
 
     def tearDown(self):
         self.client.disable_secret_backend(mount_point=self.DEFAULT_MOUNT_POINT)
