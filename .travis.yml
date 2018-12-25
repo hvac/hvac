@@ -12,6 +12,7 @@ env:
   - HVAC_VAULT_VERSION=HEAD
 matrix:
   include:
+    # Explicitly include our flake8 tox jobs so they're only run once per Python version and have independent results.
     - name: 'Python v2.7 - Linting (flake8)'
       python: '2.7'
       env: TOXENV=flake8-py27
