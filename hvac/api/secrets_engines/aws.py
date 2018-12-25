@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Aws methods module."""
+import json
+
+from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.aws import DEFAULT_MOUNT_POINT, ALLOWED_CREDS_ENDPOINTS, ALLOWED_CREDS_TYPES
-from hvac import exceptions
 
 
 class Aws(VaultApiBase):
@@ -153,7 +155,7 @@ class Aws(VaultApiBase):
             iam_user, the policy document will be attached to the IAM user generated and augment the permissions the IAM
             user has. With assumed_role and federation_token, the policy document will act as a filter on what the
             credentials can do.
-        :type policy_document: str | unicode
+        :type policy_document: dict | str | unicode
         :param default_sts_ttl: The default TTL for STS credentials. When a TTL is not specified when STS credentials
             are requested, and a default TTL is specified on the role, then this default TTL will be used. Valid only
             when credential_type is one of assumed_role or federation_token.
@@ -179,6 +181,9 @@ class Aws(VaultApiBase):
                 arg=credential_type,
                 allowed_types=', '.join(ALLOWED_CREDS_TYPES),
             ))
+        if isinstance(policy_document, dict):
+            policy_document = json.dumps(policy_document, indent=4, sort_keys=True)
+
         params = {
             'credential_type': credential_type,
             'policy_document': policy_document,
