@@ -32,5 +32,4 @@ install:
   - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION}
   - pip install tox-travis
 script:
-  - export PATH=$HOME/bin:$PATH
   - make test
