@@ -14,12 +14,10 @@ matrix:
   include:
     - name: 'Python v2.7 - Linting (flake8)'
       python: '2.7'
-      env:
-        - TOXENV=flake8-py27
+      env: TOXENV=flake8-py27
     - name: 'Python v3.6 - Linting (flake8)'
       python: '3.6'
-      env:
-        - TOXENV=flake8-py36
+      env: TOXENV=flake8-py36
   allow_failures:
     - python: '2.7'
       env:
