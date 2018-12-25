@@ -82,7 +82,6 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
         logging.debug('vault_addr being used: %s' % vault_addr)
         client = create_client(url=vault_addr)
 
-        logging.debug('vault processes: %s' % self.manager._processes)
         read_status_response = client.sys.read_health_status(
             method=method,
         )
