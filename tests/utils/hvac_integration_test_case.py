@@ -155,14 +155,16 @@ class HvacIntegrationTestCase(object):
         """
         self.client.disable_secret_backend(mount_point)
 
-    def get_standby_vault_addr(self):
+    def get_vault_addr_by_standby_status(self, standby_status=True):
         """Get an address for a Vault HA node currently in standby.
 
+        :param standby_status: Value of the 'standby' key from the health status response to match.
+        :type standby_status: bool
         :return: Standby Vault address.
         :rtype: str
         """
         vault_addresses = self.manager.get_active_vault_addresses()
         for vault_address in vault_addresses:
             health_status = create_client(url=vault_address).sys.read_health_status(method='GET')
-            if health_status['standby']:
+            if health_status['standby'] == standby_status:
                 return vault_address
