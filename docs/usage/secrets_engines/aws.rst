@@ -4,116 +4,150 @@ Aws
 Configure Root IAM Credentials
 ------------------------------
 
-:py:meth:`hvac.api.secrets_engines.Aws.configure_root_iam_credentials`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.configure_root_iam_credentials`
 
 .. code:: python
+
+    import os
 
     import hvac
     client = hvac.Client()
 
-    client.aws.configure_root_iam_credentials(
+    client.secrets.aws.configure_root_iam_credentials(
+        access_key=os.getenv('AWS_ACCESS_KEY_ID'),
+        secret_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
     )
 
 Rotate Root IAM Credentials
 ---------------------------
 
-:py:meth:`hvac.api.secrets_engines.Aws.rotate_root_iam_credentials`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.rotate_root_iam_credentials`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.rotate_root_iam_credentials(
-    )
+    client.secrets.aws.rotate_root_iam_credentials()
 
 Configure Lease
 ---------------
 
-:py:meth:`hvac.api.secrets_engines.Aws.configure_lease`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.configure_lease`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.configure_lease(
+    # Set the default least TTL to 300 seconds / 5 minutes
+    client.secrets.aws.configure_lease(
+        lease='300s',
     )
 
 Read Lease
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Aws.read_lease`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.read_lease`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.read_lease(
-    )
+    read_lease_response = client.secrets.aws.read_lease()
+    print('The current "lease_max" TTL is: {lease_max}'.format(
+        lease_max=read_lease_response['data']['lease_max'],
+    ))
 
 Create or Update Role
 ---------------------
 
-:py:meth:`hvac.api.secrets_engines.Aws.create_or_update_role`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.create_or_update_role`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.create_or_update_role(
+    describe_ec2_policy_doc = {
+        'Version': '2012-10-17',
+        'Statement': [
+            {
+                'Resource': '*'
+                'Action': 'ec2:Describe*',
+                'Effect': 'Allow',
+            },
+        ],
+    }
+    client.secrets.aws.create_or_update_role(
+        name='hvac-role',
+        credential_type='assumed_role',
+        policy_document=policy_document,
+        policy_arns=['arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess'],
     )
 
 Read Role
 ---------
 
-:py:meth:`hvac.api.secrets_engines.Aws.read_role`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.read_role`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.read_role(
+    read_role_response = client.secrets.aws.read_role(
+        name='hvac-role',
     )
+    print('The credential type for role "hvac-role" is: {cred_type}'.format(
+        cred_type=read_role_response['data']['credential_types'],
+    ))
+
 
 List Roles
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Aws.list_roles`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.list_roles`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.list_roles(
-    )
+    list_roles_response = client.secrets.aws.list_roles()
+    print('AWS secrets engine role listing: {roles}'.format(
+        roles=', '.join(list_roles_response['data']['keys'])
+    ))
 
 Delete Role
 -----------
 
-:py:meth:`hvac.api.secrets_engines.Aws.delete_role`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.delete_role`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.delete_role(
+    client.secrets.aws.delete_role(
+        name='hvac-role',
     )
 
 Generate Credentials
 --------------------
 
-:py:meth:`hvac.api.secrets_engines.Aws.generate_credentials`
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.generate_credentials`
 
 .. code:: python
 
     import hvac
     client = hvac.Client()
 
-    client.aws.generate_credentials(
+    gen_creds_response = client.secrets.aws.generate_credentials(
+        role_name='hvac-role',
     )
+    print('Generated access / secret keys: {access} / {secret}'.format(
+        access=gen_creds_response['data']['access_key'],
+        secret=gen_creds_response['data']['secret_key'],
+    ))
