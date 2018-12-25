@@ -1,39 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import logging
-from threading import Thread
 from unittest import TestCase
 
 from parameterized import parameterized, param
 
-from tests import utils
+from hvac.exceptions import ParamValidationError
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
-from tests.utils.mock_aws_request_handler import MockAWSRequestHandler
-
-try:
-    # Python 2.7
-    from http.server import HTTPServer
-except ImportError:
-    # Python 3.x
-    from BaseHTTPServer import HTTPServer
 
 
 class TestAws(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = 'aws-test'
     TEST_ROLE_NAME = 'hvac-test-role'
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestAws, cls).setUpClass()
-        # Configure mock server.
-        cls.mock_server_port = utils.get_free_port()
-        cls.mock_server = HTTPServer(('localhost', cls.mock_server_port), MockAWSRequestHandler)
-
-        # Start running mock server in a separate thread.
-        # Daemon threads automatically shut down when the main process exits.
-        cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
-        cls.mock_server_thread.setDaemon(True)
-        cls.mock_server_thread.start()
 
     def setUp(self):
         super(TestAws, self).setUp()
@@ -149,6 +127,47 @@ class TestAws(HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         param(
             'success',
+        ),
+        param(
+            'with policy document',
+            policy_document={
+                'Statement': [
+                    {
+                        'Action': 'ec2:Describe*',
+                        'Effect': 'Allow',
+                        'Resource': '*'
+                    },
+                ],
+                'Version': '2012-10-17'
+            }
+        ),
+        param(
+            'with policy_arns',
+            policy_arns=['arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess'],
+        ),
+        param(
+            'assumed_role success',
+            credential_type='assumed_role',
+        ),
+        param(
+            'assumed_role with policy document',
+            policy_document={
+                'Statement': [
+                    {
+                        'Action': 'ec2:Describe*',
+                        'Effect': 'Allow',
+                        'Resource': '*'
+                    },
+                ],
+                'Version': '2012-10-17'
+            },
+            credential_type='assumed_role',
+        ),
+        param(
+            'invalid credential type',
+            credential_type='cat',
+            raises=ParamValidationError,
+            exception_message='invalid credential_type argument provided',
         ),
     ])
     def test_create_or_update_role(self, label, credential_type='iam_user', policy_document=None, default_sts_ttl=None,
