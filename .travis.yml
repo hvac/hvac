@@ -19,6 +19,9 @@ matrix:
     - name: 'Python v3.6 - Linting (flake8)'
       python: '3.6'
       env: TOXENV=flake8-py36
+    - name: 'Python v3.7 - Linting (flake8)'
+      python: '3.7'
+      env: TOXENV=flake8-py37
   allow_failures:
     # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
     - env: HVAC_VAULT_VERSION=HEAD
