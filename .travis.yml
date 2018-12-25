@@ -1,91 +1,37 @@
 language: python
+python:
+  - '2.7'
+  - '3.6'
+env:
+  - HVAC_VAULT_VERSION=0.9.6
+  - HVAC_VAULT_VERSION=0.10.4
+  # Leaving Vault v0.11.0 since it has some backwards-incompatible changes that were reverted in later versions.
+  - HVAC_VAULT_VERSION=0.11.0
+  - HVAC_VAULT_VERSION=0.11.5
+  - HVAC_VAULT_VERSION=1.0.0
+  - HVAC_VAULT_VERSION=HEAD
 matrix:
   include:
-    - name: 'Python v2.7, Vault v0.9.6 - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.9.6
-    - name: 'Python v2.7, Vault v0.10.4 - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.10.4
-    # Leaving Vault v0.11.0 since it has some backwards-incompatible changes that were reverted in later versions.
-    - name: 'Python v2.7, Vault v0.11.0 - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.11.0
-    - name: 'Python v2.7, Vault v0.11.5 - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=0.11.5
-    - name: 'Python v2.7, Vault v1.0.0 - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=1.0.0
-    - name: 'Python v2.7, Vault HEAD ref - Integration/Unit Tests'
-      python: '2.7'
-      env:
-        - TOXENV=py27
-        - HVAC_VAULT_VERSION=HEAD
     - name: 'Python v2.7 - Linting (flake8)'
       python: '2.7'
       env:
         - TOXENV=py27-flake8
-    - name: 'Python v3.6, Vault v0.9.6 - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=0.9.6
-    - name: 'Python v3.6, Vault v0.10.4 - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=0.10.4
-    # Leaving Vault v0.11.0 since it has some backwards-incompatible changes that were reverted in later versions.
-    - name: 'Python v3.6, Vault v0.11.0 - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=0.11.0
-    - name: 'Python v3.6, Vault v0.11.5 - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=0.11.5
-    - name: 'Python v3.6, Vault v1.0.0 - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=1.0.0
-    - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
-      python: '3.6'
-      env:
-        - TOXENV=py36
-        - HVAC_VAULT_VERSION=HEAD
     - name: 'Python v3.6 - Linting (flake8)'
       python: '3.6'
       env:
-        - TOXENV=py27-flake8
+        - TOXENV=py36-flake8
   allow_failures:
-    - name: 'Python v2.7, Vault HEAD ref - Integration/Unit Tests'
-      python: '2.7'
+    - python: '2.7'
       env:
-        - TOXENV=py27
         - HVAC_VAULT_VERSION=HEAD
-    - name: 'Python v3.6, Vault HEAD ref - Integration/Unit Tests'
-      python: '3.6'
+    - python: '3.6'
       env:
         - TOXENV=py36
         - HVAC_VAULT_VERSION=HEAD
 install:
   - tests/scripts/install-consul.sh
   - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION}
-  - pip install tox
+  - pip install tox-travis
 script:
   - export PATH=$HOME/bin:$PATH
   - make test
