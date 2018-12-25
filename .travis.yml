@@ -15,18 +15,17 @@ matrix:
     - name: 'Python v2.7 - Linting (flake8)'
       python: '2.7'
       env:
-        - TOXENV=py27-flake8
+        - TOXENV=flake8-py27
     - name: 'Python v3.6 - Linting (flake8)'
       python: '3.6'
       env:
-        - TOXENV=py36-flake8
+        - TOXENV=flake8-py36
   allow_failures:
     - python: '2.7'
       env:
         - HVAC_VAULT_VERSION=HEAD
     - python: '3.6'
       env:
-        - TOXENV=py36
         - HVAC_VAULT_VERSION=HEAD
 install:
   - tests/scripts/install-consul.sh
