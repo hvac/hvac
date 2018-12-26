@@ -14,7 +14,7 @@ env:
   - TOXENV=flake8
 matrix:
   include:
-    - name: 'Build Documentation'
+    - name: 'Test Documentation Build'
       python: '3.7'
       env: TOXENV=docs
   allow_failures:
