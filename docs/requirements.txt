@@ -12,7 +12,7 @@ docutils==0.14            # via m2r, sphinx
 idna==2.8                 # via requests
 imagesize==1.1.0          # via sphinx
 jinja2==2.10              # via sphinx
-m2r==0.1.15
+m2r==0.2.1
 markupsafe==1.1.0         # via jinja2
 mistune==0.8.3            # via m2r
 packaging==18.0           # via sphinx
