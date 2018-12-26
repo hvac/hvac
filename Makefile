@@ -18,6 +18,7 @@ distclean: clean
 package: version
 	python setup.py sdist bdist_wheel
 
+# Note, we breakout the docs/requirements target separately since its not reasonable to use filesystem paths in target names
 update-all-requirements: $(addprefix update-, $(REQUIREMENTS_FILES)) update-docs-requirements
 update-docs-requirements:
 	$(call pip-compile,docs/requirements)
