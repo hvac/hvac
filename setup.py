@@ -22,8 +22,8 @@ setup(
     description='HashiCorp Vault API client',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author='Ian Unruh',
-    author_email='ianunruh@gmail.com',
+    author='Jeffrey Hogan <jeff.hogan1@gmai.com>, Ian Unruh <ianunruh@gmail.com>',
+    author_email='admin@hvac.network',
     url='https://github.com/hvac/hvac',
     keywords=['hashicorp', 'vault'],
     classifiers=[
