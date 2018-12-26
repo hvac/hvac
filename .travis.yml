@@ -11,18 +11,8 @@ env:
   - HVAC_VAULT_VERSION=0.11.6
   - HVAC_VAULT_VERSION=1.0.1
   - HVAC_VAULT_VERSION=HEAD
+  - TOXENV=flake8
 matrix:
-  include:
-    # Explicitly include our flake8 tox jobs so they're only run once per Python version and have independent results.
-    - name: 'Linting (flake8) - Python v2.7'
-      python: '2.7'
-      env: TOXENV=flake8-py27
-    - name: 'Linting (flake8) - Python v3.6'
-      python: '3.6'
-      env: TOXENV=flake8-py36
-    - name: 'Linting (flake8) - Python v3.7'
-      python: '3.7'
-      env: TOXENV=flake8-py37
   allow_failures:
     # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
     - env: HVAC_VAULT_VERSION=HEAD
