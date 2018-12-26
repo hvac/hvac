@@ -1,0 +1,10 @@
+codecov
+coverage
+ipaddress
+mock
+nose
+parameterized
+python-ldap-test
+requests_mock
+semantic_version
+tox
