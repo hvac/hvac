@@ -29,6 +29,13 @@ def load_long_description():
     return long_description
 
 
+def parse_requirements(requirements_path):
+    with open(requirements_path, 'r') as fh:
+        # drop any comments; either full line comments or comments following the requirement line
+        requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
+    return requirements
+
+
 def get_extra_require():
     extra_require = {
         'parser': []
@@ -36,10 +43,7 @@ def get_extra_require():
     for extra_require_key in extra_require.keys():
         requirements_file = 'requirements-{suffix}.txt'.format(suffix=extra_require_key)
         requirements_path = os.path.join(BASE_DIR, requirements_file)
-        with open(requirements_path, 'r') as fh:
-            # drop any comments; either full line comments or comments following the requirement line
-            requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
-            extra_require[extra_require_key] = requirements
+        extra_require[extra_require_key] = parse_requirements(requirements_path)
 
     return extra_require
 
@@ -64,9 +68,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
     ],
     packages=find_packages(),
-    install_requires=[
-        'requests>=2.7.0',
-    ],
+    install_requires=parse_requirements(os.path.join(BASE_DIR, 'requirements.txt')),
     include_package_data=True,
     package_data={'hvac': ['version']},
     extras_require=get_extra_require(),
