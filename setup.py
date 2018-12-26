@@ -33,6 +33,7 @@ def get_extra_require():
     for extra_require_key in extra_require.keys():
         requirements_file = 'requirements-{suffix}.txt'.format(suffix=extra_require_key)
         with open(requirements_file, 'r') as fh:
+            # drop any comments; either full line comments or comments following the requirement line
             requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
             extra_require[extra_require_key] = requirements
 
