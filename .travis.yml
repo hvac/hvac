@@ -13,6 +13,10 @@ env:
   - HVAC_VAULT_VERSION=HEAD
   - TOXENV=flake8
 matrix:
+  include:
+    - name: 'Build Documentation'
+      python: '3.7'
+      env: TOXENV=docs
   allow_failures:
     # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
     - env: HVAC_VAULT_VERSION=HEAD
