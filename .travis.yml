@@ -14,7 +14,7 @@ env:
   - TOXENV=flake8
 matrix:
   include:
-    - name: 'Test Documentation Build'
+    - name: 'Test Documentation Build - Sphinx: "make html"'
       env: TOXENV=docs
   allow_failures:
     # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
