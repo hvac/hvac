@@ -1,6 +1,7 @@
-PYTHON_IMAGE	?= wpengine/python
+PYTHON_IMAGE		?= wpengine/python
+REQUIREMENTS_FILES	:= requirements requirements-parser requirements-dev
 
-.PHONY: clean package publish test update-all-reqs update-reqs update-parser-reqs update-dev-reqs update-docs-reqs version
+.PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt version
 
 test: version
 	tox
@@ -17,15 +18,11 @@ distclean: clean
 package: version
 	python setup.py sdist bdist_wheel
 
-update-reqs:
-	$(call pip-compile,requirements)
-update-parser-reqs:
-	$(call pip-compile,requirements-parser)
-update-dev-reqs:
-	$(call pip-compile,requirements-dev)
-update-docs-reqs:
+update-all-requirements: $(addprefix update-, $(REQUIREMENTS_FILES)) update-docs-requirements
+update-docs-requirements:
 	$(call pip-compile,docs/requirements)
-update-all-reqs: update-reqs update-parser-reqs update-dev-reqs update-docs-reqs
+update-%:
+	$(call pip-compile,$(*))
 
 define pip-compile
 	@echo
