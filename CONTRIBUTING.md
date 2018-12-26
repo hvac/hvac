@@ -37,26 +37,15 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
   make distclean
   ```
-- [ ] Checkout a working branch based on the `develop` branch:
+- [ ] Checkout the `develop` branch:
   ```
   git checkout develop
   git pull
-  git checkout -b master_v0-6-2
   ```
-- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff using the previous version's tag. E.g.: [https://github.com/hvac/hvac/compare/v0.6.1...master](https://github.com/hvac/hvac/compare/v0.6.1...master)
-- [ ] Commit the changelog changes:
+- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff. E.g.: [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop)
+- [ ] Update version number using [bumpversion](https://github.com/peritus/bumpversion). This example is for the "patch" version but can also be "minor" or "major" as needed. This will also add an appropriate commit and tag.
   ```
-  git add CHANGELOG.md
-  git commit -S -m "Updates for upcoming release 0.6.2"
-  ```
-- [ ] Update version number using [bumpversion](https://github.com/peritus/bumpversion). This example is for the "patch" version but can also be "minor" or "major" as needed.
-  ```
-  bumpversion patch version
-  ```
-- [ ] Commit the version changes:
-  ```
-  git add version setup.cfg
-  git commit -S -m "Bump patch version to $(cat version)"
+  bumpversion {patch|minor|major}
   ```
 - [ ] Install the package again for local development, but with the new version number:
   ```
@@ -87,14 +76,7 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
 - [ ] Create a **draft** GitHub release using the contents of the new release version's [CHANGELOG.md](CHANGELOG.md) content: https://github.com/hvac/hvac/releases/new
 - [ ] Upload the sdist and whl files to the draft GitHub release as attached "binaries".
-- [ ] Push up the working branch (`git push`) and open a PR to merge the working branch into master:  [https://github.com/hvac/hvac/compare/master...master_v0-6-2](https://github.com/hvac/hvac/compare/master...master_v0-6-2)
-- [ ] After merging the working branch into master, tag master with the release version and push that up as well:
-  ```
-  git checkout master
-  git pull
-  git tag "v$(cat version)"
-  git push "v$(cat version)"
-  ```
+- [ ] Push up the update develop branch (`git push`) and open a PR to merge the develop branch into master:  [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop)
 
 - [ ] Publish the sdist and wheel artifacts to [PyPI](https://pypi.org/) using [twine](https://pypi.org/project/twine/):
   ```

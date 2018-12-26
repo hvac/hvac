@@ -1,19 +1,16 @@
 PYTHON_IMAGE		?= wpengine/python
 REQUIREMENTS_FILES	:= requirements requirements-dev
 
-.PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt version
+.PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt
 
-test: version
+test:
 	tox
-
-version:
-	cp version hvac/version
 
 clean:
 	rm -rf dist hvac.egg-info
 
 distclean: clean
-	rm -rf build hvac/version .tox
+	rm -rf build .tox
 
 package: version
 	python setup.py sdist bdist_wheel
