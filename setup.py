@@ -4,8 +4,6 @@ import os
 from pkg_resources import resource_filename
 from setuptools import setup, find_packages
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
 
 def get_version():
     # depending on your execution context the version file
@@ -23,29 +21,9 @@ def get_version():
 
 
 def load_long_description():
-    readme_path = os.path.join(BASE_DIR, 'README.md')
-    with open(readme_path, 'r') as fh:
+    with open("README.md", "r") as fh:
         long_description = fh.read()
     return long_description
-
-
-def parse_requirements(requirements_path):
-    with open(requirements_path, 'r') as fh:
-        # drop any comments; either full line comments or comments following the requirement line
-        requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
-    return requirements
-
-
-def get_extra_require():
-    extra_require = {
-        'parser': []
-    }
-    for extra_require_key in extra_require.keys():
-        requirements_file = 'requirements-{suffix}.txt'.format(suffix=extra_require_key)
-        requirements_path = os.path.join(BASE_DIR, requirements_file)
-        extra_require[extra_require_key] = parse_requirements(requirements_path)
-
-    return extra_require
 
 
 setup(
@@ -68,8 +46,12 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
     ],
     packages=find_packages(),
-    install_requires=parse_requirements(os.path.join(BASE_DIR, 'requirements.txt')),
+    install_requires=[
+        'requests>=2.7.0',
+    ],
     include_package_data=True,
     package_data={'hvac': ['version']},
-    extras_require=get_extra_require(),
+    extras_require={
+        'parser': ['pyhcl>=0.2.1,<0.3.0']
+    }
 )
