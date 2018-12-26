@@ -1,26 +1,36 @@
 #!/usr/bin/env python
 import os
-import sys
-from setuptools import setup, find_packages
+
 from pkg_resources import resource_filename
+from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
-# depending on your execution context the version file
-# may be located in a different place!
-vsn_path = resource_filename(__name__, 'hvac/version')
-if not os.path.exists(vsn_path):
-    vsn_path = resource_filename(__name__, 'version')
+def get_version():
+    # depending on your execution context the version file
+    # may be located in a different place!
+    vsn_path = resource_filename(__name__, 'hvac/version')
     if not os.path.exists(vsn_path):
-        print("%s is missing" % vsn_path)
-        sys.exit(1)
+        vsn_path = resource_filename(__name__, 'version')
+        if not os.path.exists(vsn_path):
+            raise Exception("%s is missing" % vsn_path)
+
+    with open(vsn_path, 'r') as fh:
+        version = fh.read()
+
+    return version
+
+
+def load_long_description():
+    with open("README.md", "r") as fh:
+        long_description = fh.read()
+    return long_description
+
 
 setup(
     name='hvac',
-    version=open(vsn_path, 'r').read(),
+    version=get_version(),
     description='HashiCorp Vault API client',
-    long_description=long_description,
+    long_description=load_long_description(),
     long_description_content_type="text/markdown",
     author='Jeffrey Hogan <jeff.hogan1@gmai.com>, Ian Unruh <ianunruh@gmail.com>',
     author_email='admin@hvac.network',
