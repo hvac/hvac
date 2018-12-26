@@ -26,6 +26,19 @@ def load_long_description():
     return long_description
 
 
+def get_extra_require():
+    extra_require = {
+        'parser': []
+    }
+    for extra_require_key in extra_require.keys():
+        requirements_file = 'requirements-{suffix}.txt'.format(suffix=extra_require_key)
+        with open(requirements_file, 'r') as fh:
+            requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
+            extra_require[extra_require_key] = requirements
+
+    return extra_require
+
+
 setup(
     name='hvac',
     version=get_version(),
@@ -51,7 +64,5 @@ setup(
     ],
     include_package_data=True,
     package_data={'hvac': ['version']},
-    extras_require={
-        'parser': ['pyhcl>=0.2.1,<0.3.0']
-    }
+    extras_require=get_extra_require(),
 )
