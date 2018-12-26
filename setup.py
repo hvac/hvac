@@ -4,6 +4,8 @@ import os
 from pkg_resources import resource_filename
 from setuptools import setup, find_packages
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 def get_version():
     # depending on your execution context the version file
@@ -21,7 +23,8 @@ def get_version():
 
 
 def load_long_description():
-    with open("README.md", "r") as fh:
+    readme_path = os.path.join(BASE_DIR, 'README.md')
+    with open(readme_path, 'r') as fh:
         long_description = fh.read()
     return long_description
 
@@ -32,7 +35,8 @@ def get_extra_require():
     }
     for extra_require_key in extra_require.keys():
         requirements_file = 'requirements-{suffix}.txt'.format(suffix=extra_require_key)
-        with open(requirements_file, 'r') as fh:
+        requirements_path = os.path.join(BASE_DIR, requirements_file)
+        with open(requirements_path, 'r') as fh:
             # drop any comments; either full line comments or comments following the requirement line
             requirements = [l.split()[0] for l in fh.readlines() if not l.startswith('#')]
             extra_require[extra_require_key] = requirements
