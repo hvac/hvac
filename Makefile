@@ -1,5 +1,5 @@
 PYTHON_IMAGE		?= wpengine/python
-REQUIREMENTS_FILES	:= requirements requirements-parser requirements-dev
+REQUIREMENTS_FILES	:= requirements requirements-dev
 
 .PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt version
 
