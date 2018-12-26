@@ -76,7 +76,7 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   ```
 - [ ] Create a **draft** GitHub release using the contents of the new release version's [CHANGELOG.md](CHANGELOG.md) content: https://github.com/hvac/hvac/releases/new
 - [ ] Upload the sdist and whl files to the draft GitHub release as attached "binaries".
-- [ ] Push up the update develop branch (`git push`) and open a PR to merge the develop branch into master:  [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop)
+- [ ] Git push the updated develop branch (`git push`) and open a PR to merge the develop branch into master:  [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop)
 
 - [ ] Publish the sdist and wheel artifacts to [PyPI](https://pypi.org/) using [twine](https://pypi.org/project/twine/):
   ```
