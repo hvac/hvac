@@ -11,6 +11,11 @@ the latest `vault` binary is available in your `PATH`.
 2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
 3. Run tests: `make test`
 
+## Updating Requirements
+
+This project uses [pip-tool's](https://pypi.org/project/pip-tools/) `pip-compile` utility to manage its various requirements.
+Any given requirements file can be manually updated by following the pip-compile comments at the top of the file. Alternatively, the `update-all-reqs` Makefile target can be used to update requirements across the board (this has a dependency on docker being available).
+
 ## Documentation
 
 ### Examples
