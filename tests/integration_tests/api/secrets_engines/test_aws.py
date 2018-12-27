@@ -1,17 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import logging
 from unittest import TestCase
 
 from parameterized import parameterized, param
 
 from hvac.exceptions import ParamValidationError
+from tests.utils import vault_version_lt
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestAws(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = 'aws-test'
     TEST_ROLE_NAME = 'hvac-test-role'
+    TEST_POLICY_DOCUMENT = {
+        'Statement': [
+            {
+                'Action': 'ec2:Describe*',
+                'Effect': 'Allow',
+                'Resource': '*'
+            },
+        ],
+        'Version': '2012-10-17'
+    }
 
     def setUp(self):
         super(TestAws, self).setUp()
@@ -127,9 +139,6 @@ class TestAws(HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         param(
             'success',
-        ),
-        param(
-            'with policy document',
             policy_document={
                 'Statement': [
                     {
@@ -144,10 +153,6 @@ class TestAws(HvacIntegrationTestCase, TestCase):
         param(
             'with policy_arns',
             policy_arns=['arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess'],
-        ),
-        param(
-            'assumed_role success',
-            credential_type='assumed_role',
         ),
         param(
             'assumed_role with policy document',
@@ -183,6 +188,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                     max_sts_ttl=max_sts_ttl,
                     role_arns=role_arns,
                     policy_arns=policy_arns,
+                    legacy_params=vault_version_lt('0.11.0'),
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -198,6 +204,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                 max_sts_ttl=max_sts_ttl,
                 role_arns=role_arns,
                 policy_arns=policy_arns,
+                legacy_params=vault_version_lt('0.11.0'),
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('role_response: %s' % role_response)
@@ -216,6 +223,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             self.client.secrets.aws.create_or_update_role(
                 name=self.TEST_ROLE_NAME,
                 credential_type='iam_user',
+                policy_document=self.TEST_POLICY_DOCUMENT,
+                legacy_params=vault_version_lt('0.11.0'),
                 mount_point=self.TEST_MOUNT_POINT,
             )
         if raises:
@@ -234,10 +243,16 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('read_role_response: %s' % read_role_response)
-            self.assertEqual(
-                first=read_role_response['data']['credential_types'],
-                second=['iam_user'],
-            )
+            if vault_version_lt('0.11.0'):
+                self.assertDictEqual(
+                    d1=json.loads(read_role_response['data']['policy']),
+                    d2=self.TEST_POLICY_DOCUMENT,
+                )
+            else:
+                self.assertEqual(
+                    first=read_role_response['data']['credential_types'],
+                    second=['iam_user'],
+                )
 
     @parameterized.expand([
         param(
@@ -249,6 +264,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             self.client.secrets.aws.create_or_update_role(
                 name=self.TEST_ROLE_NAME,
                 credential_type='iam_user',
+                policy_document=self.TEST_POLICY_DOCUMENT,
+                legacy_params=vault_version_lt('0.11.0'),
                 mount_point=self.TEST_MOUNT_POINT,
             )
         if raises:
@@ -280,6 +297,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             self.client.secrets.aws.create_or_update_role(
                 name=self.TEST_ROLE_NAME,
                 credential_type='iam_user',
+                policy_document=self.TEST_POLICY_DOCUMENT,
+                legacy_params=vault_version_lt('0.11.0'),
                 mount_point=self.TEST_MOUNT_POINT,
             )
         if raises:

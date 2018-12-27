@@ -137,7 +137,7 @@ class Aws(VaultApiBase):
         return response.json()
 
     def create_or_update_role(self, name, credential_type, policy_document=None, default_sts_ttl=None, max_sts_ttl=None,
-                              role_arns=None, policy_arns=None, mount_point=DEFAULT_MOUNT_POINT):
+                              role_arns=None, policy_arns=None, legacy_params=False, mount_point=DEFAULT_MOUNT_POINT):
         """Create or update the role with the given name.
 
         If a role with the name does not exist, it will be created. If the role exists, it will be updated with the new
@@ -170,6 +170,8 @@ class Aws(VaultApiBase):
             requested. Valid only when credential_type is iam_user. When credential_type is iam_user, at least one of
             policy_arns or policy_document must be specified. This is a comma-separated string or JSON array.
         :type policy_arns: list
+        :param legacy_params:
+        :type legacy_params: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -184,14 +186,21 @@ class Aws(VaultApiBase):
         if isinstance(policy_document, dict):
             policy_document = json.dumps(policy_document, indent=4, sort_keys=True)
 
-        params = {
-            'credential_type': credential_type,
-            'policy_document': policy_document,
-            'default_sts_ttl': default_sts_ttl,
-            'max_sts_ttl': max_sts_ttl,
-            'role_arns': role_arns,
-            'policy_arns': policy_arns,
-        }
+        if legacy_params:
+            # Support for Vault <0.11.0
+            params = {
+                'policy': policy_document,
+                'arn': policy_arns[0] if isinstance(policy_arns, list) else policy_arns,
+            }
+        else:
+            params = {
+                'credential_type': credential_type,
+                'policy_document': policy_document,
+                'default_sts_ttl': default_sts_ttl,
+                'max_sts_ttl': max_sts_ttl,
+                'role_arns': role_arns,
+                'policy_arns': policy_arns,
+            }
         api_path = '/v1/{mount_point}/roles/{name}'.format(
             mount_point=mount_point,
             name=name,
