@@ -7,7 +7,7 @@ from unittest import TestCase
 from parameterized import parameterized, param
 
 from hvac.exceptions import ParamValidationError
-from tests.utils import vault_version_lt
+from tests.utils import vault_version_lt, vault_version_eq
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -208,9 +208,14 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('role_response: %s' % role_response)
+
+            expected_status_code = 204
+            if vault_version_eq('0.11.0'):
+                expected_status_code = 200
+
             self.assertEqual(
                 first=role_response.status_code,
-                second=204,
+                second=expected_status_code,
             )
 
     @parameterized.expand([
