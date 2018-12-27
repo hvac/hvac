@@ -57,7 +57,8 @@ class TestAws(TestCase):
             exception_msg='cats'
         ),
     ])
-    def test_generate_credentials(self, test_label, role_name='hvac-test-role', mount_point=DEFAULT_MOUNT_POINT, endpoint='creds', raises=None, exception_msg=''):
+    def test_generate_credentials(self, test_label, role_name='hvac-test-role', mount_point=DEFAULT_MOUNT_POINT,
+                                  endpoint='creds', raises=None, exception_msg=''):
         expected_status_code = 200
         mock_response = {
           "data": {
