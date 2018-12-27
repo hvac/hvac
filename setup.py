@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-import os
-
-from pkg_resources import resource_filename
 from setuptools import setup, find_packages
 
 
