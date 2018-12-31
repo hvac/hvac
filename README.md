@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/gh/hvac/hvac/branch/master/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
 [![Documentation Status](https://readthedocs.org/projects/hvac/badge/)](https://hvac.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/hvac.svg)](https://badge.fury.io/py/hvac)
+[![Twitter - @hvac_python](https://img.shields.io/twitter/follow/hvac_python.svg?label=Twitter%20-%20@hvac_project&style=social?style=plastic)](https://twitter.com/hvac_python)
 
 Tested against the latest release, HEAD ref, and 3 previous major versions (counting back from the latest release) of Vault. 
 Currently supports Vault v0.9.6 or later.
