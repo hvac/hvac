@@ -4,6 +4,7 @@ Secrets Engines
 .. toctree::
    :maxdepth: 2
 
+   aws
    azure
    identity
    kv

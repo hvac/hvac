@@ -523,10 +523,10 @@ class Identity(VaultApiBase):
         Supported methods:
             POST: /{mount_point}/group. Produces: 200 application/json
 
-        :param group_id: ID of the group. If set, updates the corresponding existing group.
-        :type group_id: str | unicode
         :param name: Name of the group.
         :type name: str | unicode
+        :param group_id: ID of the group. If set, updates the corresponding existing group.
+        :type group_id: str | unicode
         :param group_type: Type of the group, internal or external. Defaults to internal.
         :type group_type: str | unicode
         :param metadata: Metadata to be associated with the group.
