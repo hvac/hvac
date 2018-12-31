@@ -165,12 +165,14 @@ class Aws(VaultApiBase):
         :type max_sts_ttl: str | unicode
         :param role_arns: Specifies the ARNs of the AWS roles this Vault role is allowed to assume. Required when
             credential_type is assumed_role and prohibited otherwise. This is a comma-separated string or JSON array.
-        :type role_arns: list
+            String types supported for Vault legacy parameters.
+        :type role_arns: list | str | unicode
         :param policy_arns: Specifies the ARNs of the AWS managed policies to be attached to IAM users when they are
             requested. Valid only when credential_type is iam_user. When credential_type is iam_user, at least one of
             policy_arns or policy_document must be specified. This is a comma-separated string or JSON array.
         :type policy_arns: list
-        :param legacy_params:
+        :param legacy_params: Flag to send legacy (Vault versions < 0.11.0) parameters in the request. When this is set
+            to True, policy_document and policy_arns are the only parameters used from this method.
         :type legacy_params: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode

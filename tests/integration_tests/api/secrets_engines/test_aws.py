@@ -211,6 +211,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
 
             expected_status_code = 204
             if vault_version_eq('0.11.0'):
+                # In Vault 0.11.0, this API route returns a 200 instead of a 204.
                 expected_status_code = 200
 
             self.assertEqual(
