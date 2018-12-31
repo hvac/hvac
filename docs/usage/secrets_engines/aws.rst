@@ -83,8 +83,43 @@ Source reference: :py:meth:`hvac.api.secrets_engines.Aws.create_or_update_role`
     client.secrets.aws.create_or_update_role(
         name='hvac-role',
         credential_type='assumed_role',
-        policy_document=policy_document,
+        policy_document=describe_ec2_policy_doc,
         policy_arns=['arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess'],
+    )
+
+Legacy Parameters
+`````````````````
+
+.. note::
+    In previous versions of Vault (before version 0.11.0), this API route only supports the `policy_document` and `policy_arns` parameters (which hvac will translate to `policy` and `arn` parameters respectively in the request sent to Vault). If running these versions of Vault, the `legacy_params` parameter on this method can be set to `True`.
+
+For older versions of Vault (any version before 0.11.0):
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    describe_ec2_policy_doc = {
+        'Version': '2012-10-17',
+        'Statement': [
+            {
+                'Resource': '*'
+                'Action': 'ec2:Describe*',
+                'Effect': 'Allow',
+            },
+        ],
+    }
+
+    # Note: with the legacy params, the `policy_arns` parameter is translated to `arn`
+    # in the request sent to Vault and only one ARN is accepted. If a list is provided,
+    # hvac will only use the first ARN in the list.
+    client.secrets.aws.create_or_update_role(
+        name='hvac-role',
+        credential_type='assumed_role',
+        policy_document=describe_ec2_policy_doc,
+        policy_arns='arn:aws:iam::aws:policy/AmazonVPCReadOnlyAccess',
+        legacy_params=True,
     )
 
 Read Role
