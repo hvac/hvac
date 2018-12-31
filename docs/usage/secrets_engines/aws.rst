@@ -1,5 +1,7 @@
-Aws
+AWS
 ===
+
+.. contents::
 
 Configure Root IAM Credentials
 ------------------------------
