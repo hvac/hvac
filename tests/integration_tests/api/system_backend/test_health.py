@@ -76,13 +76,12 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
             # Standby nodes can't be sealed directly.
             # I.e.: "vault cannot seal when in standby mode; please restart instead"
             self.manager.restart_vault_cluster()
-        if use_standby_node:
-            standby_vault_addr = self.get_standby_vault_addr()
-            logging.debug('standby_vault_addr being used: %s' % standby_vault_addr)
-            client = create_client(url=standby_vault_addr)
-        else:
-            client = self.client
-        logging.debug('vault processes: %s' % self.manager._processes)
+
+        # Grab a Vault node address for our desired standby status and create a one-off client configured for that address.
+        vault_addr = self.get_vault_addr_by_standby_status(standby_status=use_standby_node)
+        logging.debug('vault_addr being used: %s' % vault_addr)
+        client = create_client(url=vault_addr)
+
         read_status_response = client.sys.read_health_status(
             method=method,
         )

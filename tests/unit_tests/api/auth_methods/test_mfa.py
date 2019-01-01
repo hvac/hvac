@@ -88,7 +88,7 @@ class TestMfa(TestCase):
         mfa = Mfa(adapter=Request())
         response = mfa.configure_duo_access(
             mount_point=mount_point,
-            host='someapisubdomain.hvac.network',
+            host='someapisubdomain.python-hvac.org',
             integration_key='ikey',
             secret_key='supersecret',
         )

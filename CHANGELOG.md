@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.7.2 (January 1st, 2019)
+
+IMPROVEMENTS:
+
+* Support for the AWS secrets engine. [GH-370](https://github.com/hvac/hvac/pull/370)
+
+BUG FIXES:
+
+* Fixes for intermittent test case failures. [GH-361](https://github.com/hvac/hvac/pull/361) & [GH-364](https://github.com/hvac/hvac/pull/364)
+
+MISCELLANEOUS:
+
+* Travis CI builds now run against Python 3.7 (along side the previously tested 2.7 and 3.6 versions). [GH-360](https://github.com/hvac/hvac/pull/360)
+* Documentation build test case added. [GH-366](https://github.com/hvac/hvac/pull/366)
+* Module version now managed by the `bumpversion` utility exclusively. [GH-369](https://github.com/hvac/hvac/pull/369)
+
 ## 0.7.1 (December 19th, 2018)
 
 IMPROVEMENTS:

@@ -75,18 +75,21 @@ class HvacIntegrationTestCase(object):
         :return: The provided TTL value in the form returned by the Vault API.
         :rtype: int
         """
-        expected_ttl = ttl_value
+        expected_ttl = 0
         if not isinstance(ttl_value, int) and ttl_value != '':
-            regexp_matches = re.match(r'^(?P<duration>[0-9]+)(?P<unit>[smh])?$', ttl_value)
+            regexp_matches = re.findall(r'(?P<duration>[0-9]+)(?P<unit>[smh])', ttl_value)
             if regexp_matches:
-                fields = regexp_matches.groupdict()
-                expected_ttl = int(fields['duration'])
-                if fields['unit'] == 'm':
-                    # convert minutes to seconds
-                    expected_ttl = expected_ttl * 60
-                elif fields['unit'] == 'h':
-                    # convert hours to seconds
-                    expected_ttl = expected_ttl * 60 * 60
+                for regexp_match in regexp_matches:
+                    duration, unit = regexp_match
+                    if unit == 'm':
+                        # convert minutes to seconds
+                        expected_ttl += int(duration) * 60
+                    elif unit == 'h':
+                        # convert hours to seconds
+                        expected_ttl += int(duration) * 60 * 60
+                    else:
+                        expected_ttl += int(duration)
+
         elif ttl_value == '':
             expected_ttl = 0
         return expected_ttl
@@ -155,14 +158,16 @@ class HvacIntegrationTestCase(object):
         """
         self.client.disable_secret_backend(mount_point)
 
-    def get_standby_vault_addr(self):
+    def get_vault_addr_by_standby_status(self, standby_status=True):
         """Get an address for a Vault HA node currently in standby.
 
+        :param standby_status: Value of the 'standby' key from the health status response to match.
+        :type standby_status: bool
         :return: Standby Vault address.
         :rtype: str
         """
         vault_addresses = self.manager.get_active_vault_addresses()
         for vault_address in vault_addresses:
             health_status = create_client(url=vault_address).sys.read_health_status(method='GET')
-            if health_status['standby']:
+            if health_status['standby'] == standby_status:
                 return vault_address

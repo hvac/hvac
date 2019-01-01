@@ -11,7 +11,5 @@ test/*.log
 /cover
 *~
 
-/hvac/version
-
 # sphinx build folder
 docs/_build/
