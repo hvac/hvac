@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = u'hvac'
-copyright = u'2018, Ian Unruh, Jeffrey Hogan'
+copyright = u'2018-2019, Ian Unruh, Jeffrey Hogan'
 author = u'Ian Unruh, Jeffrey Hogan'
 
 # The short X.Y version
