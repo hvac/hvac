@@ -29,7 +29,7 @@ class TestLdap(TestCase):
         response = ldap.configure(
             user_dn='dc=users,cn=hvac,cn=network',
             group_dn='ou=groups,cn=hvac,cn=network',
-            url='ldaps://ldap.hvac.network',
+            url='ldaps://ldap.python-hvac.org',
             mount_point=mount_point,
         )
         self.assertEqual(
@@ -61,7 +61,7 @@ class TestLdap(TestCase):
                 'userattr': '',
                 'insecure_tls': False,
                 'userdn': '',
-                'url': 'ldap://ldap.hvac.network',
+                'url': 'ldap://ldap.python-hvac.org',
                 'groupfilter': '',
                 'tls_max_version': 'tls12',
                 'tls_min_version': 'tls12',

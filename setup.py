@@ -15,7 +15,7 @@ setup(
     long_description=load_long_description(),
     long_description_content_type="text/markdown",
     author='Ian Unruh <ianunruh@gmail.com>, Jeffrey Hogan <jeff.hogan1@gmail.com>',
-    author_email='admin@hvac.network',
+    author_email='admin@python-hvac.org',
     url='https://github.com/hvac/hvac',
     keywords=['hashicorp', 'vault'],
     classifiers=[

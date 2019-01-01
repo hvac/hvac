@@ -8,7 +8,7 @@ from hvac import exceptions
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
-LDAP_URL = 'ldap://ldap.hvac.network'
+LDAP_URL = 'ldap://ldap.python-hvac.org'
 LDAP_GROUP_NAME = 'vault-users'
 LDAP_USER_NAME = 'somedude'
 LDAP_USER_PASSWORD = 'hvacrox'
@@ -102,7 +102,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         ('update url', dict(url=LDAP_URL)),
         ('update binddn', dict(url=LDAP_URL, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
-        ('update upn_domain', dict(url=LDAP_URL, upn_domain='hvac.network')),
+        ('update upn_domain', dict(url=LDAP_URL, upn_domain='python-hvac.org')),
         ('update certificate', dict(url=LDAP_URL, certificate=utils.load_config_file('server-cert.pem'))),
         ('incorrect tls version', dict(url=LDAP_URL, tls_min_version='cats'), exceptions.InvalidRequest,
          "invalid 'tls_min_version'"),
