@@ -1,5 +1,7 @@
 # hvac
 
+![Header image](https://python-hvac.org/wp-content/uploads/2019/01/hvac_header_800px.png)
+
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2.7/3.x
 
 [![Travis CI](https://travis-ci.org/hvac/hvac.svg?branch=master)](https://travis-ci.org/hvac/hvac)
