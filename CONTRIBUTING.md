@@ -42,7 +42,10 @@ The follow list uses version number `0.6.2`, this string should be updated to ma
   git checkout develop
   git pull
   ```
-- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff. E.g.: [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop)
+- [ ] Update [CHANGELOG.md](CHANGELOG.md) with a list of the included changes. Those changes can be reviewed, and their associated GitHub PR number confirmed, via GitHub's pull request diff. E.g.: [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop). Then commit the changes:
+  ```
+  git commit CHANGELOG.md -m 'Changelog updates for vX.X.X release'
+  ```
 - [ ] Update version number using [bumpversion](https://github.com/peritus/bumpversion). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed as needed. This will also add an appropriate git commit and tag for the new version.
   ```
   bumpversion {patch|minor|major}
