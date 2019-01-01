@@ -1,12 +1,14 @@
 # hvac
 
+![Header image](https://raw.githubusercontent.com/hvac/hvac/master/docs/_static/hvac_logo_800px.png)
+
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2.7/3.x
 
 [![Travis CI](https://travis-ci.org/hvac/hvac.svg?branch=master)](https://travis-ci.org/hvac/hvac)
 [![codecov](https://codecov.io/gh/hvac/hvac/branch/master/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
 [![Documentation Status](https://readthedocs.org/projects/hvac/badge/)](https://hvac.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/hvac.svg)](https://badge.fury.io/py/hvac)
-[![Twitter - @hvac_python](https://img.shields.io/twitter/follow/hvac_python.svg?label=Twitter%20-%20@hvac_project&style=social?style=plastic)](https://twitter.com/hvac_python)
+[![Twitter - @python_hvac](https://img.shields.io/twitter/follow/python_hvac.svg?label=Twitter%20-%20@python_hvac&style=social?style=plastic)](https://twitter.com/python_hvac)
 
 Tested against the latest release, HEAD ref, and 3 previous major versions (counting back from the latest release) of Vault. 
 Currently supports Vault v0.9.6 or later.

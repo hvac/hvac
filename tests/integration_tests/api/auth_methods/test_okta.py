@@ -10,7 +10,7 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 class TestOkta(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = 'test-okta'
     TEST_ORG_NAME = 'hvac-test'
-    TEST_BASE_URL = 'hvac.network'
+    TEST_BASE_URL = 'python-hvac.org'
     TEST_USERNAME = 'hvac-person'
     TEST_GROUP = 'hvac-group'
 
