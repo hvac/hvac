@@ -12,7 +12,7 @@ clean:
 distclean: clean
 	rm -rf build .tox
 
-package: version
+package:
 	python setup.py sdist bdist_wheel
 
 # Note, we breakout the docs/requirements target separately since its not reasonable to use filesystem paths in target names
