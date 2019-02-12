@@ -182,7 +182,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.Aws.generate_credentials`
     client = hvac.Client()
 
     gen_creds_response = client.secrets.aws.generate_credentials(
-        role_name='hvac-role',
+        name='hvac-role',
     )
     print('Generated access / secret keys: {access} / {secret}'.format(
         access=gen_creds_response['data']['access_key'],
