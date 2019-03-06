@@ -11,6 +11,7 @@ import requests.exceptions
 
 from hvac import utils
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URI = 'http://localhost:8200'
