@@ -254,10 +254,15 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                     d1=json.loads(read_role_response['data']['policy']),
                     d2=self.TEST_POLICY_DOCUMENT,
                 )
-            else:
+            elif 'credential_types' in read_role_response['data']:
                 self.assertEqual(
                     first=read_role_response['data']['credential_types'],
                     second=['iam_user'],
+                )
+            else:
+                self.assertEqual(
+                    first=read_role_response['data']['credential_type'],
+                    second='iam_user',
                 )
 
     @parameterized.expand([
