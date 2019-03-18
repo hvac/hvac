@@ -254,7 +254,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
                     d1=json.loads(read_role_response['data']['policy']),
                     d2=self.TEST_POLICY_DOCUMENT,
                 )
-            elif 'credential_types' in read_role_response['data']:
+            # https://github.com/hashicorp/vault/commit/2dcd0aed2a242f53dae03318b4d68693f7d92b81
+            elif vault_version_lt('1.0.2'):
                 self.assertEqual(
                     first=read_role_response['data']['credential_types'],
                     second=['iam_user'],
