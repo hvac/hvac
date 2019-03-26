@@ -139,9 +139,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
         param(
             'success iam',
             role_type='iam',
-            extra_params=dict(
-                bound_service_accounts=['*'],
-            )
+            extra_params=dict(bound_service_accounts=['*'])
         ),
         param(
             'iam no bound service account',
