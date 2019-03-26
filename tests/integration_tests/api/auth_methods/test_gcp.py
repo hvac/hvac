@@ -139,7 +139,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
         param(
             'success iam',
             role_type='iam',
-            extra_params=dict(bound_service_accounts=['*'])
+            bound_service_accounts=['*']
         ),
         param(
             'iam no bound service account',
@@ -157,19 +157,10 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             raises=exceptions.ParamValidationError,
             exception_message='unsupported role_type argument provided',
         ),
-        param(
-            'wrong policy arg type',
-            role_type='iam',
-            policies='cats',
-            raises=exceptions.ParamValidationError,
-            exception_message='unsupported policies argument provided',
-        )
     ])
-    def test_create_role(self, label, role_type, policies=None, extra_params=None, raises=None, exception_message=''):
+    def test_create_role(self, label, role_type, policies=None, bound_service_accounts=None, raises=None, exception_message=''):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
-        if extra_params is None:
-            extra_params = {}
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.auth.gcp.create_role(
@@ -177,8 +168,8 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                     role_type=role_type,
                     project_id=project_id,
                     policies=policies,
+                    bound_service_accounts=bound_service_accounts,
                     mount_point=self.TEST_MOUNT_POINT,
-                    **extra_params
                 )
             self.assertIn(
                 member=exception_message,
@@ -190,8 +181,8 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 role_type=role_type,
                 project_id=project_id,
                 policies=policies,
+                bound_service_accounts=bound_service_accounts,
                 mount_point=self.TEST_MOUNT_POINT,
-                **extra_params
             )
             logging.debug('create_role_response: %s' % create_role_response)
             if utils.vault_version_lt('0.10.0'):
