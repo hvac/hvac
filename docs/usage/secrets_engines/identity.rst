@@ -354,7 +354,7 @@ List Groups By Name
 	import hvac
 	client = hvac.Client()
 
-	list_response = client.secrets.identity.list_entities_by_name()
+	list_response = client.secrets.identity.list_groups_by_name()
 	group_keys = list_response['data']['keys']
 	print('The following group names are currently configured: {keys}'.format(keys=group_keys))
 
