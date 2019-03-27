@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import json
+import os
 from base64 import b64encode
 
 from hvac import aws_utils, exceptions, adapters, utils, api
@@ -50,6 +51,8 @@ class Client(object):
         if adapter is not None:
             self._adapter = adapter
         else:
+            token = token if token is not None else utils.get_token_from_env()
+            url = os.getenv('VAULT_ADDR', url)
             self._adapter = adapters.Request(
                 base_uri=url,
                 token=token,
