@@ -56,7 +56,15 @@ class ServerManager(object):
                     attempts_left -= 1
                     last_exception = ex
             if not cluster_initialized:
-                raise Exception('Unable to start Vault in background: {0}'.format(last_exception))
+                self._processes[0].kill()
+                stdout, stderr = self._processes[0].communicate()
+                raise Exception(
+                    'Unable to start Vault in background:\n{err}\n{stdout}\n{stderr}'.format(
+                        err=last_exception,
+                        stdout=stdout,
+                        stderr=stderr,
+                    )
+                )
 
     def start_consul(self):
         command = ['consul', 'agent', '-dev']
@@ -103,10 +111,11 @@ class ServerManager(object):
         self.root_token = result['root_token']
         self.keys = result['keys']
 
-    def restart_vault_cluster(self):
+    def restart_vault_cluster(self, perform_init=True):
         self.stop()
         self.start()
-        self.initialize()
+        if perform_init:
+            self.initialize()
 
     def get_active_vault_addresses(self):
         vault_addresses = []
@@ -116,7 +125,7 @@ class ServerManager(object):
             try:
                 vault_address = 'https://{addr}'.format(addr=config['listener']['tcp']['address'])
             except KeyError as error:
-                logger.error('Unable to find explict Vault address in config file {path}: {err}'.format(
+                logger.debug('Unable to find explict Vault address in config file {path}: {err}'.format(
                     path=config_path,
                     err=error,
                 ))
