@@ -86,8 +86,8 @@ class Seal(SystemBackendMixin):
     def submit_unseal_keys(self, keys, migrate=False):
         """Enter multiple master key share to progress the unsealing of the Vault.
 
-        :param key: List of master key shares.
-        :type key: List[str]
+        :param keys: List of master key shares.
+        :type keys: List[str]
         :param migrate: Available in 1.0 Beta - Used to migrate the seal from shamir to autoseal or autoseal to shamir.
             Must be provided on all unseal key calls.
         :type: migrate: bool
