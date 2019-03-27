@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 (March 26th, 2019)
+
+IMPROVMENTS:
+
+* Support for the Kubernetes auth method
+
+BUG FIXES:
+
+* Fix for comparision `recovery_threshold` and `recovery_shares` during initialization. 
+
 ## 0.7.2 (January 1st, 2019)
 
 IMPROVEMENTS:

@@ -196,8 +196,10 @@ def validate_list_of_strings_param(param_name, param_argument):
     """
     if param_argument is None:
         param_argument = []
+    if isinstance(param_argument, str):
+        param_argument = param_argument.split(',')
     if not isinstance(param_argument, list) or not all([isinstance(p, str) for p in param_argument]):
-        error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]"'
+        error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]'
         raise exceptions.ParamValidationError(error_msg.format(
             param=param_name,
             arg=param_argument,
@@ -216,3 +218,45 @@ def list_to_comma_delimited(list_param):
     if list_param is None:
         list_param = []
     return ','.join(list_param)
+
+
+def comma_delimited_to_list(list_param):
+    """Convert comma-delimited list / string into a list of strings
+
+    :param list_param: Comma-delimited string
+    :type list_param: str | unicode
+    :return: A list of strings
+    :rtype: list
+    """
+    if isinstance(list_param, list):
+        return list_param
+    if isinstance(list_param, str):
+        return list_param.split(',')
+    else:
+        return []
+
+
+def validate_pem_format(param_name, param_argument):
+    """Validate that an argument is a PEM-formatted public key or certificate
+
+    :param param_name: The name of the parameter being validate. Used in any resulting exception messages.
+    :type param_name: str | unicode
+    :param param_argument: The argument to validate
+    :type param_argument: str | unicode
+    :return True if the argument is validate False otherwise
+    :rtype: bool
+    """
+
+    def _check_pem(arg):
+        arg = arg.strip()
+        if not arg.startswith('-----BEGIN CERTIFICATE-----') \
+                or not arg.endswith('-----END CERTIFICATE-----'):
+            return False
+        return True
+
+    if isinstance(param_argument, str):
+        param_argument = [param_argument]
+
+    if not isinstance(param_argument, list) or not all(_check_pem(p) for p in param_argument):
+        error_msg = 'unsupported {param} public key / certificate format, required type: PEM'
+        raise exceptions.ParamValidationError(error_msg.format(param=param_name))
