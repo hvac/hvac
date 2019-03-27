@@ -86,7 +86,7 @@ class Init(SystemBackendMixin):
             params['recovery_shares'] = recovery_shares
 
         if recovery_threshold is not None:
-            if recovery_threshold > recovery_shares:
+            if recovery_threshold <= recovery_shares:
                 error_msg = 'value for recovery_threshold argument be less than or equal to recovery_shares argument'
                 raise ParamValidationError(error_msg)
             params['recovery_threshold'] = recovery_threshold
