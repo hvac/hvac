@@ -5,6 +5,7 @@ import warnings
 from hvac.api.auth_methods.azure import Azure
 from hvac.api.auth_methods.gcp import Gcp
 from hvac.api.auth_methods.github import Github
+from hvac.api.auth_methods.kubernetes import Kubernetes
 from hvac.api.auth_methods.ldap import Ldap
 from hvac.api.auth_methods.mfa import Mfa
 from hvac.api.auth_methods.okta import Okta
@@ -16,6 +17,7 @@ __all__ = (
     'Azure',
     'Gcp',
     'Github',
+    'Kubernetes',
     'Ldap',
     'Mfa',
     'Okta'
@@ -28,6 +30,7 @@ class AuthMethods(VaultApiCategory):
         Azure,
         Github,
         Gcp,
+        Kubernetes,
         Ldap,
         Mfa,
         Okta
@@ -38,7 +41,6 @@ class AuthMethods(VaultApiCategory):
         'AliCloud',
         'Aws',
         'Jwt',
-        'Kubernetes',
         'Radius',
         'Cert',
         'Token',
