@@ -339,7 +339,6 @@ class Client(object):
             params['period'] = period
         if token_type:
             params['type'] = token_type
-            
 
         if orphan:
             return self._adapter.post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
