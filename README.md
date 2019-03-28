@@ -31,7 +31,7 @@ if you would like to be able to return parsed HCL data as a Python dict for meth
 
 Additional documentation for this module available at: [hvac.readthedocs.io](https://hvac.readthedocs.io/en/stable/usage/index.html):
 
-* [Getting Started](https://hvac.readthedocs.io/en/stable/readme.html#getting-started)
+* [Getting Started](https://hvac.readthedocs.io/en/stable/overview.html#getting-started)
 * [Usage](https://hvac.readthedocs.io/en/stable/usage/index.html)
 * [Advanced Usage](https://hvac.readthedocs.io/en/stable/advanced_usage.html)
 * [Source Reference / Autodoc](https://hvac.readthedocs.io/en/stable/source/index.html)
