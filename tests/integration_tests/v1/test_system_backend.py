@@ -9,6 +9,21 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestSystemBackend(HvacIntegrationTestCase, TestCase):
+    TEST_KVV1_MOUNT_POINT = 'kvv1_mount'
+
+    def setUp(self):
+        super(TestSystemBackend, self).setUp()
+        if '%s/' % self.TEST_KVV1_MOUNT_POINT not in self.client.sys.list_mounted_secrets_engines()['data']:
+            self.client.enable_secret_backend(
+                backend_type='kv',
+                mount_point=self.TEST_KVV1_MOUNT_POINT,
+                options=dict(version=1),
+            )
+
+    def tearDown(self):
+        self.client.token = self.manager.root_token
+        self.client.disable_secret_backend(mount_point=self.TEST_KVV1_MOUNT_POINT)
+        super(TestSystemBackend, self).tearDown()
 
     def test_unseal_multi(self):
         cls = type(self)
@@ -421,7 +436,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         self.client.disable_audit_backend('tmpfile')
 
     def test_get_secret_backend_tuning(self):
-        secret_backend_tuning = self.client.get_secret_backend_tuning('secret')
+        secret_backend_tuning = self.client.get_secret_backend_tuning(self.TEST_KVV1_MOUNT_POINT)
         self.assertIn(
             member='default_lease_ttl',
             container=secret_backend_tuning['data'],

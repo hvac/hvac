@@ -7,6 +7,19 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestKvV1(HvacIntegrationTestCase, TestCase):
+    DEFAULT_MOUNT_POINT = 'kvv1'
+
+    def setUp(self):
+        super(TestKvV1, self).setUp()
+        self.client.enable_secret_backend(
+            backend_type='kv',
+            mount_point=self.DEFAULT_MOUNT_POINT,
+            options=dict(version=1),
+        )
+
+    def tearDown(self):
+        self.client.disable_secret_backend(mount_point=self.DEFAULT_MOUNT_POINT)
+        super(TestKvV1, self).tearDown()
 
     @parameterized.expand([
         ('nonexistent secret', 'no-secret-here', False, exceptions.InvalidPath),
@@ -20,6 +33,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
         if raises:
             with self.assertRaises(raises) as cm:
@@ -34,6 +48,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
 
             read_secret_result = self.client.secrets.kv.v1.read_secret(
                 path=path,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
             self.assertDictEqual(
                 d1=test_secret,
@@ -54,11 +69,13 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.secrets.kv.v1.list_secrets(
                     path=test_path_prefix,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
@@ -67,6 +84,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
         else:
             list_secrets_result = self.client.secrets.kv.v1.list_secrets(
                 path=test_path_prefix,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
             self.assertEqual(
                 first=dict(keys=[test_key]),
@@ -90,6 +108,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
         if raises:
             with self.assertRaises(raises) as cm:
@@ -97,6 +116,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
                     path=path,
                     secret=test_secret,
                     method=method,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
@@ -107,6 +127,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
                 path=path,
                 secret=test_secret,
                 method=method,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
             self.assertEqual(
                 first=204,
@@ -126,11 +147,13 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             self.client.secrets.kv.v1.create_or_update_secret(
                 path=path,
                 secret=test_secret,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.secrets.kv.v1.delete_secret(
                     path=path,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
@@ -139,6 +162,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
         else:
             delete_secret_result = self.client.secrets.kv.v1.delete_secret(
                 path=path,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
             self.assertEqual(
                 first=204,
