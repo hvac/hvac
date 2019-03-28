@@ -75,7 +75,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             with self.assertRaises(raises) as cm:
                 self.client.secrets.kv.v1.list_secrets(
                     path=test_path_prefix,
-                mount_point=self.DEFAULT_MOUNT_POINT,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
@@ -116,7 +116,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
                     path=path,
                     secret=test_secret,
                     method=method,
-                mount_point=self.DEFAULT_MOUNT_POINT,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
@@ -153,7 +153,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             with self.assertRaises(raises) as cm:
                 self.client.secrets.kv.v1.delete_secret(
                     path=path,
-                mount_point=self.DEFAULT_MOUNT_POINT,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
                 member=exception_message,
