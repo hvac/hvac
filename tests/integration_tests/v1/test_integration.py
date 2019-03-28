@@ -8,6 +8,15 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
+    def setUp(self):
+        super(IntegrationTest, self).setUp()
+        if 'secret/' not in self.client.sys.list_mounted_secrets_engines()['data']:
+            self.client.enable_secret_backend(
+                backend_type='kv',
+                mount_point='secret',
+                options=dict(version=1),
+            )
+
     def test_generic_secret_backend(self):
         self.client.write('secret/foo', zap='zip')
         result = self.client.read('secret/foo')
