@@ -1372,7 +1372,7 @@ class Client(object):
         return self._adapter.post(url, json=params)
 
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
-        """DELETE /auth/<mount_point>/role/<role name>/secret-id/<secret_id_accessor>
+        """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/destroy
 
         :param role_name:
         :type role_name:
@@ -1383,8 +1383,11 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(mount_point, role_name, secret_id_accessor)
-        return self._adapter.delete(url)
+        url = '/v1/auth/{0}/role/{1}/secret-id-accessor/destroy'.format(mount_point, role_name)
+        params = {
+            'secret_id_accessor': secret_id_accessor
+        }
+        return self._adapter.post(url, json=params)
 
     def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/custom-secret-id

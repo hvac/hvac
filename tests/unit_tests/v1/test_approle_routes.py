@@ -465,13 +465,12 @@ class TestApproleRoutes(TestCase):
     def test_delete_role_secret_id_accessor(self, test_label, mount_point, role_name, secret_id_accessor, requests_mocker):
         expected_status_code = 204
 
-        mock_url = 'http://localhost:8200/v1/auth/{0}/role/{1}/secret-id-accessor/{2}'.format(
+        mock_url = 'http://localhost:8200/v1/auth/{0}/role/{1}/secret-id-accessor/destroy'.format(
             'approle' if mount_point is None else mount_point,
             role_name,
-            secret_id_accessor,
         )
         requests_mocker.register_uri(
-            method='DELETE',
+            method='POST',
             url=mock_url,
             status_code=expected_status_code,
         )
