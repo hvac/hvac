@@ -263,7 +263,7 @@ def validate_pem_format(param_name, param_argument):
     :type param_name: str | unicode
     :param param_argument: The argument to validate
     :type param_argument: str | unicode
-    :return True if the argument is validate False otherwise
+    :return: True if the argument is validate False otherwise
     :rtype: bool
     """
 
