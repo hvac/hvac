@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import logging
 import os
+from time import sleep
 
 from requests_mock.mocker import Mocker
 
@@ -49,4 +51,19 @@ def doctest_global_setup():
     os.environ['LDAP_PASSWORD'] = MockLdapServer.ldap_user_password
     os.environ['AWS_LAMBDA_FUNCTION_NAME'] = 'hvac-lambda'
     os.environ.setdefault("LDAP_PASSWORD", MockLdapServer.ldap_user_password)
+
+    if 'secret/' not in client.sys.list_mounted_secrets_engines()['data']:
+        client.sys.enable_secrets_engine(
+            backend_type='kv',
+            path='secret',
+            options=dict(version=2),
+        )
+        attempts = 0
+        while attempts < 25 and 'secret/' not in client.sys.list_mounted_secrets_engines()['data']:
+            attempts += 1
+            logging.debug('Waiting 1 second for KV V2 secrets engine under path {path} to become available...'.format(
+                path='secret',
+            ))
+            sleep(1)
+
     return manager

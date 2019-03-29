@@ -102,6 +102,10 @@ Read and write to secrets engines
 
     Vault currently defaults the KV version 2 secrets engine under the `secret/` automatically when a `Vault server is running in "dev" mode <https://www.vaultproject.io/docs/secrets/kv/kv-v2.html#setup>`_.
 
+.. note::
+
+    Starting with Vault v1.1.0, _no_ KV secrets engine is mounted by default. I.e., outside of dev mode, a KV engine mounted under path `secret` much be explicitly enabled before use.
+
 KV Secrets Engine - Version 2
 """""""""""""""""""""""""""""
 
@@ -157,7 +161,7 @@ Generic usage:
     do not offer the same level of validation that hvac methods specific to individual auth methods and secrets engines provide.
 
 .. doctest:: kvv1
-   :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1' and os.getenv('HVAC_DOCTEST') is not None
+   :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1' and os.getenv('HVAC_DOCTEST') is None
 
     >>> client.write('secret/foo', baz='bar', lease='1h')
     >>> read_response = client.read('secret/foo')
