@@ -25,12 +25,14 @@ release = '0.7.2'
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'm2r',
 ]
+
+if os.getenv('HVAC_RENDER_DOCTESTS') is None:
+    extensions.append('sphinx.ext.doctest')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
