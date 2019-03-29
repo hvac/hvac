@@ -276,7 +276,7 @@ class Client(object):
                      no_parent=False, lease=None, display_name=None,
                      num_uses=None, no_default_policy=False,
                      ttl=None, orphan=False, wrap_ttl=None, renewable=None,
-                     explicit_max_ttl=None, period=None):
+                     explicit_max_ttl=None, period=None, token_type=None):
         """POST /auth/token/create
 
         POST /auth/token/create/<role>
@@ -313,6 +313,8 @@ class Client(object):
         :type explicit_max_ttl:
         :param period:
         :type period:
+        :param token_type:
+        :type token_type:
         :return:
         :rtype:
         """
@@ -338,6 +340,8 @@ class Client(object):
 
         if period:
             params['period'] = period
+        if token_type:
+            params['type'] = token_type
 
         if orphan:
             return self._adapter.post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
