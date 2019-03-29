@@ -24,15 +24,13 @@ release = '0.8.0'
 # -- General configuration ---------------------------------------------------
 
 extensions = [
+    'docs.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'm2r',
 ]
-
-if os.getenv('HVAC_RENDER_DOCTESTS') is None:
-    extensions.append('sphinx.ext.doctest')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,6 +72,9 @@ epub_copyright = copyright
 epub_exclude_files = ['search.html']
 
 # -- doctest configuration -------------------------------------------------
+if os.getenv('READ_THE_DOCS_BUILD') is not None:
+    doctest_global_enabled = False
+
 doctest_global_setup = '''
 import os
 from pprint import pprint, pformat
