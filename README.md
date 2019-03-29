@@ -15,17 +15,17 @@ Currently supports Vault v0.10.4 or later.
 
 ## Installation
 
-.. code-block:: bash
+```console
+pip install hvac
+```
 
-   pip install hvac
+If you would like to be able to return parsed HCL data as a Python dict for methods that support it:
 
-or
+```console
+pip install "hvac[parser]"
+```
 
-.. code-block:: bash
 
-   pip install "hvac[parser]"
-
-if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
 
 ## Documentation
 
