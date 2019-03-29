@@ -157,11 +157,10 @@ Generic usage:
 
 .. note::
 
-   The following `read()` and `write()` methods are roughly equivalent to the equivalent Vault CLI commands. These methods
-    do not offer the same level of validation that hvac methods specific to individual auth methods and secrets engines provide.
+   The following `read()` and `write()` methods are roughly equivalent to the equivalent Vault CLI commands. These methods do not offer the same level of validation that hvac methods specific to individual auth methods and secrets engines provide.
 
 .. doctest:: kvv1
-   :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1' and os.getenv('HVAC_DOCTEST') is None
+   :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1' and os.getenv('HVAC_RENDER_DOCTESTS') is None
 
     >>> client.write('secret/foo', baz='bar', lease='1h')
     >>> read_response = client.read('secret/foo')
