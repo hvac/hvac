@@ -1,7 +1,6 @@
 import logging
 from unittest import TestCase
 
-
 from parameterized import parameterized, param
 
 from hvac import exceptions
@@ -13,8 +12,6 @@ from tests.utils.mock_ldap_server import MockLdapServer
 class TestLdap(HvacIntegrationTestCase, TestCase):
     TEST_LDAP_PATH = 'test-ldap'
     ldap_server = None
-    # mock_server_port = None
-    # mock_ldap_url = None
 
     @classmethod
     def setUpClass(cls):
@@ -23,7 +20,6 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
 
         cls.mock_server_port = utils.get_free_port()
         cls.ldap_server = MockLdapServer()
-        # cls.mock_ldap_url =
         cls.ldap_server.start()
 
     @classmethod
