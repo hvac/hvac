@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 (March 31st, 2019)
+
+BUG FIXES:
+
+* Fix `initialize()` method `recovery_shares` and `recovery_threshold` parameter validation regression. [GH-416](https://github.com/hvac/hvac/pull/416)
+
 ## 0.8.0 (March 29th, 2019)
 
 BACKWARDS COMPATIBILITY NOTICE:
