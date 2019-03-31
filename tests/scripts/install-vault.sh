@@ -7,7 +7,7 @@ HVAC_VAULT_VERSION=${1:-$DEFAULT_VAULT_VERSION}
 function build_and_install_vault_head_ref() {
     mkdir -p $HOME/bin
 
-    eval "$(GIMME_GO_VERSION=1.10.3 gimme)"
+    eval "$(GIMME_GO_VERSION=1.11 gimme)"
 
     export GOPATH=$HOME/go
     mkdir $GOPATH

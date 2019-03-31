@@ -500,7 +500,7 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'n_bytes': n_bytes,
+            'bytes': n_bytes,
             'format': output_format,
         }
         api_path = '/v1/{mount_point}/random'.format(mount_point=mount_point)

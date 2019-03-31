@@ -1,15 +1,10 @@
-hvac: Python Client Library for HashiCorp's Vault
-=================================================
-
-Source code repository hosted at `github.com/hvac/hvac`_.
+hvac
+====
 
 .. toctree::
-   :glob:
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
 
-
-   Readme <readme>
+   Overview<overview>
    usage/index
    advanced_usage
    source/index
@@ -24,5 +19,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+Source code repository hosted at `github.com/hvac/hvac`_.
 
 .. _github.com/hvac/hvac: https://github.com/hvac/hvac/

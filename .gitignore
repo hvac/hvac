@@ -13,3 +13,7 @@ test/*.log
 
 # sphinx build folder
 docs/_build/
+
+.idea/
+venv/
+.envrc

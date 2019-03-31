@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.8.1 (March 31st, 2019)
+
+BUG FIXES:
+
+* Fix `initialize()` method `recovery_shares` and `recovery_threshold` parameter validation regression. [GH-416](https://github.com/hvac/hvac/pull/416)
+
+## 0.8.0 (March 29th, 2019)
+
+BACKWARDS COMPATIBILITY NOTICE:
+
+* The `Client()` class constructor now behaves similarly to Vault CLI in that it uses the `VAULT_ADDR` environmental variable for the Client URL when that variable is set. Along the same lines, when no token is passed into the `Client()` constructor, it will attempt to load a token from the `VAULT_TOKEN` environmental variable or the `~/.vault-token` file where available. [GH-411](https://github.com/hvac/hvac/pull/411) 
+
+IMPROVEMENTS:
+
+* Support for the Kubernetes auth method. [GH-408](https://github.com/hvac/hvac/pull/408)
+
+BUG FIXES:
+
+* Fix for comparision `recovery_threshold` and `recovery_shares` during initialization. [GH-398](https://github.com/hvac/hvac/pull/398)
+* Fix request method for AWS secrets engine `generate_credentials()` method. [GH-403](https://github.com/hvac/hvac/pull/403)
+* Fix request parameter (`n_bytes` -> `bytes`) for Transit secrets engine `generate_random_bytes()` method. [GH-377](https://github.com/hvac/hvac/pull/377)
+
+Thanks to @engstrom, @viralpoetry, @bootswithdefer, @steved, @kserrano, @spbsoluble, @uepoch, @singuliere, @frgaudet, @jsporna, & @mrsiesta for their lovely contributions.
+
 ## 0.7.2 (January 1st, 2019)
 
 IMPROVEMENTS:

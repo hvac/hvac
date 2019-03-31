@@ -4,6 +4,19 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestMount(HvacIntegrationTestCase, TestCase):
+    TEST_KVV1_MOUNT_POINT = 'kvv1_mount'
+
+    def setUp(self):
+        super(TestMount, self).setUp()
+        self.client.enable_secret_backend(
+            backend_type='kv',
+            mount_point=self.TEST_KVV1_MOUNT_POINT,
+            options=dict(version=1),
+        )
+
+    def tearDown(self):
+        self.client.disable_secret_backend(mount_point=self.TEST_KVV1_MOUNT_POINT)
+        super(TestMount, self).tearDown()
 
     def test_secret_backend_manipulation(self):
         self.assertNotIn(
@@ -59,7 +72,7 @@ class TestMount(HvacIntegrationTestCase, TestCase):
         )
 
     def test_get_secret_backend_tuning(self):
-        secret_backend_tuning = self.client.sys.read_mount_configuration(path='secret')
+        secret_backend_tuning = self.client.sys.read_mount_configuration(path=self.TEST_KVV1_MOUNT_POINT)
         self.assertIn(
             member='default_lease_ttl',
             container=secret_backend_tuning['data'],

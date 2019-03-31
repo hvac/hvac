@@ -11,62 +11,29 @@
 [![Twitter - @python_hvac](https://img.shields.io/twitter/follow/python_hvac.svg?label=Twitter%20-%20@python_hvac&style=social?style=plastic)](https://twitter.com/python_hvac)
 
 Tested against the latest release, HEAD ref, and 3 previous major versions (counting back from the latest release) of Vault. 
-Currently supports Vault v0.9.6 or later.
+Currently supports Vault v0.10.4 or later.
+
+## Installation
+
+```console
+pip install hvac
+```
+
+If you would like to be able to return parsed HCL data as a Python dict for methods that support it:
+
+```console
+pip install "hvac[parser]"
+```
+
+
 
 ## Documentation
 
-Documentation for this module is hosted on [readthedocs.io](https://hvac.readthedocs.io/en/latest/).
+Additional documentation for this module available at: [hvac.readthedocs.io](https://hvac.readthedocs.io/en/stable/usage/index.html):
 
-## Getting started
-
-### Installation
-
-```bash
-pip install hvac
-```
-or
-```bash
-pip install "hvac[parser]"
-```
-if you would like to be able to return parsed HCL data as a Python dict for methods that support it.
-
-### Initialize the client
-
-```python
-import os
-
-import hvac
-
-# Using plaintext
-client = hvac.Client()
-client = hvac.Client(url='http://localhost:8200')
-client = hvac.Client(url='http://localhost:8200', token=os.environ['VAULT_TOKEN'])
-
-# Using TLS
-client = hvac.Client(url='https://localhost:8200')
-
-# Using TLS with client-side certificate authentication
-client = hvac.Client(url='https://localhost:8200', cert=('path/to/cert.pem', 'path/to/key.pem'))
-
-# Using Namespace
-client = hvac.Client(url='http://localhost:8200', token=os.environ['VAULT_TOKEN'], namespace=os.environ['VAULT_NAMESPACE'])
-
-```
-
-### Read and write to secret backends
-
-```python
-client.write('secret/foo', baz='bar', lease='1h')
-
-print(client.read('secret/foo'))
-
-client.delete('secret/foo')
-```
-
-### Authenticate using token auth backend
-
-```python
-# Token
-client.token = 'MY_TOKEN'
-assert client.is_authenticated() # => True
-```
+* [Getting Started](https://hvac.readthedocs.io/en/stable/overview.html#getting-started)
+* [Usage](https://hvac.readthedocs.io/en/stable/usage/index.html)
+* [Advanced Usage](https://hvac.readthedocs.io/en/stable/advanced_usage.html)
+* [Source Reference / Autodoc](https://hvac.readthedocs.io/en/stable/source/index.html)
+* [Contributing](https://hvac.readthedocs.io/en/stable/contributing.html)
+* [Changelog](https://hvac.readthedocs.io/en/stable/changelog.html)

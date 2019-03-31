@@ -1,64 +1,17 @@
 import logging
 from unittest import TestCase
 
-from ldap_test import LdapServer
 from parameterized import parameterized, param
 
 from hvac import exceptions
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
-
-LDAP_URL = 'ldap://ldap.python-hvac.org'
-LDAP_GROUP_NAME = 'vault-users'
-LDAP_USER_NAME = 'somedude'
-LDAP_USER_PASSWORD = 'hvacrox'
-LDAP_BASE_DC = 'hvac'
-LDAP_BASE_DN = 'dc={dc},dc=network'.format(dc=LDAP_BASE_DC)
-LDAP_BIND_DN = 'cn=admin,{base_dn}'.format(base_dn=LDAP_BASE_DN)
-LDAP_BIND_PASSWORD = 'notaverygoodpassword'
-LDAP_USERS_DN = 'dc=users,{base_dn}'.format(base_dn=LDAP_BASE_DN)
-LDAP_GROUPS_OU = 'groups'
-LDAP_GROUPS_DN = 'ou={ou},{base_dn}'.format(ou=LDAP_GROUPS_OU, base_dn=LDAP_BASE_DN)
-LDAP_LOGIN_USER_DN = 'uid={username},{users_dn}'.format(username=LDAP_USER_NAME, users_dn=LDAP_USERS_DN)
-LDAP_ENTRIES = [
-    {
-        'objectclass': 'domain',
-        'dn': LDAP_USERS_DN,
-        'attributes': {
-            'dc': 'users'
-        }
-    },
-    {
-        'objectclass': ['inetOrgPerson', 'posixGroup', 'top'],
-        'dn': LDAP_LOGIN_USER_DN,
-        'attributes': {
-            'uid': LDAP_USER_NAME,
-            'userPassword': LDAP_USER_PASSWORD
-        }
-    },
-    {
-        'objectclass': 'organizationalUnit',
-        'dn': LDAP_GROUPS_DN,
-        'attributes': {
-            'ou': 'groups',
-        }
-    },
-    {
-        'objectclass': 'groupOfNames',
-        'dn': 'cn={cn},{groups_dn}'.format(cn=LDAP_GROUP_NAME, groups_dn=LDAP_GROUPS_DN),
-        'attributes': {
-            'cn': LDAP_GROUP_NAME,
-            'member': LDAP_LOGIN_USER_DN,
-        }
-    },
-]
+from tests.utils.mock_ldap_server import MockLdapServer
 
 
 class TestLdap(HvacIntegrationTestCase, TestCase):
     TEST_LDAP_PATH = 'test-ldap'
     ldap_server = None
-    mock_server_port = None
-    mock_ldap_url = None
 
     @classmethod
     def setUpClass(cls):
@@ -66,18 +19,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         logging.getLogger('ldap_test').setLevel(logging.ERROR)
 
         cls.mock_server_port = utils.get_free_port()
-        cls.mock_ldap_url = 'ldap://localhost:{port}'.format(port=cls.mock_server_port)
-        cls.ldap_server = LdapServer({
-            'port': cls.mock_server_port,
-            'bind_dn': LDAP_BIND_DN,
-            'password': LDAP_BIND_PASSWORD,
-            'base': {
-                'objectclass': ['domain'],
-                'dn': LDAP_BASE_DN,
-                'attributes': {'dc': LDAP_BASE_DC}
-            },
-            'entries': LDAP_ENTRIES,
-        })
+        cls.ldap_server = MockLdapServer()
         cls.ldap_server.start()
 
     @classmethod
@@ -100,17 +42,17 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ('update url', dict(url=LDAP_URL)),
-        ('update binddn', dict(url=LDAP_URL, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
-        ('update upn_domain', dict(url=LDAP_URL, upn_domain='python-hvac.org')),
-        ('update certificate', dict(url=LDAP_URL, certificate=utils.load_config_file('server-cert.pem'))),
-        ('incorrect tls version', dict(url=LDAP_URL, tls_min_version='cats'), exceptions.InvalidRequest,
+        ('update url', dict(url=MockLdapServer.ldap_url)),
+        ('update binddn', dict(url=MockLdapServer.ldap_url, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
+        ('update upn_domain', dict(url=MockLdapServer.ldap_url, upn_domain='python-hvac.org')),
+        ('update certificate', dict(url=MockLdapServer.ldap_url, certificate=utils.load_config_file('server-cert.pem'))),
+        ('incorrect tls version', dict(url=MockLdapServer.ldap_url, tls_min_version='cats'), exceptions.InvalidRequest,
          "invalid 'tls_min_version'"),
     ])
     def test_configure(self, test_label, parameters, raises=None, exception_message=''):
         parameters.update({
-            'user_dn': LDAP_USERS_DN,
-            'group_dn': LDAP_GROUPS_DN,
+            'user_dn': MockLdapServer.ldap_users_dn,
+            'group_dn': MockLdapServer.ldap_groups_dn,
             'mount_point': self.TEST_LDAP_PATH,
         })
         if raises:
@@ -400,19 +342,25 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
             skip_due_to_vault_version=utils.vault_version_ge('0.10.3'),
         ),
     ])
-    def test_login(self, label, username=LDAP_USER_NAME, password=LDAP_USER_PASSWORD, attach_policy=True, raises=None,
+    def test_login(self, label, username=None, password=None, attach_policy=True, raises=None,
                    exception_message='', skip_due_to_vault_version=False):
         if skip_due_to_vault_version:
             self.skipTest(reason='test case does not apply to Vault version under test')
 
+        if username is None:
+            username = self.ldap_server.ldap_user_name
+
+        if password is None:
+            password = self.ldap_server.ldap_user_password
+
         test_policy_name = 'test-ldap-policy'
         self.client.auth.ldap.configure(
-            url=self.mock_ldap_url,
-            bind_dn=self.ldap_server.config['bind_dn'],
-            bind_pass=self.ldap_server.config['password'],
-            user_dn=LDAP_USERS_DN,
+            url=self.ldap_server.url,
+            bind_dn=self.ldap_server.ldap_bind_dn,
+            bind_pass=self.ldap_server.ldap_bind_password,
+            user_dn=self.ldap_server.ldap_users_dn,
             user_attr='uid',
-            group_dn=LDAP_GROUPS_DN,
+            group_dn=self.ldap_server.ldap_groups_dn,
             group_attr='cn',
             insecure_tls=True,
             mount_point=self.TEST_LDAP_PATH,
@@ -421,7 +369,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         if attach_policy:
             self.prep_policy(test_policy_name)
             self.client.auth.ldap.create_or_update_group(
-                name=LDAP_GROUP_NAME,
+                name=self.ldap_server.ldap_group_name,
                 policies=[test_policy_name],
                 mount_point=self.TEST_LDAP_PATH,
             )
