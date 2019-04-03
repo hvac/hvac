@@ -17,7 +17,7 @@ except ImportError:
 class Client(object):
     """The hvac Client class for HashiCorp's Vault."""
 
-    def __init__(self, url='http://localhost:8200', token=None,
+    def __init__(self, url=None, token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None, adapter=None, namespace=None):
         """Creates a new hvac client instance.
@@ -52,7 +52,7 @@ class Client(object):
             self._adapter = adapter
         else:
             token = token if token is not None else utils.get_token_from_env()
-            url = os.getenv('VAULT_ADDR', url)
+            url = url if url else os.getenv('VAULT_ADDR', 'http://localhost:8200')
             self._adapter = adapters.Request(
                 base_uri=url,
                 token=token,
