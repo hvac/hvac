@@ -5,7 +5,7 @@ import os
 from base64 import b64encode
 
 from hvac import aws_utils, exceptions, adapters, utils, api
-from hvac.constants.client import DEPRECATED_PROPERTIES
+from hvac.constants.client import DEPRECATED_PROPERTIES, DEFAULT_URL
 
 try:
     import hcl
@@ -52,7 +52,7 @@ class Client(object):
             self._adapter = adapter
         else:
             token = token if token is not None else utils.get_token_from_env()
-            url = url if url else os.getenv('VAULT_ADDR', 'http://localhost:8200')
+            url = url if url else os.getenv('VAULT_ADDR', DEFAULT_URL)
             self._adapter = adapters.Request(
                 base_uri=url,
                 token=token,
