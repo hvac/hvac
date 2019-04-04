@@ -20,3 +20,5 @@ DEPRECATED_PROPERTIES = {
         client_property='secrets',
     ),
 }
+
+DEFAULT_URL = 'http://localhost:8200'
