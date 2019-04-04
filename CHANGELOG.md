@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.2 (April 4th, 2019)
+
+BUG FIXES:
+
+* Fix priority of client url and VAULT_ADDR environment variable. [GH-423](https://github.com/hvac/hvac/pull/423)
+* Update setup.py to only compile hvac package. [GH-418](https://github.com/hvac/hvac/pull/418)
+
+Thanks to @eltoder and @andytumelty for their lovely contributions.
+
 ## 0.8.1 (March 31st, 2019)
 
 BUG FIXES:

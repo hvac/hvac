@@ -10,7 +10,7 @@ def load_long_description():
 
 setup(
     name='hvac',
-    version='0.8.1',
+    version='0.8.2',
     description='HashiCorp Vault API client',
     long_description=load_long_description(),
     long_description_content_type="text/markdown",
@@ -27,7 +27,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=['docs*', 'tests*']),
     install_requires=[
         'requests>=2.21.0',
     ],
