@@ -40,10 +40,20 @@ Lookup and revoke tokens via a token accessor:
     same_token = client.lookup_token(token_accessor, accessor=True)
     client.revoke_token(token_accessor, accessor=True)
 
-Wrapping/unwrapping a token:
 
+Wrapping/unwrapping a token:
 
 .. code:: python
 
     wrap = client.create_token(policies=['root'], lease='1h', wrap_ttl='1m')
     result = self.client.unwrap(wrap['wrap_info']['token'])
+
+
+Login with a wrapped token:
+
+.. code:: python
+
+    wrap = client.create_token(policies=['root'], lease='1h', wrap_ttl='1m')
+    new_client = hvac.Client()
+    new_client.auth_cubbyhole(wrap['wrap_info']['token'])
+    assert new_client.token != wrapped_token['wrap_info']['token']
