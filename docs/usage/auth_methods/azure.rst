@@ -148,7 +148,7 @@ Login
     import hvac
     client = hvac.Client()
 
-    client.azure.login(
+    client.auth.azure.login(
         role=role_name,
         jwt='Some MST JWT...',
     )
