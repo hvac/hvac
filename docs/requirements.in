@@ -1,3 +1,5 @@
+-r ../requirements-dev.txt
+-r ../requirements.txt
 m2r
 sphinx
 sphinx_rtd_theme
