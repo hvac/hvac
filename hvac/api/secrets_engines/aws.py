@@ -326,14 +326,8 @@ class Aws(VaultApiBase):
             name=name,
         )
 
-        if endpoint == 'sts':
-            response = self._adapter.post(
-                url=api_path,
-                json=params,
-            )
-        else:
-            response = self._adapter.get(
-                url=api_path,
-                json=params,
-            )
+        response = self._adapter.post(
+            url=api_path,
+            json=params,
+        )
         return response.json()
