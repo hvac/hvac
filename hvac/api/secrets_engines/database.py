@@ -50,7 +50,7 @@ class Database(VaultApiBase):
     def rotate_root_credentials(self, name):
         """This endpoint is used to rotate the root superuser credentials stored for the database connection.
         This user must have permissions to update its own password.
-        
+
         :param name: Specifies the name of the connection to rotate.
         :type name: str | unicode
         :return: The response of the request.
@@ -75,14 +75,14 @@ class Database(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         ).json()
-    
+
     def list_connections(self):
         """This endpoint returns a list of available connections.
 
         :return: The response of the request.
         :rtype: requests.Response
         """
-        
+
         api_path = "/v1/database/config"
         return self._adapter.list(
             url=api_path,
@@ -115,7 +115,7 @@ class Database(VaultApiBase):
         return self._adapter.post(
             url=api_path,
         ).json()
-    
+
     def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
                     revocation_statements=list(), rollback_statements=list(), renew_statements=list()):
         """This endpoint creates or updates a role definition.
@@ -204,7 +204,7 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        
+
         api_path = "/v1/database/creds/{}".format(name)
 
         return self._adapter.get(
