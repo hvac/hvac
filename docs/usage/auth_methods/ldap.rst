@@ -212,4 +212,4 @@ E.g., via Vault CLI with `vault auth enable -path=prod-ldap ldap`
         password=service_account_password,
         mount_point='prod-ldap'
     )
-    print(client.is_authenticated)  # => True
+    print(client.is_authenticated())  # => True
