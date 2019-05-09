@@ -132,7 +132,6 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        
         api_path = "/v1/consul/creds/{}".format(name)
 
         return self._adapter.get(
