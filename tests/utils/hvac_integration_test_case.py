@@ -115,49 +115,6 @@ class HvacIntegrationTestCase(object):
         self.client.set_policy(name, text)
         return text, obj
 
-    def configure_pki(self, common_name='hvac.com', role_name='my-role', mount_point='pki'):
-        """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
-
-        :param common_name: Common name to configure in the pki backend
-        :type common_name: str
-        :param role_name: Name of the test role to configure.
-        :type role_name: str
-        :param mount_point: The path the pki backend is mounted under.
-        :type mount_point: str
-        :return: Nothing.
-        :rtype: None.
-        """
-        if '{path}/'.format(path=mount_point) in self.client.list_secret_backends():
-            self.client.disable_secret_backend(mount_point)
-
-        self.client.enable_secret_backend(backend_type='pki', mount_point=mount_point)
-
-        self.client.write(
-            path='{path}/root/generate/internal'.format(path=mount_point),
-            common_name=common_name,
-            ttl='8760h',
-        )
-        self.client.write(
-            path='{path}/config/urls'.format(path=mount_point),
-            issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
-            crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
-        )
-        self.client.write(
-            path='{path}/roles/{name}'.format(path=mount_point, name=role_name),
-            allowed_domains=common_name,
-            allow_subdomains=True,
-            generate_lease=True,
-            max_ttl='72h',
-        )
-
-    def disable_pki(self, mount_point='pki'):
-        """Disable a previously configured pki backend.
-
-        :param mount_point: The path the pki backend is mounted under.
-        :type mount_point: str
-        """
-        self.client.disable_secret_backend(mount_point)
-
     def get_vault_addr_by_standby_status(self, standby_status=True):
         """Get an address for a Vault HA node currently in standby.
 

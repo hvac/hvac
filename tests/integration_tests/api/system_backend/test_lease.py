@@ -2,6 +2,7 @@ import logging
 from unittest import TestCase
 
 from hvac import exceptions
+from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -10,11 +11,11 @@ class TestLease(HvacIntegrationTestCase, TestCase):
     def setUp(self):
         super(TestLease, self).setUp()
         # Set up a test pki backend and issue a cert against some role so we.
-        self.configure_pki()
+        utils.configure_pki(client=self.client)
 
     def tearDown(self):
         # Reset integration test state.
-        self.disable_pki()
+        utils.disable_pki(client=self.client)
         super(TestLease, self).tearDown()
 
     def test_read_lease(self):
