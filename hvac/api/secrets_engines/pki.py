@@ -344,7 +344,6 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-
     # Create/Update Role
     def create_or_update_role(self, name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Create/Update Role.

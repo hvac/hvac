@@ -1,12 +1,9 @@
 import os
 import logging
 from unittest import TestCase
-from unittest import skip
 
 from parameterized import parameterized, param
 
-from hvac import exceptions
-from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -22,13 +19,13 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         common_name = 'Vault integration tests'
         generate_type = 'exported'
-        generate_root_response = self.client.secrets.pki.generate_root(
+        self.client.secrets.pki.generate_root(
             type=generate_type,
             common_name=common_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
         name = self.TEST_ROLE
-        create_or_update_role_response = self.client.secrets.pki.create_or_update_role(
+        self.client.secrets.pki.create_or_update_role(
             name=name,
             extra_params={
                 'allow_any_name': True,
@@ -49,8 +46,6 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_read_ca_certificate(self, label, raises=False, exception_message=''):
-        common_name = 'Vault integration tests'
-        generate_type = 'exported'
         read_ca_certificate_response = self.client.secrets.pki.read_ca_certificate(
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -67,8 +62,6 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_read_ca_certificate_chain(self, label, raises=False, exception_message=''):
-        common_name = 'Vault integration tests'
-        generate_type = 'exported'
         read_ca_certificate_chain_response = self.client.secrets.pki.read_ca_certificate_chain(
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -154,7 +147,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         params = {
                 'expiry': '72h',
                 }
-        set_crl_configuration_response = self.client.secrets.pki.set_crl_configuration(
+        self.client.secrets.pki.set_crl_configuration(
             params=params,
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -199,7 +192,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
                 'issuing_certificates': ['http://127.0.0.1:8200/v1/pki/ca'],
                 'crl_distribution_points': ['http://127.0.0.1:8200/v1/pki/crl']
                 }
-        set_urls_response = self.client.secrets.pki.set_urls(
+        self.client.secrets.pki.set_urls(
             params=params,
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -243,7 +236,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         params = {
                 'expiry': '72h',
                 }
-        set_crl_configuration_response = self.client.secrets.pki.set_crl_configuration(
+        self.client.secrets.pki.set_crl_configuration(
             params=params,
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -461,7 +454,6 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             second=204,
         )
 
-
     # Generate Root
     @parameterized.expand([
         param(
@@ -502,7 +494,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         common_name = 'Vault integration tests'
         generate_type = 'exported'
-        generate_root_response = self.client.secrets.pki.generate_root(
+        self.client.secrets.pki.generate_root(
             type=generate_type,
             common_name=common_name,
             mount_point=ca_pki_mount_point,
@@ -574,7 +566,6 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             first=sign_self_issued_response.status_code,
             second=200,
         )
-
 
     # Sign Certificate
     @parameterized.expand([
