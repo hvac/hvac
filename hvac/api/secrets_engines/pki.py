@@ -32,7 +32,7 @@ class Pki(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.text
+        return str(response.text)
 
     # Read CA Certificate Chain
     def read_ca_certificate_chain(self, mount_point=DEFAULT_MOUNT_POINT):
@@ -52,7 +52,7 @@ class Pki(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.text
+        return str(response.text)
 
     # Read Certificate
     def read_certificate(self, serial, mount_point=DEFAULT_MOUNT_POINT):
