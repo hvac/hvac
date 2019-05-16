@@ -486,7 +486,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             'success',
         ),
     ])
-    def test_generate_root(self, label, raises=False, exception_message=''):
+    def test_delete_root(self, label, raises=False, exception_message=''):
         ca_pki_mount_point = '{}-test-ca'.format(self.TEST_MOUNT_POINT)
         self.client.enable_secret_backend(
             backend_type='pki',
