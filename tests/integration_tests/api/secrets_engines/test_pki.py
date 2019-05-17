@@ -120,15 +120,12 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         current_directory = os.path.dirname(current_file)
         ca_key_path = os.path.join(current_directory, 'data', 'pki', 'ca.key')
         ca_crt_path = os.path.join(current_directory, 'data', 'pki', 'ca.crt')
-        params = {
-                'pem_bundle': '{ca_key}{ca_crt}'.format(
-                    ca_key=''.join(open(ca_key_path).readlines()),
-                    ca_crt=''.join(open(ca_crt_path).readlines()),
-                    ),
-                }
-        logging.debug('params: %s' % params)
+        pem_bundle = '{ca_key}{ca_crt}'.format(
+            ca_key=''.join(open(ca_key_path).readlines()),
+            ca_crt=''.join(open(ca_crt_path).readlines()),
+        )
         submit_ca_information_response = self.client.secrets.pki.submit_ca_information(
-            params=params,
+            pem_bundle=pem_bundle,
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('submit_ca_information_response: %s' % submit_ca_information_response)
@@ -144,11 +141,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_read_crl_configuration(self, label, raises=False, exception_message=''):
-        params = {
-                'expiry': '72h',
-                }
+        expiry = '72h'
         self.client.secrets.pki.set_crl_configuration(
-            params=params,
+            expiry=expiry,
             mount_point=self.TEST_MOUNT_POINT,
         )
 
@@ -168,11 +163,11 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_set_crl_configuration(self, label, raises=False, exception_message=''):
-        params = {
-                'expiry': '72h',
-                }
+        expiry = '72h'
+        disable = False
         set_crl_configuration_response = self.client.secrets.pki.set_crl_configuration(
-            params=params,
+            expiry=expiry,
+            disable=disable,
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('set_crl_configuration_response: %s' % set_crl_configuration_response)
@@ -233,11 +228,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_read_crl(self, label, raises=False, exception_message=''):
-        params = {
-                'expiry': '72h',
-                }
+        expiry = '72h'
         self.client.secrets.pki.set_crl_configuration(
-            params=params,
+            expiry=expiry,
             mount_point=self.TEST_MOUNT_POINT,
         )
 

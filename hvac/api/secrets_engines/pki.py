@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Transit methods module."""
-# from hvac import exceptions
+"""PKI methods module."""
 from hvac.api.vault_api_base import VaultApiBase
-# from hvac.constants import transit as transit_constants
 
 DEFAULT_MOUNT_POINT = 'pki'
 
@@ -14,19 +12,18 @@ class Pki(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/pki/index.html
     """
 
-    # Read CA Certificate
     def read_ca_certificate(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read CA Certificate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Retrieves the CA certificate in raw DER-encoded form.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/ca/pem. Produces: String
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The certificate as pem.
-        :rtype: requests.Response
+        :rtype: str
         """
         api_path = '/v1/{mount_point}/ca/pem'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -34,19 +31,18 @@ class Pki(VaultApiBase):
         )
         return str(response.text)
 
-    # Read CA Certificate Chain
     def read_ca_certificate_chain(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read CA Certificate Chain.
 
-        Only the key names are returned (not the actual keys themselves).
+        Retrieves the CA certificate chain, including the CA in PEM format.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/ca_chain. Produces: String
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The certificate chain as pem.
-        :rtype: requests.Response
+        :rtype: str
         """
         api_path = '/v1/{mount_point}/ca_chain'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -54,19 +50,20 @@ class Pki(VaultApiBase):
         )
         return str(response.text)
 
-    # Read Certificate
     def read_certificate(self, serial, mount_point=DEFAULT_MOUNT_POINT):
         """Read Certificate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Retrieves one of a selection of certificates.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/cert/{serial}. Produces: 200 application/json
 
+        :param serial: the serial of the key to read.
+        :type serial: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/cert/{serial}'.format(
             mount_point=mount_point,
@@ -77,19 +74,18 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # List Certificates
     def list_certificates(self, mount_point=DEFAULT_MOUNT_POINT):
         """List Certificates.
 
-        Only the key names are returned (not the actual keys themselves).
+        The list of the current certificates by serial number only.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            LIST: /{mount_point}/certs. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/certs'.format(mount_point=mount_point)
         response = self._adapter.list(
@@ -97,40 +93,40 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Submit CA Information
-    def submit_ca_information(self, params, mount_point=DEFAULT_MOUNT_POINT):
+    def submit_ca_information(self, pem_bundle, mount_point=DEFAULT_MOUNT_POINT):
         """Submit CA Information.
 
-        Only the key names are returned (not the actual keys themselves).
+        Submitting the CA information for the backend.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/config/ca. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        params = {
+                'pem_bundle': pem_bundle,
+                }
         api_path = '/v1/{mount_point}/config/ca'.format(mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response
 
-    # Read CRL Configuration
     def read_crl_configuration(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read CRL Configuration.
 
-        Only the key names are returned (not the actual keys themselves).
+        Getting the duration for which the generated CRL should be marked valid.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/config/crl. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -138,14 +134,15 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Set CRL Configuration
-    def set_crl_configuration(self, params, mount_point=DEFAULT_MOUNT_POINT):
+    def set_crl_configuration(self, expiry=None, disable=None, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Set CRL Configuration.
 
-        Only the key names are returned (not the actual keys themselves).
+        Setting the duration for which the generated CRL should be marked valid.
+        If the CRL is disabled, it will return a signed but zero-length CRL for any
+        request. If enabled, it will re-build the CRL.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/config/crl. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -153,25 +150,29 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
-        response = self._adapter.post(
+        params = extra_params
+        if expiry is not None:
+            params['expiry'] = expiry
+        if disable is not None:
+            params['disable'] = disable
+
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response
 
-    # Read URLs
     def read_urls(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read URLs.
 
-        Only the key names are returned (not the actual keys themselves).
+        Fetches the URLs to be encoded in generated certificates.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/config/urls. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/config/urls'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -179,14 +180,15 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Set URLs
     def set_urls(self, params, mount_point=DEFAULT_MOUNT_POINT):
         """Set URLs.
 
-        Only the key names are returned (not the actual keys themselves).
+        Setting the issuing certificate endpoints, CRL distribution points, and OCSP server endpoints that will be
+        encoded into issued certificates. You can update any of the values at any time without affecting the other
+        existing values. To remove the values, simply use a blank string as the parameter.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/config/urls. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -194,25 +196,23 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/config/urls'.format(mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response
 
-    # Read CRL
     def read_crl(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read CRL.
 
-        Only the key names are returned (not the actual keys themselves).
+        Retrieves the current CRL **in raw DER-encoded form**.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/config/crl. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -220,19 +220,18 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Rotate CRLs
     def rotate_crl(self, mount_point=DEFAULT_MOUNT_POINT):
         """Rotate CRLs.
 
-        Only the key names are returned (not the actual keys themselves).
+        Forces a rotation of the CRL.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/crl/rotate. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/crl/rotate'.format(mount_point=mount_point)
         response = self._adapter.get(
@@ -240,15 +239,20 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Generate Intermediate
     def generate_intermediate(self, type, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Intermediate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Generates a new private key and a CSR for signing.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/intermediate/generate/{type}. Produces: 200 application/json
 
+        :param type: Specifies the type to create. `exported` (private key also exported) or `internal`.
+        :type type: str | unicode
+        :param common_name: Specifies the requested CN for the certificate.
+        :type common_name: str | unicode
+        :param extra_params: Dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -267,15 +271,16 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Set Signed Intermediate
     def set_signed_intermediate(self, certificate, mount_point=DEFAULT_MOUNT_POINT):
-        """Generate Intermediate.
+        """Set Signed Intermediate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Allows submitting the signed CA certificate corresponding to a private key generated via "Generate Intermediate"
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/intermediate/set-signed. Produces: 200 application/json
 
+        :param certificate: Specifies the certificate in PEM format.
+        :type certificate: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -293,15 +298,20 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Generate Certificate
     def generate_certificate(self, name, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Certificate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Generates a new set of credentials (private key and certificate) based on the role named in the endpoint.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/issue/{name}. Produces: 200 application/json
 
+        :param name: The name of the role to create the certificate against.
+        :name name: str | unicode
+        :param common_name: The requested CN for the certificate.
+        :name common_name: str | unicode
+        :param extra_params: A dictionary with extra parameters.
+        :name extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
@@ -320,15 +330,16 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Revoke Certificate
     def revoke_certificate(self, serial_number, mount_point=DEFAULT_MOUNT_POINT):
         """Revoke Certificate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Revokes a certificate using its serial number.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/revoke. Produces: 200 application/json
 
+        :param serial_number: The serial number of the certificate to revoke.
+        :name serial_number: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
@@ -344,15 +355,18 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Create/Update Role
     def create_or_update_role(self, name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Create/Update Role.
 
-        Only the key names are returned (not the actual keys themselves).
+        Creates or updates the role definition.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/roles/{name}. Produces: 200 application/json
 
+        :param name: The name of the role to create.
+        :name name: str | unicode
+        :param extra_params: A dictionary with extra parameters.
+        :name extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
@@ -371,19 +385,20 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Read Role
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Read Role.
 
-        Only the key names are returned (not the actual keys themselves).
+        Queries the role definition.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            GET: /{mount_point}/roles/{name}. Produces: 200 application/json
 
+        :param name: The name of the role to read.
+        :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/roles/{name}'.format(
             mount_point=mount_point,
@@ -394,19 +409,18 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # List Roles
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List Roles.
 
-        Only the key names are returned (not the actual keys themselves).
+        Get a list of available roles.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            LIST: /{mount_point}/roles. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = '/v1/{mount_point}/roles'.format(mount_point=mount_point)
         response = self._adapter.list(
@@ -414,15 +428,16 @@ class Pki(VaultApiBase):
         )
         return response.json()
 
-    # Delete Role
-    def delete_role(self, name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete Role.
 
-        Only the key names are returned (not the actual keys themselves).
+        Deletes the role definition.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            DELETE: /{mount_point}/roles/{name}. Produces: 200 application/json
 
+        :param name: The name of the role to delete.
+        :name name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
@@ -437,15 +452,20 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    # Generate Root
     def generate_root(self, type, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Root.
 
-        Only the key names are returned (not the actual keys themselves).
+        Generates a new self-signed CA certificate and private key.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/root/generate/{type}. Produces: 200 application/json
 
+        :param type: Specifies the type to create. `exported` (private key also exported) or `internal`.
+        :type type: str | unicode
+        :param common_name: The requested CN for the certificate.
+        :type common_name: str | unicode
+        :param extra_params: A dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -464,14 +484,13 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Delete Root
     def delete_root(self, mount_point=DEFAULT_MOUNT_POINT):
         """Delete Root.
 
-        Only the key names are returned (not the actual keys themselves).
+        Deletes the current CA key.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            DELETE: /{mount_point}/root. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -487,15 +506,20 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    # Sign Intermediate
     def sign_intermediate(self, csr, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Intermediate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Issue a certificate with appropriate values for acting as an intermediate CA.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/root/sign-intermediate. Produces: 200 application/json
 
+        :param csr: The PEM-encoded CSR.
+        :type csr: str | unicode
+        :param common_name: The requested CN for the certificate.
+        :type common_name: str | unicode
+        :param extra_params: Dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -512,15 +536,16 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Sign Self-Issued
     def sign_self_issued(self, certificate, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Self-Issued.
 
-        Only the key names are returned (not the actual keys themselves).
+        Sign a self-issued certificate.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/root/sign-self-issued. Produces: 200 application/json
 
+        :param certificate: The PEM-encoded self-issued certificate.
+        :type certificate: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -536,15 +561,22 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Sign Certificate
     def sign_certificate(self, name, csr, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Certificate.
 
-        Only the key names are returned (not the actual keys themselves).
+        Signs a new certificate based upon the provided CSR and the supplied parameters.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/sign/{name}. Produces: 200 application/json
 
+        :param name: The role to sign the certificate.
+        :type name: str | unicode
+        :param csr: The PEM-encoded CSR.
+        :type csr: str | unicode
+        :param common_name: The requested CN for the certificate. If the CN is allowed by role policy, it will be issued.
+        :type common_name: str | unicode
+        :param extra_params: A dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -564,24 +596,28 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Sign Verbatim
     def sign_verbatim(self, csr, name=False, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Verbatim.
 
-        Only the key names are returned (not the actual keys themselves).
+        Signs a new certificate based upon the provided CSR.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/sign-verbatim. Produces: 200 application/json
 
+        :param csr: The PEM-encoded CSR.
+        :type csr: str | unicode
+        :param name: Specifies a role.
+        :type name: str | unicode
+        :param extra_params: A dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        url_to_transform = '/v1/{mount_point}/sign-verbatim'
         if name:
-            url_to_transform = '/v1/{mount_point}/sign-verbatim/{name}'
-        else:
-            url_to_transform = '/v1/{mount_point}/sign-verbatim'
+            url_to_transform = url_to_transform + '/{name}'
 
         api_path = url_to_transform.format(
                 mount_point=mount_point,
@@ -596,15 +632,17 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    # Tidy
     def tidy(self, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Tidy.
 
-        Only the key names are returned (not the actual keys themselves).
+        Allows tidying up the storage backend and/or CRL by removing certificates that have
+        expired and are past a certain buffer period beyond their expiration time.
 
         Supported methods:
-            LIST: /{mount_point}/keys. Produces: 200 application/json
+            POST: /{mount_point}/tidy. Produces: 200 application/json
 
+        :param extra_params: A dictionary with extra parameters.
+        :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
