@@ -1,122 +1,160 @@
 Policy
 ======
 
+.. contents::
+   :local:
+   :depth: 1
+
 Manipulate policies
 -------------------
 
-.. code:: python
+.. testcode:: sys_policy
 
-	policies = client.sys.list_policies()['data']['policies'] # => ['root']
+    policies = client.sys.list_policies()['data']['policies'] # => ['root']
 
-	policy = """
-	path "sys" {
-	  policy = "deny"
-	}
+    policy = """
+    path "sys" {
+      policy = "deny"
+    }
 
-	path "secret" {
-	  policy = "write"
-	}
+    path "secret" {
+      policy = "write"
+    }
 
-	path "secret/foo" {
-	  policy = "read"
-	}
-	"""
+    path "secret/foo" {
+      policy = "read"
+    }
+    """
 
-	client.sys.create_or_update_policy(
-		name='secret-writer',
-		policy=policy,
-	)
+    client.sys.create_or_update_policy(
+        name='secret-writer',
+        policy=policy,
+    )
 
-	client.sys.delete_policy('oldthing')
+    client.sys.delete_policy('oldthing')
 
-	policy = client.sys.get_policy('mypolicy')
+    # The get_policy method offers some additional features and is available in the Client class.
+    policy = client.get_policy('mypolicy')
 
-	# Requires pyhcl to automatically parse HCL into a Python dictionary
-	policy = client.sys.get_policy('mypolicy', parse=True)
+    # Requires pyhcl to automatically parse HCL into a Python dictionary
+    policy = client.get_policy('mypolicy', parse=True)
 
 Using Python Variable(s) In Policy Rules
 ````````````````````````````````````````
 
-.. code:: python
+.. testcode:: sys_policy
 
-	import hvac
+    import hvac
 
-	client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-	key = 'some-key-string'
+    key = 'some-key-string'
 
-	policy_body = """
-	path "transit/encrypt/%s" {
-		capabilities = "update"
-	}
-	""" % key
-	client.sys.create_or_update_policy(name='my-policy-name', rules=policy_body)
+    policy_body = """
+    path "transit/encrypt/%s" {
+        capabilities = ["update"]
+    }
+    """ % key
+    client.sys.create_or_update_policy(
+        name='my-policy-name',
+        policy=policy_body,
+    )
 
 
 List Policies
 -------------
 
-:py:meth:`hvac.api.system_backend.Policy.list_policies`
+.. automethod:: hvac.api.system_backend.Policy.list_policies
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_policy
 
-	list_policies_resp = client.sys.list_policies()['data']['policies']
-	print('List of currently configured policies: %s' % list_policies_resp)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    list_policies_resp = client.sys.list_policies()['data']['policies']
+    print('List of currently configured policies: %s' % ', '.join(list_policies_resp))
+
+Example output:
+
+.. testoutput:: sys_policy
+
+    List of currently configured policies: default, my-policy-name, secret-writer, root
 
 
 Read Policy
 -----------
 
-:py:meth:`hvac.api.system_backend.Policy.read_policy`
+.. automethod:: hvac.api.system_backend.Policy.read_policy
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_policy
 
-	hvac_policy_rules = client.sys.read_policy(name='hvac-policy')['data']['rules']
-	print('Rules for the hvac policy are: %s' % hvac_policy_rules)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
+    hvac_policy_rules = client.sys.read_policy(name='secret-writer')['data']['rules']
+    print('secret-writer policy rules:\n%s' % hvac_policy_rules)
+
+Example output:
+
+.. testoutput:: sys_policy
+
+    secret-writer policy rules:
+    ...
+    path "secret" {
+      policy = "write"
+    }
+    ...
 
 Create Or Update Policy
 -----------------------
 
-:py:meth:`hvac.api.system_backend.Policy.create_or_update_policy`
+.. automethod:: hvac.api.system_backend.Policy.create_or_update_policy
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_policy
 
-	policy = '''
-		path "sys" {
-			policy = "deny"
-		}
-		path "secret" {
-			policy = "write"
-		}
-	'''
-	client.sys.create_or_update_policy(
-		name='secret-writer',
-		policy=policy,
-	)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    policy = '''
+        path "sys" {
+            policy = "deny"
+        }
+        path "secret" {
+            policy = "write"
+        }
+    '''
+    client.sys.create_or_update_policy(
+        name='secret-writer',
+        policy=policy,
+    )
 
 
 Delete Policy
 -------------
 
-:py:meth:`hvac.api.system_backend.Policy.delete_policy`
+.. automethod:: hvac.api.system_backend.Policy.delete_policy
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_policy
 
-	client.sys.delete_policy(
-		name='secret-writer',
-	)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-
+    client.sys.delete_policy(
+        name='secret-writer',
+    )

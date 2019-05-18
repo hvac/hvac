@@ -1,170 +1,310 @@
 Key
 ===
 
+.. contents::
+   :local:
+   :depth: 1
+
 Read Root Generation Progress
 -----------------------------
 
-:py:meth:`hvac.api.system_backend.Key.read_root_generation_progress`
+.. automethod:: hvac.api.system_backend.Key.read_root_generation_progress
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	root_gen_progress = client.sys.read_root_generation_progress()
-	print('Root generation "started" status: %s' % root_gen_progress['started'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    root_gen_progress = client.sys.read_root_generation_progress()
+    print('Root generation "started" status: %s' % root_gen_progress['started'])
+
+Example output:
+
+.. testoutput:: sys_key
+
+    Root generation "started" status: ...
 
 
 Start Root Token Generation
 ---------------------------
 
-:py:meth:`hvac.api.system_backend.Key.start_root_token_generation`
+.. automethod:: hvac.api.system_backend.Key.start_root_token_generation
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	new_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
-	start_generate_root_response = client.sys.start_root_token_generation(
+    import hvac
+    from tests.utils import get_generate_root_otp
+
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    new_otp = get_generate_root_otp()
+    start_generate_root_response = client.sys.start_root_token_generation(
         otp=new_otp,
     )
-	print('Nonce for root generation is: %s' % start_generate_root_response['nonce'])
+    nonce = start_generate_root_response['nonce']
+    print('Nonce for root generation is: %s' % nonce)
+
+Example output:
+
+.. testoutput:: sys_key
+
+    Nonce for root generation is: ...
 
 
 Cancel Root Generation
 ----------------------
 
-:py:meth:`hvac.api.system_backend.Key.cancel_root_generation`
+.. automethod:: hvac.api.system_backend.Key.cancel_root_generation
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	client.sys.cancel_root_generation()
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.cancel_root_generation()
 
 
 Generate Root
 -------------
 
-:py:meth:`hvac.api.system_backend.Key.generate_root`
+.. automethod:: hvac.api.system_backend.Key.generate_root
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testsetup:: sys_key_generate_root
 
-	client.sys.generate_root(
-		key=key,
-		nonce=nonce,
-	)
+    from tests.utils import get_generate_root_otp
+    new_otp = get_generate_root_otp()
+    start_generate_root_response = client.sys.start_root_token_generation(
+        otp=new_otp,
+    )
+    nonce = start_generate_root_response['nonce']
+    key = manager.keys[0]
+
+.. testcode:: sys_key_generate_root
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.generate_root(
+        key=key,
+        nonce=nonce,
+    )
 
 
 Get Encryption Key Status
 -------------------------
 
-:py:meth:`hvac.api.system_backend.Key.get_encryption_key_status`
+.. autoattribute:: hvac.v1.Client.key_status
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	print('Encryption key term is: %s' % client.sys.key_status['term'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    print('Encryption key term is: %s' % client.key_status['term'])
+
+Example output:
+
+.. testoutput:: sys_key
+
+    Encryption key term is: 1
 
 
 Rotate Encryption Key
 ---------------------
 
-:py:meth:`hvac.api.system_backend.Key.rotate_encryption_key`
+.. automethod:: hvac.api.system_backend.Key.rotate_encryption_key
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	client.sys.rotate_encryption_key()
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.rotate_encryption_key()
 
 
 Read Rekey Progress
 -------------------
 
-:py:meth:`hvac.api.system_backend.Key.read_rekey_progress`
+.. automethod:: hvac.api.system_backend.Key.read_rekey_progress
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	print('Rekey "started" status is: %s' % client.sys.read_rekey_progress()['started'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    print('Rekey "started" status is: %s' % client.sys.read_rekey_progress()['started'])
+
+Example output:
+
+.. testoutput:: sys_key
+
+    Rekey "started" status is: False
 
 
 Start Rekey
 -----------
 
-:py:meth:`hvac.api.system_backend.Key.start_rekey`
+.. automethod:: hvac.api.system_backend.Key.start_rekey
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	client.sys.start_rekey()
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    rekey_response = client.sys.start_rekey()
+    nonce = rekey_response['nonce']
+    print('Nonce for rekey is: %s' % nonce)
+
+Example output:
+
+.. testoutput:: sys_key
+
+    Nonce for rekey is: ...
 
 
 Cancel Rekey
 ------------
 
-:py:meth:`hvac.api.system_backend.Key.cancel_rekey`
+.. automethod:: hvac.api.system_backend.Key.cancel_rekey
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_key
 
-	client.sys.cancel_rekey()
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.cancel_rekey()
 
 
 Rekey
 -----
 
-:py:meth:`hvac.api.system_backend.Key.rekey`
+.. automethod:: hvac.api.system_backend.Key.rekey
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testsetup:: sys_key_rekey
 
-	client.sys.rekey(
-		key=key,
-		nonce=nonce,
-		recovery_key=recovery_key,
-	)
+    keys = manager.keys
+    key = keys[0]
+    rekey_response = client.sys.start_rekey()
+    nonce = rekey_response['nonce']
+
+.. testcode:: sys_key_rekey
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.rekey(
+        key=key,
+        nonce=nonce,
+    )
 
 
 Rekey Multi
 -----------
 
-:py:meth:`hvac.api.system_backend.Key.rekey_multi`
+.. automethod:: hvac.api.system_backend.Key.rekey_multi
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testsetup:: sys_key_rekey_multi
 
-	client.sys.rekey_multi(keys, nonce=nonce)
+    keys = manager.keys
+    key = keys[0]
+    rekey_response = client.sys.start_rekey()
+    nonce = rekey_response['nonce']
+
+.. testcode:: sys_key_rekey_multi
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.rekey_multi(
+        keys,
+        nonce=nonce,
+    )
 
 
 Read Backup Keys
 ----------------
 
-:py:meth:`hvac.api.system_backend.Key.read_backup_keys`
+.. automethod:: hvac.api.system_backend.Key.read_backup_keys
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testsetup:: sys_key_backup_keys
 
-	print('Backup keys are: %s' % client.sys.read_backup_keys()['keys'])
+    keys = manager.keys
+    key = keys[0]
+    pgp_key_path = test_utils.get_config_file_path('pgp_key.asc.b64')
+    pgp_key = test_utils.load_config_file(pgp_key_path)
+    #pgp_keys = [test_utils.base64ify(pgp_key)]
+    pgp_keys = [pgp_key]
+
+.. testcode:: sys_key_backup_keys
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+    rekey_response = client.sys.start_rekey(
+        secret_shares=1,
+        secret_threshold=1,
+        pgp_keys=pgp_keys,
+        backup=True,
+    )
+    nonce = rekey_response['nonce']
+
+    client.sys.rekey_multi(
+        keys,
+        nonce=nonce,
+    )
+
+    print('Backup keys are: %s' % client.sys.read_backup_keys()['keys'])
+
+Example output:
+
+.. testoutput:: sys_key_backup_keys
+
+    Backup keys are: {'...': [...]}
 
