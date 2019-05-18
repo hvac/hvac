@@ -4,6 +4,7 @@ from unittest import TestCase
 
 from parameterized import parameterized, param
 
+from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -116,13 +117,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_submit_ca_information(self, label, raises=False, exception_message=''):
-        current_file = os.path.realpath(__file__)
-        current_directory = os.path.dirname(current_file)
-        ca_key_path = os.path.join(current_directory, 'data', 'pki', 'ca.key')
-        ca_crt_path = os.path.join(current_directory, 'data', 'pki', 'ca.crt')
         pem_bundle = '{ca_key}{ca_crt}'.format(
-            ca_key=''.join(open(ca_key_path).readlines()),
-            ca_crt=''.join(open(ca_crt_path).readlines()),
+            ca_key=''.join(open(utils.get_config_file_path('ca-key.pem')).readlines()),
+            ca_crt=''.join(open(utils.get_config_file_path('ca-cert.pem')).readlines()),
         )
         submit_ca_information_response = self.client.secrets.pki.submit_ca_information(
             pem_bundle=pem_bundle,
@@ -547,11 +544,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ),
     ])
     def test_sign_self_issued(self, label, raises=False, exception_message=''):
-        current_file = os.path.realpath(__file__)
-        current_directory = os.path.dirname(current_file)
-        ca_crt_path = os.path.join(current_directory, 'data', 'pki', 'ca.crt')
         sign_self_issued_response = self.client.secrets.pki.sign_self_issued(
-            certificate=''.join(open(ca_crt_path).readlines()),
+            certificate=''.join(open(utils.get_config_file_path('ca-cert.pem')).readlines()),
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('sign_self_issued_response: %s' % sign_self_issued_response)
@@ -569,12 +563,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     def test_sign_certificate(self, label, raises=False, exception_message=''):
         name = self.TEST_ROLE
         common_name = 'another.example.com'
-        current_file = os.path.realpath(__file__)
-        current_directory = os.path.dirname(current_file)
-        ca_crt_path = os.path.join(current_directory, 'data', 'pki', 'server.csr')
         sign_certificate_response = self.client.secrets.pki.sign_certificate(
             name=name,
-            csr=''.join(open(ca_crt_path).readlines()),
+            csr=''.join(open(utils.get_config_file_path('server-cert.csr')).readlines()),
             common_name=common_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
@@ -592,11 +583,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     ])
     def test_sign_verbatim(self, label, raises=False, exception_message=''):
         name = self.TEST_ROLE
-        current_file = os.path.realpath(__file__)
-        current_directory = os.path.dirname(current_file)
-        ca_crt_path = os.path.join(current_directory, 'data', 'pki', 'server.csr')
         sign_verbatim_response = self.client.secrets.pki.sign_verbatim(
-            csr=''.join(open(ca_crt_path).readlines()),
+            csr=''.join(open(utils.get_config_file_path('server-cert.csr')).readlines()),
             name=name,
             mount_point=self.TEST_MOUNT_POINT,
         )
