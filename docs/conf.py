@@ -24,7 +24,7 @@ release = '0.8.2'
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    'docs.ext.doctest',
+    'docs.ext.hvac_doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
