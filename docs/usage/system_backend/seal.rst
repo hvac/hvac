@@ -1,83 +1,134 @@
 Seal
 ====
 
+.. contents::
+   :local:
+   :depth: 1
+
 
 Seal Status
 -----------
 
-:py:meth:`hvac.api.system_backend.Seal.seal_status`
+.. autoattribute:: hvac.v1.Client.seal_status
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_seal
 
-	print('Is Vault sealed: %s' % client.sys.seal_status['sealed'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    print('Is Vault sealed: %s' % client.seal_status['sealed'])
+
+Example output:
+
+.. testoutput:: sys_seal
+
+    Is Vault sealed: False
 
 
 Is Sealed
 ---------
 
-:py:meth:`hvac.api.system_backend.Seal.is_sealed`
+.. automethod:: hvac.api.system_backend.Seal.is_sealed
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_seal
 
-	print('Is Vault sealed: %s' % client.sys.is_sealed())
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    print('Is Vault sealed: %s' % client.sys.is_sealed())
+
+Example output:
+
+.. testoutput:: sys_seal
+
+    Is Vault sealed: False
 
 
 Read Seal Status
 ----------------
 
-:py:meth:`hvac.api.system_backend.Seal.read_status`
+.. automethod:: hvac.api.system_backend.Seal.read_seal_status
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_seal
 
-	print('Is Vault sealed: %s' % client.sys.read_seal_status()['sealed'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    print('Is Vault sealed: %s' % client.sys.read_seal_status()['sealed'])
+
+Example output:
+
+.. testoutput:: sys_seal
+
+    Is Vault sealed: False
 
 
 Seal
 ----
 
-:py:meth:`hvac.api.system_backend.Seal.read_status`
+.. automethod:: hvac.api.system_backend.Seal.seal
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testsetup:: sys_seal_seal
 
-	client.sys.seal()
+    key = manager.keys[0]
+    keys = manager.keys[1:]
+
+.. testcode:: sys_seal_seal
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.seal()
 
 
 Submit Unseal Key
 -----------------
 
-:py:meth:`hvac.api.system_backend.Seal.submit_unseal_key`
+.. automethod:: hvac.api.system_backend.Seal.submit_unseal_key
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_seal_seal
 
-	client.sys.submit_unseal_key(key=key)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.submit_unseal_key(key=key)
 
 
 Submit Unseal Keys
 ------------------
 
-:py:meth:`hvac.api.system_backend.Seal.read_status`
+.. automethod:: hvac.api.system_backend.Seal.submit_unseal_keys
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_seal_seal
 
-	client.sys.submit_unseal_keys(keys=keys)
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.submit_unseal_keys(keys=keys)
 
 
 

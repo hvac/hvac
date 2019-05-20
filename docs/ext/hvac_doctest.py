@@ -76,6 +76,15 @@ def is_allowed_version(spec, version):
     return Version(version) in SpecifierSet(spec)
 
 
+class Py23DocChecker(doctest.OutputChecker):
+    def check_output(self, want, got, optionflags):
+        if sys.version_info[0] < 3:
+            # Ignore unicode `u` prefix in repr to simplify Python 2.7 doctest coverage
+            got = re.sub("u'(.*?)'", "'\\1'", got)
+            got = re.sub('u"(.*?)"', '"\\1"', got)
+        return doctest.OutputChecker.check_output(self, want, got, optionflags)
+
+
 # set up the necessary directives
 
 class TestDirective(SphinxDirective):
@@ -253,6 +262,11 @@ class TestCode(object):
 
 
 class SphinxDocTestRunner(doctest.DocTestRunner):
+
+    def __init__(self, *args, **kwargs):
+        # HACK: workaround unicode issues for testcode directives on Python 2.7 versus 3.x
+        doctest.DocTestRunner.__init__(self, *args, checker=Py23DocChecker(), **kwargs)
+
     def summarize(self, out, verbose=None):  # type: ignore
         # type: (Callable, bool) -> Tuple[int, int]
         string_io = StringIO()
@@ -570,6 +584,7 @@ Doctest summary
             # DocTest.__init__ copies the globs namespace, which we don't want
             test.globs = ns
             # also don't clear the globs namespace after running the doctest
+            # raise Exception(self.test_runner._checker)
             self.test_runner.run(test, out=self._warn_out, clear_globs=False)
 
         # run the cleanup

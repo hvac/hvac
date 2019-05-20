@@ -1,16 +1,30 @@
 Leader
 ======
 
+.. contents::
+   :local:
+   :depth: 1
+
 
 Read Leader Status
 ------------------
 
-:py:meth:`hvac.api.system_backend.Leader.read_leader_status`
+.. automethod:: hvac.api.system_backend.Leader.read_leader_status
+   :noindex:
 
-.. code:: python
+Examples
+````````
 
-	import hvac
-	client = hvac.Client()
+.. testcode:: sys_leader
 
-	status = self.client.sys.read_leader_status()
-	print('HA status is: %s' % status['ha_enabled'])
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    status = client.sys.read_leader_status()
+    print('HA status is: %s' % status['ha_enabled'])
+
+Example output:
+
+.. testoutput:: sys_leader
+
+    HA status is: False
