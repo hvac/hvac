@@ -300,7 +300,7 @@ Examples
         nonce=nonce,
     )
 
-    print('Backup keys are: %s' % client.sys.read_backup_keys()['keys'])
+    print('Backup keys are: %s' % client.sys.read_backup_keys()['data']['keys'])
 
 Example output:
 
