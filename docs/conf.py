@@ -95,7 +95,6 @@ client = manager.client
 '''
 
 doctest_global_cleanup = '''
-# mocker.stop()
 manager.stop()
 '''
 
