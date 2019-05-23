@@ -1,120 +1,215 @@
 GCP
 ===
 
+.. contents::
+   :local:
+   :depth: 1
 
-write-config
--------------------------------
+.. testsetup:: gcp_secrets
 
-:py:meth:`hvac.api.secrets_engines.Gcp.write_config`
+    from requests_mock import ANY
 
-.. code:: python
+    client.sys.enable_secrets_engine('gcp')
 
-    import hvac
-    client = hvac.Client()
+    # mock out external calls that are diffcult to support in test environments
+    mock_urls = {
+        'https://127.0.0.1:8200/v1/gcp/rolesets': 'LIST',
+        'https://127.0.0.1:8200/v1/gcp/roleset/hvac-doctest': ANY,
+        'https://127.0.0.1:8200/v1/gcp/roleset/hvac-doctest/rotate': 'POST',
+        'https://127.0.0.1:8200/v1/gcp/roleset/hvac-doctest/rotate-key': 'POST',
+        'https://127.0.0.1:8200/v1/gcp/token/hvac-doctest': 'GET',
+        'https://127.0.0.1:8200/v1/gcp/key/hvac-doctest': 'POST',
+    }
+    for mock_url, method in mock_urls.items():
+        mocker.register_uri(
+            method=method,
+            url=mock_url,
+            json=dict(),
+        )
 
-    client.secrets.gcp.write_config(
-    )
+Configure
+---------
 
-read-config
--------------------------------
+.. automethod:: hvac.api.secrets_engines.Gcp.configure
+   :noindex:
 
-:py:meth:`hvac.api.secrets_engines.Gcp.read_config`
+Examples
+````````
 
-.. code:: python
-
-    import hvac
-    client = hvac.Client()
-
-    client.secrets.gcp.read_config(
-    )
-
-create-update-roleset
--------------------------------
-
-:py:meth:`hvac.api.secrets_engines.Gcp.create_or_update_roleset`
-
-.. code:: python
-
-    import hvac
-    client = hvac.Client()
-
-    client.secrets.gcp.create_or_update_roleset(
-    )
-
-rotate-roleset-account
--------------------------------
-
-:py:meth:`hvac.api.secrets_engines.Gcp.rotate_roleset_account`
-
-.. code:: python
+.. testcode:: gcp_secrets
 
     import hvac
-    client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-    client.secrets.gcp.rotate_roleset_account(
+
+    credentials = test_utils.load_config_file('example.jwt.json')
+    configure_response = client.secrets.gcp.configure(
+        credentials=credentials,
+        max_ttl=3600,
     )
+    print(configure_response)
 
-rotate-roleset-account-key-access_token-roleset-only-
--------------------------------
+Example output:
 
-:py:meth:`hvac.api.secrets_engines.Gcp.rotate_roleset_account_key_access_token_roleset_only`
+.. testoutput:: gcp_secrets
 
-.. code:: python
+    <Response [204]>
+
+Read Config
+-----------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.read_config
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
 
     import hvac
-    client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-    client.secrets.gcp.rotate_roleset_account_key_access_token_roleset_only(
-    )
+    read_config_response = client.secrets.gcp.read_config()
+    print('Max TTL for GCP secrets engine set to: {max_ttl}'.format(max_ttl=read_config_response['data']['max_ttl']))
 
-read-roleset
--------------------------------
+Example output:
 
-:py:meth:`hvac.api.secrets_engines.Gcp.read_roleset`
+.. testoutput:: gcp_secrets
 
-.. code:: python
+    Max TTL for GCP secrets engine set to: 3600
 
-    import hvac
-    client = hvac.Client()
+Create Or Update Roleset
+------------------------
 
-    client.secrets.gcp.read_roleset(
-    )
+.. automethod:: hvac.api.secrets_engines.Gcp.create_or_update_roleset
+   :noindex:
 
-list-rolesets
--------------------------------
+Examples
+````````
 
-:py:meth:`hvac.api.secrets_engines.Gcp.list_rolesets`
-
-.. code:: python
+.. testcode:: gcp_secrets
 
     import hvac
-    client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-    client.secrets.gcp.list_rolesets(
+
+    bindings = """
+        resource "//cloudresourcemanager.googleapis.com/project/some-gcp-project-id" {
+          roles = [
+            "roles/viewer"
+          ],
+        }
+    """
+    token_scopes = [
+        'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/bigquery',
+    ]
+
+    roleset_response = client.secrets.gcp.create_or_update_roleset(
+        name='hvac-doctest',
+        project='some-gcp-project-id',
+        bindings=bindings,
+        token_scopes=token_scopes,
     )
 
-generate-secret-iam-service-account-creds-oauth2-access-token
--------------------------------
+Rotate Roleset Account
+----------------------
 
-:py:meth:`hvac.api.secrets_engines.Gcp.generate_secret_iam_service_account_creds_oauth2_access_token`
+.. automethod:: hvac.api.secrets_engines.Gcp.rotate_roleset_account
+   :noindex:
 
-.. code:: python
+Examples
+````````
+
+.. testcode:: gcp_secrets
 
     import hvac
-    client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-    client.secrets.gcp.generate_secret_iam_service_account_creds_oauth2_access_token(
-    )
+    rotate_response = client.secrets.gcp.rotate_roleset_account(name='hvac-doctest')
 
-generate-secret-iam-service-account-creds-service-account-key
--------------------------------
+Rotate Roleset Account Key
+--------------------------
 
-:py:meth:`hvac.api.secrets_engines.Gcp.generate_secret_iam_service_account_creds_service_account_key`
+.. automethod:: hvac.api.secrets_engines.Gcp.rotate_roleset_account_key
+   :noindex:
 
-.. code:: python
+Examples
+````````
+
+.. testcode:: gcp_secrets
 
     import hvac
-    client = hvac.Client()
+    client = hvac.Client(url='https://127.0.0.1:8200')
 
-    client.secrets.gcp.generate_secret_iam_service_account_creds_service_account_key(
-    )
+    rotate_response = client.secrets.gcp.rotate_roleset_account_key(name='hvac-doctest')
+
+Read Roleset
+------------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.read_roleset
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    read_response = client.secrets.gcp.read_roleset(name='hvac-doctest')
+
+List Rolesets
+-------------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.list_rolesets
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    list_response = client.secrets.gcp.list_rolesets()
+
+
+Generate Oauth2 Access Token
+----------------------------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.generate_oauth2_access_token
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    token_response = client.secrets.gcp.generate_oauth2_access_token(roleset='hvac-doctest')
+
+Generate Service Account Key
+----------------------------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.generate_service_account_key
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    key_response = client.secrets.gcp.generate_service_account_key(roleset='hvac-doctest')
+
+
+.. testcleanup:: gcp_secrets
+
+    client.sys.disable_secrets_engine(path='gcp')

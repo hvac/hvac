@@ -66,4 +66,4 @@ def doctest_global_setup():
             ))
             sleep(1)
 
-    return manager
+    return manager, mocker
