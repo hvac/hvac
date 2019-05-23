@@ -1,86 +1,86 @@
+import logging
+from textwrap import dedent
 from unittest import TestCase
 
 import requests_mock
-from parameterized import parameterized
+from parameterized import parameterized, param
 
 from hvac.adapters import Request
 from hvac.api.secrets_engines import Gcp
-from hvac.api.secrets_engines.gcp import DEFAULT_MOUNT_POINT
 
 
 class TestGcp(TestCase):
+    TEST_MOUNT_POINT = 'gcp-test'
+    TEST_ROLESET_NAME = 'hvac-roleset'
+    TEST_PROJECT_ID = 'test-hvac'
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestGcp, cls).setUpClass()
+    @parameterized.expand([
+        param(
+            'success',
+        ),
+    ])
+    def test_create_or_update_roleset(self, label, secret_type='access_token', raises=False, exception_message=''):
 
-    def setUp(self):
-        super(TestGcp, self).setUp()
+        bindings = {
+            'resource': {
+                "//cloudresourcemanager.googleapis.com/projects/{project}".format(project=self.TEST_PROJECT_ID): {
+                    "roles": ['roles/viewer'],
+                },
+            },
+        }
+        bindings = """
+            resource "//cloudresourcemanager.googleapis.com/project/{project}" {
+              roles = [
+                "roles/viewer"
+              ],
+            }
+        """
+        bindings = dedent(bindings)
+        token_scopes = None
+        if secret_type == 'access_token':
+            token_scopes = [
+                'https://www.googleapis.com/auth/cloud-platform',
+                'https://www.googleapis.com/auth/bigquery',
+            ]
 
-    def tearDown(self):
-        super(TestGcp, self).tearDown()
+        gcp = Gcp(adapter=Request())
+        mock_url = 'http://localhost:8200/v1/{mount_point}/roleset/{name}'.format(
+            mount_point=self.TEST_MOUNT_POINT,
+            name=self.TEST_ROLESET_NAME,
+        )
+        expected_status_code = 204
 
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_write_config(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_read_config(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_create_or_update_roleset(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_rotate_roleset_account(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_rotate_roleset_account_key_access_token_roleset_only(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_read_roleset(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_list_rolesets(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_generate_secret_iam_service_account_creds_oauth2_access_token(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    @requests_mock.Mocker()
-    def test_generate_secret_iam_service_account_creds_service_account_key(self, test_label, requests_mocker):
-        raise NotImplementedError
-    
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method='POST',
+                url=mock_url,
+                status_code=expected_status_code,
+            )
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    gcp.create_or_update_roleset(
+                        name=self.TEST_ROLESET_NAME,
+                        project=self.TEST_PROJECT_ID,
+                        bindings=bindings,
+                        secret_type=secret_type,
+                        token_scopes=token_scopes,
+                        mount_point=self.TEST_MOUNT_POINT,
+                    )
+                self.assertIn(
+                    member=exception_message,
+                    container=str(cm.exception),
+                )
+            else:
+                create_or_update_response = gcp.create_or_update_roleset(
+                    name=self.TEST_ROLESET_NAME,
+                    project=self.TEST_PROJECT_ID,
+                    bindings=bindings,
+                    secret_type=secret_type,
+                    token_scopes=token_scopes,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+                logging.debug('configure_response: %s' % create_or_update_response)
+                self.assertEqual(
+                    first=create_or_update_response.status_code,
+                    second=204,
+                )

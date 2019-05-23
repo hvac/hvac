@@ -1,75 +1,62 @@
+import logging
 from unittest import TestCase
 
-from parameterized import parameterized
+from parameterized import param, parameterized
 
-from hvac.api.secrets_engines.gcp import DEFAULT_MOUNT_POINT
-from hvac.tests import utils
+from tests import utils
+from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
-class TestGcp(utils.HvacIntegrationTestCase, TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestGcp, cls).setUpClass()
+class TestGcp(HvacIntegrationTestCase, TestCase):
+    TEST_MOUNT_POINT = 'test-gcp'
+    TEST_ROLESET_NAME = 'hvac-roleset'
+    TEST_PROJECT_ID = 'test-hvac'
 
     def setUp(self):
         super(TestGcp, self).setUp()
+        self.client.enable_secret_backend(
+            backend_type='gcp',
+            mount_point=self.TEST_MOUNT_POINT,
+        )
 
     def tearDown(self):
+        self.client.disable_secret_backend(mount_point=self.TEST_MOUNT_POINT)
         super(TestGcp, self).tearDown()
 
-    
     @parameterized.expand([
-        ('some_test',),
+        param(
+            'success',
+        ),
     ])
-    def test_write_config(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_read_config(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_create_or_update_roleset(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_rotate_roleset_account(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_rotate_roleset_account_key_access_token_roleset_only(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_read_roleset(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_list_rolesets(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_generate_secret_iam_service_account_creds_oauth2_access_token(self, test_label):
-        raise NotImplementedError
-    
-    @parameterized.expand([
-        ('some_test',),
-    ])
-    def test_generate_secret_iam_service_account_creds_service_account_key(self, test_label):
-        raise NotImplementedError
-    
+    def test_write_config(self, label, max_ttl=3600, raises=False, exception_message=''):
+        credentials = utils.load_config_file('example.jwt.json')
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.secrets.gcp.configure(
+                    credentials=credentials,
+                    max_ttl=max_ttl,
+                    mount_point=self.TEST_MOUNT_POINT,
+                )
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            configure_response = self.client.secrets.gcp.configure(
+                credentials=credentials,
+                max_ttl=max_ttl,
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+            logging.debug('configure_response: %s' % configure_response)
+            self.assertEqual(
+                first=configure_response.status_code,
+                second=204,
+            )
+            read_configuration_response = self.client.secrets.gcp.read_config(
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+            logging.debug('read_configuration_response: %s' % read_configuration_response)
+            self.assertEqual(
+                first=read_configuration_response['data']['max_ttl'],
+                second=max_ttl,
+            )
