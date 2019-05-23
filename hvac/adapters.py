@@ -3,16 +3,12 @@
 HTTP Client Library Adapters
 
 """
-import logging
 from abc import ABCMeta, abstractmethod
 
 import requests
 import requests.exceptions
 
 from hvac import utils
-
-logging.basicConfig()
-logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URI = 'http://localhost:8200'
 
@@ -239,7 +235,6 @@ class Request(Adapter):
         if '//' in url:
             # Vault CLI treats a double forward slash ('//') as a single forward slash for a given path.
             # To avoid issues with the requests module's redirection logic, we perform the same translation here.
-            logger.warning('Replacing double-slashes ("//") in path with single slash ("/") to avoid Vault redirect response.')
             url = url.replace('//', '/')
 
         url = self.urljoin(self.base_uri, url)
