@@ -12,6 +12,7 @@ IMPROVEMENTS:
 * Support for the Radius auth method. [GH-420](https://github.com/hvac/hvac/pull/420)
 * Support for the Database secrets engine. [GH-431](https://github.com/hvac/hvac/pull/431)
 * Add the consul secret engine support [GH-432](https://github.com/hvac/hvac/pull/432)
+* Support for the GCP secrets engine. [GH-443](https://github.com/hvac/hvac/pull/443)
 
 MISCELLANEOUS:
 
