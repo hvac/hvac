@@ -90,11 +90,12 @@ client_cert_path = test_utils.get_config_file_path('client-cert.pem')
 client_key_path = test_utils.get_config_file_path('client-key.pem')
 server_cert_path = test_utils.get_config_file_path('server-cert.pem')
 
-manager = doctest_global_setup()
+manager, mocker = doctest_global_setup()
 client = manager.client
 '''
 
 doctest_global_cleanup = '''
+mocker.stop()
 manager.stop()
 '''
 
