@@ -16,15 +16,15 @@ copyright = u'2018-2019, Ian Unruh, Jeffrey Hogan'
 author = u'Ian Unruh, Jeffrey Hogan'
 
 # The short X.Y version
-version = '0.8.2'
+version = '0.9.0'
 # The full version, including alpha/beta/rc tags
-release = '0.8.2'
+release = '0.9.0'
 
 
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    'docs.ext.doctest',
+    'docs.ext.hvac_doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
@@ -90,12 +90,12 @@ client_cert_path = test_utils.get_config_file_path('client-cert.pem')
 client_key_path = test_utils.get_config_file_path('client-key.pem')
 server_cert_path = test_utils.get_config_file_path('server-cert.pem')
 
-manager = doctest_global_setup()
+manager, mocker = doctest_global_setup()
 client = manager.client
 '''
 
 doctest_global_cleanup = '''
-# mocker.stop()
+mocker.stop()
 manager.stop()
 '''
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.9.0 (May 23rd, 2019)
+
+BUG FIXES:
+
+* Update path to azure.login() [GH-429](https://github.com/hvac/hvac/pull/429)
+* AWS secrets engine generate credentials updated to a post request. [GH-430](https://github.com/hvac/hvac/pull/430)
+
+IMPROVEMENTS:
+
+* Support for the Radius auth method. [GH-420](https://github.com/hvac/hvac/pull/420)
+* Support for the Database secrets engine. [GH-431](https://github.com/hvac/hvac/pull/431)
+* Add the consul secret engine support [GH-432](https://github.com/hvac/hvac/pull/432)
+* Support for the GCP secrets engine. [GH-443](https://github.com/hvac/hvac/pull/443)
+
+MISCELLANEOUS:
+
+* Remove logger call within adapters module [GH-445](https://github.com/hvac/hvac/pull/445)
+* Add docs for auth_cubbyhole [GH-427](https://github.com/hvac/hvac/pull/427)
+
+Thanks to @paulcaskey, @stevenmanton, @brad-alexander, @yoyomeng2, @JadeHayes, @Dudesons for their lovely contributions.
+
 ## 0.8.2 (April 4th, 2019)
 
 BUG FIXES:

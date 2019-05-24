@@ -196,3 +196,52 @@ def base64ify(bytes_or_str):
         return output_bytes.decode('ascii')
     else:
         return output_bytes
+
+
+def configure_pki(client, common_name='hvac.com', role_name='my-role', mount_point='pki'):
+    """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
+
+    :param client: Authenticated hvac Client instance.
+    :typeclient: hvac.Client
+    :param common_name: Common name to configure in the pki backend
+    :type common_name: str
+    :param role_name: Name of the test role to configure.
+    :type role_name: str
+    :param mount_point: The path the pki backend is mounted under.
+    :type mount_point: str
+    :return: Nothing.
+    :rtype: None.
+    """
+    if '{path}/'.format(path=mount_point) in client.sys.list_mounted_secrets_engines():
+        client.sys.disable_secrets_engine(mount_point)
+
+    client.sys.enable_secrets_engine(backend_type='pki', path=mount_point)
+
+    client.write(
+        path='{path}/root/generate/internal'.format(path=mount_point),
+        common_name=common_name,
+        ttl='8760h',
+    )
+    client.write(
+        path='{path}/config/urls'.format(path=mount_point),
+        issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
+        crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
+    )
+    client.write(
+        path='{path}/roles/{name}'.format(path=mount_point, name=role_name),
+        allowed_domains=common_name,
+        allow_subdomains=True,
+        generate_lease=True,
+        max_ttl='72h',
+    )
+
+
+def disable_pki(client, mount_point='pki'):
+    """Disable a previously configured pki backend.
+
+    :param client: Authenticated hvac Client instance.
+    :typeclient: hvac.Client
+    :param mount_point: The path the pki backend is mounted under.
+    :type mount_point: str
+    """
+    client.sys.disable_secrets_engine(mount_point)

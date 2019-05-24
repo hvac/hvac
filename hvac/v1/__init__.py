@@ -1165,12 +1165,15 @@ class Client(object):
         return self._adapter.post('/v1/auth/{0}/role/{1}/tag'.format(mount_point, role), json=params)
 
     def auth_cubbyhole(self, token):
-        """POST /v1/sys/wrapping/unwrap
+        """Perform a login request with a wrapped token.
 
-        :param token:
-        :type token:
-        :return:
-        :rtype:
+        Stores the unwrapped token in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter`
+            instance under the _adapater Client attribute.
+
+        :param token: Wrapped token
+        :type token: str | unicode
+        :return: The (JSON decoded) response of the auth request
+        :rtype: dict
         """
         self.token = token
         return self.login('/v1/sys/wrapping/unwrap')
