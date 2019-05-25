@@ -192,7 +192,7 @@ class Azure(VaultApiBase):
         """List all the roles that are registered with the plugin.
 
         Supported methods:
-            LIST: /auth/{mount_point}/roles. Produces: 200 application/json
+            LIST: /auth/{mount_point}/role. Produces: 200 application/json
 
 
         :param mount_point: The "path" the azure auth method was mounted on.
@@ -200,7 +200,7 @@ class Azure(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = '/v1/auth/{mount_point}/role'.format(mount_point=mount_point)
         response = self._adapter.list(
             url=api_path
         )

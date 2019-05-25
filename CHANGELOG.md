@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 (UNRELEASED)
+
+BUG FIXES:
+
+* Fix Azure list roles [GH-448](https://github.com/hvac/hvac/pull/448)
+
 ## 0.9.0 (May 23rd, 2019)
 
 BUG FIXES:
