@@ -206,9 +206,9 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             )
 
     @parameterized.expand([
-        # param(
-        #     'success',  # TODO: figure out why this is returning a "InvalidPath" exception ("unsupported path")
-        # ),
+        param(
+            'success',
+        ),
         param(
             'no roles',
             num_roles_to_create=0,
@@ -217,7 +217,6 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         param(
             'no config',
             write_config_first=False,
-            raises=exceptions.InvalidPath,
         ),
     ])
     def test_list_roles(self, label, num_roles_to_create=1, write_config_first=True, raises=None):
@@ -249,7 +248,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('read_role_response: %s' % list_roles_response)
             self.assertEqual(
-                first=list_roles_response['roles'],
+                first=list_roles_response['keys'],
                 second=roles_to_create,
             )
 

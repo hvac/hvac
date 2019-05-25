@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.1 (May 25th, 2019)
+
+BUG FIXES:
+
+* Fix Azure list roles [GH-448](https://github.com/hvac/hvac/pull/448)
+
+IMPROVEMENTS:
+* Support for the PKI secrets engine. [GH-436](https://github.com/hvac/hvac/pull/436)
+
+MISCELLANEOUS:
+
+* `delete_roleset()` method added to GCP secrets engine support. [GH-449](https://github.com/hvac/hvac/pull/449)
+
+Thanks to @nledez and @drewmullen for their lovely contributions.
+
 ## 0.9.0 (May 23rd, 2019)
 
 BUG FIXES:
