@@ -207,7 +207,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand([
         param(
-            'success',  # TODO: figure out why this is returning a "InvalidPath" exception ("unsupported path")
+            'success',
         ),
         param(
             'no roles',
