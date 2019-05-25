@@ -176,6 +176,22 @@ Examples
 
     list_response = client.secrets.gcp.list_rolesets()
 
+Delete Roleset
+--------------
+
+.. automethod:: hvac.api.secrets_engines.Gcp.delete_roleset
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: gcp_secrets
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    delete_response = client.secrets.gcp.delete_roleset(name='hvac-doctest')
+
 
 Generate Oauth2 Access Token
 ----------------------------

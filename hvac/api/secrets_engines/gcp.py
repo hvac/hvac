@@ -206,6 +206,28 @@ class Gcp(VaultApiBase):
         )
         return response.json()
 
+    def delete_roleset(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete an existing roleset by the given name.
+
+        Supported methods:
+            DELETE: /{mount_point}/roleset/{name} Produces: 200 application/json
+
+        :param name: Name of the role.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = '/v1/{mount_point}/roleset/{name}'.format(
+            name=name,
+            mount_point=mount_point,
+        )
+        response = self._adapter.delete(
+            url=api_path,
+        )
+        return response
+
     def generate_oauth2_access_token(self, roleset, mount_point=DEFAULT_MOUNT_POINT):
         """Generate an OAuth2 token with the scopes defined on the roleset.
 
