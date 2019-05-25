@@ -8,6 +8,7 @@ Secrets Engines
    azure
    gcp
    identity
+   pki
    kv
    kv_v1
    kv_v2
