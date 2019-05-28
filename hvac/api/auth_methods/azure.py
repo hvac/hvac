@@ -98,7 +98,7 @@ class Azure(VaultApiBase):
         )
 
     def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
-                    bound_group_ids=None, bound_location=None, bound_subscription_ids=None,
+                    bound_group_ids=None, bound_locations=None, bound_subscription_ids=None,
                     bound_resource_groups=None, bound_scale_sets=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
@@ -125,8 +125,8 @@ class Azure(VaultApiBase):
         :type bound_service_principal_ids: list
         :param bound_group_ids: The list of group ids that login is restricted to.
         :type bound_group_ids: list
-        :param bound_location: The list of locations that login is restricted to.
-        :type bound_location: list
+        :param bound_locations: The list of locations that login is restricted to.
+        :type bound_locations: list
         :param bound_subscription_ids: The list of subscription IDs that login is restricted to.
         :type bound_subscription_ids: list
         :param bound_resource_groups: The list of resource groups that login is restricted to.
@@ -153,7 +153,7 @@ class Azure(VaultApiBase):
             'period': period,
             'bound_service_principal_ids': bound_service_principal_ids,
             'bound_group_ids': bound_group_ids,
-            'bound_location': bound_location,
+            'bound_locations': bound_locations,
             'bound_subscription_ids': bound_subscription_ids,
             'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
