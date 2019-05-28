@@ -99,7 +99,7 @@ class Azure(VaultApiBase):
 
     def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
                     bound_group_ids=None, bound_location=None, bound_subscription_ids=None,
-                    bound_resource_group_names=None, bound_scale_sets=None, mount_point=DEFAULT_MOUNT_POINT):
+                    bound_resource_groups=None, bound_scale_sets=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -129,8 +129,8 @@ class Azure(VaultApiBase):
         :type bound_location: list
         :param bound_subscription_ids: The list of subscription IDs that login is restricted to.
         :type bound_subscription_ids: list
-        :param bound_resource_group_names: The list of resource groups that login is restricted to.
-        :type bound_resource_group_names: list
+        :param bound_resource_groups: The list of resource groups that login is restricted to.
+        :type bound_resource_groups: list
         :param bound_scale_sets: The list of scale set names that the login is restricted to.
         :type bound_scale_sets: list
         :param mount_point: The "path" the azure auth method was mounted on.
@@ -155,7 +155,7 @@ class Azure(VaultApiBase):
             'bound_group_ids': bound_group_ids,
             'bound_location': bound_location,
             'bound_subscription_ids': bound_subscription_ids,
-            'bound_resource_group_names': bound_resource_group_names,
+            'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
         }
 
