@@ -99,7 +99,7 @@ class Azure(VaultApiBase):
 
     def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
                     bound_group_ids=None, bound_locations=None, bound_subscription_ids=None,
-                    bound_resource_groups=None, bound_scale_sets=None, mount_point=DEFAULT_MOUNT_POINT):
+                    bound_resource_groups=None, bound_scale_sets=None, num_uses=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -113,6 +113,8 @@ class Azure(VaultApiBase):
         :type name: str | unicode
         :param policies: Policies to be set on tokens issued using this role.
         :type policies: list
+        :param num_uses: Number of uses to set on a token produced by this role.
+        :type num_uses: int
         :param ttl: The TTL period of tokens issued using this role in seconds.
         :type ttl: str | unicode
         :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
@@ -157,6 +159,7 @@ class Azure(VaultApiBase):
             'bound_subscription_ids': bound_subscription_ids,
             'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
+            'num_uses': num_uses,
         }
 
         api_path = '/v1/auth/{mount_point}/role/{name}'.format(mount_point=mount_point, name=name)
