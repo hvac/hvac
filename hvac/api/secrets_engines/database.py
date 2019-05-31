@@ -60,7 +60,7 @@ class Database(VaultApiBase):
         api_path = '/v1/{mount_point}/rotate-root/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
-        ).json()
+        )
 
     def read_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns the configuration settings for a connection.
