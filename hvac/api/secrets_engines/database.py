@@ -115,7 +115,7 @@ class Database(VaultApiBase):
         api_path = '/v1/{mount_point}/reset/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
-        ).json()
+        )
 
     def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
                     revocation_statements=list(), rollback_statements=list(), renew_statements=list(), 
