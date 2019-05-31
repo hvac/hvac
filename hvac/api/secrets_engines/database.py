@@ -3,8 +3,7 @@
 """Database methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = "database"
-
+DEFAULT_MOUNT_POINT= "database"
 
 class Database(VaultApiBase):
     """Database Secrets Engine (API).
@@ -12,7 +11,7 @@ class Database(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/databases/index.html
     """
 
-    def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[],
+    def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[], 
                   mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """This endpoint configures the connection string used to communicate with the desired database.
         In addition to the parameters listed here, each Database plugin has additional,
@@ -31,8 +30,6 @@ class Database(VaultApiBase):
         :param root_rotation_statements: Specifies the database statements to be executed to rotate
         the root user's credentials.
         :type root_rotation_statements: list
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -70,8 +67,6 @@ class Database(VaultApiBase):
 
         :param name: Specifies the name of the connection to read.
         :type name: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -85,8 +80,6 @@ class Database(VaultApiBase):
     def list_connections(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available connections.
 
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -99,8 +92,7 @@ class Database(VaultApiBase):
     def delete_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a connection.
 
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
+
         :param name: Specifies the name of the connection to delete.
         :type name: str | unicode
         :return: The response of the request.
@@ -115,8 +107,6 @@ class Database(VaultApiBase):
         """This endpoint closes a connection and it's underlying plugin and
         restarts it with the configuration stored in the barrier.
 
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
         :param name: Specifies the name of the connection to reset.
         :type name: str | unicode
         :return: The response of the request.
@@ -128,7 +118,7 @@ class Database(VaultApiBase):
         ).json()
 
     def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
-                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(),
+                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(), 
                     mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates a role definition.
 
@@ -167,8 +157,8 @@ class Database(VaultApiBase):
         api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
-            params=params
-        ).json()
+            json=params
+        )
 
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries the role definition.
@@ -223,8 +213,6 @@ class Database(VaultApiBase):
         :type name: str | unicode
         :param name: Specifies the name of the role to create credentials against
         :type name: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
