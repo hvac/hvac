@@ -3,6 +3,8 @@
 """Database methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 
+DEFAULT_MOUNT_POINT = "database"
+
 
 class Database(VaultApiBase):
     """Database Secrets Engine (API).
@@ -11,7 +13,7 @@ class Database(VaultApiBase):
     """
 
     def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[],
-                  *args, **kwargs):
+                  mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """This endpoint configures the connection string used to communicate with the desired database.
         In addition to the parameters listed here, each Database plugin has additional,
         database plugin specific, parameters for this endpoint.
@@ -29,6 +31,8 @@ class Database(VaultApiBase):
         :param root_rotation_statements: Specifies the database statements to be executed to rotate
         the root user's credentials.
         :type root_rotation_statements: list
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -41,13 +45,13 @@ class Database(VaultApiBase):
 
         params.update(kwargs)
 
-        api_path = "/v1/database/config/{}".format(name)
+        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
         ).json()
 
-    def rotate_root_credentials(self, name):
+    def rotate_root_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint is used to rotate the root superuser credentials stored for the database connection.
         This user must have permissions to update its own password.
 
@@ -56,68 +60,76 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/database/rotate-root/{}".format(name)
+        api_path = '/v1/{mount_point}/rotate-root/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
         ).json()
 
-    def read_connection(self, name):
+    def read_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns the configuration settings for a connection.
 
         :param name: Specifies the name of the connection to read.
         :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/database/config/{}".format(name)
+        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,
         ).json()
 
-    def list_connections(self):
+    def list_connections(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available connections.
 
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/database/config"
+        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
 
-    def delete_connection(self, name):
+    def delete_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a connection.
 
-
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :param name: Specifies the name of the connection to delete.
         :type name: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/database/config/{}".format(name)
+        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
-        ).json()
+        )
 
-    def reset_connection(self, name):
+    def reset_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint closes a connection and it's underlying plugin and
         restarts it with the configuration stored in the barrier.
 
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :param name: Specifies the name of the connection to reset.
         :type name: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/database/reset/{}".format(name)
+        api_path = '/v1/{mount_point}/reset/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
         ).json()
 
     def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
-                    revocation_statements=list(), rollback_statements=list(), renew_statements=list()):
+                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(),
+                    mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates a role definition.
 
         :param name: Specifies the database role to manage.
@@ -136,6 +148,8 @@ class Database(VaultApiBase):
         :type rollback_statements: list
         :param renew_statements: Specifies the database role to manage.
         :type renew_statements: list
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -150,62 +164,72 @@ class Database(VaultApiBase):
             "renew_statements": renew_statements
         }
 
-        api_path = "/v1/database/roles/{}".format(name)
+        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             params=params
         ).json()
 
-    def read_role(self, name):
+    def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries the role definition.
 
         :param name: Specifies the name of the role to read.
         :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/database/roles/{}".format(name)
+        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,
         ).json()
 
-    def list_roles(self):
+    def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available roles.
 
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/database/roles"
+        api_path = '/v1/{mount_point}/roles'.format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
 
-    def delete_role(self, name):
+    def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes the role definition.
 
         :param name: Specifies the name of the role to delete.
         :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/database/roles/{}".format(name)
+        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
         ).json()
 
-    def generate_credentials(self, name):
+    def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a new set of dynamic credentials based on the named role.
 
+        :param name: Specifies the name of the role to delete.
+        :type name: str | unicode
         :param name: Specifies the name of the role to create credentials against
         :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/database/creds/{}".format(name)
+        api_path = '/v1/{mount_point}/creds/{name}'.format(mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,
