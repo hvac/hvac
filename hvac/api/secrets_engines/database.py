@@ -3,7 +3,8 @@
 """Database methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT= "database"
+DEFAULT_MOUNT_POINT = "database"
+
 
 class Database(VaultApiBase):
     """Database Secrets Engine (API).
@@ -11,7 +12,7 @@ class Database(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/databases/index.html
     """
 
-    def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[], 
+    def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[],
                   mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """This endpoint configures the connection string used to communicate with the desired database.
         In addition to the parameters listed here, each Database plugin has additional,
@@ -118,7 +119,7 @@ class Database(VaultApiBase):
         )
 
     def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
-                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(), 
+                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(),
                     mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates a role definition.
 
