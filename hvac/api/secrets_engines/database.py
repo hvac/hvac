@@ -204,7 +204,7 @@ class Database(VaultApiBase):
         api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
-        ).json()
+        )
 
     def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a new set of dynamic credentials based on the named role.
