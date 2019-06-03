@@ -3,6 +3,8 @@
 """Consul methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 
+DEFAULT_MOUNT_POINT = "consul"
+
 
 class Consul(VaultApiBase):
     """Copnsul Secrets Engine (API).
@@ -10,7 +12,7 @@ class Consul(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/consul/index.html
     """
 
-    def configure_access(self, address, token, scheme="http"):
+    def configure_access(self, address, token, scheme="http", mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint configures the access information for Consul.
         This access information is used so that Vault can communicate with Consul and generate Consul tokens.
 
@@ -20,6 +22,8 @@ class Consul(VaultApiBase):
         :type token: str | unicode
         :param scheme:  Specifies the URL scheme to use.
         :type scheme: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -29,13 +33,14 @@ class Consul(VaultApiBase):
           "scheme": scheme
         }
 
-        api_path = "/v1/consul/config/access"
+        api_path = "/v1/{}/config/access".format(mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
         ).json()
 
-    def create_or_update_role(self, name, policy="", policies=[], token_type="client", local=False, ttl="", max_ttl=""):
+    def create_or_update_role(self, name, policy="", policies=[], token_type="client", local=False, ttl="", max_ttl="",
+                              mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the Consul role definition.
         If the role does not exist, it will be created.
         If the role already exists, it will receive updated attributes.
@@ -63,10 +68,12 @@ class Consul(VaultApiBase):
         This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
         If not provided, the default Vault Max TTL is used.
         :type max_ttl: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/consul/roles/{}".format(name)
+        api_path = "/v1/{}/roles/{}".format(mount_point, name)
 
         params = {
             "token_type": token_type,
@@ -82,57 +89,63 @@ class Consul(VaultApiBase):
             json=params,
         ).json()
 
-    def read_role(self, name):
+    def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries for information about a Consul role with the given name.
         If no role exists with that name, a 404 is returned.
 
         :param name: Specifies the name of the role to query.
         :type name: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/consul/roles/{}".format(name)
+        api_path = "/v1/{}/roles/{}".format(mount_point, name)
 
         return self._adapter.get(
             url=api_path,
         ).json()
 
-    def list_roles(self):
+    def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint lists all existing roles in the secrets engine.
 
         :return: The response of the request.
         :rtype: requests.Response
         """
 
-        api_path = "/v1/consul/roles"
+        api_path = "/v1/{}/roles".format(mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
 
-    def delete_role(self, name):
+    def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a Consul role with the given name.
         Even if the role does not exist, this endpoint will still return a successful response.
 
         :param name: Specifies the name of the role to delete.
         :type name: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/consul/roles/{}".format(name)
+        api_path = "/v1/{}/roles/{}".format(mount_point, name)
         return self._adapter.delete(
             url=api_path,
-        ).json()
+        )
 
-    def generate_credentials(self, name):
+    def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a dynamic Consul token based on the given role definition.
 
         :param name: Specifies the name of an existing role against which to create this Consul credential.
         :type name: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/consul/creds/{}".format(name)
+        api_path = "/v1/{}/creds/{}".format(mount_point, name)
 
         return self._adapter.get(
             url=api_path,
