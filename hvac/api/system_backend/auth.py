@@ -23,7 +23,7 @@ class Auth(SystemBackendMixin):
         )
         return response.json()
 
-    def enable_auth_method(self, method_type, description=None, config=None, plugin_name=None, local=False, path=None):
+    def enable_auth_method(self, method_type, description=None, config=None, plugin_name=None, local=False, path=None, **kwargs):
         """Enable a new auth method.
 
         After enabling, the auth method can be accessed and configured via the auth path specified as part of the URL.
@@ -70,6 +70,7 @@ class Auth(SystemBackendMixin):
             'plugin_name': plugin_name,
             'local': local,
         }
+        params.update(kwargs)
         api_path = '/v1/sys/auth/{path}'.format(path=path)
         return self._adapter.post(
             url=api_path,
@@ -118,7 +119,7 @@ class Auth(SystemBackendMixin):
 
     def tune_auth_method(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
                          audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility='',
-                         passthrough_request_headers=None):
+                         passthrough_request_headers=None, **kwargs):
         """Tune configuration parameters for a given auth path.
 
         This endpoint requires sudo capability on the final path, but the same functionality can be achieved without
@@ -179,7 +180,7 @@ class Auth(SystemBackendMixin):
                     params[optional_parameter] = list_to_comma_delimited(argument)
                 else:
                     params[optional_parameter] = locals().get(optional_parameter)
-
+        params.update(kwargs)
         api_path = '/v1/sys/auth/{path}/tune'.format(path=path)
         return self._adapter.post(
             url=api_path,
