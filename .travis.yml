@@ -27,3 +27,6 @@ install:
   - pip install tox-travis
 script:
   - make test
+notifications:
+  slack:
+    secure: looVR3I5wFEYMDursCKMd7jqEAijXc4dxlaIXQz9PRIepwr0BISBCBJO1XUNTPlSF5ZS8cJmHcMpM91LdHLSuCPrfqAvUj0E3QvUwgm7KoSI/zVSpASPS1H+NvdbJemHUXWMsoU1K9LOVN2frcKzYFsqkmb9cHTcqFxYl1fxyBE=
