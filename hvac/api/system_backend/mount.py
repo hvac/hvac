@@ -123,7 +123,7 @@ class Mount(SystemBackendMixin):
 
     def tune_mount_configuration(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
                                  audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None,
-                                 listing_visibility=None, passthrough_request_headers=None, options=None):
+                                 listing_visibility=None, passthrough_request_headers=None, options=None, force_no_cache=None):
         """Tune configuration parameters for a given mount point.
 
         Supported methods:
@@ -170,6 +170,7 @@ class Mount(SystemBackendMixin):
             'audit_non_hmac_response_keys',
             'listing_visibility',
             'passthrough_request_headers',
+            'force_no_cache'
             'options',
         ]
         params = {}
