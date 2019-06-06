@@ -63,6 +63,9 @@ class Mount(SystemBackendMixin):
         :type local: bool
         :param seal_wrap: <Vault enterprise only> Enable seal wrapping for the mount.
         :type seal_wrap: bool
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -159,6 +162,11 @@ class Mount(SystemBackendMixin):
 
             * **version**: <KV> The version of the KV to mount. Set to "2" for mount KV v2.
         :type options: dict
+        :param force_no_cache: Disable caching.
+        :type force_no_cache: bool
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response from the request.
         :rtype: request.Response
         """

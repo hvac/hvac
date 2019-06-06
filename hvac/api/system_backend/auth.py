@@ -57,6 +57,9 @@ class Auth(SystemBackendMixin):
         :param path: The path to mount the method on. If not provided, defaults to the value of the "method_type"
             argument.
         :type path: str | unicode
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -150,6 +153,9 @@ class Auth(SystemBackendMixin):
         :type listing_visibility: list
         :param passthrough_request_headers: List of headers to whitelist and pass from the request to the backend.
         :type passthrough_request_headers: list
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
