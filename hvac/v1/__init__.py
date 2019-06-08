@@ -19,7 +19,7 @@ class Client(object):
 
     def __init__(self, url=None, token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, adapter=None, namespace=None):
+                 allow_redirects=True, session=None, adapter=adapters.Request, namespace=None):
         """Creates a new hvac client instance.
 
         :param url: Base URL for the Vault instance being addressed.
@@ -48,22 +48,19 @@ class Client(object):
         :type namespace: str
         """
 
-        if adapter is not None:
-            self._adapter = adapter
-        else:
-            token = token if token is not None else utils.get_token_from_env()
-            url = url if url else os.getenv('VAULT_ADDR', DEFAULT_URL)
-            self._adapter = adapters.Request(
-                base_uri=url,
-                token=token,
-                cert=cert,
-                verify=verify,
-                timeout=timeout,
-                proxies=proxies,
-                allow_redirects=allow_redirects,
-                session=session,
-                namespace=namespace
-            )
+        token = token if token is not None else utils.get_token_from_env()
+        url = url if url else os.getenv('VAULT_ADDR', DEFAULT_URL)
+        self._adapter = adapter(
+            base_uri=url,
+            token=token,
+            cert=cert,
+            verify=verify,
+            timeout=timeout,
+            proxies=proxies,
+            allow_redirects=allow_redirects,
+            session=session,
+            namespace=namespace
+        )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
         self._auth = api.AuthMethods(adapter=self._adapter)
