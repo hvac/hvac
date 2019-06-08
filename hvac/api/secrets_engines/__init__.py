@@ -8,6 +8,8 @@ from hvac.api.secrets_engines.pki import Pki
 from hvac.api.secrets_engines.kv_v1 import KvV1
 from hvac.api.secrets_engines.kv_v2 import KvV2
 from hvac.api.secrets_engines.transit import Transit
+from hvac.api.secrets_engines.database import Database
+from hvac.api.secrets_engines.consul import Consul
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
@@ -21,6 +23,7 @@ __all__ = (
     'Pki',
     'Transit',
     'SecretsEngines',
+    'Database'
 )
 
 
@@ -35,13 +38,13 @@ class SecretsEngines(VaultApiCategory):
         Kv,
         Pki,
         Transit,
+        Database,
+        Consul,
     ]
     unimplemented_classes = [
         'Ad',
         'AliCloud',
         'Azure',
-        'Consul',
-        'Database',
         'GcpKms',
         'Nomad',
         'RabbitMq',

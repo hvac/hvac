@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.9.2 (June 8th, 2019)
+
+BUG FIXES:
+
+* Fix kubernetes auth method list roles method. [GH-466](https://github.com/hvac/hvac/pull/466)
+* Enable consul secrets engine. [GH-460](https://github.com/hvac/hvac/pull/460)
+* Enable database secrets engine. [GH-455](https://github.com/hvac/hvac/pull/455)
+* Many fixes for the database secrets engine. [GH-457](https://github.com/hvac/hvac/pull/457)
+
+IMPROVEMENTS:
+
+* The `enable_auth_method()`, `tune_auth_method()`, `enable_secrets_engine()`, `tune_mount_configuration()` system backend method now take arbitrary `**kwargs` parameters to provide greater support for variations in accepted parameters in the underlying Vault plugins.
+* Azure auth params, add `num_uses`, change `bound_location` -> `bound_locations` and `bound_resource_group_names` -> `bound_resource_groups`. [GH-452](https://github.com/hvac/hvac/pull/452)
+
+MISCELLANEOUS:
+
+* The hvac project now has gitter chat enabled. Feel free to check it out for any online discussions related to this module at: [gitter.im/hvac/community](https://gitter.im/hvac/community))! [GH-465](https://github.com/hvac/hvac/pull/465)
+* Added Vault agent socket listener usage example under the "advanced usage" documentation section at: [hvac.readthedocs.io](https://hvac.readthedocs.io/en/stable/advanced_usage.html#vault-agent-unix-socket-listener) [GH-468](https://github.com/hvac/hvac/issues/468)
+
+Thanks to @denisvll, @Dudesons, and @drewmullen for their lovely contributions.
+
 ## 0.9.1 (May 25th, 2019)
 
 BUG FIXES:

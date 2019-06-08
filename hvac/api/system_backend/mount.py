@@ -25,7 +25,7 @@ class Mount(SystemBackendMixin):
         return mount_options.get(option_name, default_value)
 
     def enable_secrets_engine(self, backend_type, path=None, description=None, config=None, plugin_name=None,
-                              options=None, local=False, seal_wrap=False):
+                              options=None, local=False, seal_wrap=False, **kwargs):
         """Enable a new secrets engine at the given path.
 
         Supported methods:
@@ -63,6 +63,9 @@ class Mount(SystemBackendMixin):
         :type local: bool
         :param seal_wrap: <Vault enterprise only> Enable seal wrapping for the mount.
         :type seal_wrap: bool
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -78,6 +81,8 @@ class Mount(SystemBackendMixin):
             'local': local,
             'seal_wrap': seal_wrap,
         }
+
+        params.update(kwargs)
 
         api_path = '/v1/sys/mounts/{path}'.format(path=path)
         return self._adapter.post(
@@ -123,7 +128,7 @@ class Mount(SystemBackendMixin):
 
     def tune_mount_configuration(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
                                  audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None,
-                                 listing_visibility=None, passthrough_request_headers=None, options=None):
+                                 listing_visibility=None, passthrough_request_headers=None, options=None, force_no_cache=None, **kwargs):
         """Tune configuration parameters for a given mount point.
 
         Supported methods:
@@ -157,6 +162,11 @@ class Mount(SystemBackendMixin):
 
             * **version**: <KV> The version of the KV to mount. Set to "2" for mount KV v2.
         :type options: dict
+        :param force_no_cache: Disable caching.
+        :type force_no_cache: bool
+        :param kwargs: All dicts are accepted and passed to vault. See your specific secret engine for details on which
+            extra key-word arguments you might want to pass.
+        :type kwargs: dict
         :return: The response from the request.
         :rtype: request.Response
         """
@@ -170,12 +180,15 @@ class Mount(SystemBackendMixin):
             'audit_non_hmac_response_keys',
             'listing_visibility',
             'passthrough_request_headers',
+            'force_no_cache'
             'options',
         ]
         params = {}
         for optional_parameter in optional_parameters:
             if locals().get(optional_parameter) is not None:
                 params[optional_parameter] = locals().get(optional_parameter)
+
+        params.update(kwargs)
 
         api_path = '/v1/sys/mounts/{path}/tune'.format(path=path)
         return self._adapter.post(

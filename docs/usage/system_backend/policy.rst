@@ -14,15 +14,15 @@ Manipulate policies
 
     policy = """
     path "sys" {
-      policy = "deny"
+      capabilities = ["deny"]
     }
 
-    path "secret" {
-      policy = "write"
+    path "secret/*" {
+      capabilities = ["read", "list"]
     }
 
     path "secret/foo" {
-      policy = "read"
+      capabilities = ["create", "read", "update", "delete", "list"]
     }
     """
 
@@ -107,9 +107,17 @@ Example output:
 .. testoutput:: sys_policy
 
     secret-writer policy rules:
-    ...
-    path "secret" {
-      policy = "write"
+
+    path "sys" {
+      capabilities = ["deny"]
+    }
+
+    path "secret/*" {
+      capabilities = ["read", "list"]
+    }
+
+    path "secret/foo" {
+      capabilities = ["create", "read", "update", "delete", "list"]
     }
     ...
 
@@ -129,17 +137,16 @@ Examples
 
     policy = '''
         path "sys" {
-            policy = "deny"
+            capabilities = ["deny"]
         }
         path "secret" {
-            policy = "write"
+            capabilities = ["create", "read", "update", "delete", "list"]
         }
     '''
     client.sys.create_or_update_policy(
         name='secret-writer',
         policy=policy,
     )
-
 
 Delete Policy
 -------------

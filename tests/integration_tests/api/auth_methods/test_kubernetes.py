@@ -208,9 +208,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             )
 
     @parameterized.expand([
-        # param(
-        #     'success',  # TODO: figure out why this is returning a "InvalidPath" exception ("unsupported path")
-        # ),
+        param(
+            'success',
+        ),
         param(
             'no roles',
             num_roles_to_create=0,
@@ -219,7 +219,6 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         param(
             'no config',
             write_config_first=False,
-            raises=exceptions.InvalidPath,
         ),
     ])
     def test_list_roles(self, label, num_roles_to_create=1, write_config_first=True, raises=None):

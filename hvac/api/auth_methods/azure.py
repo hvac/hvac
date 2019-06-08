@@ -98,8 +98,8 @@ class Azure(VaultApiBase):
         )
 
     def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
-                    bound_group_ids=None, bound_location=None, bound_subscription_ids=None,
-                    bound_resource_group_names=None, bound_scale_sets=None, mount_point=DEFAULT_MOUNT_POINT):
+                    bound_group_ids=None, bound_locations=None, bound_subscription_ids=None,
+                    bound_resource_groups=None, bound_scale_sets=None, num_uses=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -113,6 +113,8 @@ class Azure(VaultApiBase):
         :type name: str | unicode
         :param policies: Policies to be set on tokens issued using this role.
         :type policies: list
+        :param num_uses: Number of uses to set on a token produced by this role.
+        :type num_uses: int
         :param ttl: The TTL period of tokens issued using this role in seconds.
         :type ttl: str | unicode
         :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
@@ -125,12 +127,12 @@ class Azure(VaultApiBase):
         :type bound_service_principal_ids: list
         :param bound_group_ids: The list of group ids that login is restricted to.
         :type bound_group_ids: list
-        :param bound_location: The list of locations that login is restricted to.
-        :type bound_location: list
+        :param bound_locations: The list of locations that login is restricted to.
+        :type bound_locations: list
         :param bound_subscription_ids: The list of subscription IDs that login is restricted to.
         :type bound_subscription_ids: list
-        :param bound_resource_group_names: The list of resource groups that login is restricted to.
-        :type bound_resource_group_names: list
+        :param bound_resource_groups: The list of resource groups that login is restricted to.
+        :type bound_resource_groups: list
         :param bound_scale_sets: The list of scale set names that the login is restricted to.
         :type bound_scale_sets: list
         :param mount_point: The "path" the azure auth method was mounted on.
@@ -153,10 +155,11 @@ class Azure(VaultApiBase):
             'period': period,
             'bound_service_principal_ids': bound_service_principal_ids,
             'bound_group_ids': bound_group_ids,
-            'bound_location': bound_location,
+            'bound_locations': bound_locations,
             'bound_subscription_ids': bound_subscription_ids,
-            'bound_resource_group_names': bound_resource_group_names,
+            'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
+            'num_uses': num_uses,
         }
 
         api_path = '/v1/auth/{mount_point}/role/{name}'.format(mount_point=mount_point, name=name)
