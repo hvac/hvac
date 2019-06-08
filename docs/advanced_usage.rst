@@ -1,6 +1,10 @@
 Advanced Usage
 ==============
 
+.. contents::
+   :local:
+   :depth: 1
+
 Making Use of Private CA
 ------------------------
 
@@ -60,3 +64,28 @@ Custom Requests / HTTP Adapter
 Calls to the `requests module`_. (which provides the methods hvac utilizes to send HTTP/HTTPS request to Vault instances) were extracted from the :class:`Client <hvac.v1.Client>` class and moved to a newly added :meth:`hvac.adapters` module. The :class:`Client <hvac.v1.Client>` class itself defaults to an instance of the :class:`Request <hvac.adapters.Request>` class for its :attr:`_adapter <hvac.v1.Client._adapter>` private attribute attribute if no adapter argument is provided to its :meth:`constructor <hvac.v1.Client.__init__>`. This attribute provides an avenue for modifying the manner in which hvac completes request. To enable this type of customization, implement a class of type :meth:`hvac.adapters.Adapter`, override its abstract methods, and pass an instance of this custom class to the adapter argument of the :meth:`Client constructor <hvac.v1.Client.__init__>`
 
 .. _requests module: http://requests.readthedocs.io/en/master/
+
+Vault Agent Unix Socket Listener
+--------------------------------
+
+hvac does not currently offer direct support of requests to a `Vault agent process configured with a unix socket listener <https://github.com/hashicorp/vault/pull/6220/>`_. However this use case can be handled with the help of the `requests_unixsocket module <https://pypi.org/project/requests-unixsocket/>`_. To accomplish this, first ensure the module is available (e.g. `pip install requests_unixsocket`), and then instantiate the :class:`Client <hvac.v1.Client>` class in the following manner:
+
+
+.. code:: python
+
+	import urllib.parse
+
+	import requests_unixsocket
+	import hvac
+
+	vault_agent_socket_path = '/var/run/vault/agent.sock'
+	socket_url = 'http+unix://{encoded_path}'.format(
+		encoded_path=urllib.parse.quote(vault_agent_socket_path, safe='')
+	)
+	socket_session = requests_unixsocket.Session()
+	client = hvac.Client(
+		url=socket_url,
+		session=socket_session,
+	)
+	print(client.secrets.kv.read_secret_version(path='some-secret'))
+
