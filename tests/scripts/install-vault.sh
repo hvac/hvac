@@ -29,8 +29,11 @@ function install_vault_release() {
 
     cd /tmp
 
-    curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
-    unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+    #curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+    #unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+    curl -sOL https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+    unzip vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+
     mv vault $HOME/bin
 }
 
