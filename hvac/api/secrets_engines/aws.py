@@ -326,7 +326,7 @@ class Aws(VaultApiBase):
             name=name,
         )
 
-        response = self._adapter.post(
+        response = self._adapter.get(
             url=api_path,
             json=params,
         )

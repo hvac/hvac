@@ -75,7 +75,7 @@ class TestAws(TestCase):
         aws = Aws(adapter=Request())
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
-                method='POST',
+                method='GET',
                 url=mock_url,
                 status_code=expected_status_code,
                 json=mock_response,
