@@ -17,14 +17,27 @@ VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
 LATEST_VAULT_VERSION = '1.1.3'
 
 
-def get_installed_vault_version():
+def get_vault_version_string():
     command = ['vault', '-version']
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
-    version = output.strip().split()[1].lstrip('v')
+    version_string = output.strip().split()[1].lstrip('v')
+    return version_string
+
+
+def get_installed_vault_version():
+    version_string = get_vault_version_string()
     # replace any '-beta1' type substrings with a StrictVersion parsable version. E.g., 1.0.0-beta1 => 1.0.0b1
-    version = version.replace('-', '').replace('beta', 'b')
+    version = version_string.replace('-', '').replace('beta', 'b')
+    version = version.replace('+ent', '')
     return version
+
+
+def is_enterprise():
+    version_string = get_vault_version_string()
+    if re.search(r'\+ent$', version_string) is not None:
+        return True
+    return False
 
 
 def if_vault_version(supported_version, comparison=operator.lt):
