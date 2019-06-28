@@ -596,6 +596,10 @@ class Client(object):
 
         return self.login('/v1/auth/{0}/login/{1}'.format(mount_point, username), json=params, use_token=use_token)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.iam_login,
+    )
     def auth_aws_iam(self, access_key, secret_key, session_token=None, header_value=None, mount_point='aws', role='', use_token=True, region='us-east-1'):
         """POST /auth/<mount point>/login
 
@@ -641,6 +645,10 @@ class Client(object):
 
         return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.ec2_login,
+    )
     def auth_ec2(self, pkcs7, nonce=None, role=None, use_token=True, mount_point='aws-ec2'):
         """POST /auth/<mount point>/login
 
@@ -900,6 +908,10 @@ class Client(object):
         """
         return self._adapter.delete('/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.configure,
+    )
     def create_vault_ec2_client_configuration(self, access_key, secret_key, endpoint=None, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/client
 
@@ -938,6 +950,10 @@ class Client(object):
 
         return self._adapter.post('/v1/auth/{0}/config/client'.format(mount_point), json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.read_config,
+    )
     def get_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/client
 
@@ -948,6 +964,10 @@ class Client(object):
         """
         return self._adapter.get('/v1/auth/{0}/config/client'.format(mount_point)).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.delete_config,
+    )
     def delete_vault_ec2_client_configuration(self, mount_point='aws-ec2'):
         """DELETE /auth/<mount_point>/config/client
 
@@ -958,6 +978,10 @@ class Client(object):
         """
         return self._adapter.delete('/v1/auth/{0}/config/client'.format(mount_point))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.create_certificate_configuration,
+    )
     def create_vault_ec2_certificate_configuration(self, cert_name, aws_public_cert, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/config/certificate/<cert_name>
 
@@ -976,6 +1000,10 @@ class Client(object):
         }
         return self._adapter.post('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name), json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.read_certificate_configuration,
+    )
     def get_vault_ec2_certificate_configuration(self, cert_name, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/certificate/<cert_name>
 
@@ -988,6 +1016,10 @@ class Client(object):
         """
         return self._adapter.get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.list_certificate_configurations,
+    )
     def list_vault_ec2_certificate_configurations(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/config/certificates?list=true
 
@@ -999,6 +1031,10 @@ class Client(object):
         params = {'list': True}
         return self._adapter.get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.create_role,
+    )
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
                         bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
                         bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
@@ -1089,6 +1125,10 @@ class Client(object):
 
         return self._adapter.post('/v1/auth/{0}/role/{1}'.format(mount_point, role), json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.read_role,
+    )
     def get_ec2_role(self, role, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/role/<role>
 
@@ -1101,6 +1141,10 @@ class Client(object):
         """
         return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.delete_role,
+    )
     def delete_ec2_role(self, role, mount_point='aws-ec2'):
         """DELETE /auth/<mount_point>/role/<role>
 
@@ -1113,6 +1157,10 @@ class Client(object):
         """
         return self._adapter.delete('/v1/auth/{0}/role/{1}'.format(mount_point, role))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.list_roles,
+    )
     def list_ec2_roles(self, mount_point='aws-ec2'):
         """GET /auth/<mount_point>/roles?list=true
 
@@ -1126,6 +1174,10 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.11.2',
+        new_method=api.auth_methods.Aws.create_role_tags,
+    )
     def create_ec2_role_tag(self, role, policies=None, max_ttl=None, instance_id=None,
                             disallow_reauthentication=False, allow_instance_migration=False, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/role/<role>/tag
