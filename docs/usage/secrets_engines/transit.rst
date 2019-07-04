@@ -109,7 +109,7 @@ Encrypt Data
 
 	encrypt_data_response = client.secrets.transit.encrypt_data(
 		name='hvac-key',
-		plaintext=base64.urlsafe_b64encode('hi its me hvac').decode('ascii'),
+		plaintext=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
 	)
 	ciphertext = encrypt_data_response['data']['ciphertext']
 	print('Encrypted plaintext ciphertext is: {cipher}'.format(cipher=ciphertext))
@@ -124,13 +124,13 @@ Decrypt Data
 
 	import hvac
 	client = hvac.Client()
-
+	
 	decrypt_data_response = client.secrets.transit.decrypt_data(
 		name='hvac-key',
 		ciphertext=ciphertext,
 	)
 	plaintext = decrypt_data_response['data']['plaintext']
-	print('Encrypted plaintext is: {text}'.format(text=plaintext))
+	print('Decrypted plaintext is: {text}'.format(text=plaintext))
 
 
 Rewrap Data
