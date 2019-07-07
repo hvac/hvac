@@ -22,7 +22,7 @@ matrix:
   # Don't wait on the "allow_failures" build jobs before reporting on the overall success/failure of the current build.
   fast_finish: true
 install:
-#  - tests/scripts/install-consul.sh
+  - tests/scripts/install-consul.sh
   - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION} ${HVAC_VAULT_LICENSE}
   - pip install tox-travis
 script:
