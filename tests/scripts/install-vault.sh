@@ -2,7 +2,9 @@
 set -eux
 
 DEFAULT_VAULT_VERSION=1.1.3
+DEFAULT_VAULT_LICENSE=oss
 HVAC_VAULT_VERSION=${1:-$DEFAULT_VAULT_VERSION}
+HVAC_VAULT_LICENSE=${2:-DEFAULT_VAULT_LICENSE}
 
 function build_and_install_vault_head_ref() {
     mkdir -p $HOME/bin
@@ -28,11 +30,13 @@ function install_vault_release() {
     mkdir -p $HOME/bin
 
     cd /tmp
-
-    #curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
-    #unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
-    curl -sOL https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
-    unzip vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+    if [[ "$HVAC_VAULT_LICENSE" == "oss" ]]; then
+        curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+        unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+    else
+        curl -sOL https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+        unzip vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+    fi
 
     mv vault $HOME/bin
 }
