@@ -4,7 +4,7 @@ branches:
   - 'develop'
 exclude-lables:
   - 'release'
-  - 'skip-release-notes'
+  - 'skip-changelog'
 categories:
   - title: '🚀 Features'
     labels:
