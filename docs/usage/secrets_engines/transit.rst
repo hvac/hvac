@@ -8,7 +8,8 @@ Transit
 Create Key
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.create_key`
+.. automethod:: hvac.api.secrets_engines.Transit.create_key
+   :noindex:
 
 .. code:: python
 
@@ -20,7 +21,8 @@ Create Key
 Read Key
 --------
 
-:py:meth:`hvac.api.secrets_engines.Transit.read_key`
+.. automethod:: hvac.api.secrets_engines.Transit.read_key
+   :noindex:
 
 .. code:: python
 
@@ -35,7 +37,8 @@ Read Key
 List Keys
 ---------
 
-:py:meth:`hvac.api.secrets_engines.Transit.list_keys`
+.. automethod:: hvac.api.secrets_engines.Transit.list_keys
+   :noindex:
 
 .. code:: python
 
@@ -50,7 +53,8 @@ List Keys
 Delete Key
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.delete_key`
+.. automethod:: hvac.api.secrets_engines.Transit.delete_key
+   :noindex:
 
 .. code:: python
 
@@ -62,7 +66,8 @@ Delete Key
 Update Key Configuration
 ------------------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.update_key_configuration`
+.. automethod:: hvac.api.secrets_engines.Transit.update_key_configuration
+   :noindex:
 
 .. code:: python
 
@@ -79,7 +84,8 @@ Update Key Configuration
 Rotate Key
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.rotate_key`
+.. automethod:: hvac.api.secrets_engines.Transit.rotate_key
+   :noindex:
 
 .. code:: python
 
@@ -90,7 +96,8 @@ Rotate Key
 Export Key
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.encrypt_key`
+.. automethod:: hvac.api.secrets_engines.Transit.export_key
+   :noindex:
 
 .. code:: python
 
@@ -103,7 +110,8 @@ Export Key
 Encrypt Data
 ------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.decrypt_data`
+.. automethod:: hvac.api.secrets_engines.Transit.decrypt_data
+   :noindex:
 
 .. code:: python
 
@@ -122,13 +130,14 @@ Encrypt Data
 Decrypt Data
 ------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.decrypt_data`
+.. automethod:: hvac.api.secrets_engines.Transit.decrypt_data
+   :noindex:
 
 .. code:: python
 
 	import hvac
 	client = hvac.Client()
-	
+
 	decrypt_data_response = client.secrets.transit.decrypt_data(
 		name='hvac-key',
 		ciphertext=ciphertext,
@@ -140,7 +149,8 @@ Decrypt Data
 Rewrap Data
 -----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.rewrap_data`
+.. automethod:: hvac.api.secrets_engines.Transit.rewrap_data
+   :noindex:
 
 .. code:: python
 
@@ -158,7 +168,8 @@ Rewrap Data
 Generate Data Key
 -----------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.generate_data_key`
+.. automethod:: hvac.api.secrets_engines.Transit.generate_data_key
+   :noindex:
 
 .. code:: python
 
@@ -172,7 +183,8 @@ Generate Data Key
 Generate Random Bytes
 ---------------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.generate_random_bytes`
+.. automethod:: hvac.api.secrets_engines.Transit.generate_random_bytes
+   :noindex:
 
 .. code:: python
 
@@ -188,7 +200,8 @@ Generate Random Bytes
 Hash Data
 ---------
 
-:py:meth:`hvac.api.secrets_engines.Transit.hash_data`
+.. automethod:: hvac.api.secrets_engines.Transit.hash_data
+   :noindex:
 
 .. code:: python
 
@@ -206,7 +219,8 @@ Hash Data
 Generate Hmac
 -------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.generate_hmac`
+.. automethod:: hvac.api.secrets_engines.Transit.generate_hmac
+   :noindex:
 
 .. code:: python
 
@@ -224,7 +238,8 @@ Generate Hmac
 Sign Data
 ---------
 
-:py:meth:`hvac.api.secrets_engines.Transit.sign_data`
+.. automethod:: hvac.api.secrets_engines.Transit.sign_data
+   :noindex:
 
 .. code:: python
 
@@ -242,7 +257,8 @@ Sign Data
 Verify Signed Data
 ------------------
 
-:py:meth:`hvac.api.secrets_engines.Transit.verify_signed_data`
+.. automethod:: hvac.api.secrets_engines.Transit.verify_signed_data
+   :noindex:
 
 .. code:: python
 
@@ -260,7 +276,8 @@ Verify Signed Data
 Backup Key
 ----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.backup_key`
+.. automethod:: hvac.api.secrets_engines.Transit.backup_key
+   :noindex:
 
 .. code:: python
 
@@ -276,7 +293,8 @@ Backup Key
 Restore Key
 -----------
 
-:py:meth:`hvac.api.secrets_engines.Transit.restore_key`
+.. automethod:: hvac.api.secrets_engines.Transit.restore_key
+   :noindex:
 
 .. code:: python
 
@@ -288,7 +306,8 @@ Restore Key
 Trim Key
 --------
 
-:py:meth:`hvac.api.secrets_engines.Transit.trim_key`
+.. automethod:: hvac.api.secrets_engines.Transit.trim_key
+   :noindex:
 
 .. code:: python
 
