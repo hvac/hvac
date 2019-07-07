@@ -5,6 +5,13 @@ Transit
    :local:
    :depth: 1
 
+
+.. testsetup:: transit_secret
+
+    client.sys.enable_secrets_engine(
+        backend_type='transit',
+    )
+
 .. note:: The following helper method is used various of the examples included here.
 
 .. testcode:: transit_secret
@@ -395,3 +402,7 @@ Examples
         name='hvac-key',
         min_version=3,
     )
+
+.. testcleanup:: transit_secret
+
+    client.sys.disable_secrets_engine('transit')
