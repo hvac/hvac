@@ -520,7 +520,10 @@ Trim Key
 Examples
 ````````
 
+.. note:: Transit key trimming was added for Vault versions >=0.11.4.
+
 .. testcode:: transit_secret
+    :skipif: test_utils.vault_version_lt('0.11.4')
 
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
