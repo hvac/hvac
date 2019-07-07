@@ -18,7 +18,7 @@ matrix:
       env: TOXENV=docs
   allow_failures:
     # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
-    - env: HVAC_VAULT_VERSION=HEAD
+    - env: HVAC_VAULT_VERSION=HEAD HVAC_VAULT_LICENSE=OSS
   # Don't wait on the "allow_failures" build jobs before reporting on the overall success/failure of the current build.
   fast_finish: true
 install:
