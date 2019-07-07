@@ -30,12 +30,12 @@ function install_vault_release() {
     mkdir -p $HOME/bin
 
     cd /tmp
-    if [[ "$HVAC_VAULT_LICENSE" == "oss" ]]; then
-        curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
-        unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
-    else
+    if [[ "$HVAC_VAULT_LICENSE" == "enterprise" ]]; then
         curl -sOL https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
         unzip vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip
+    else
+        curl -sOL https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
+        unzip vault_${HVAC_VAULT_VERSION}_linux_amd64.zip
     fi
 
     mv vault $HOME/bin
