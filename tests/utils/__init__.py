@@ -14,7 +14,7 @@ from hvac import Client
 logger = logging.getLogger(__name__)
 
 VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
-LATEST_VAULT_VERSION = '0.11.4'
+LATEST_VAULT_VERSION = '1.1.3'
 
 
 def get_installed_vault_version():
