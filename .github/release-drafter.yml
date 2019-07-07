@@ -12,6 +12,9 @@ categories:
   - title: '🐛 Bug Fixes'
     labels:
       - 'bug'
+  - title: '📚 Documentation'
+    labels:
+      - 'documentation'
   - title: '🧰 Miscellaneous'
     labels:
       - 'misc'
