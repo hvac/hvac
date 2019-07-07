@@ -30,3 +30,13 @@ script:
 notifications:
   webhooks:
     secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
+deploy:
+  provider: pypi
+  user: hvac-bot
+  password:
+    secure: 2iA1+OX1fzv6+p13S1hAfUA9l8Rqh4PTjwTkZTiaRGoXNmdRVTG8F6Nyz4yW38bTROyHPD++/pTTtsQtCthH0595EDySBQG3DhRBMxXqZFMbLLQjWUpo3I2GCeEuWNblprsu7htMd41MKlQng8Qn8LdYFO51xtp577zVhA37hXM=
+  distributions: "sdist bdist_wheel"
+  skip_existing: true
+  skip_cleanup: true
+  on:
+    tags: true
