@@ -31,10 +31,6 @@ Due to the close connection between this module and HashiCorp Vault versions, br
 
 ## Creating / Publishing Releases
 
-- [ ] Ensure your working directory is clear by running:
-  ```
-  make distclean
-  ```
 - [ ] Checkout the `develop` branch:
   ```
   git checkout develop
