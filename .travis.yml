@@ -36,7 +36,7 @@ deploy:
   provider: pypi
   user: hvac-bot
   password:
-    secure: 2iA1+OX1fzv6+p13S1hAfUA9l8Rqh4PTjwTkZTiaRGoXNmdRVTG8F6Nyz4yW38bTROyHPD++/pTTtsQtCthH0595EDySBQG3DhRBMxXqZFMbLLQjWUpo3I2GCeEuWNblprsu7htMd41MKlQng8Qn8LdYFO51xtp577zVhA37hXM=
+    secure: s9LLuUp1+ZTE3xvXdW9tF9hPUk7jxsFvol3PouDXdSVBNeVUhyHG1fMxOi1p8UOhx7e/iOGv8Bi77z0gDQgcynrFywhHEGbuna92Am40wMFT/Lu+JzHi8y2zBdahNsi80FnlNhW3MEtCNkXI6HgIlBpzEcfSm0ovfuncT0+5fCI=
   distributions: "sdist bdist_wheel"
   skip_existing: true
   skip_cleanup: true
