@@ -30,6 +30,8 @@ script:
 notifications:
   webhooks:
     secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
+before_deploy:
+  - make package
 deploy:
   provider: pypi
   user: hvac-bot
