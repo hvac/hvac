@@ -1,5 +1,8 @@
 name-template: 'v$NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
+branches:
+  - 'master'
+  - 'develop'
 exclude-lables:
   - 'release'
 categories:
