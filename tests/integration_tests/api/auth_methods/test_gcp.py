@@ -29,29 +29,21 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         param(
             'success',
-        ),
-        param(
-            'set valid credentials',
             credentials=utils.load_config_file('example.jwt.json'),
         ),
         param(
             'set invalid credentials',
             credentials='some invalid JWT',
             raises=exceptions.InvalidRequest,
-            exception_message='error reading google credentials from given JSON'
         ),
     ])
-    def test_configure(self, label, credentials='', raises=None, exception_message=''):
+    def test_configure(self, label, credentials='', raises=None):
         if raises:
-            with self.assertRaises(raises) as cm:
+            with self.assertRaises(raises):
                 self.client.auth.gcp.configure(
                     credentials=credentials,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
-            self.assertIn(
-                member=exception_message,
-                container=str(cm.exception),
-            )
         else:
             configure_response = self.client.auth.gcp.configure(
                 credentials=credentials,
