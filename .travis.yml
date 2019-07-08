@@ -33,6 +33,7 @@ notifications:
 jobs:
   include:
     - stage: PyPi Release
+      script: skip
       before_deploy:
         - make package
       deploy:
