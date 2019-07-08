@@ -1,12 +1,12 @@
 dist: xenial
 language: python
 python:
-  - '2.7'
   - '3.7'
+  - '2.7'
 env:
-  - HVAC_VAULT_VERSION=0.11.0 HVAC_VAULT_LICENSE=enterprise  # This ver kept explicitly; it has subsequently reverted backwards-incompatible changes.
+  - HVAC_VAULT_VERSION=1.1.3 HVAC_VAULT_LICENSE=enterprise
   - HVAC_VAULT_VERSION=1.0.3 HVAC_VAULT_LICENSE=enterprise
-  - HVAC_VAULT_VERSION=1.1.0 HVAC_VAULT_LICENSE=enterprise
+  - HVAC_VAULT_VERSION=0.11.0 HVAC_VAULT_LICENSE=enterprise  # This ver kept explicitly; it has subsequently reverted backwards-incompatible changes.
   - HVAC_VAULT_VERSION=HEAD HVAC_VAULT_LICENSE=OSS
   - TOXENV=flake8
 matrix:
@@ -30,15 +30,20 @@ script:
 notifications:
   webhooks:
     secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
-before_deploy:
-  - make package
-deploy:
-  provider: pypi
-  user: hvac-bot
-  password:
-    secure: s9LLuUp1+ZTE3xvXdW9tF9hPUk7jxsFvol3PouDXdSVBNeVUhyHG1fMxOi1p8UOhx7e/iOGv8Bi77z0gDQgcynrFywhHEGbuna92Am40wMFT/Lu+JzHi8y2zBdahNsi80FnlNhW3MEtCNkXI6HgIlBpzEcfSm0ovfuncT0+5fCI=
-  distributions: "sdist bdist_wheel"
-  skip_existing: true
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+  include:
+    - stage: PyPi Release
+      name: 'Publish to PyPI During Git "tag" Builds'
+      install: skip
+      script: skip
+      before_deploy:
+        - make package
+      deploy:
+        provider: pypi
+        user: hvac-bot
+        password:
+          secure: s9LLuUp1+ZTE3xvXdW9tF9hPUk7jxsFvol3PouDXdSVBNeVUhyHG1fMxOi1p8UOhx7e/iOGv8Bi77z0gDQgcynrFywhHEGbuna92Am40wMFT/Lu+JzHi8y2zBdahNsi80FnlNhW3MEtCNkXI6HgIlBpzEcfSm0ovfuncT0+5fCI=
+        distributions: "sdist bdist_wheel"
+        skip_cleanup: true
+        on:
+          tags: true
