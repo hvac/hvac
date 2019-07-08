@@ -4,7 +4,7 @@ python:
   - '2.7'
   - '3.7'
 env:
-  - HVAC_VAULT_VERSION=1.1.0 HVAC_VAULT_LICENSE=enterprise
+  - HVAC_VAULT_VERSION=1.1.3 HVAC_VAULT_LICENSE=enterprise
   - HVAC_VAULT_VERSION=1.0.3 HVAC_VAULT_LICENSE=enterprise
   - HVAC_VAULT_VERSION=0.11.0 HVAC_VAULT_LICENSE=enterprise  # This ver kept explicitly; it has subsequently reverted backwards-incompatible changes.
   - HVAC_VAULT_VERSION=HEAD HVAC_VAULT_LICENSE=OSS
