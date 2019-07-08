@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.9.3 (July 7th, 2019)
+
+### 🚀 Features
+
+- Add Create and List Namespace System Backend Methods. GH-489
+- Expanded Support for AWS Auth Method. GH-482
+- Capabilities System Backend Support. GH-476
+
+### 🐛 Bug Fixes
+
+- GCP Auth Test Case Updates For Changes in Vault v1.1.1+. GH-487
+- Change AWS `generate_credentials` request method to GET. GH-475
+
+### 📚 Documentation
+
+- Numerous Fixes and Doctest Support for Transit Secrets Engine. GH-486
+
+### 🧰 Miscellaneous
+
+- Start Using Enterprise (Trial) Version of Vault For Travis CI Builds. GH-478
+- Update Travis CI Test Matrix With Latest Vault Version & Drop Python 3.6. GH-488
+- Set up release-drafter / _mostly_ automated releases. GH-485
+
+Thanks to @donjar, @fhemberger, @jeffwecan, @stevefranks and @stevenmanton for their lovely contributions.
+
 ## 0.9.2 (June 8th, 2019)
 
 BUG FIXES:

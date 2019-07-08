@@ -1,0 +1,26 @@
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+branches:
+  - 'develop'
+exclude-lables:
+  - 'release'
+  - 'skip-changelog'
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+  - title: '📚 Documentation'
+    labels:
+      - 'documentation'
+  - title: '🧰 Miscellaneous'
+    labels:
+      - 'misc'
+change-template: '- $TITLE. GH-$NUMBER'
+template: |
+
+  $CHANGES
+
+  Thanks to $CONTRIBUTORS for their lovely contributions.
