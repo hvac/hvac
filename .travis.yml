@@ -16,22 +16,6 @@ matrix:
       env: HVAC_VAULT_VERSION=1.1.3 HVAC_VAULT_LICENSE=OSS
     - name: 'Test Documentation Build - Sphinx: "make html"'
       env: TOXENV=docs
-  allow_failures:
-    # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
-    - env: HVAC_VAULT_VERSION=HEAD HVAC_VAULT_LICENSE=OSS
-  # Don't wait on the "allow_failures" build jobs before reporting on the overall success/failure of the current build.
-  fast_finish: true
-install:
-  - tests/scripts/install-consul.sh
-  - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION} ${HVAC_VAULT_LICENSE}
-  - pip install tox-travis
-script:
-  - make test
-notifications:
-  webhooks:
-    secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
-jobs:
-  include:
     - stage: PyPi Release
       name: 'Publish to PyPI During Git "tag" Builds'
       install: skip
@@ -47,3 +31,17 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
+  allow_failures:
+    # Ignore failed tests run against Vault builds using the HEAD ref at: https://github.com/hashicorp/vault.
+    - env: HVAC_VAULT_VERSION=HEAD HVAC_VAULT_LICENSE=OSS
+  # Don't wait on the "allow_failures" build jobs before reporting on the overall success/failure of the current build.
+  fast_finish: true
+install:
+  - tests/scripts/install-consul.sh
+  - tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION} ${HVAC_VAULT_LICENSE}
+  - pip install tox-travis
+script:
+  - make test
+notifications:
+  webhooks:
+    secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
