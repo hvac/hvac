@@ -33,6 +33,7 @@ notifications:
 jobs:
   include:
     - stage: PyPi Release
+      name: 'Publish to PyPI During Git "tag" Builds'
       install: skip
       script: skip
       before_deploy:
