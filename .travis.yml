@@ -30,15 +30,17 @@ script:
 notifications:
   webhooks:
     secure: "IuHvo7I77oZKo++O9QSq1TOtYOvZnqSTg7uO1lr7/+6fMsFLZE4YQVVqa3qyJwn5Q2DafAIdzVj5OyWT9FK8hDTAhqkDL4iVnh+Bk+ph1WBYA0OzFv32K0M46byUwTMmeq51DIuTozhJ/v58pYk6d95MJT9J5/cXCeGmr2vAUqo="
-before_deploy:
-  - make package
-deploy:
-  provider: pypi
-  user: hvac-bot
-  password:
-    secure: s9LLuUp1+ZTE3xvXdW9tF9hPUk7jxsFvol3PouDXdSVBNeVUhyHG1fMxOi1p8UOhx7e/iOGv8Bi77z0gDQgcynrFywhHEGbuna92Am40wMFT/Lu+JzHi8y2zBdahNsi80FnlNhW3MEtCNkXI6HgIlBpzEcfSm0ovfuncT0+5fCI=
-  distributions: "sdist bdist_wheel"
-  skip_existing: true
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+  include:
+    - stage: PyPi Release
+      before_deploy:
+        - make package
+      deploy:
+        provider: pypi
+        user: hvac-bot
+        password:
+          secure: s9LLuUp1+ZTE3xvXdW9tF9hPUk7jxsFvol3PouDXdSVBNeVUhyHG1fMxOi1p8UOhx7e/iOGv8Bi77z0gDQgcynrFywhHEGbuna92Am40wMFT/Lu+JzHi8y2zBdahNsi80FnlNhW3MEtCNkXI6HgIlBpzEcfSm0ovfuncT0+5fCI=
+        distributions: "sdist bdist_wheel"
+        skip_cleanup: true
+        on:
+          tags: true
