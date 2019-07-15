@@ -24,7 +24,7 @@ Examples
     client.sys.create_namespace(path="team1")
 
     # Create namespace team1/app1 where app1 is a child of team1
-    client2 = hvac.Client(url=url, token=token, namespace="team1")
+    client2 = hvac.Client(url='https://127.0.0.1:8200', namespace="team1")
     client2.sys.create_namespace(path="app1")
 
 Example output:
@@ -47,6 +47,7 @@ Examples
 .. testcode:: sys_namespace
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
+    client.sys.create_namespace(path='team1')
 
     client.sys.list_namespaces()
 
@@ -70,13 +71,11 @@ Examples
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
     client.sys.create_namespace(path="team1")
-    client2 = hvac.Client(url=url, token=token, namespace="team1")
+    client2 = hvac.Client(url='https://127.0.0.1:8200', namespace="team1")
     client2.sys.create_namespace(path="app1")
 
     # Delete namespace app1 where app1 is a child of team1
-    client2 = hvac.Client(url=url, token=token, namespace="team1")
-    child_namespace = client2.sys.delete_namespace(path="app1")
+    client2.sys.delete_namespace(path="app1")
 
     # Delete namespace team1
-    client = hvac.Client(url=url, token=token)
-    new_namespace = client.sys.delete_namespace(path="team1")
+    client.sys.delete_namespace(path="team1")
