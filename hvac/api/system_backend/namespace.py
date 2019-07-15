@@ -37,7 +37,7 @@ class Namespace(SystemBackendMixin):
         """Delete a namespaces. You cannot delete a namespace with existing child namespaces.
 
         Supported methods:
-            DELETE: /sys/namespaces. Produces: 200 application/json
+            DELETE: /sys/namespaces. Produces: 204 (empty body)
 
         :return: The response of the request.
         :rtype: requests.Response
@@ -47,5 +47,3 @@ class Namespace(SystemBackendMixin):
             url=api_path,
         )
         return response
-
-

@@ -9,14 +9,15 @@ Namespace
 Create Namespace
 ----------------
 
-.. automethod:: hvac.api.system_backend.namespace.create_namespace
+.. automethod:: hvac.api.system_backend.Namespace.create_namespace
    :noindex:
 
 Examples
 ````````
 
 .. testcode:: sys_namespace
-   
+    :skipif: not test_utils.is_enterprise() 
+
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
@@ -45,9 +46,11 @@ Examples
 ````````
 
 .. testcode:: sys_namespace
+    :skipif: not test_utils.is_enterprise() 
+    
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
-    client.sys.create_namespace(path='team1')
+    client.sys.create_namespace(path='testns')
 
     client.sys.list_namespaces()
 
@@ -67,12 +70,7 @@ Examples
 ````````
 
 .. testcode:: sys_namespace
-    
-    import hvac
-    client = hvac.Client(url='https://127.0.0.1:8200')
-    client.sys.create_namespace(path="team1")
-    client2 = hvac.Client(url='https://127.0.0.1:8200', namespace="team1")
-    client2.sys.create_namespace(path="app1")
+    :skipif: not test_utils.is_enterprise()
 
     # Delete namespace app1 where app1 is a child of team1
     client2.sys.delete_namespace(path="app1")
