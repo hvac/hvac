@@ -37,7 +37,7 @@ class Consul(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
-        ).json()
+        )
 
     def create_or_update_role(self, name, policy="", policies=[], token_type="client", local=False, ttl="", max_ttl="",
                               mount_point=DEFAULT_MOUNT_POINT):
@@ -87,7 +87,7 @@ class Consul(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
-        ).json()
+        )
 
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries for information about a Consul role with the given name.
