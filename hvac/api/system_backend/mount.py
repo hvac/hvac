@@ -106,6 +106,25 @@ class Mount(SystemBackendMixin):
             url=api_path,
         )
 
+    def read_configuration(self, path):
+        """Read the given mount's configuration.
+
+        This will return the mount configuration.
+
+        Supported methods:
+            GET: /{mount_point}/config. Produces: 200 application/json
+
+        :param path: Specifies the path where the secrets engine will be mounted. This is specified as part of the URL.
+        :type path: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = '/v1/{path}/config'.format(path=path)
+        response = self._adapter.get(
+            url=api_path,
+        )
+        return response.json()    
+
     def read_mount_configuration(self, path):
         """Read the given mount's configuration.
 
