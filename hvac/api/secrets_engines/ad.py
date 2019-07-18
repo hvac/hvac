@@ -54,7 +54,7 @@ class ActiveDirectory(VaultApiBase):
             url=api_path,
             json=params,
         )
-    
+
     def read_configuration(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read the given mount's configuration.
         This will return the mount configuration.
@@ -65,7 +65,7 @@ class ActiveDirectory(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{path}/config'.format(path=path)
+        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
