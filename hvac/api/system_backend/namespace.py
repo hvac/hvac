@@ -7,7 +7,7 @@ class Namespace(SystemBackendMixin):
         """Create a namespace at the given path.
 
         Supported methods:
-            LIST: /sys/namespaces/{path}. Produces: 200 application/json
+            POST: /sys/namespaces/{path}. Produces: 200 application/json
 
         :return: The response of the request.
         :rtype: requests.Response
@@ -32,3 +32,18 @@ class Namespace(SystemBackendMixin):
             url=api_path,
         )
         return response.json()
+
+    def delete_namespace(self, path):
+        """Delete a namespaces. You cannot delete a namespace with existing child namespaces.
+
+        Supported methods:
+            DELETE: /sys/namespaces. Produces: 204 (empty body)
+
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = '/v1/sys/namespaces/{path}'.format(path=path)
+        response = self._adapter.delete(
+            url=api_path,
+        )
+        return response

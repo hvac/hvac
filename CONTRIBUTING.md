@@ -2,13 +2,28 @@
 
 Feel free to open issues and/or pull requests with additional features or improvements! For general questions about contributing to hvac that don't fit in the scope of a GitHub issue, and for any folks are interested in becoming a maintainer of hvac, please feel free to join our gitter chat room for discussions at [gitter.im/hvac/community](https://gitter.im/hvac/community): [![Gitter chat](https://badges.gitter.im/hvac/community.png)](https://gitter.im/hvac/community)
 
+## Typical Devevelopment Environment Setup
+
+```
+virtualenv hvac-env
+source hvac-env/bin/activate
+
+git clone https://github.com/hvac/hvac.git
+cd hvac
+pip install -e .
+```
+
 ## Testing
 
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
 1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `tests/scripts/install-vault.sh`. Note: by default this script installs the OSS version of Vault. An enterprise trial version of the Vault binary is available for testing (but has an explicitly limited runtime). To run integration test cases requiring enterprise Vault, you can invoke the installation script with: `install-vault.sh <desired version> 'enterprise'`
-2. [Install Tox](http://tox.readthedocs.org/en/latest/install.html)
+2. Install requirements
+```
+cd hvac
+pip install -r requirements.txt
+```
 3. Run tests: `make test`
 
 ## Updating Requirements
@@ -17,6 +32,14 @@ This project uses [pip-tool's](https://pypi.org/project/pip-tools/) `pip-compile
 Any given requirements file can be manually updated by following the pip-compile comments at the top of the file. Alternatively, the `update-all-requirements` Makefile target can be used to update requirements across the board (this has a dependency on docker being available).
 
 ## Documentation
+
+## Testing Docs
+
+```
+cd docs/
+pip install -r requirements.txt
+make doctest
+```
 
 ### Examples
 

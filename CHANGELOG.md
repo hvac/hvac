@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.9.4 (July 18th, 2019)
+
+### 🚀 Features
+
+- Add delete_namespace Method and Establish Namespace Documentation. GH-500
+
+### 🐛 Bug Fixes
+
+- Fix consul configure_access/create_or_update_role Method Return Values. GH-502
+
+### 📚 Documentation
+
+- Fix Database generate_credentials Docstring Params. GH-498
+
+### 🧰 Miscellaneous
+
+- Add config for updatedocs app. GH-495
+- Add a Codeowners file for automatic reviewer assignments. GH-494
+
+Thanks to @Tylerlhess, @drewmullen and @jeffwecan for their lovely contributions.
+
+
 ## 0.9.3 (July 7th, 2019)
 
 ### 🚀 Features

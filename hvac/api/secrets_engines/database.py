@@ -210,10 +210,10 @@ class Database(VaultApiBase):
     def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a new set of dynamic credentials based on the named role.
 
-        :param name: Specifies the name of the role to delete.
-        :type name: str | unicode
         :param name: Specifies the name of the role to create credentials against
         :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
