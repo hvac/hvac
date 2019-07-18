@@ -16,7 +16,7 @@ Examples
 ````````
 
 .. testcode:: sys_namespace
-    :skipif: not test_utils.is_enterprise() 
+    :skipif: not test_utils.is_enterprise()
 
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
@@ -46,8 +46,8 @@ Examples
 ````````
 
 .. testcode:: sys_namespace
-    :skipif: not test_utils.is_enterprise() 
-    
+    :skipif: not test_utils.is_enterprise()
+
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
     client.sys.create_namespace(path='testns')
