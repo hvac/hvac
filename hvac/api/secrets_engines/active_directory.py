@@ -15,8 +15,10 @@ class ActiveDirectory(VaultApiBase):
     def configure(self, binddn="", bindpass="", url="", userdn=None, upndomain=None, ttl=0, max_ttl=0,
                   mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """Configure shared information for the ad secrets engine.
+
         Supported methods:
             POST: /{mount_point}/config. Produces: 204 (empty body)
+
         :param binddn: Distinguished name of object to bind when performing user and group search.
         :type binddn: str | unicode
         :param bindpass: Password to use along with binddn when performing user search.
@@ -57,9 +59,12 @@ class ActiveDirectory(VaultApiBase):
 
     def read_configuration(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read the given mount's configuration.
+
         This will return the mount configuration.
+
         Supported methods:
             GET: /{mount_point}/config. Produces: 200 application/json
+
         :param path: Specifies the path where the secrets engine will be mounted. This is specified as part of the URL.
         :type path: str | unicode
         :return: The JSON response of the request.
@@ -73,9 +78,12 @@ class ActiveDirectory(VaultApiBase):
 
     def read_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read the configured shared information for the ad secrets engine.
+
         Credentials will be omitted from returned data.
+
         Supported methods:
             GET: /{mount_point}/config. Produces: 200 application/json
+
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -89,13 +97,14 @@ class ActiveDirectory(VaultApiBase):
 
     def create_or_update_role(self, name, service_account_name="", ttl="", mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the ad role definition.
+
         :param name: Specifies the name of an existing role against which to create this ad credential.
         :type name: str | unicode
         :param service_account_name: The name of a pre-existing service account in Active Directory that maps to this role.
         :type service_account_name: str | unicode
         :param ttl: Specifies the TTL for this role.
-        This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
-        If not provided, the default Vault TTL is used.
+            This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
+            If not provided, the default Vault TTL is used.
         :type ttl: str | unicode
         :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
         :type mount_point: str | unicode
