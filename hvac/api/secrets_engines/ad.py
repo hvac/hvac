@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Active Directory methods module."""
-import json
-import logging
 
-from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'ad'
@@ -26,9 +23,9 @@ class ActiveDirectory(VaultApiBase):
         :type bindpass: str | unicode
         :param url: Base DN under which to perform user search.
         :type url: str | unicode
-        :param userdn: Base DN under which to perform user search. 
+        :param userdn: Base DN under which to perform user search.
         :type userdn: str | unicode
-        :param upndomain: userPrincipalDomain used to construct the UPN string for the authenticating user. 
+        :param upndomain: userPrincipalDomain used to construct the UPN string for the authenticating user.
         :type upndomain: str | unicode
         :param ttl: – The default password time-to-live in seconds. Once the ttl has passed, a password will be rotated the next time it's requested.
         :type ttl: int | str
@@ -49,9 +46,9 @@ class ActiveDirectory(VaultApiBase):
             'ttl': ttl,
             'max_ttl': max_ttl,
         }
-        
+
         params.update(kwargs)
-        
+
         api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -90,19 +87,16 @@ class ActiveDirectory(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = "/v1/{}/roles/{}".format(mount_point, name)
-
         params = {
             "name": name,
             "service_account_name": service_account_name,
             "ttl": ttl,
         }
-
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-   
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries for information about a ad role with the given name.
         If no role exists with that name, a 404 is returned.
