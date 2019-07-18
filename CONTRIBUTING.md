@@ -33,7 +33,7 @@ Any given requirements file can be manually updated by following the pip-compile
 
 ## Documentation
 
-## Testing Docs
+### Testing Docs
 
 ```
 cd docs/
