@@ -57,25 +57,6 @@ class ActiveDirectory(VaultApiBase):
             json=params,
         )
 
-    def read_configuration(self, mount_point=DEFAULT_MOUNT_POINT):
-        """Read the given mount's configuration.
-
-        This will return the mount configuration.
-
-        Supported methods:
-            GET: /{mount_point}/config. Produces: 200 application/json
-
-        :param path: Specifies the path where the secrets engine will be mounted. This is specified as part of the URL.
-        :type path: str | unicode
-        :return: The JSON response of the request.
-        :rtype: requests.Response
-        """
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
-        response = self._adapter.get(
-            url=api_path,
-        )
-        return response.json()
-
     def read_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read the configured shared information for the ad secrets engine.
 
