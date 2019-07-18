@@ -123,7 +123,7 @@ class Mount(SystemBackendMixin):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json()    
+        return response.json()
 
     def read_mount_configuration(self, path):
         """Read the given mount's configuration.
