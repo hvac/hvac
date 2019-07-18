@@ -2,6 +2,7 @@
 from hvac.api.secrets_engines.aws import Aws
 from hvac.api.secrets_engines.azure import Azure
 from hvac.api.secrets_engines.gcp import Gcp
+from hvac.api.secrets_engines.ad import ActiveDirectory
 from hvac.api.secrets_engines.identity import Identity
 from hvac.api.secrets_engines.kv import Kv
 from hvac.api.secrets_engines.pki import Pki
@@ -16,6 +17,7 @@ __all__ = (
     'Aws',
     'Azure',
     'Gcp',
+    'ActiveDirectory',
     'Identity',
     'Kv',
     'KvV1',
@@ -34,6 +36,7 @@ class SecretsEngines(VaultApiCategory):
         Aws,
         Azure,
         Gcp,
+        ActiveDirectory,
         Identity,
         Kv,
         Pki,
@@ -42,7 +45,6 @@ class SecretsEngines(VaultApiCategory):
         Consul,
     ]
     unimplemented_classes = [
-        'Ad',
         'AliCloud',
         'Azure',
         'GcpKms',
