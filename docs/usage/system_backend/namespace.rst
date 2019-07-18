@@ -1,5 +1,5 @@
 Namespace
-=====
+=========
 
 .. contents::
    :local:
