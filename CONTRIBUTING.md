@@ -33,7 +33,15 @@ Any given requirements file can be manually updated by following the pip-compile
 
 ## Documentation
 
-## Testing Docs
+### Adding New Documentation Files
+
+When adding documentation for an entirely new feature / class, it often makes sense to place the documentation in a new `.rst` file. After drafting the new file, be sure to add the file as an entry to at least one table of contents directive (e.g., `toctree`) to ensure it gets rendered and published on https://hvac.readthedocs.io/. As an example, the process for adding a new documentation file for a secrets engine related to Active Directory could involve:
+
+1. Add a new file to `docs/usage/secrets_engines` with a name along the lines of `active_directory.rst`.
+2. Update the `toctree` directive within `docs/usage/secrets_engines/index.rst` to add a line for `active_directory`
+3. Verify the new file is being included and rendered as expected by running `make html` from the `docs/` subdirectory. You can then view the rendered HTML documentation, in a browser or otherwise, by opening `docs/_build/html/index.html`.
+
+### Testing Docs
 
 ```
 cd docs/
