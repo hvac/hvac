@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.5 (July 19th, 2019)
+
+### 🚀 Features
+
+- Add Active Directory Secrets Engine Support. GH-508
+
+### 📚 Documentation
+
+- Include Recently Added Namespace Documentation In Toctree. GH-509
+
+Thanks to @jeffwecan and @vamshideveloper for their lovely contributions.
+
 ## 0.9.4 (July 18th, 2019)
 
 ### 🚀 Features
