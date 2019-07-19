@@ -12,6 +12,7 @@ System Backend
    leader
    lease
    mount
+   namespace
    policy
    seal
    wrapping
