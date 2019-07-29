@@ -46,14 +46,14 @@ Read Certificate
 List Certificates
 -----------------
 
-:py:meth:`hvac.api.secrets_engines.pki.list_certificate`
+:py:meth:`hvac.api.secrets_engines.pki.list_certificates`
 
 .. code:: python
 
 	import hvac
 	client = hvac.Client()
 
-        list_certificate_response = self.client.secrets.pki.list_certificate()
+        list_certificate_response = self.client.secrets.pki.list_certificates()
         print('Current certificates (serial numbers): {}'.format(list_certificate_response))
 
 
