@@ -99,4 +99,3 @@ class Namespace(SystemBackendMixin):
             url=api_path,
             json=params,
         )
-
