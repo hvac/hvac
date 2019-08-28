@@ -10,14 +10,14 @@ class Userpass(VaultApiBase):
     """USERPASS Auth Method (API).
     Reference: https://www.vaultproject.io/api/auth/userpass/index.html
     """
-    
+
     def create_or_update_user(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
         """
         Create/update user in userpass.
-        
+
         Supported methods:
             POST: /auth/{mount_point}/users/{username}. Produces: 204 (empty body)
-            
+
         :param username: The username for the user.
         :type username: str | unicode
         :param password: The password for the user. Only required when creating the user.
@@ -37,10 +37,10 @@ class Userpass(VaultApiBase):
     def list_user(self, mount_point=DEFAULT_MOUNT_POINT):
         """
         List existing users that have been created in the auth method
-        
+
         Supported methods:
             LIST: /auth/{mount_point}/users. Produces: 200 application/json
-        
+
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the list_groups request.
@@ -55,8 +55,10 @@ class Userpass(VaultApiBase):
     def read_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
         Read user in the auth method.
+
         Supported methods:
             GET: /auth/{mount_point}/users/{username}. Produces: 200 application/json
+
         :param username: The username for the user.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -73,8 +75,10 @@ class Userpass(VaultApiBase):
     def delete_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
         Delete user in the auth method.
+
         Supported methods:
             GET: /auth/{mount_point}/users/{username}. Produces: 200 application/json
+
         :param username: The username for the user.
         :type name: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
@@ -91,10 +95,10 @@ class Userpass(VaultApiBase):
     def update_password_on_user(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
         """
         update password for the user in userpass.
-        
+
         Supported methods:
             POST: /auth/{mount_point}/users/{username}/password. Produces: 204 (empty body)
-            
+
         :param username: The username for the user.
         :type username: str | unicode
         :param password: The password for the user. Only required when creating the user.
@@ -114,10 +118,10 @@ class Userpass(VaultApiBase):
     def login(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
         """
         Log in with USERPASS credentials.
-        
+
         Supported methods:
             POST: /auth/{mount_point}/login/{username}. Produces: 200 application/json
-            
+
         :param username: The username for the user.
         :type username: str | unicode
         :param password: The password for the user. Only required when creating the user.
