@@ -29,7 +29,7 @@ class Userpass(VaultApiBase):
             'password': password,
         }
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
@@ -110,7 +110,7 @@ class Userpass(VaultApiBase):
             'password': password,
         }
         api_path = '/v1/auth/{mount_point}/users/{username}/password'.format(mount_point=mount_point, username=username)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
