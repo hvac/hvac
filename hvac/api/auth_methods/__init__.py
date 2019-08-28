@@ -7,6 +7,7 @@ from hvac.api.auth_methods.gcp import Gcp
 from hvac.api.auth_methods.github import Github
 from hvac.api.auth_methods.kubernetes import Kubernetes
 from hvac.api.auth_methods.ldap import Ldap
+from hvac.api.auth_methods.userpass import Userpass
 from hvac.api.auth_methods.mfa import Mfa
 from hvac.api.auth_methods.okta import Okta
 from hvac.api.auth_methods.radius import Radius
@@ -21,6 +22,7 @@ __all__ = (
     'Github',
     'Kubernetes',
     'Ldap',
+    'Userpass',
     'Mfa',
     'Okta',
     'Radius',
@@ -36,6 +38,7 @@ class AuthMethods(VaultApiCategory):
         Gcp,
         Kubernetes,
         Ldap,
+        Userpass
         Mfa,
         Okta,
         Radius,
@@ -48,7 +51,6 @@ class AuthMethods(VaultApiCategory):
         'Jwt',
         'Cert',
         'Token',
-        'UserPass',
     ]
 
     def __call__(self, *args, **kwargs):
