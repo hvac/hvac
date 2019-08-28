@@ -38,7 +38,7 @@ class AuthMethods(VaultApiCategory):
         Gcp,
         Kubernetes,
         Ldap,
-        Userpass
+        Userpass,
         Mfa,
         Okta,
         Radius,
