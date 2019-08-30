@@ -25,6 +25,7 @@ __all__ = (
     'Okta',
     'Radius',
     'Aws',
+    'Token',
 )
 
 
@@ -40,6 +41,7 @@ class AuthMethods(VaultApiCategory):
         Okta,
         Radius,
         Aws,
+        Token,
     ]
     unimplemented_classes = [
         'AppId',
@@ -47,7 +49,6 @@ class AuthMethods(VaultApiCategory):
         'AliCloud',
         'Jwt',
         'Cert',
-        'Token',
         'UserPass',
     ]
 
