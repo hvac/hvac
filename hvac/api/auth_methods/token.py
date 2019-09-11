@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Token module."""
-from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.adapters import Request
 
