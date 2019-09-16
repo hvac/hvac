@@ -17,7 +17,7 @@ Enabling the LDAP Auth Method
     ldap_auth_path = 'company-ldap'
     description = "Auth method for use by team members in our company's LDAP organization"
 
-    if '%s/' % ldap_auth_path not in vault_client.list_auth_backends():
+    if '%s/' % ldap_auth_path not in vault_client.sys.list_auth_methods():
         print('Enabling the ldap auth backend at mount_point: {path}'.format(
             path=ldap_auth_path,
         ))
