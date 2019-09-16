@@ -142,33 +142,13 @@ Preferred usage:
 .. doctest:: kvv1
    :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1'
 
-    >>> client.secrets.kv.default_kv_version = '1'
-    >>> create_response = client.secrets.kv.create_or_update_secret('foo', secret=dict(baz='bar'))
-    >>> read_response = client.secrets.kv.read_secret('foo')
+    >>> create_response = client.secrets.kv.v1.create_or_update_secret('foo', secret=dict(baz='bar'))
+    >>> read_response = client.secrets.kv.v1.read_secret('foo')
     >>> print('Value under path "secret/foo" / key "baz": {val}'.format(
     ...     val=read_response['data']['baz'],
     ... ))
     Value under path "secret/foo" / key "baz": bar
-    >>> delete_response = client.secrets.kv.delete_secret('foo')
-
-
-
-Generic usage:
-
-.. note::
-
-   The following `read()` and `write()` methods are roughly equivalent to the equivalent Vault CLI commands. These methods do not offer the same level of validation that hvac methods specific to individual auth methods and secrets engines provide.
-
-.. doctest:: kvv1
-   :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '1'
-
-    >>> client.write('secret/foo', baz='bar', lease='1h')
-    >>> read_response = client.read('secret/foo')
-    >>> print('Value under path "secret/foo" / key "baz": {val}'.format(
-    ...     val=read_response['data']['baz'],
-    ... ))
-    Value under path "secret/foo" / key "baz": bar
-    >>> client.delete('secret/foo')
+    >>> delete_response = client.secrets.kv.v1.delete_secret('foo')
 
 
 Authentication
