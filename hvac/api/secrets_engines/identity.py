@@ -370,7 +370,10 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json()
+        if response.status_code == 204:
+            return response
+        else:
+            return response.json()
 
     def read_entity_alias(self, alias_id, mount_point=DEFAULT_MOUNT_POINT):
         """Query the entity alias by its identifier.
