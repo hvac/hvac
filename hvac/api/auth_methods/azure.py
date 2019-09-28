@@ -3,7 +3,7 @@
 """Azure auth method module."""
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.azure import VALID_ENVIRONMENTS
 
@@ -58,7 +58,7 @@ class Azure(VaultApiBase):
             params['client_id'] = client_id
         if client_secret is not None:
             params['client_secret'] = client_secret
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -75,7 +75,7 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -92,7 +92,7 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path,
         )
@@ -162,7 +162,7 @@ class Azure(VaultApiBase):
             'num_uses': num_uses,
         }
 
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -182,7 +182,7 @@ class Azure(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -203,7 +203,7 @@ class Azure(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/role'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/role', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path
         )
@@ -223,7 +223,7 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -278,7 +278,7 @@ class Azure(VaultApiBase):
             params['vm_name'] = vm_name
         if vmss_name is not None:
             params['vmss_name'] = vmss_name
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
         response = self._adapter.login(
             url=api_path,
             use_token=use_token,

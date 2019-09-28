@@ -1,5 +1,6 @@
 import json
 
+from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -31,7 +32,7 @@ class Policy(SystemBackendMixin):
         :return: The response of the request
         :rtype: dict
         """
-        api_path = '/v1/sys/policy/{name}'.format(name=name)
+        api_path = utils.format_url('/v1/sys/policy/{name}', name=name)
         response = self._adapter.get(
             url=api_path,
         )
@@ -63,7 +64,7 @@ class Policy(SystemBackendMixin):
         params = {
             'policy': policy,
         }
-        api_path = '/v1/sys/policy/{name}'.format(name=name)
+        api_path = utils.format_url('/v1/sys/policy/{name}', name=name)
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -82,7 +83,7 @@ class Policy(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/policy/{name}'.format(name=name)
+        api_path = utils.format_url('/v1/sys/policy/{name}', name=name)
         return self._adapter.delete(
             url=api_path,
         )

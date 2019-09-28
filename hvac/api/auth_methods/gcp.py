@@ -3,7 +3,7 @@
 """GCP methods module."""
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.gcp import ALLOWED_ROLE_TYPES, GCP_CERTS_ENDPOINT
 from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
@@ -46,7 +46,7 @@ class Gcp(VaultApiBase):
             'credentials': credentials,
             'google_certs_endpoint': google_certs_endpoint,
         }
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -63,7 +63,7 @@ class Gcp(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -81,7 +81,7 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path,
         )
@@ -216,7 +216,7 @@ class Gcp(VaultApiBase):
                     )
                     logger.warning(warning_msg)
 
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -249,7 +249,7 @@ class Gcp(VaultApiBase):
             'add': add,
             'remove': remove,
         }
-        api_path = '/v1/auth/{mount_point}/role/{name}/service-accounts'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}/service-accounts',
             mount_point=mount_point,
             name=name,
         )
@@ -283,7 +283,7 @@ class Gcp(VaultApiBase):
             'add': add,
             'remove': remove,
         }
-        api_path = '/v1/auth/{mount_point}/role/{name}/labels'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}/labels',
             mount_point=mount_point,
             name=name,
         )
@@ -309,7 +309,7 @@ class Gcp(VaultApiBase):
         params = {
             'name': name,
         }
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -331,7 +331,7 @@ class Gcp(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/roles', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -354,7 +354,7 @@ class Gcp(VaultApiBase):
         params = {
             'role': role,
         }
-        api_path = '/v1/auth/{mount_point}/role/{role}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{role}',
             mount_point=mount_point,
             role=role,
         )
@@ -389,7 +389,7 @@ class Gcp(VaultApiBase):
             'role': role,
             'jwt': jwt,
         }
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
         response = self._adapter.login(
             url=api_path,
             use_token=use_token,

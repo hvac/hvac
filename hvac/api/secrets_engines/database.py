@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Database methods module."""
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = "database"
@@ -43,7 +44,7 @@ class Database(VaultApiBase):
 
         params.update(kwargs)
 
-        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -58,7 +59,7 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/rotate-root/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/rotate-root/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
         )
@@ -72,7 +73,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,
@@ -85,7 +86,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
@@ -99,7 +100,7 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/config/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
         )
@@ -113,7 +114,7 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/reset/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/reset/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
         )
@@ -155,7 +156,7 @@ class Database(VaultApiBase):
             "renew_statements": renew_statements
         }
 
-        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params
@@ -172,7 +173,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,
@@ -187,7 +188,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = '/v1/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
@@ -202,7 +203,7 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/roles/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
         return self._adapter.delete(
             url=api_path,
         )
@@ -218,7 +219,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = '/v1/{mount_point}/creds/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/{mount_point}/creds/{name}', mount_point=mount_point, name=name)
 
         return self._adapter.get(
             url=api_path,

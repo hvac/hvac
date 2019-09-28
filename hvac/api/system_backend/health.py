@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Support for "Health"-related System Backend Methods."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -54,14 +54,14 @@ class Health(SystemBackendMixin):
         }
 
         if method == 'HEAD':
-            api_path = '/v1/sys/health'.format()
+            api_path = utils.format_url('/v1/sys/health', )
             response = self._adapter.head(
                 url=api_path,
                 raise_exception=False,
             )
             return response
         elif method == 'GET':
-            api_path = '/v1/sys/health'.format()
+            api_path = utils.format_url('/v1/sys/health', )
             response = self._adapter.get(
                 url=api_path,
                 json=params,

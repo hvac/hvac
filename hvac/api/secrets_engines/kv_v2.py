@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """KvV2 methods module."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'secret'
@@ -36,7 +36,7 @@ class KvV2(VaultApiBase):
         }
         if cas_required is not None:
             params['cas_required'] = cas_required
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -54,7 +54,7 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config'.format(
+        api_path = utils.format_url('/v1/{mount_point}/config',
             mount_point=mount_point,
         )
         response = self._adapter.get(url=api_path)
@@ -79,7 +79,7 @@ class KvV2(VaultApiBase):
         params = {}
         if version is not None:
             params['version'] = version
-        api_path = '/v1/{mount_point}/data/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
         response = self._adapter.get(
             url=api_path,
             params=params,
@@ -116,7 +116,7 @@ class KvV2(VaultApiBase):
         if cas is not None:
             params['options']['cas'] = cas
 
-        api_path = '/v1/{mount_point}/data/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -173,7 +173,7 @@ class KvV2(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/data/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -207,7 +207,7 @@ class KvV2(VaultApiBase):
         params = {
             'versions': versions,
         }
-        api_path = '/v1/{mount_point}/delete/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/delete/{path}', mount_point=mount_point, path=path)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -240,7 +240,7 @@ class KvV2(VaultApiBase):
         params = {
             'versions': versions,
         }
-        api_path = '/v1/{mount_point}/undelete/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/undelete/{path}', mount_point=mount_point, path=path)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -272,7 +272,7 @@ class KvV2(VaultApiBase):
         params = {
             'versions': versions,
         }
-        api_path = '/v1/{mount_point}/destroy/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/destroy/{path}', mount_point=mount_point, path=path)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -296,7 +296,7 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
         response = self._adapter.list(
             url=api_path,
         )
@@ -316,7 +316,7 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
         response = self._adapter.get(
             url=api_path,
         )
@@ -351,7 +351,7 @@ class KvV2(VaultApiBase):
                 error_msg = 'bool expected for cas_required param, {type} received'.format(type=type(cas_required))
                 raise exceptions.ParamValidationError(error_msg)
             params['cas_required'] = cas_required
-        api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -373,7 +373,7 @@ class KvV2(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/metadata/{path}'.format(mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
         return self._adapter.delete(
             url=api_path,
         )
