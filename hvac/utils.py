@@ -8,6 +8,8 @@ import os
 import warnings
 from textwrap import dedent
 
+import six
+
 from hvac import exceptions
 
 
@@ -280,3 +282,31 @@ def validate_pem_format(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(_check_pem(p) for p in param_argument):
         error_msg = 'unsupported {param} public key / certificate format, required type: PEM'
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
+
+
+def format_url(format_str, *args, **kwargs):
+    """Creates a URL using the specified format after escaping the provided arguments.
+
+    :param format_str: The URL containing replacement fields.
+    :type format_str: str
+    :param kwargs: Positional replacement field values.
+    :type kwargs: list
+    :param kwargs: Named replacement field values.
+    :type kwargs: dict
+    :return: The formatted URL path with escaped replacement fields.
+    :rtype: str
+    """
+
+    def maybe_quote(maybe_str):
+        if isinstance(maybe_str, six.string_types):
+            return six.moves.urllib.parse.quote(maybe_str)
+        else:
+            return maybe_str
+
+    escaped_args = [maybe_quote(value) for value in args]
+    escaped_kwargs = {key: maybe_quote(value) for key, value in kwargs.items()}
+
+    return format_str.format(
+        *escaped_args,
+        **escaped_kwargs
+    )

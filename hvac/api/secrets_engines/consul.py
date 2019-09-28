@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Consul methods module."""
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = "consul"
@@ -33,7 +34,7 @@ class Consul(VaultApiBase):
           "scheme": scheme
         }
 
-        api_path = "/v1/{}/config/access".format(mount_point)
+        api_path = utils.format_url("/v1/{}/config/access", mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -73,7 +74,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
         params = {
             "token_type": token_type,
@@ -101,7 +102,7 @@ class Consul(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
         return self._adapter.get(
             url=api_path,
@@ -114,7 +115,7 @@ class Consul(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles".format(mount_point)
+        api_path = utils.format_url("/v1/{}/roles", mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
@@ -130,7 +131,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
         return self._adapter.delete(
             url=api_path,
         )
@@ -145,7 +146,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/creds/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/creds/{}", mount_point, name)
 
         return self._adapter.get(
             url=api_path,

@@ -3,7 +3,7 @@
 """Identity secret engine module."""
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.identity import ALLOWED_GROUP_TYPES
 
@@ -57,7 +57,7 @@ class Identity(VaultApiBase):
         }
         if entity_id is not None:
             params['id'] = entity_id
-        api_path = '/v1/{mount_point}/entity'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/entity', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -101,7 +101,7 @@ class Identity(VaultApiBase):
             'policies': policies,
             'disabled': disabled,
         }
-        api_path = '/v1/{mount_point}/entity/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -127,7 +127,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/entity/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -147,7 +147,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/entity/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -193,7 +193,7 @@ class Identity(VaultApiBase):
             'policies': policies,
             'disabled': disabled,
         }
-        api_path = '/v1/{mount_point}/entity/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -219,7 +219,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/entity/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -240,7 +240,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/entity/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -261,13 +261,13 @@ class Identity(VaultApiBase):
         :rtype: dict
         """
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/entity/id'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity/id', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
 
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/entity/id?list=true'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity/id?list=true', mount_point=mount_point)
             response = self._adapter.get(
                 url=api_path,
             )
@@ -290,13 +290,13 @@ class Identity(VaultApiBase):
         :rtype: dict
         """
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/entity/name'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity/name', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
 
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/entity/name'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity/name', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
@@ -331,7 +331,7 @@ class Identity(VaultApiBase):
             'to_entity_id': to_entity_id,
             'force': force,
         }
-        api_path = '/v1/{mount_point}/entity/merge'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/entity/merge', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -365,7 +365,7 @@ class Identity(VaultApiBase):
         }
         if alias_id is not None:
             params['id'] = alias_id
-        api_path = '/v1/{mount_point}/entity-alias'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/entity-alias', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -385,7 +385,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/entity-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -420,7 +420,7 @@ class Identity(VaultApiBase):
             'canonical_id': canonical_id,
             'mount_accessor': mount_accessor,
         }
-        api_path = '/v1/{mount_point}/entity-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -447,13 +447,13 @@ class Identity(VaultApiBase):
         """
 
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/entity-alias/id'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity-alias/id', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
 
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/entity-alias/id?list=true'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/entity-alias/id?list=true', mount_point=mount_point)
             response = self._adapter.get(
                 url=api_path,
             )
@@ -476,7 +476,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/entity-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -572,7 +572,7 @@ class Identity(VaultApiBase):
             member_entity_ids=member_entity_ids,
         )
 
-        api_path = '/v1/{mount_point}/group'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/group', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -595,7 +595,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/group/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -658,7 +658,7 @@ class Identity(VaultApiBase):
             member_entity_ids=member_entity_ids,
         )
 
-        api_path = '/v1/{mount_point}/group/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -684,7 +684,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/group/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -706,13 +706,13 @@ class Identity(VaultApiBase):
         """
 
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/group/id'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group/id', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
 
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/group/id?list=true'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group/id?list=true', mount_point=mount_point)
             response = self._adapter.get(
                 url=api_path,
             )
@@ -736,13 +736,13 @@ class Identity(VaultApiBase):
         """
 
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/group/name'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group/name', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
 
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/group/name?list-true'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group/name?list-true', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
@@ -798,7 +798,7 @@ class Identity(VaultApiBase):
             'member_group_ids': member_group_ids,
             'member_entity_ids': member_entity_ids,
         }
-        api_path = '/v1/{mount_point}/group/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -821,7 +821,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/group/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -843,7 +843,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/group/name/{name}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -877,7 +877,7 @@ class Identity(VaultApiBase):
         }
         if alias_id is not None:
             params['id'] = alias_id
-        api_path = '/v1/{mount_point}/group-alias'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/group-alias', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -909,7 +909,7 @@ class Identity(VaultApiBase):
             'mount_accessor': mount_accessor,
             'canonical_id': canonical_id,
         }
-        api_path = '/v1/{mount_point}/group-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -931,7 +931,7 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/group-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -953,7 +953,7 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/group-alias/id/{id}'.format(
+        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -975,12 +975,12 @@ class Identity(VaultApiBase):
         """
 
         if method == 'LIST':
-            api_path = '/v1/{mount_point}/group-alias/id'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group-alias/id', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
         elif method == 'GET':
-            api_path = '/v1/{mount_point}/group-alias/id'.format(mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group-alias/id', mount_point=mount_point)
             response = self._adapter.list(
                 url=api_path,
             )
@@ -1023,7 +1023,7 @@ class Identity(VaultApiBase):
         elif alias_name is not None and alias_mount_accessor is not None:
             params['alias_name'] = alias_name
             params['alias_mount_accessor'] = alias_mount_accessor
-        api_path = '/v1/{mount_point}/lookup/entity'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/lookup/entity', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,
@@ -1067,7 +1067,7 @@ class Identity(VaultApiBase):
         elif alias_name is not None and alias_mount_accessor is not None:
             params['alias_name'] = alias_name
             params['alias_mount_accessor'] = alias_mount_accessor
-        api_path = '/v1/{mount_point}/lookup/group'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/lookup/group', mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
             json=params,

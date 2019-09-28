@@ -5,7 +5,7 @@ import logging
 import json
 from base64 import b64encode
 
-from hvac import exceptions, aws_utils
+from hvac import exceptions, aws_utils, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.aws import ALLOWED_IAM_ALIAS_TYPES, ALLOWED_EC2_ALIAS_TYPES
 from hvac.constants.aws import DEFAULT_MOUNT_POINT as AWS_DEFAULT_MOUNT_POINT
@@ -81,7 +81,7 @@ class Aws(VaultApiBase):
             params['sts_endpoint'] = sts_endpoint
         if iam_server_id_header_value is not None:
             params['iam_server_id_header_value'] = iam_server_id_header_value
-        api_path = '/v1/auth/{mount_point}/config/client'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -98,7 +98,7 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config/client'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -115,7 +115,7 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/config/client'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path
         )
@@ -180,7 +180,7 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config/identity'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/identity', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -213,7 +213,7 @@ class Aws(VaultApiBase):
             'aws_public_cert': aws_public_cert,
             'document_type': document_type,
         }
-        api_path = '/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)
+        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -231,7 +231,7 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)
+        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
         response = self._adapter.get(
             url=api_path,
         )
@@ -250,7 +250,7 @@ class Aws(VaultApiBase):
         :return: The response of the request
         :rtype: request.Response
         """
-        api_path = '/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)
+        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
         return self._adapter.delete(
             url=api_path,
         )
@@ -264,7 +264,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/certificates'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/certificates', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -285,7 +285,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/config/sts/{1}'.format(mount_point, account_id)
+        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
         params = {
             'account_id': account_id,
             'sts_role': sts_role,
@@ -302,7 +302,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/config/sts/{1}'.format(mount_point, account_id)
+        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
         response = self._adapter.get(
             url=api_path,
         )
@@ -314,7 +314,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/sts'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/sts', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path
         )
@@ -327,7 +327,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/config/sts/{1}'.format(mount_point, account_id)
+        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
         return self._adapter.delete(
             url=api_path,
         )
@@ -341,7 +341,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/identity-whitelist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
         params = {
             'safety_buffer': safety_buffer,
             'disable_periodic_tidy': disable_periodic_tidy,
@@ -357,7 +357,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/identity-whitelist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path
         )
@@ -369,7 +369,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/identity-whitelist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path,
         )
@@ -383,7 +383,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/roletag-blacklist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
         params = {
             'safety_buffer': safety_buffer,
             'disable_periodic_tidy': disable_periodic_tidy,
@@ -399,7 +399,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/roletag-blacklist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path
         )
@@ -411,7 +411,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/config/tidy/roletag-blacklist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path
         )
@@ -457,7 +457,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/role/{1}'.format(mount_point, role)
+        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
         params = {
             'role': role,
             'auth_type': auth_type,
@@ -512,7 +512,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/role/{1}'.format(mount_point, role)
+        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
         response = self._adapter.get(
             url=api_path
         )
@@ -524,7 +524,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/roles', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -537,7 +537,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/role/{1}'.format(mount_point, role)
+        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
         return self._adapter.delete(
             url=api_path,
         )
@@ -567,7 +567,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/role/{1}/tag'.format(mount_point, role)
+        api_path = utils.format_url('/v1/auth/{0}/role/{1}/tag', mount_point, role)
 
         params = {
             'disallow_reauthentication': disallow_reauthentication,
@@ -599,7 +599,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
 
         request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
         auth = aws_utils.SigV4Auth(access_key, secret_key, session_token, region)
@@ -629,7 +629,7 @@ class Aws(VaultApiBase):
         :param use_token:
         :param mount_point:
         """
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
         params = {
             'pkcs7': pkcs7
         }
@@ -655,7 +655,7 @@ class Aws(VaultApiBase):
         :param mount_pont:
         :return:
         """
-        api_path = '/v1/auth/{0}/roletag-blacklist/{1}'.format(mount_pont, role_tag)
+        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_pont, role_tag)
         return self._adapter.post(
             url=api_path
         )
@@ -667,7 +667,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/roletag-blacklist/{1}'.format(mount_point, role_tag)
+        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
         response = self._adapter.get(
             url=api_path
         )
@@ -679,7 +679,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/roletag-blacklist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/roletag-blacklist', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -692,7 +692,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/roletag-blacklist/{1}'.format(mount_point, role_tag)
+        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
         return self._adapter.delete(
             url=api_path,
         )
@@ -704,7 +704,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/tidy/roletag-blacklist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/tidy/roletag-blacklist', mount_point=mount_point)
         params = {
             'safety_buffer': saftey_buffer,
         }
@@ -720,7 +720,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/identity-whitelist/{1}'.format(mount_point, instance_id)
+        api_path = utils.format_url('/v1/auth/{0}/identity-whitelist/{1}', mount_point, instance_id)
         response = self._adapter.get(
             url=api_path
         )
@@ -732,7 +732,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/identity-whitelist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/identity-whitelist', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -745,7 +745,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{0}/identity-whitelist/{1}'.format(mount_point, instance_id)
+        api_path = utils.format_url('/v1/auth/{0}/identity-whitelist/{1}', mount_point, instance_id)
         return self._adapter.delete(
             url=api_path,
         )
@@ -757,7 +757,7 @@ class Aws(VaultApiBase):
         :param mount_point:
         :return:
         """
-        api_path = '/v1/auth/{mount_point}/tidy/identity-whitelist'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/tidy/identity-whitelist', mount_point=mount_point)
         params = {
             'safety_buffer': saftey_buffer,
         }

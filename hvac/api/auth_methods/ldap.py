@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """LDAP methods module."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.ldap import DEFAULT_GROUP_FILTER
 
@@ -104,7 +104,7 @@ class Ldap(VaultApiBase):
         if certificate is not None:
             params['certificate'] = certificate
 
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -122,7 +122,7 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the read_configuration request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -157,7 +157,7 @@ class Ldap(VaultApiBase):
         params = {
             'policies': ','.join(policies),
         }
-        api_path = '/v1/auth/{mount_point}/groups/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -179,7 +179,7 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the list_groups request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/groups'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/groups', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -203,7 +203,7 @@ class Ldap(VaultApiBase):
         params = {
             'name': name,
         }
-        api_path = '/v1/auth/{mount_point}/groups/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -228,7 +228,7 @@ class Ldap(VaultApiBase):
         :return: The response of the delete_group request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/groups/{name}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -277,7 +277,7 @@ class Ldap(VaultApiBase):
             'policies': ','.join(policies),
             'groups': ','.join(groups),
         }
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -299,7 +299,7 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the list_users request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/users'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -320,7 +320,7 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the read_user request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -344,7 +344,7 @@ class Ldap(VaultApiBase):
         :return: The response of the delete_user request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -375,7 +375,7 @@ class Ldap(VaultApiBase):
         params = {
             'password': password,
         }
-        api_path = '/v1/auth/{mount_point}/login/{username}'.format(
+        api_path = utils.format_url('/v1/auth/{mount_point}/login/{username}',
             mount_point=mount_point,
             username=username,
         )
