@@ -56,7 +56,8 @@ class Mfa(VaultApiBase):
             'type': mfa_type,
         }
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/mfa_config',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/mfa_config',
             mount_point=mount_point
         )
         return self._adapter.post(
@@ -76,7 +77,8 @@ class Mfa(VaultApiBase):
         :return: The JSON response of the read_configuration request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/mfa_config',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/mfa_config',
             mount_point=mount_point,
         )
         response = self._adapter.get(url=api_path)
@@ -107,7 +109,8 @@ class Mfa(VaultApiBase):
             'ikey': integration_key,
             'skey': secret_key,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/duo/access',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/duo/access',
             mount_point=mount_point,
         )
         return self._adapter.post(
@@ -145,7 +148,8 @@ class Mfa(VaultApiBase):
             params['push_info'] = push_info
         if user_agent is not None:
             params['user_agent'] = user_agent
-        api_path = utils.format_url('/v1/auth/{mount_point}/duo/config',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/duo/config',
             mount_point=mount_point,
         )
         return self._adapter.post(
@@ -165,7 +169,8 @@ class Mfa(VaultApiBase):
         :return: The JSON response of the read_duo_behavior_configuration request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/duo/config',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/duo/config',
             mount_point=mount_point,
         )
         response = self._adapter.get(url=api_path)

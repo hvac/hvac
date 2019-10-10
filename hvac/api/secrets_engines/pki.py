@@ -66,7 +66,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/cert/{serial}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/cert/{serial}',
             mount_point=mount_point,
             serial=serial,
         )
@@ -259,7 +260,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/intermediate/generate/{type}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/intermediate/generate/{type}',
             mount_point=mount_point,
             type=type,
         )
@@ -287,7 +289,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/intermediate/set-signed',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/intermediate/set-signed',
             mount_point=mount_point,
         )
 
@@ -318,7 +321,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/issue/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/issue/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -373,7 +377,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rname: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -401,7 +406,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -444,7 +450,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rname: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -472,7 +479,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/root/generate/{type}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/root/generate/{type}',
             mount_point=mount_point,
             type=type,
         )
@@ -498,7 +506,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/root',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/root',
             mount_point=mount_point,
         )
 
@@ -582,7 +591,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/sign/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/sign/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -619,7 +629,8 @@ class Pki(VaultApiBase):
         if name:
             url_to_transform = url_to_transform + '/{name}'
 
-        api_path = utils.format_url(url_to_transform,
+        api_path = utils.format_url(
+            url_to_transform,
             mount_point=mount_point,
             name=name,
         )
@@ -648,7 +659,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/tidy',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/tidy',
             mount_point=mount_point,
         )
 

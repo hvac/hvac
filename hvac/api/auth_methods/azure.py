@@ -182,7 +182,8 @@ class Azure(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -223,7 +224,8 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )

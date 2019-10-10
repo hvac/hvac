@@ -67,7 +67,8 @@ class Transit(VaultApiBase):
             'allow_plaintext_backup': allow_plaintext_backup,
             'type': key_type,
         }
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -93,7 +94,8 @@ class Transit(VaultApiBase):
         :return: The JSON response of the read_key request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -137,7 +139,8 @@ class Transit(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -188,7 +191,8 @@ class Transit(VaultApiBase):
             'exportable': exportable,
             'allow_plaintext_backup': allow_plaintext_backup,
         }
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}/config',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}/config',
             mount_point=mount_point,
             name=name,
         )
@@ -214,7 +218,8 @@ class Transit(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}/rotate',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}/rotate',
             mount_point=mount_point,
             name=name,
         )
@@ -254,7 +259,8 @@ class Transit(VaultApiBase):
                 arg=key_type,
                 allowed_types=', '.join(transit_constants.ALLOWED_EXPORT_KEY_TYPES),
             ))
-        api_path = utils.format_url('/v1/{mount_point}/export/{key_type}/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/export/{key_type}/{name}',
             mount_point=mount_point,
             key_type=key_type,
             name=name,
@@ -321,7 +327,8 @@ class Transit(VaultApiBase):
             'type': type,
             'convergent_encryption': convergent_encryption,
         }
-        api_path = utils.format_url('/v1/{mount_point}/encrypt/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/encrypt/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -363,7 +370,8 @@ class Transit(VaultApiBase):
             'nonce': nonce,
             'batch_input': batch_input,
         }
-        api_path = utils.format_url('/v1/{mount_point}/decrypt/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/decrypt/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -412,7 +420,8 @@ class Transit(VaultApiBase):
             'nonce': nonce,
             'batch_input': batch_input,
         }
-        api_path = utils.format_url('/v1/{mount_point}/rewrap/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/rewrap/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -472,7 +481,8 @@ class Transit(VaultApiBase):
             'nonce': nonce,
             'bits': bits,
         }
-        api_path = utils.format_url('/v1/{mount_point}/datakey/{key_type}/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/datakey/{key_type}/{name}',
             mount_point=mount_point,
             key_type=key_type,
             name=name,
@@ -588,7 +598,8 @@ class Transit(VaultApiBase):
             'key_version': key_version,
             'algorithm': algorithm,
         }
-        api_path = utils.format_url('/v1/{mount_point}/hmac/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/hmac/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -655,7 +666,8 @@ class Transit(VaultApiBase):
             'prehashed': prehashed,
             'signature_algorithm': signature_algorithm,
         }
-        api_path = utils.format_url('/v1/{mount_point}/sign/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/sign/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -747,7 +759,8 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/backup/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/backup/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -813,7 +826,8 @@ class Transit(VaultApiBase):
         params = {
             'min_available_version': min_version,
         }
-        api_path = utils.format_url('/v1/{mount_point}/keys/{name}/trim',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/keys/{name}/trim',
             mount_point=mount_point,
             name=name,
         )

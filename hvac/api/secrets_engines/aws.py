@@ -203,7 +203,8 @@ class Aws(VaultApiBase):
                 'role_arns': role_arns,
                 'policy_arns': policy_arns,
             }
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -227,7 +228,8 @@ class Aws(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -269,7 +271,8 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -320,7 +323,8 @@ class Aws(VaultApiBase):
             'role_arn': role_arn,
             'ttl': ttl,
         }
-        api_path = utils.format_url('/v1/{mount_point}/{endpoint}/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/{endpoint}/{name}',
             mount_point=mount_point,
             endpoint=endpoint,
             name=name,
