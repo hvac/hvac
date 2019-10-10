@@ -27,7 +27,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
             cls.mock_server_port = utils.get_free_port()
             cls.ldap_server = MockLdapServer()
             cls.ldap_server.start()
-        except:
+        except Exception:
             # Ensure that Vault server is taken down if setUpClass fails
             super(TestLdap, cls).tearDownClass()
             raise
