@@ -59,7 +59,8 @@ class Kubernetes(VaultApiBase):
             'token_reviewer_jwt': token_reviewer_jwt,
             'pem_keys': pem_keys,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/config',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/config',
             mount_point=mount_point
         )
         return self._adapter.post(
@@ -162,7 +163,8 @@ class Kubernetes(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -202,7 +204,8 @@ class Kubernetes(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )

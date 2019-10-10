@@ -112,7 +112,8 @@ class Auth(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/sys/auth/{path}/tune',
+        api_path = utils.format_url(
+            '/v1/sys/auth/{path}/tune',
             path=path,
         )
         response = self._adapter.get(

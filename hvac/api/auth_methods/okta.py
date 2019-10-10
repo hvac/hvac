@@ -113,7 +113,8 @@ class Okta(VaultApiBase):
             'groups': groups,
             'policies': policies,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -138,7 +139,8 @@ class Okta(VaultApiBase):
         params = {
             'username': username,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -164,7 +166,8 @@ class Okta(VaultApiBase):
         params = {
             'username': username,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -208,7 +211,8 @@ class Okta(VaultApiBase):
         params = {
             'policies': policies,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -230,7 +234,8 @@ class Okta(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -255,7 +260,8 @@ class Okta(VaultApiBase):
         params = {
             'name': name,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/groups/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/groups/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -286,7 +292,8 @@ class Okta(VaultApiBase):
             'username': username,
             'password': password,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/login/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/login/{username}',
             mount_point=mount_point,
             username=username,
         )

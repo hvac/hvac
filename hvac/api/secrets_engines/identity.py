@@ -101,7 +101,8 @@ class Identity(VaultApiBase):
             'policies': policies,
             'disabled': disabled,
         }
-        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -127,7 +128,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -147,7 +149,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -193,7 +196,8 @@ class Identity(VaultApiBase):
             'policies': policies,
             'disabled': disabled,
         }
-        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -219,7 +223,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -240,7 +245,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -385,7 +391,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -420,7 +427,8 @@ class Identity(VaultApiBase):
             'canonical_id': canonical_id,
             'mount_accessor': mount_accessor,
         }
-        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -476,7 +484,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/entity-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/entity-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -595,7 +604,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -658,7 +668,8 @@ class Identity(VaultApiBase):
             member_entity_ids=member_entity_ids,
         )
 
-        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -684,7 +695,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/group/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/id/{id}',
             mount_point=mount_point,
             id=group_id,
         )
@@ -798,7 +810,8 @@ class Identity(VaultApiBase):
             'member_group_ids': member_group_ids,
             'member_entity_ids': member_entity_ids,
         }
-        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -821,7 +834,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -843,7 +857,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/group/name/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -909,7 +924,8 @@ class Identity(VaultApiBase):
             'mount_accessor': mount_accessor,
             'canonical_id': canonical_id,
         }
-        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )
@@ -931,7 +947,8 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=alias_id,
         )
@@ -953,7 +970,8 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/group-alias/id/{id}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/group-alias/id/{id}',
             mount_point=mount_point,
             id=entity_id,
         )

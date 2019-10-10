@@ -110,7 +110,8 @@ class Gcp(VaultApiBase):
             'secret_type': secret_type,
             'token_scopes': token_scopes,
         }
-        api_path = utils.format_url('/v1/{mount_point}/roleset/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -136,7 +137,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roleset/{name}/rotate',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}/rotate',
             mount_point=mount_point,
             name=name,
         )
@@ -159,7 +161,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roleset/{name}/rotate-key',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}/rotate-key',
             mount_point=mount_point,
             name=name
         )
@@ -180,7 +183,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/roleset/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -219,7 +223,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roleset/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             name=name,
             mount_point=mount_point,
         )
@@ -243,7 +248,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/token/{roleset}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/token/{roleset}',
             mount_point=mount_point,
             roleset=roleset,
         )
@@ -276,7 +282,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/key/{roleset}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/key/{roleset}',
             mount_point=mount_point,
             roleset=roleset,
         )

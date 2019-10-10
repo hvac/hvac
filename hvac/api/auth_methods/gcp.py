@@ -216,7 +216,8 @@ class Gcp(VaultApiBase):
                     )
                     logger.warning(warning_msg)
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -249,7 +250,8 @@ class Gcp(VaultApiBase):
             'add': add,
             'remove': remove,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}/service-accounts',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}/service-accounts',
             mount_point=mount_point,
             name=name,
         )
@@ -283,7 +285,8 @@ class Gcp(VaultApiBase):
             'add': add,
             'remove': remove,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}/labels',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}/labels',
             mount_point=mount_point,
             name=name,
         )
@@ -309,7 +312,8 @@ class Gcp(VaultApiBase):
         params = {
             'name': name,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -354,7 +358,8 @@ class Gcp(VaultApiBase):
         params = {
             'role': role,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{role}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{role}',
             mount_point=mount_point,
             role=role,
         )

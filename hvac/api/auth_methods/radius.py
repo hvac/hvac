@@ -108,7 +108,8 @@ class Radius(VaultApiBase):
         params = {
             'username': ','.join(username),
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{name}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{name}',
             mount_point=mount_point,
             name=username,
         )
@@ -151,7 +152,8 @@ class Radius(VaultApiBase):
         :return: The JSON response of the read_user request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -175,7 +177,8 @@ class Radius(VaultApiBase):
         :return: The response of the delete_user request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/users/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/users/{username}',
             mount_point=mount_point,
             username=username,
         )
@@ -206,7 +209,8 @@ class Radius(VaultApiBase):
         params = {
             'password': password,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/login/{username}',
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/login/{username}',
             mount_point=mount_point,
             username=username,
         )

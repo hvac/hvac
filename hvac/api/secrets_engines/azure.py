@@ -126,7 +126,8 @@ class Azure(VaultApiBase):
             'ttl': ttl,
             'max_ttl': max_ttl,
         }
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name
         )
@@ -167,7 +168,8 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/creds/{name}',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/creds/{name}',
             mount_point=mount_point,
             name=name,
         )

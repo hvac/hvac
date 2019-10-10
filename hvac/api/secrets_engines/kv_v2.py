@@ -54,7 +54,8 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config',
+        api_path = utils.format_url(
+            '/v1/{mount_point}/config',
             mount_point=mount_point,
         )
         response = self._adapter.get(url=api_path)
