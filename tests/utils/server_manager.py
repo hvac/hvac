@@ -33,31 +33,46 @@ class ServerManager(object):
         self._processes = []
 
     def start(self):
-        """Launch the vault server process and wait until its online and initialized."""
+        """Launch the vault server process and wait until its online and ready."""
         if self.use_consul:
             self.start_consul()
 
-        cluster_initialized = False
+        # If a vault server is already running then we won't be able to start another one.
+        # If we can't start our vault server then we don't know what we're testing against.
+        try:
+            self.client.sys.is_initialized()
+        except Exception:
+            pass
+        else:
+            raise Exception('Vault server already running')
+
+        cluster_ready = False
         for config_path in self.config_paths:
             command = ['vault', 'server', '-config=' + config_path]
             logger.debug('Starting vault server with command: {cmd}'.format(cmd=command))
-            self._processes.append(subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self._processes.append(process)
+            logger.debug('Spawned vault server with PID {pid}'.format(pid=process.pid))
 
             attempts_left = 20
             last_exception = None
-            while attempts_left > 0 and not cluster_initialized:
+            while attempts_left > 0 and not cluster_ready:
                 try:
+                    logger.debug('Checking if vault is ready...')
                     self.client.sys.is_initialized()
-                    cluster_initialized = True
+                    cluster_ready = True
                     break
                 except Exception as ex:
+                    if process.poll() is not None:
+                        raise Exception('Vault server terminated before becoming ready')
                     logger.debug('Waiting for Vault to start')
                     time.sleep(0.5)
                     attempts_left -= 1
                     last_exception = ex
-            if not cluster_initialized:
-                self._processes[0].kill()
-                stdout, stderr = self._processes[0].communicate()
+            if not cluster_ready:
+                if process.poll() is None:
+                    process.kill()
+                stdout, stderr = process.communicate()
                 raise Exception(
                     'Unable to start Vault in background:\n{err}\n{stdout}\n{stderr}'.format(
                         err=last_exception,
@@ -67,25 +82,35 @@ class ServerManager(object):
                 )
 
     def start_consul(self):
+        try:
+            requests.get('http://127.0.0.1:8500/v1/catalog/nodes')
+        except Exception:
+            pass
+        else:
+            raise Exception('Consul service already running')
+
         command = ['consul', 'agent', '-dev']
         logger.debug('Starting consul service with command: {cmd}'.format(cmd=command))
-        self._processes.append(subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self._processes.append(process)
         attempts_left = 20
         last_exception = None
         while attempts_left > 0:
             try:
                 catalog_nodes_response = requests.get('http://127.0.0.1:8500/v1/catalog/nodes')
                 nodes_list = catalog_nodes_response.json()
-                logging.debug('JSON response from request to consul/v1/catalog/noses: {resp}'.format(resp=nodes_list))
+                logger.debug('JSON response from request to consul/v1/catalog/noses: {resp}'.format(resp=nodes_list))
                 node_name = nodes_list[0]['Node']
-                logging.debug('Current consul node name: {name}'.format(name=node_name))
+                logger.debug('Current consul node name: {name}'.format(name=node_name))
                 node_health_response = requests.get('http://127.0.0.1:8500/v1/health/node/{name}'.format(name=node_name))
                 node_health = node_health_response.json()
-                logging.debug('Node health response: {resp}'.format(resp=node_health))
+                logger.debug('Node health response: {resp}'.format(resp=node_health))
                 assert node_health[0]['Status'] == 'passing', 'Node {name} status != "passing"'.format(name=node_name)
                 return True
             except Exception as error:
-                logging.debug('Unable to connect to consul while waiting for process to start: {err}'.format(err=error))
+                if process.poll() is not None:
+                    raise Exception('Consul service terminated before becoming ready')
+                logger.debug('Unable to connect to consul while waiting for process to start: {err}'.format(err=error))
                 time.sleep(0.5)
                 attempts_left -= 1
                 last_exception = error
@@ -95,7 +120,9 @@ class ServerManager(object):
     def stop(self):
         """Stop the vault server process being managed by this class."""
         for process_num, process in enumerate(self._processes):
-            process.kill()
+            logger.debug('Terminating vault server with PID {pid}'.format(pid=process.pid))
+            if process.poll() is None:
+                process.kill()
             if os.getenv('HVAC_OUTPUT_VAULT_STDERR', False):
                 _, stderr_lines = process.communicate()
                 stderr_filename = 'vault{num}_stderr.log'.format(num=process_num)

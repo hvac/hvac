@@ -40,14 +40,19 @@ class HvacIntegrationTestCase(object):
             client=create_client(),
             use_consul=cls.enable_vault_ha,
         )
-        cls.manager.start()
-        cls.manager.initialize()
-        cls.manager.unseal()
+        try:
+            cls.manager.start()
+            cls.manager.initialize()
+            cls.manager.unseal()
+        except:
+            cls.manager.stop()
+            raise
 
     @classmethod
     def tearDownClass(cls):
         """Stop the vault server process at the conclusion of a test class."""
-        cls.manager.stop()
+        if cls.manager:
+            cls.manager.stop()
 
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
