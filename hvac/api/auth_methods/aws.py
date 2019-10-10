@@ -644,7 +644,7 @@ class Aws(VaultApiBase):
             json=params,
         )
 
-    def place_role_tags_in_blacklist(self, role_tag, mount_pont=AWS_DEFAULT_MOUNT_POINT):
+    def place_role_tags_in_blacklist(self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Places a valid role tag in a blacklist
 
             This ensures that the role tag cannot be used by any instance to perform a login operation again. Note
@@ -652,10 +652,10 @@ class Aws(VaultApiBase):
             does not invalidate the already issued token
 
         :param role_tag:
-        :param mount_pont:
+        :param mount_point:
         :return:
         """
-        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_pont, role_tag)
+        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
         return self._adapter.post(
             url=api_path
         )
