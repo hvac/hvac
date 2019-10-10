@@ -33,7 +33,7 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
             cls.mock_server_thread.setDaemon(True)
             cls.mock_server_thread.start()
-        except:
+        except Exception:
             # Ensure that Vault server is taken down if setUpClass fails
             super(TestGithub, cls).tearDownClass()
             raise
