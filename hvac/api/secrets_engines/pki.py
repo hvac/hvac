@@ -500,7 +500,6 @@ class Pki(VaultApiBase):
         """
         api_path = utils.format_url('/v1/{mount_point}/root',
             mount_point=mount_point,
-            type=type,
         )
 
         return self._adapter.delete(
@@ -584,9 +583,9 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/{mount_point}/sign/{name}',
-                mount_point=mount_point,
-                name=name,
-                )
+            mount_point=mount_point,
+            name=name,
+        )
 
         params = extra_params
         params['csr'] = csr
@@ -621,9 +620,9 @@ class Pki(VaultApiBase):
             url_to_transform = url_to_transform + '/{name}'
 
         api_path = utils.format_url(url_to_transform,
-                mount_point=mount_point,
-                name=name,
-                )
+            mount_point=mount_point,
+            name=name,
+        )
 
         params = extra_params
         params['csr'] = csr
@@ -650,8 +649,8 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/{mount_point}/tidy',
-                mount_point=mount_point,
-                )
+            mount_point=mount_point,
+        )
 
         params = extra_params
 
