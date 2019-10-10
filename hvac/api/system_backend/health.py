@@ -54,14 +54,14 @@ class Health(SystemBackendMixin):
         }
 
         if method == 'HEAD':
-            api_path = utils.format_url('/v1/sys/health', )
+            api_path = utils.format_url('/v1/sys/health')
             response = self._adapter.head(
                 url=api_path,
                 raise_exception=False,
             )
             return response
         elif method == 'GET':
-            api_path = utils.format_url('/v1/sys/health', )
+            api_path = utils.format_url('/v1/sys/health')
             response = self._adapter.get(
                 url=api_path,
                 json=params,
