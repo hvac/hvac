@@ -9,7 +9,7 @@ HVAC_VAULT_LICENSE=${2:-DEFAULT_VAULT_LICENSE}
 function build_and_install_vault_head_ref() {
     mkdir -p $HOME/bin
 
-    eval "$(GIMME_GO_VERSION=1.11 gimme)"
+    eval "$(GIMME_GO_VERSION=1.12.7 gimme)"
 
     export GOPATH=$HOME/go
     mkdir $GOPATH
