@@ -297,14 +297,16 @@ def format_url(format_str, *args, **kwargs):
     :rtype: str
     """
 
-    def maybe_quote(maybe_str):
-        if isinstance(maybe_str, six.string_types):
-            return six.moves.urllib.parse.quote(maybe_str)
-        else:
-            return maybe_str
+    def url_quote(maybe_str):
+        # Special care must be taken for Python 2 where Unicode characters will break urllib quoting.
+        # To work around this, we always cast to a Unicode type, then UTF-8 encode it.
+        # Doing this is version agnostic and returns the same result in Python 2 or 3.
+        unicode_str = six.text_type(maybe_str)
+        utf8_str = unicode_str.encode("utf-8")
+        return six.moves.urllib.parse.quote(utf8_str)
 
-    escaped_args = [maybe_quote(value) for value in args]
-    escaped_kwargs = {key: maybe_quote(value) for key, value in kwargs.items()}
+    escaped_args = [url_quote(value) for value in args]
+    escaped_kwargs = {key: url_quote(value) for key, value in kwargs.items()}
 
     return format_str.format(
         *escaped_args,
