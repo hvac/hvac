@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Support for "Audit"-related System Backend Methods."""
+from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -52,7 +53,7 @@ class Audit(SystemBackendMixin):
             'options': options,
         }
 
-        api_path = '/v1/sys/audit/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/audit/{path}', path=path)
         return self._adapter.post(
             url=api_path,
             json=params
@@ -69,7 +70,7 @@ class Audit(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/audit/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/audit/{path}', path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -94,7 +95,7 @@ class Audit(SystemBackendMixin):
             'input': input_to_hash,
         }
 
-        api_path = '/v1/sys/audit-hash/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/audit-hash/{path}', path=path)
         response = self._adapter.post(
             url=api_path,
             json=params

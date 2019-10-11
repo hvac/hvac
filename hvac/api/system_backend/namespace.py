@@ -1,3 +1,4 @@
+from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -12,7 +13,7 @@ class Namespace(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/namespaces/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
         response = self._adapter.post(
             url=api_path,
         )
@@ -42,7 +43,7 @@ class Namespace(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/namespaces/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
         response = self._adapter.delete(
             url=api_path,
         )

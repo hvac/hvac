@@ -4,7 +4,7 @@
 import json
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.gcp import ALLOWED_SECRETS_TYPES, SERVICE_ACCOUNT_KEY_ALGORITHMS, SERVICE_ACCOUNT_KEY_TYPES
 
@@ -42,7 +42,7 @@ class Gcp(VaultApiBase):
             'ttl': ttl,
             'max_ttl': max_ttl,
         }
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -61,7 +61,7 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -110,7 +110,8 @@ class Gcp(VaultApiBase):
             'secret_type': secret_type,
             'token_scopes': token_scopes,
         }
-        api_path = '/v1/{mount_point}/roleset/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -136,7 +137,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/roleset/{name}/rotate'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}/rotate',
             mount_point=mount_point,
             name=name,
         )
@@ -159,7 +161,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/roleset/{name}/rotate-key'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}/rotate-key',
             mount_point=mount_point,
             name=name
         )
@@ -180,7 +183,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/roleset/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -200,7 +204,7 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/rolesets'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/rolesets', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -219,7 +223,8 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/roleset/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roleset/{name}',
             name=name,
             mount_point=mount_point,
         )
@@ -243,7 +248,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/token/{roleset}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/token/{roleset}',
             mount_point=mount_point,
             roleset=roleset,
         )
@@ -276,7 +282,8 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/key/{roleset}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/key/{roleset}',
             mount_point=mount_point,
             roleset=roleset,
         )

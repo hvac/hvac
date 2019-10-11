@@ -2172,7 +2172,8 @@ class Client(object):
         params = {
             'rules': rules,
         }
-        api_path = '/v1/sys/policy/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/sys/policy/{name}',
             name=name,
         )
         self._adapter.put(api_path, json=params)

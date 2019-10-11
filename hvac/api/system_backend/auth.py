@@ -3,7 +3,7 @@
 """Support for "Auth"-related System Backend Methods."""
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
-from hvac import exceptions
+from hvac import exceptions, utils
 
 
 class Auth(SystemBackendMixin):
@@ -74,7 +74,7 @@ class Auth(SystemBackendMixin):
             'local': local,
         }
         params.update(kwargs)
-        api_path = '/v1/sys/auth/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/auth/{path}', path=path)
         return self._adapter.post(
             url=api_path,
             json=params
@@ -92,7 +92,7 @@ class Auth(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/auth/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/auth/{path}', path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -112,7 +112,8 @@ class Auth(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/auth/{path}/tune'.format(
+        api_path = utils.format_url(
+            '/v1/sys/auth/{path}/tune',
             path=path,
         )
         response = self._adapter.get(
@@ -187,7 +188,7 @@ class Auth(SystemBackendMixin):
                 else:
                     params[optional_parameter] = locals().get(optional_parameter)
         params.update(kwargs)
-        api_path = '/v1/sys/auth/{path}/tune'.format(path=path)
+        api_path = utils.format_url('/v1/sys/auth/{path}/tune', path=path)
         return self._adapter.post(
             url=api_path,
             json=params,

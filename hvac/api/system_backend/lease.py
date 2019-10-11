@@ -1,3 +1,4 @@
+from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -35,7 +36,7 @@ class Lease(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/leases/lookup/{prefix}'.format(prefix=prefix)
+        api_path = utils.format_url('/v1/sys/leases/lookup/{prefix}', prefix=prefix)
         response = self._adapter.list(
             url=api_path,
         )
@@ -104,7 +105,7 @@ class Lease(SystemBackendMixin):
         params = {
             'prefix': prefix,
         }
-        api_path = '/v1/sys/leases/revoke-prefix/{prefix}'.format(prefix=prefix)
+        api_path = utils.format_url('/v1/sys/leases/revoke-prefix/{prefix}', prefix=prefix)
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -128,7 +129,7 @@ class Lease(SystemBackendMixin):
         params = {
             'prefix': prefix,
         }
-        api_path = '/v1/sys/leases/revoke-force/{prefix}'.format(prefix=prefix)
+        api_path = utils.format_url('/v1/sys/leases/revoke-force/{prefix}', prefix=prefix)
         return self._adapter.put(
             url=api_path,
             json=params,

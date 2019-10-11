@@ -8,6 +8,8 @@ import os
 import warnings
 from textwrap import dedent
 
+import six
+
 from hvac import exceptions
 
 
@@ -280,3 +282,33 @@ def validate_pem_format(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(_check_pem(p) for p in param_argument):
         error_msg = 'unsupported {param} public key / certificate format, required type: PEM'
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
+
+
+def format_url(format_str, *args, **kwargs):
+    """Creates a URL using the specified format after escaping the provided arguments.
+
+    :param format_str: The URL containing replacement fields.
+    :type format_str: str
+    :param kwargs: Positional replacement field values.
+    :type kwargs: list
+    :param kwargs: Named replacement field values.
+    :type kwargs: dict
+    :return: The formatted URL path with escaped replacement fields.
+    :rtype: str
+    """
+
+    def url_quote(maybe_str):
+        # Special care must be taken for Python 2 where Unicode characters will break urllib quoting.
+        # To work around this, we always cast to a Unicode type, then UTF-8 encode it.
+        # Doing this is version agnostic and returns the same result in Python 2 or 3.
+        unicode_str = six.text_type(maybe_str)
+        utf8_str = unicode_str.encode("utf-8")
+        return six.moves.urllib.parse.quote(utf8_str)
+
+    escaped_args = [url_quote(value) for value in args]
+    escaped_kwargs = {key: url_quote(value) for key, value in kwargs.items()}
+
+    return format_str.format(
+        *escaped_args,
+        **escaped_kwargs
+    )
