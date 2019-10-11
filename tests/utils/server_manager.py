@@ -7,6 +7,8 @@ import time
 import requests
 import hcl
 
+import distutils.spawn
+from unittest import SkipTest
 from tests.utils import get_config_file_path, load_config_file, create_client
 
 logger = logging.getLogger(__name__)
@@ -36,6 +38,9 @@ class ServerManager(object):
         """Launch the vault server process and wait until its online and ready."""
         if self.use_consul:
             self.start_consul()
+
+        if distutils.spawn.find_executable('vault') is None:
+            raise SkipTest('Vault executable not found')
 
         # If a vault server is already running then we won't be able to start another one.
         # If we can't start our vault server then we don't know what we're testing against.
@@ -82,6 +87,9 @@ class ServerManager(object):
                 )
 
     def start_consul(self):
+        if distutils.spawn.find_executable('consul') is None:
+            raise SkipTest('Consul executable not found')
+
         try:
             requests.get('http://127.0.0.1:8500/v1/catalog/nodes')
         except Exception:
