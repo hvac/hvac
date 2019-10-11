@@ -18,7 +18,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
     def setUpClass(cls):
         # The mock LDAP server requires Java runtime
         if not distutils.spawn.find_executable('java'):
-            raise SkipTest
+            raise SkipTest('The mock LDAP server requires Java runtime')
 
         try:
             super(TestLdap, cls).setUpClass()
