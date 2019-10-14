@@ -21,16 +21,22 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestGithub, cls).setUpClass()
-        # Configure mock server.
-        cls.mock_server_port = utils.get_free_port()
-        cls.mock_server = HTTPServer(('localhost', cls.mock_server_port), MockGithubRequestHandler)
+        try:
+            super(TestGithub, cls).setUpClass()
 
-        # Start running mock server in a separate thread.
-        # Daemon threads automatically shut down when the main process exits.
-        cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
-        cls.mock_server_thread.setDaemon(True)
-        cls.mock_server_thread.start()
+            # Configure mock server.
+            cls.mock_server_port = utils.get_free_port()
+            cls.mock_server = HTTPServer(('localhost', cls.mock_server_port), MockGithubRequestHandler)
+
+            # Start running mock server in a separate thread.
+            # Daemon threads automatically shut down when the main process exits.
+            cls.mock_server_thread = Thread(target=cls.mock_server.serve_forever)
+            cls.mock_server_thread.setDaemon(True)
+            cls.mock_server_thread.start()
+        except Exception:
+            # Ensure that Vault server is taken down if setUpClass fails
+            super(TestGithub, cls).tearDownClass()
+            raise
 
     def setUp(self):
         super(TestGithub, self).setUp()

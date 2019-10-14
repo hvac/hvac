@@ -1,5 +1,6 @@
+import distutils.spawn
 import logging
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 
 from parameterized import parameterized, param
 
@@ -15,12 +16,21 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestLdap, cls).setUpClass()
-        logging.getLogger('ldap_test').setLevel(logging.ERROR)
+        # The mock LDAP server requires Java runtime
+        if not distutils.spawn.find_executable('java'):
+            raise SkipTest('The mock LDAP server requires Java runtime')
 
-        cls.mock_server_port = utils.get_free_port()
-        cls.ldap_server = MockLdapServer()
-        cls.ldap_server.start()
+        try:
+            super(TestLdap, cls).setUpClass()
+            logging.getLogger('ldap_test').setLevel(logging.ERROR)
+
+            cls.mock_server_port = utils.get_free_port()
+            cls.ldap_server = MockLdapServer()
+            cls.ldap_server.start()
+        except Exception:
+            # Ensure that Vault server is taken down if setUpClass fails
+            super(TestLdap, cls).tearDownClass()
+            raise
 
     @classmethod
     def tearDownClass(cls):

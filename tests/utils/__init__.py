@@ -7,6 +7,8 @@ import re
 import socket
 import subprocess
 import sys
+from unittest import SkipTest
+from distutils.spawn import find_executable
 from distutils.version import StrictVersion
 
 from hvac import Client
@@ -18,6 +20,8 @@ LATEST_VAULT_VERSION = '1.1.3'
 
 
 def get_vault_version_string():
+    if not find_executable('vault'):
+        raise SkipTest('Vault executable not found')
     command = ['vault', '-version']
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
