@@ -9,19 +9,16 @@ HVAC_VAULT_LICENSE=${2:-DEFAULT_VAULT_LICENSE}
 function build_and_install_vault_head_ref() {
     mkdir -p $HOME/bin
 
-    eval "$(GIMME_GO_VERSION=1.11 gimme)"
+    eval "$(GIMME_GO_VERSION=1.12.7 gimme)"
 
     export GOPATH=$HOME/go
     mkdir $GOPATH
 
     export PATH=$GOPATH/bin:$PATH
 
-    go get github.com/tools/godep
-    go get github.com/mitchellh/gox
-
     git clone https://github.com/hashicorp/vault.git $GOPATH/src/github.com/hashicorp/vault
     cd $GOPATH/src/github.com/hashicorp/vault
-    make dev
+    make bootstrap dev
 
     mv bin/vault $HOME/bin
 }

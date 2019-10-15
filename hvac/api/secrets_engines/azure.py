@@ -59,7 +59,7 @@ class Azure(VaultApiBase):
                 'environment': environment,
             })
         )
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -77,7 +77,7 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -95,7 +95,7 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.delete(
             url=api_path,
         )
@@ -134,9 +134,10 @@ class Azure(VaultApiBase):
                 'max_ttl': max_ttl,
             })
         )
-        api_path = '/v1/{mount_point}/roles/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
-            name=name
+            name=name,
         )
         return self._adapter.post(
             url=api_path,
@@ -155,7 +156,7 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -175,7 +176,8 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/creds/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/creds/{name}',
             mount_point=mount_point,
             name=name,
         )

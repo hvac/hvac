@@ -52,7 +52,7 @@ class ActiveDirectory(VaultApiBase):
 
         params.update(kwargs)
 
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -71,7 +71,7 @@ class ActiveDirectory(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -94,7 +94,7 @@ class ActiveDirectory(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
         params = {
             "name": name,
         }
@@ -120,7 +120,7 @@ class ActiveDirectory(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
         return self._adapter.get(
             url=api_path,
@@ -132,7 +132,7 @@ class ActiveDirectory(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles".format(mount_point)
+        api_path = utils.format_url("/v1/{}/roles", mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
@@ -147,7 +147,7 @@ class ActiveDirectory(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
         return self._adapter.delete(
             url=api_path,
         )

@@ -47,8 +47,9 @@ class Github(VaultApiBase):
                 'max_ttl': max_ttl,
             })
         )
-        api_path = '/v1/auth/{mount_point}/config'.format(
-            mount_point=mount_point
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/config',
+            mount_point=mount_point,
         )
         return self._adapter.post(
             url=api_path,
@@ -67,7 +68,8 @@ class Github(VaultApiBase):
         :return: The JSON response of the read_configuration request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/config',
             mount_point=mount_point,
         )
         response = self._adapter.get(url=api_path)
@@ -102,7 +104,8 @@ class Github(VaultApiBase):
         params = {
             'value': ','.join(policies),
         }
-        api_path = '/v1/auth/{mount_point}/map/teams/{team_name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/map/teams/{team_name}',
             mount_point=mount_point,
             team_name=team_name,
         )
@@ -125,7 +128,8 @@ class Github(VaultApiBase):
         :return: The JSON response of the read_team_mapping request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/map/teams/{team_name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/map/teams/{team_name}',
             mount_point=mount_point,
             team_name=team_name,
         )
@@ -162,7 +166,8 @@ class Github(VaultApiBase):
         params = {
             'value': ','.join(policies),
         }
-        api_path = '/v1/auth/{mount_point}/map/users/{user_name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/map/users/{user_name}',
             mount_point=mount_point,
             user_name=user_name,
         )
@@ -185,7 +190,8 @@ class Github(VaultApiBase):
         :return: The JSON response of the read_user_mapping request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/map/users/{user_name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/map/users/{user_name}',
             mount_point=mount_point,
             user_name=user_name,
         )
@@ -212,7 +218,7 @@ class Github(VaultApiBase):
         params = {
             'token': token,
         }
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
         return self._adapter.login(
             url=api_path,
             use_token=use_token,

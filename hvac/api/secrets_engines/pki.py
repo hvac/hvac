@@ -26,7 +26,7 @@ class Pki(VaultApiBase):
         :return: The certificate as pem.
         :rtype: str
         """
-        api_path = '/v1/{mount_point}/ca/pem'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/ca/pem', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -45,7 +45,7 @@ class Pki(VaultApiBase):
         :return: The certificate chain as pem.
         :rtype: str
         """
-        api_path = '/v1/{mount_point}/ca_chain'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/ca_chain', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -66,7 +66,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/cert/{serial}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/cert/{serial}',
             mount_point=mount_point,
             serial=serial,
         )
@@ -88,7 +89,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/certs'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/certs', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -110,7 +111,7 @@ class Pki(VaultApiBase):
         params = {
             'pem_bundle': pem_bundle,
         }
-        api_path = '/v1/{mount_point}/config/ca'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/ca', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -129,7 +130,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -150,7 +151,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
         params = extra_params
         params.update(
             utils.remove_nones({
@@ -177,7 +178,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config/urls'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/urls', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -198,7 +199,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/config/urls'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/urls', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -217,7 +218,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -236,7 +237,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/crl/rotate'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/crl/rotate', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -261,7 +262,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/intermediate/generate/{type}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/intermediate/generate/{type}',
             mount_point=mount_point,
             type=type,
         )
@@ -289,7 +291,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/intermediate/set-signed'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/intermediate/set-signed',
             mount_point=mount_point,
         )
 
@@ -320,7 +323,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/issue/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/issue/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -348,7 +352,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/revoke'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/revoke', mount_point=mount_point)
 
         params = {}
         params['serial_number'] = serial_number
@@ -375,7 +379,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rname: requests.Response
         """
-        api_path = '/v1/{mount_point}/roles/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -403,7 +408,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/roles/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -425,7 +431,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/{mount_point}/roles'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -446,7 +452,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/roles/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -474,7 +481,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/root/generate/{type}'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/root/generate/{type}',
             mount_point=mount_point,
             type=type,
         )
@@ -500,9 +508,9 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/root'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/root',
             mount_point=mount_point,
-            type=type,
         )
 
         return self._adapter.delete(
@@ -528,7 +536,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/root/sign-intermediate'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/root/sign-intermediate', mount_point=mount_point)
 
         params = extra_params
         params['csr'] = csr
@@ -554,7 +562,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/root/sign-self-issued'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/{mount_point}/root/sign-self-issued', mount_point=mount_point)
 
         params = {}
         params['certificate'] = certificate
@@ -585,10 +593,11 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/sign/{name}'.format(
-                mount_point=mount_point,
-                name=name,
-                )
+        api_path = utils.format_url(
+            '/v1/{mount_point}/sign/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
 
         params = extra_params
         params['csr'] = csr
@@ -622,7 +631,8 @@ class Pki(VaultApiBase):
         if name:
             url_to_transform = url_to_transform + '/{name}'
 
-        api_path = url_to_transform.format(
+        api_path = utils.format_url(
+            url_to_transform,
             mount_point=mount_point,
             name=name,
         )
@@ -651,7 +661,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/tidy'.format(
+        api_path = utils.format_url(
+            '/v1/{mount_point}/tidy',
             mount_point=mount_point,
         )
 

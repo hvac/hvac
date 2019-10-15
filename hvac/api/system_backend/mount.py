@@ -1,3 +1,4 @@
+from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
@@ -84,7 +85,7 @@ class Mount(SystemBackendMixin):
 
         params.update(kwargs)
 
-        api_path = '/v1/sys/mounts/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/mounts/{path}', path=path)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -101,7 +102,7 @@ class Mount(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/mounts/{path}'.format(path=path)
+        api_path = utils.format_url('/v1/sys/mounts/{path}', path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -120,7 +121,7 @@ class Mount(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/mounts/{path}/tune'.format(path=path)
+        api_path = utils.format_url('/v1/sys/mounts/{path}/tune', path=path)
         response = self._adapter.get(
             url=api_path,
         )
@@ -190,7 +191,7 @@ class Mount(SystemBackendMixin):
 
         params.update(kwargs)
 
-        api_path = '/v1/sys/mounts/{path}/tune'.format(path=path)
+        api_path = utils.format_url('/v1/sys/mounts/{path}/tune', path=path)
         return self._adapter.post(
             url=api_path,
             json=params,

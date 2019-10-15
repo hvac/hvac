@@ -61,7 +61,8 @@ class Kubernetes(VaultApiBase):
                 'pem_keys': pem_keys,
             })
         )
-        api_path = '/v1/auth/{mount_point}/config'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/config',
             mount_point=mount_point
         )
         return self._adapter.post(
@@ -80,7 +81,7 @@ class Kubernetes(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -150,7 +151,7 @@ class Kubernetes(VaultApiBase):
         if policies is not None:
             params['policies'] = comma_delimited_to_list(policies)
 
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(mount_point=mount_point, name=name)
+        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -169,7 +170,8 @@ class Kubernetes(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -189,7 +191,7 @@ class Kubernetes(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/role'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/role', mount_point=mount_point)
         response = self._adapter.list(
             url=api_path,
         )
@@ -209,7 +211,8 @@ class Kubernetes(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/role/{name}'.format(
+        api_path = utils.format_url(
+            '/v1/auth/{mount_point}/role/{name}',
             mount_point=mount_point,
             name=name,
         )
@@ -243,7 +246,7 @@ class Kubernetes(VaultApiBase):
             'jwt': jwt,
         }
 
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
         response = self._adapter.login(
             url=api_path,
             use_token=use_token,

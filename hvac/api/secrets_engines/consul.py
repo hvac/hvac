@@ -38,7 +38,7 @@ class Consul(VaultApiBase):
             })
         )
 
-        api_path = "/v1/{}/config/access".format(mount_point)
+        api_path = utils.format_url("/v1/{}/config/access", mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -78,7 +78,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
         if not policy and token_type != "management":
             error_msg = 'policy must be specified unless token_type is management'
@@ -110,7 +110,7 @@ class Consul(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
         return self._adapter.get(
             url=api_path,
@@ -123,7 +123,7 @@ class Consul(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = "/v1/{}/roles".format(mount_point)
+        api_path = utils.format_url("/v1/{}/roles", mount_point)
         return self._adapter.list(
             url=api_path,
         ).json()
@@ -139,7 +139,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/roles/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
         return self._adapter.delete(
             url=api_path,
         )
@@ -154,7 +154,7 @@ class Consul(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{}/creds/{}".format(mount_point, name)
+        api_path = utils.format_url("/v1/{}/creds/{}", mount_point, name)
 
         return self._adapter.get(
             url=api_path,
