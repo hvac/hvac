@@ -19,8 +19,8 @@ function build_and_install_vault_head_ref() {
     go env
 
     build_dir="$GOPATH/src/github.com/hashicorp/vault"
-    cd "${build_dir}"
     git clone https://github.com/hashicorp/vault.git "${build_dir}"
+    cd "${build_dir}"
 
     echo "Current Commit: $(git rev-parse HEAD)"
     echo "Current Describe: $(git describe)"
