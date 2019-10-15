@@ -27,8 +27,12 @@ function build_and_install_vault_head_ref() {
     echo "Most Recent Tag: $(git describe --abbrev=0)"
     echo "Hashicorp Libraries:"
     ls -al "vendor/github.com/hashicorp"
+    echo "Root Directory:"
+    ls -al
+    echo "Git Status:"
+    git status
 
-    go clean
+    go clean -cache
     make bootstrap dev
 
     mv bin/vault $HOME/bin
