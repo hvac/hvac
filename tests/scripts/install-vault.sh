@@ -15,24 +15,10 @@ function build_and_install_vault_head_ref() {
     mkdir $GOPATH
 
     export PATH=$GOPATH/bin:$PATH
-    echo "Go Environment:"
-    go env
 
-    build_dir="$GOPATH/src/github.com/hashicorp/vault"
+    build_dir="/tmp/src/github.com/hashicorp/vault"
     git clone https://github.com/hashicorp/vault.git "${build_dir}"
     cd "${build_dir}"
-
-    echo "Current Commit: $(git rev-parse HEAD)"
-    echo "Current Describe: $(git describe)"
-    echo "Most Recent Tag: $(git describe --abbrev=0)"
-    echo "Hashicorp Libraries:"
-    ls -al "vendor/github.com/hashicorp"
-    echo "Root Directory:"
-    ls -al
-    echo "Git Status:"
-    git status
-
-    go clean -cache
     make bootstrap dev
 
     mv bin/vault $HOME/bin
