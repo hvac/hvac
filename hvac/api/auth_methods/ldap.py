@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """LDAP methods module."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.constants.ldap import DEFAULT_GROUP_FILTER
 
 DEFAULT_MOUNT_POINT = 'ldap'
 
@@ -14,10 +13,10 @@ class Ldap(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/ldap/index.html
     """
 
-    def configure(self, user_dn, group_dn, url='ldap://127.0.0.1', case_sensitive_names=False, starttls=False,
-                  tls_min_version='tls12', tls_max_version='tls12', insecure_tls=False, certificate=None, bind_dn=None,
-                  bind_pass=None, user_attr='cn', discover_dn=False, deny_null_bind=True, upn_domain=None,
-                  group_filter=DEFAULT_GROUP_FILTER, group_attr='cn', mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, user_dn=None, group_dn=None, url=None, case_sensitive_names=None, starttls=None,
+                  tls_min_version=None, tls_max_version=None, insecure_tls=None, certificate=None, bind_dn=None,
+                  bind_pass=None, user_attr=None, discover_dn=None, deny_null_bind=True, upn_domain=None,
+                  group_filter=None, group_attr=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         Configure the LDAP auth method.
 
@@ -78,10 +77,10 @@ class Ldap(VaultApiBase):
         :return: The response of the configure request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
+            'url': url,
             'userdn': user_dn,
             'groupdn': group_dn,
-            'url': url,
             'case_sensitive_names': case_sensitive_names,
             'starttls': starttls,
             'tls_min_version': tls_min_version,
@@ -93,17 +92,11 @@ class Ldap(VaultApiBase):
             'deny_null_bind': deny_null_bind,
             'groupfilter': group_filter,
             'groupattr': group_attr,
-        }
-        # Fill out params dictionary with any optional parameters provided
-        if upn_domain is not None:
-            params['upndomain'] = upn_domain
-        if bind_dn is not None:
-            params['binddn'] = bind_dn
-        if bind_pass is not None:
-            params['bindpass'] = bind_pass
-        if certificate is not None:
-            params['certificate'] = certificate
-
+            'upndomain': upn_domain,
+            'binddn': bind_dn,
+            'bindpass': bind_pass,
+            'certificate': certificate,
+        })
         api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -146,17 +139,15 @@ class Ldap(VaultApiBase):
         :return: The response of the create_or_update_group request.
         :rtype: requests.Response
         """
-        if policies is None:
-            policies = []
-        if not isinstance(policies, list):
+        if policies is not None and not isinstance(policies, list):
             error_msg = '"policies" argument must be an instance of list or None, "{policies_type}" provided.'.format(
                 policies_type=type(policies),
             )
             raise exceptions.ParamValidationError(error_msg)
 
-        params = {
-            'policies': ','.join(policies),
-        }
+        params = {}
+        if policies is not None:
+            params['policies'] = ','.join(policies)
         api_path = '/v1/auth/{mount_point}/groups/{name}'.format(
             mount_point=mount_point,
             name=name,
@@ -257,26 +248,23 @@ class Ldap(VaultApiBase):
         :return: The response of the create_or_update_user request.
         :rtype: requests.Response
         """
-        if policies is None:
-            policies = []
-        if groups is None:
-            groups = []
         list_required_params = {
             'policies': policies,
             'groups': groups,
         }
         for param_name, param_arg in list_required_params.items():
-            if not isinstance(param_arg, list):
+            if param_arg is not None and not isinstance(param_arg, list):
                 error_msg = '"{param_name}" argument must be an instance of list or None, "{param_type}" provided.'.format(
                     param_name=param_name,
                     param_type=type(param_arg),
                 )
                 raise exceptions.ParamValidationError(error_msg)
 
-        params = {
-            'policies': ','.join(policies),
-            'groups': ','.join(groups),
-        }
+        params = {}
+        if policies is not None:
+            params['policies'] = ','.join(policies)
+        if groups is not None:
+            params['groups'] = ','.join(groups)
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(
             mount_point=mount_point,
             username=username,

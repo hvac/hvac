@@ -3,7 +3,7 @@
 """Identity secret engine module."""
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.identity import ALLOWED_GROUP_TYPES
 
@@ -18,7 +18,7 @@ class Identity(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/identity/entity.html
     """
 
-    def create_or_update_entity(self, name, entity_id=None, metadata=None, policies=None, disabled=False,
+    def create_or_update_entity(self, name, entity_id=None, metadata=None, policies=None, disabled=None,
                                 mount_point=DEFAULT_MOUNT_POINT):
         """Create or update an Entity.
 
@@ -41,22 +41,19 @@ class Identity(VaultApiBase):
         :return: The JSON response for creates, the generic response object for updates, of the request.
         :rtype: dict | requests.Response
         """
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
                 arg_type=type(metadata),
             ))
-        params = {
+        params = utils.remove_nones({
+            'id': entity_id,
             'name': name,
             'metadata': metadata,
             'policies': policies,
             'disabled': disabled,
-        }
-        if entity_id is not None:
-            params['id'] = entity_id
+        })
         api_path = '/v1/{mount_point}/entity'.format(mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
@@ -67,7 +64,7 @@ class Identity(VaultApiBase):
         else:
             return response.json()
 
-    def create_or_update_entity_by_name(self, name, metadata=None, policies=None, disabled=False,
+    def create_or_update_entity_by_name(self, name, metadata=None, policies=None, disabled=None,
                                         mount_point=DEFAULT_MOUNT_POINT):
         """Create or update an entity by a given name.
 
@@ -88,19 +85,17 @@ class Identity(VaultApiBase):
         :return: The JSON response for creates, the generic response of the request for updates.
         :rtype: requests.Response | dict
         """
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
                 arg_type=type(metadata),
             ))
-        params = {
+        params = utils.remove_nones({
             'metadata': metadata,
             'policies': policies,
             'disabled': disabled,
-        }
+        })
         api_path = '/v1/{mount_point}/entity/name/{name}'.format(
             mount_point=mount_point,
             name=name,
@@ -156,7 +151,7 @@ class Identity(VaultApiBase):
         )
         return response.json()
 
-    def update_entity(self, entity_id, name=None, metadata=None, policies=None, disabled=False,
+    def update_entity(self, entity_id, name=None, metadata=None, policies=None, disabled=None,
                       mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing entity.
 
@@ -179,20 +174,18 @@ class Identity(VaultApiBase):
         :return: The JSON response where available, otherwise the generic response object, of the request.
         :rtype: dict | requests.Response
         """
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
                 arg_type=type(metadata),
             ))
-        params = {
+        params = utils.remove_nones({
             'name': name,
             'metadata': metadata,
             'policies': policies,
             'disabled': disabled,
-        }
+        })
         api_path = '/v1/{mount_point}/entity/id/{id}'.format(
             mount_point=mount_point,
             id=entity_id,
@@ -306,7 +299,7 @@ class Identity(VaultApiBase):
 
         return response.json()
 
-    def merge_entities(self, from_entity_ids, to_entity_id, force=False, mount_point=DEFAULT_MOUNT_POINT):
+    def merge_entities(self, from_entity_ids, to_entity_id, force=None, mount_point=DEFAULT_MOUNT_POINT):
         """Merge many entities into one entity.
 
         Supported methods:
@@ -326,11 +319,11 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'from_entity_ids': from_entity_ids,
             'to_entity_id': to_entity_id,
             'force': force,
-        }
+        })
         api_path = '/v1/{mount_point}/entity/merge'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -358,13 +351,12 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
+            'id': alias_id,
             'name': name,
             'canonical_id': canonical_id,
             'mount_accessor': mount_accessor,
-        }
-        if alias_id is not None:
-            params['id'] = alias_id
+        })
         api_path = '/v1/{mount_point}/entity-alias'.format(mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
@@ -415,11 +407,11 @@ class Identity(VaultApiBase):
         :return: The JSON response where available, otherwise the generic response object, of the request.
         :rtype: dict | requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'name': name,
             'canonical_id': canonical_id,
             'mount_accessor': mount_accessor,
-        }
+        })
         api_path = '/v1/{mount_point}/entity-alias/id/{id}'.format(
             mount_point=mount_point,
             id=alias_id,
@@ -504,7 +496,7 @@ class Identity(VaultApiBase):
         """
         if group_type == 'external':
             if member_entity_ids is not None:
-                logger.warning("InvalidRequest: member entities can't be set manually for external groupsl ignoring member_entity_ids argument.")
+                logger.warning("InvalidRequest: member entities can't be set manually for external groups ignoring member_entity_ids argument.")
         else:
             params['member_entity_ids'] = member_entity_ids
 
@@ -542,9 +534,7 @@ class Identity(VaultApiBase):
         :return: The JSON response where available, otherwise the generic response object, of the request.
         :rtype: dict | requests.Response
         """
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
@@ -556,14 +546,13 @@ class Identity(VaultApiBase):
                 arg=group_type,
                 allowed_values=ALLOWED_GROUP_TYPES,
             ))
-        params = {
+        params = utils.remove_nones({
+            'id': group_id,
             'name': name,
             'type': group_type,
             'metadata': metadata,
             'policies': policies,
-        }
-        if group_id is not None:
-            params['id'] = group_id
+        })
 
         Identity.validate_member_id_params_for_group_type(
             group_type=group_type,
@@ -604,7 +593,7 @@ class Identity(VaultApiBase):
         )
         return response.json()
 
-    def update_group(self, group_id, name, group_type="internal", metadata=None, policies=None, member_group_ids=None,
+    def update_group(self, group_id, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
                      member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing group.
 
@@ -630,9 +619,7 @@ class Identity(VaultApiBase):
         :return: The JSON response where available, otherwise the generic response object, of the request.
         :rtype: dict | requests.Response
         """
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
@@ -644,12 +631,12 @@ class Identity(VaultApiBase):
                 arg=group_type,
                 allowed_values=ALLOWED_GROUP_TYPES,
             ))
-        params = {
+        params = utils.remove_nones({
             'name': name,
             'type': group_type,
             'metadata': metadata,
             'policies': policies,
-        }
+        })
 
         Identity.validate_member_id_params_for_group_type(
             group_type=group_type,
@@ -752,7 +739,7 @@ class Identity(VaultApiBase):
 
         return response.json()
 
-    def create_or_update_group_by_name(self, name, group_type="internal", metadata=None, policies=None, member_group_ids=None,
+    def create_or_update_group_by_name(self, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
                                        member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create or update a group by its name.
 
@@ -777,9 +764,7 @@ class Identity(VaultApiBase):
         :rtype: requests.Response
         """
 
-        if metadata is None:
-            metadata = {}
-        if not isinstance(metadata, dict):
+        if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=metadata,
@@ -791,13 +776,13 @@ class Identity(VaultApiBase):
                 arg=group_type,
                 allowed_values=ALLOWED_GROUP_TYPES,
             ))
-        params = {
+        params = utils.remove_nones({
             'type': group_type,
             'metadata': metadata,
             'policies': policies,
             'member_group_ids': member_group_ids,
             'member_entity_ids': member_entity_ids,
-        }
+        })
         api_path = '/v1/{mount_point}/group/name/{name}'.format(
             mount_point=mount_point,
             name=name,
@@ -870,13 +855,12 @@ class Identity(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
+            'id': alias_id,
             'name': name,
             'mount_accessor': mount_accessor,
             'canonical_id': canonical_id,
-        }
-        if alias_id is not None:
-            params['id'] = alias_id
+        })
         api_path = '/v1/{mount_point}/group-alias'.format(mount_point=mount_point)
         response = self._adapter.post(
             url=api_path,
@@ -884,7 +868,7 @@ class Identity(VaultApiBase):
         )
         return response.json()
 
-    def update_group_alias(self, entity_id, name, mount_accessor="", canonical_id="", mount_point=DEFAULT_MOUNT_POINT):
+    def update_group_alias(self, entity_id, name, mount_accessor=None, canonical_id=None, mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing group alias.
 
         Supported methods:
@@ -904,11 +888,11 @@ class Identity(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'name': name,
             'mount_accessor': mount_accessor,
             'canonical_id': canonical_id,
-        }
+        })
         api_path = '/v1/{mount_point}/group-alias/id/{id}'.format(
             mount_point=mount_point,
             id=entity_id,

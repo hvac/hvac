@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Active Directory methods module."""
 
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'ad'
@@ -12,7 +13,7 @@ class ActiveDirectory(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/ad/index.html
     """
 
-    def configure(self, binddn="", bindpass="", url="", userdn=None, upndomain=None, ttl=0, max_ttl=0,
+    def configure(self, binddn=None, bindpass=None, url=None, userdn=None, upndomain=None, ttl=None, max_ttl=None,
                   mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """Configure shared information for the ad secrets engine.
 
@@ -39,7 +40,7 @@ class ActiveDirectory(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'binddn': binddn,
             'bindpass': bindpass,
             'url': url,
@@ -47,7 +48,7 @@ class ActiveDirectory(VaultApiBase):
             'upndomain': upndomain,
             'ttl': ttl,
             'max_ttl': max_ttl,
-        }
+        })
 
         params.update(kwargs)
 
@@ -76,12 +77,13 @@ class ActiveDirectory(VaultApiBase):
         )
         return response.json()
 
-    def create_or_update_role(self, name, service_account_name="", ttl="", mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(self, name, service_account_name=None, ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the ad role definition.
 
         :param name: Specifies the name of an existing role against which to create this ad credential.
         :type name: str | unicode
         :param service_account_name: The name of a pre-existing service account in Active Directory that maps to this role.
+            This value is required on create and optional on update.
         :type service_account_name: str | unicode
         :param ttl: Specifies the TTL for this role.
             This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
@@ -95,9 +97,13 @@ class ActiveDirectory(VaultApiBase):
         api_path = "/v1/{}/roles/{}".format(mount_point, name)
         params = {
             "name": name,
-            "service_account_name": service_account_name,
-            "ttl": ttl,
         }
+        params.update(
+            utils.remove_nones({
+                "service_account_name": service_account_name,
+                "ttl": ttl,
+            })
+        )
         return self._adapter.post(
             url=api_path,
             json=params,

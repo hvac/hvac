@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Okta methods module."""
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'okta'
@@ -12,7 +13,7 @@ class Okta(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/okta/index.html
     """
 
-    def configure(self, org_name, api_token=None, base_url='okta.com', ttl=None, max_ttl=None, bypass_okta_mfa=False,
+    def configure(self, org_name, api_token=None, base_url=None, ttl=None, max_ttl=None, bypass_okta_mfa=None,
                   mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for Okta.
 
@@ -44,12 +45,16 @@ class Okta(VaultApiBase):
         """
         params = {
             'org_name': org_name,
-            'api_token': api_token,
-            'base_url': base_url,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-            'bypass_okta_mfa': bypass_okta_mfa,
         }
+        params.update(
+            utils.remove_nones({
+                'api_token': api_token,
+                'base_url': base_url,
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+                'bypass_okta_mfa': bypass_okta_mfa,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -109,9 +114,13 @@ class Okta(VaultApiBase):
         """
         params = {
             'username': username,
-            'groups': groups,
-            'policies': policies,
         }
+        params.update(
+            utils.remove_nones({
+                'groups': groups,
+                'policies': policies,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(
             mount_point=mount_point,
             username=username,
@@ -204,9 +213,9 @@ class Okta(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'policies': policies,
-        }
+        })
         api_path = '/v1/auth/{mount_point}/groups/{name}'.format(
             mount_point=mount_point,
             name=name,

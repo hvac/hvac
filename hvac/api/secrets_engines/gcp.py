@@ -4,7 +4,7 @@
 import json
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.gcp import ALLOWED_SECRETS_TYPES, SERVICE_ACCOUNT_KEY_ALGORITHMS, SERVICE_ACCOUNT_KEY_TYPES
 
@@ -17,7 +17,7 @@ class Gcp(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/gcp/index.html
     """
 
-    def configure(self, credentials="", ttl=0, max_ttl=0, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, credentials=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure shared information for the Gcp secrets engine.
 
         Supported methods:
@@ -37,11 +37,11 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'credentials': credentials,
             'ttl': ttl,
             'max_ttl': max_ttl,
-        }
+        })
         api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -67,7 +67,7 @@ class Gcp(VaultApiBase):
         )
         return response.json()
 
-    def create_or_update_roleset(self, name, project, bindings, secret_type='access_token', token_scopes=None,
+    def create_or_update_roleset(self, name, project, bindings, secret_type=None, token_scopes=None,
                                  mount_point=DEFAULT_MOUNT_POINT):
         """Create a roleset or update an existing roleset.
 
@@ -93,7 +93,7 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if secret_type not in ALLOWED_SECRETS_TYPES:
+        if secret_type is not None and secret_type not in ALLOWED_SECRETS_TYPES:
             error_msg = 'unsupported secret_type argument provided "{arg}", supported types: "{secret_type}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=secret_type,
@@ -107,9 +107,14 @@ class Gcp(VaultApiBase):
         params = {
             'project': project,
             'bindings': bindings,
-            'secret_type': secret_type,
-            'token_scopes': token_scopes,
         }
+        params.update(
+            utils.remove_nones({
+                'secret_type': secret_type,
+                'token_scopes': token_scopes,
+            })
+        )
+
         api_path = '/v1/{mount_point}/roleset/{name}'.format(
             mount_point=mount_point,
             name=name,

@@ -280,3 +280,19 @@ def validate_pem_format(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(_check_pem(p) for p in param_argument):
         error_msg = 'unsupported {param} public key / certificate format, required type: PEM'
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
+
+
+def remove_nones(params):
+    """Removes None values from optional arguments in a parameter dictionary.
+
+    :param params: The dictionary of parameters to be filtered.
+    :type params: dict
+    :return: A filtered copy of the parameter dictionary.
+    :rtype: dict
+    """
+
+    return {
+        key: value
+        for key, value in params.items()
+        if value is not None
+    }

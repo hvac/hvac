@@ -3,7 +3,7 @@
 """Azure auth method module."""
 import logging
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.azure import VALID_ENVIRONMENTS
 
@@ -17,7 +17,7 @@ class Azure(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/azure/index.html
     """
 
-    def configure(self, tenant_id, resource, environment='AzurePublicCloud', client_id=None, client_secret=None,
+    def configure(self, tenant_id, resource, environment=None, client_id=None, client_secret=None,
                   mount_point=DEFAULT_MOUNT_POINT):
         """Configure the credentials required for the plugin to perform API calls to Azure.
 
@@ -43,7 +43,7 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if environment not in VALID_ENVIRONMENTS:
+        if environment is not None and environment not in VALID_ENVIRONMENTS:
             error_msg = 'invalid environment argument provided: "{arg}"; supported environments: "{environments}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=environment,
@@ -52,12 +52,14 @@ class Azure(VaultApiBase):
         params = {
             'tenant_id': tenant_id,
             'resource': resource,
-            'environment': environment,
         }
-        if client_id is not None:
-            params['client_id'] = client_id
-        if client_secret is not None:
-            params['client_secret'] = client_secret
+        params.update(
+            utils.remove_nones({
+                'environment': environment,
+                'client_id': client_id,
+                'client_secret': client_secret,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -112,7 +114,7 @@ class Azure(VaultApiBase):
         :param name: Name of the role.
         :type name: str | unicode
         :param policies: Policies to be set on tokens issued using this role.
-        :type policies: list
+        :type policies: str | list
         :param num_uses: Number of uses to set on a token produced by this role.
         :type num_uses: int
         :param ttl: The TTL period of tokens issued using this role in seconds.
@@ -140,15 +142,17 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if policies is None:
-            policies = []
-        if not isinstance(policies, list) or not all([isinstance(p, str) for p in policies]):
-            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=policies,
-                arg_type=type(policies),
-            ))
-        params = {
+        if policies is not None:
+            if not (
+                isinstance(policies, str)
+                or (isinstance(policies, list) and all([isinstance(p, str) for p in policies]))
+            ):
+                error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
+                raise exceptions.ParamValidationError(error_msg.format(
+                    arg=policies,
+                    arg_type=type(policies),
+                ))
+        params = utils.remove_nones({
             'policies': policies,
             'ttl': ttl,
             'max_ttl': max_ttl,
@@ -160,7 +164,7 @@ class Azure(VaultApiBase):
             'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
             'num_uses': num_uses,
-        }
+        })
 
         api_path = '/v1/auth/{mount_point}/role/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
@@ -270,14 +274,14 @@ class Azure(VaultApiBase):
             'role': role,
             'jwt': jwt,
         }
-        if subscription_id is not None:
-            params['subscription_id'] = subscription_id
-        if resource_group_name is not None:
-            params['resource_group_name'] = resource_group_name
-        if vm_name is not None:
-            params['vm_name'] = vm_name
-        if vmss_name is not None:
-            params['vmss_name'] = vmss_name
+        params.update(
+            utils.remove_nones({
+                'subscription_id': subscription_id,
+                'resource_group_name': resource_group_name,
+                'vm_name': vm_name,
+                'vmss_name': vmss_name,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
         response = self._adapter.login(
             url=api_path,

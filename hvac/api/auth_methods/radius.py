@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """RADIUS methods module."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'radius'
@@ -13,7 +13,7 @@ class Radius(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/auth/radius.html
     """
 
-    def configure(self, host, secret, port=1812, unregistered_user_policies=None, dial_timeout=10, nas_port=10,
+    def configure(self, host, secret, port=None, unregistered_user_policies=None, dial_timeout=None, nas_port=None,
                   mount_point=DEFAULT_MOUNT_POINT):
         """
         Configure the RADIUS auth method.
@@ -41,10 +41,14 @@ class Radius(VaultApiBase):
         params = {
             'host': host,
             'secret': secret,
-            'port': port,
-            'dial_timeout': dial_timeout,
-            'nas_port': nas_port,
         }
+        params.update(
+            utils.remove_nones({
+                'port': port,
+                'dial_timeout': dial_timeout,
+                'nas_port': nas_port,
+            })
+        )
         # Fill out params dictionary with any optional parameters provided
         if unregistered_user_policies is not None:
             if not isinstance(unregistered_user_policies, list):
@@ -97,17 +101,15 @@ class Radius(VaultApiBase):
         :return: The response of the register_user request.
         :rtype: requests.Response
         """
-        if policies is None:
-            policies = []
-        if not isinstance(policies, list):
+        if policies is not None and not isinstance(policies, list):
             error_msg = '"policies" argument must be an instance of list or None, "{policies_type}" provided.'.format(
                 policies_type=type(policies),
             )
             raise exceptions.ParamValidationError(error_msg)
 
-        params = {
-            'username': ','.join(username),
-        }
+        params = {}
+        if policies is not None:
+            params['policies'] = ','.join(policies)
         api_path = '/v1/auth/{mount_point}/users/{name}'.format(
             mount_point=mount_point,
             name=username,

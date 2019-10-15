@@ -3,7 +3,7 @@
 """Azure secret engine methods module."""
 import json
 
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.azure import VALID_ENVIRONMENTS
 
@@ -16,7 +16,7 @@ class Azure(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/azure/index.html
     """
 
-    def configure(self, subscription_id, tenant_id, client_id="", client_secret="", environment='AzurePublicCloud',
+    def configure(self, subscription_id, tenant_id, client_id=None, client_secret=None, environment=None,
                   mount_point=DEFAULT_MOUNT_POINT):
         """Configure the credentials required for the plugin to perform API calls to Azure.
 
@@ -42,7 +42,7 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if environment not in VALID_ENVIRONMENTS:
+        if environment is not None and environment not in VALID_ENVIRONMENTS:
             error_msg = 'invalid environment argument provided "{arg}", supported environments: "{environments}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=environment,
@@ -51,10 +51,14 @@ class Azure(VaultApiBase):
         params = {
             'subscription_id': subscription_id,
             'tenant_id': tenant_id,
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'environment': environment,
         }
+        params.update(
+            utils.remove_nones({
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'environment': environment,
+            })
+        )
         api_path = '/v1/{mount_point}/config'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -96,7 +100,7 @@ class Azure(VaultApiBase):
             url=api_path,
         )
 
-    def create_or_update_role(self, name, azure_roles, ttl="", max_ttl="", mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(self, name, azure_roles, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create or update a Vault role.
 
         The provided Azure roles must exist for this call to succeed. See the Azure secrets roles docs for more
@@ -123,9 +127,13 @@ class Azure(VaultApiBase):
         """
         params = {
             'azure_roles': json.dumps(azure_roles),
-            'ttl': ttl,
-            'max_ttl': max_ttl,
         }
+        params.update(
+            utils.remove_nones({
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+            })
+        )
         api_path = '/v1/{mount_point}/roles/{name}'.format(
             mount_point=mount_point,
             name=name

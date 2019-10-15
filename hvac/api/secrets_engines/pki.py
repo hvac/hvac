@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """PKI methods module."""
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'pki'
@@ -107,8 +108,8 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-                'pem_bundle': pem_bundle,
-                }
+            'pem_bundle': pem_bundle,
+        }
         api_path = '/v1/{mount_point}/config/ca'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -151,10 +152,12 @@ class Pki(VaultApiBase):
         """
         api_path = '/v1/{mount_point}/config/crl'.format(mount_point=mount_point)
         params = extra_params
-        if expiry is not None:
-            params['expiry'] = expiry
-        if disable is not None:
-            params['disable'] = disable
+        params.update(
+            utils.remove_nones({
+                'expiry': expiry,
+                'disable': disable,
+            })
+        )
 
         return self._adapter.post(
             url=api_path,
@@ -441,7 +444,7 @@ class Pki(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
-        :rname: requests.Response
+        :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/roles/{name}'.format(
             mount_point=mount_point,
@@ -620,9 +623,9 @@ class Pki(VaultApiBase):
             url_to_transform = url_to_transform + '/{name}'
 
         api_path = url_to_transform.format(
-                mount_point=mount_point,
-                name=name,
-                )
+            mount_point=mount_point,
+            name=name,
+        )
 
         params = extra_params
         params['csr'] = csr
@@ -649,8 +652,8 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = '/v1/{mount_point}/tidy'.format(
-                mount_point=mount_point,
-                )
+            mount_point=mount_point,
+        )
 
         params = extra_params
 

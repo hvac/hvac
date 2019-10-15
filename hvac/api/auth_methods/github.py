@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Github methods module."""
-from hvac import exceptions
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'github'
@@ -13,7 +13,7 @@ class Github(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/github/index.html
     """
 
-    def configure(self, organization, base_url='', ttl='', max_ttl='', mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, organization, base_url=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for GitHub.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -39,10 +39,14 @@ class Github(VaultApiBase):
         """
         params = {
             'organization': organization,
-            'base_url': base_url,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
         }
+        params.update(
+            utils.remove_nones({
+                'base_url': base_url,
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/config'.format(
             mount_point=mount_point
         )
