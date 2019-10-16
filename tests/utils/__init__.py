@@ -18,14 +18,17 @@ logger = logging.getLogger(__name__)
 VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
 LATEST_VAULT_VERSION = '1.1.3'
 
-
+__VAULT_VERSION_STRING = None
 def get_vault_version_string():
+    if __VAULT_VERSION_STRING is not None:
+        return __VAULT_VERSION_STRING
     if not find_executable('vault'):
         raise SkipTest('Vault executable not found')
     command = ['vault', '-version']
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version_string = output.strip().split()[1].lstrip('v')
+    __VAULT_VERSION_STRING = version_string
     return version_string
 
 
@@ -45,10 +48,7 @@ def is_enterprise():
 
 
 def if_vault_version(supported_version, comparison=operator.lt):
-    current_version = os.getenv('HVAC_VAULT_VERSION')
-    if current_version is None or current_version.lower() == 'head':
-        current_version = get_installed_vault_version()
-
+    current_version = get_installed_vault_version()
     return comparison(StrictVersion(current_version), StrictVersion(supported_version))
 
 
