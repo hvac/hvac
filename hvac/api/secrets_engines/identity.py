@@ -302,8 +302,8 @@ class Identity(VaultApiBase):
             )
 
         elif method == 'GET':
-            api_path = utils.format_url('/v1/{mount_point}/entity/name', mount_point=mount_point)
-            response = self._adapter.list(
+            api_path = utils.format_url('/v1/{mount_point}/entity/name?list=true', mount_point=mount_point)
+            response = self._adapter.get(
                 url=api_path,
             )
         else:
@@ -513,7 +513,7 @@ class Identity(VaultApiBase):
         """
         if group_type == 'external':
             if member_entity_ids is not None:
-                logger.warning("InvalidRequest: member entities can't be set manually for external groupsl ignoring member_entity_ids argument.")
+                logger.warning("InvalidRequest: member entities can't be set manually for external groups ignoring member_entity_ids argument.")
         else:
             params['member_entity_ids'] = member_entity_ids
 
@@ -755,7 +755,7 @@ class Identity(VaultApiBase):
 
         elif method == 'GET':
             api_path = utils.format_url('/v1/{mount_point}/group/name?list-true', mount_point=mount_point)
-            response = self._adapter.list(
+            response = self._adapter.get(
                 url=api_path,
             )
         else:
@@ -998,8 +998,8 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         elif method == 'GET':
-            api_path = utils.format_url('/v1/{mount_point}/group-alias/id', mount_point=mount_point)
-            response = self._adapter.list(
+            api_path = utils.format_url('/v1/{mount_point}/group-alias/id?list=true', mount_point=mount_point)
+            response = self._adapter.get(
                 url=api_path,
             )
         else:
