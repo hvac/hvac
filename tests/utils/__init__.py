@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
 LATEST_VAULT_VERSION = '1.1.3'
 
+
 def get_vault_version_string():
     if 'cache' in get_vault_version_string.__dict__:
         return get_vault_version_string.cache
