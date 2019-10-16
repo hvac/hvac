@@ -754,7 +754,7 @@ class Identity(VaultApiBase):
             )
 
         elif method == 'GET':
-            api_path = utils.format_url('/v1/{mount_point}/group/name?list-true', mount_point=mount_point)
+            api_path = utils.format_url('/v1/{mount_point}/group/name?list=true', mount_point=mount_point)
             response = self._adapter.get(
                 url=api_path,
             )
