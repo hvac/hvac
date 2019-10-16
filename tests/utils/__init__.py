@@ -18,17 +18,16 @@ logger = logging.getLogger(__name__)
 VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
 LATEST_VAULT_VERSION = '1.1.3'
 
-__VAULT_VERSION_STRING = None
 def get_vault_version_string():
-    if __VAULT_VERSION_STRING is not None:
-        return __VAULT_VERSION_STRING
+    if 'cache' in get_vault_version_string.__dict__:
+        return get_vault_version_string.cache
     if not find_executable('vault'):
         raise SkipTest('Vault executable not found')
     command = ['vault', '-version']
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version_string = output.strip().split()[1].lstrip('v')
-    __VAULT_VERSION_STRING = version_string
+    get_vault_version_string.cache = version_string
     return version_string
 
 
