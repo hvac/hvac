@@ -7,7 +7,7 @@ from unittest import TestCase
 from parameterized import parameterized, param
 
 from hvac.exceptions import ParamValidationError
-from tests.utils import vault_version_lt, vault_version_eq
+from tests.utils import vault_version_lt
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
