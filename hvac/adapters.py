@@ -18,7 +18,7 @@ class Adapter(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, namespace=None):
+                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
@@ -51,6 +51,7 @@ class Adapter(object):
         self.namespace = namespace
         self.session = session
         self.allow_redirects = allow_redirects
+        self.ignore_exceptions = ignore_exceptions
 
         self._kwargs = {
             'cert': cert,
@@ -171,7 +172,7 @@ class Adapter(object):
         :return: The response of the auth request.
         :rtype: requests.Response
         """
-        response = self.post(url, **kwargs).json()
+        response = self.post(url, **kwargs)
 
         if use_token:
             self.token = response['auth']['client_token']
@@ -211,8 +212,12 @@ class Adapter(object):
         raise NotImplementedError
 
 
-class Request(Adapter):
-    """The Request adapter class"""
+class RawAdapter(Adapter):
+    """
+    The RawAdapter adapter class.
+    This adapter adds Vault-specific headers as required and optionally raises exceptions on errors,
+    but always returns Response objects for requests.
+    """
 
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.
@@ -232,7 +237,7 @@ class Request(Adapter):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if '//' in url:
+        while '//' in url:
             # Vault CLI treats a double forward slash ('//') as a single forward slash for a given path.
             # To avoid issues with the requests module's redirection logic, we perform the same translation here.
             url = url.replace('//', '/')
@@ -263,12 +268,46 @@ class Request(Adapter):
             **_kwargs
         )
 
-        if raise_exception and 400 <= response.status_code < 600:
+        if not response.ok and (raise_exception and not self.ignore_exceptions):
             text = errors = None
             if response.headers.get('Content-Type') == 'application/json':
-                errors = response.json().get('errors')
+                try:
+                    errors = response.json().get('errors')
+                except Exception:
+                    pass
             if errors is None:
                 text = response.text
             utils.raise_for_error(response.status_code, text, errors=errors)
 
         return response
+
+
+class JSONAdapter(RawAdapter):
+    """
+    The JSONAdapter adapter class.
+    This adapter works just like the RawAdapter adapter except that HTTP 200 responses are returned as JSON dicts.
+    All non-200 responses are returned as Response objects.
+    """
+
+    def request(self, *args, **kwargs):
+        """Main method for routing HTTP requests to the configured Vault base_uri.
+
+        :param args: Positional arguments to pass to RawAdapter.request.
+        :type args: list
+        :param kwargs: Keyword arguments to pass to RawAdapter.request.
+        :type kwargs: dict
+        :return: Dict on HTTP 200 with JSON body, otherwise the response object.
+        :rtype: dict | requests.Response
+        """
+        response = super(JSONAdapter, self).request(*args, **kwargs)
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except ValueError:
+                pass
+
+        return response
+
+
+# Retaining the legacy name
+Request = RawAdapter

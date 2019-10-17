@@ -85,7 +85,7 @@ class Kubernetes(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl=None, max_ttl=None,
                     period=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -178,7 +178,7 @@ class Kubernetes(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all the roles that are registered with the plugin.
@@ -195,7 +195,7 @@ class Kubernetes(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously registered role.

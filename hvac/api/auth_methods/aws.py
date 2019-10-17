@@ -96,7 +96,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_config(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes the previously configured AWS access credentials
@@ -178,7 +178,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def create_certificate_configuration(self, cert_name, aws_public_cert, document_type=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Registers an AWS public key to be used to verify the instance identity documents
@@ -233,7 +233,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_certificate_configuration(self, cert_name, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Removes the previously configured AWS public key
@@ -266,7 +266,7 @@ class Aws(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def create_sts_role(self, account_id, sts_role, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """ Allows the explicit association of STS roles to satellite AWS accounts (i.e. those which are not the
@@ -304,7 +304,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_sts_roles(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the AWS Account IDs for which an STS role is registered
@@ -316,7 +316,7 @@ class Aws(VaultApiBase):
         response = self._adapter.list(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_sts_role(self, account_id, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes a previously configured AWS account/STS role association
@@ -359,7 +359,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_identity_whitelist_tidy(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes the previously configured periodic whitelist tidying settings
@@ -401,7 +401,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_role_tag_blacklist_tidy(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes the previously configured periodic blacklist tidying settings
@@ -499,7 +499,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_roles(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the roles that are registered with the method
@@ -511,7 +511,7 @@ class Aws(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_role(self, role, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes the previously registered role
@@ -650,7 +650,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_blacklist_tags(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the role tags that are blacklisted
@@ -662,7 +662,7 @@ class Aws(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_blacklist_tags(self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes a blacklisted role tag
@@ -703,7 +703,7 @@ class Aws(VaultApiBase):
         response = self._adapter.get(
             url=api_path
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_identity_whitelist(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the instance IDs that are in the whitelist of successful logins
@@ -715,7 +715,7 @@ class Aws(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_identity_whitelist_entries(self, instance_id, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes a cache of the successful login from an instance

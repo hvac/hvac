@@ -14,10 +14,9 @@ class Init(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/init'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def is_initialized(self):
         """Determine is Vault is initialized or not.
@@ -97,8 +96,7 @@ class Init(SystemBackendMixin):
             params['recovery_pgp_keys'] = recovery_pgp_keys
 
         api_path = '/v1/sys/init'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-        return response.json()

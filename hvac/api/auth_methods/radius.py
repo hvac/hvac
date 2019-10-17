@@ -79,10 +79,9 @@ class Radius(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def register_user(self, username, policies=None, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -134,10 +133,9 @@ class Radius(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def read_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -159,10 +157,9 @@ class Radius(VaultApiBase):
             mount_point=mount_point,
             username=username,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def delete_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """

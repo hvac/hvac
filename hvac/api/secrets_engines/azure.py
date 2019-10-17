@@ -81,7 +81,7 @@ class Azure(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the stored Azure configuration and credentials.
@@ -160,7 +160,7 @@ class Azure(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Generate a new service principal based on the named role.
@@ -184,4 +184,4 @@ class Azure(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')

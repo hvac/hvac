@@ -19,8 +19,7 @@ class Audit(SystemBackendMixin):
         :return: JSON response of the request.
         :rtype: dict
         """
-        list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
-        return list_audit_devices_response
+        return self._adapter.get('/v1/sys/audit')
 
     def enable_audit_device(self, device_type, description=None, options=None, path=None, local=None):
         """Enable a new audit device at the supplied path.
@@ -103,8 +102,7 @@ class Audit(SystemBackendMixin):
         }
 
         api_path = utils.format_url('/v1/sys/audit-hash/{path}', path=path)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params
         )
-        return response.json()

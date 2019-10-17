@@ -24,10 +24,9 @@ class Seal(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/seal-status'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def seal(self):
         """Seal the Vault.
@@ -77,11 +76,10 @@ class Seal(SystemBackendMixin):
             params['reset'] = reset
 
         api_path = '/v1/sys/unseal'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def submit_unseal_keys(self, keys, migrate=False):
         """Enter multiple master key share to progress the unsealing of the Vault.
