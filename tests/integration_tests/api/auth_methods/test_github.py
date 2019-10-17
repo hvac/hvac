@@ -52,9 +52,9 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ("just organization", 204, 'some-test-org', '', 0, 0, TEST_GITHUB_PATH),
+        ("just organization", True, 'some-test-org', '', 0, 0, TEST_GITHUB_PATH),
     ])
-    def test_configure(self, test_label, expected_status_code, organization, base_url, ttl, max_ttl, mount_point):
+    def test_configure(self, test_label, expected_value, organization, base_url, ttl, max_ttl, mount_point):
         response = self.client.auth.github.configure(
             organization=organization,
             base_url=base_url,
@@ -63,8 +63,8 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             mount_point=mount_point,
         )
         self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code
+            first=expected_value,
+            second=bool(response),
         )
 
     def test_read_configuration(self):
@@ -118,18 +118,18 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ("no policies", 204, 'hvac', None),
-        ("with policies", 204, 'hvac', ['default']),
+        ("no policies", True, 'hvac', None),
+        ("with policies", True, 'hvac', ['default']),
     ])
-    def test_map_team(self, test_label, expected_status_code, team_name, policies):
+    def test_map_team(self, test_label, expected_value, team_name, policies):
         response = self.client.auth.github.map_team(
             team_name=team_name,
             policies=policies,
             mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code
+            first=expected_value,
+            second=bool(response),
         )
 
     def test_read_team_mapping(self):
@@ -143,12 +143,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ("no policies", 204, 'hvac', None),
-        ("with policy", 204, 'hvac', ['default']),
-        ("with policy incorrect type", 204, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
-        ("with policies", 204, 'hvac', ['default', 'root']),
+        ("no policies", True, 'hvac', None),
+        ("with policy", True, 'hvac', ['default']),
+        ("with policy incorrect type", True, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
+        ("with policies", True, 'hvac', ['default', 'root']),
     ])
-    def test_map_team_and_read_mapping(self, test_label, expected_status_code, team_name, policies, raises=False, exception_msg=''):
+    def test_map_team_and_read_mapping(self, test_label, expected_value, team_name, policies, raises=False, exception_msg=''):
 
         if raises:
             with self.assertRaises(raises) as cm:
@@ -168,8 +168,8 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_GITHUB_PATH,
             )
             self.assertEqual(
-                first=expected_status_code,
-                second=response.status_code
+                first=expected_value,
+                second=bool(response),
             )
 
             response = self.client.auth.github.read_team_mapping(
@@ -187,18 +187,18 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             )
 
     @parameterized.expand([
-        ("no policies", 204, 'hvac-user', None),
-        ("with policies", 204, 'hvac-user', ['default']),
+        ("no policies", True, 'hvac-user', None),
+        ("with policies", True, 'hvac-user', ['default']),
     ])
-    def teat_map_user(self, test_label, expected_status_code, user_name, policies):
+    def teat_map_user(self, test_label, expected_value, user_name, policies):
         response = self.client.auth.github.map_user(
             user_name=user_name,
             policies=policies,
             mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code
+            first=expected_value,
+            second=bool(response),
         )
 
     def test_read_user_mapping(self):
@@ -212,12 +212,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ("no policies", 204, 'hvac', None),
-        ("with policy", 204, 'hvac', ['default']),
-        ("with policy incorrect type", 204, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
-        ("with policies", 204, 'hvac', ['default', 'root']),
+        ("no policies", True, 'hvac', None),
+        ("with policy", True, 'hvac', ['default']),
+        ("with policy incorrect type", True, 'hvac', 'default, root', exceptions.ParamValidationError, "unsupported policies argument provided"),
+        ("with policies", True, 'hvac', ['default', 'root']),
     ])
-    def test_map_user_and_read_mapping(self, test_label, expected_status_code, user_name, policies, raises=False, exception_msg=''):
+    def test_map_user_and_read_mapping(self, test_label, expected_value, user_name, policies, raises=False, exception_msg=''):
 
         if raises:
             with self.assertRaises(raises) as cm:
@@ -237,8 +237,8 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_GITHUB_PATH,
             )
             self.assertEqual(
-                first=expected_status_code,
-                second=response.status_code
+                first=expected_value,
+                second=bool(response),
             )
 
             response = self.client.auth.github.read_user_mapping(

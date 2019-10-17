@@ -47,8 +47,8 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('create_key_response: %s' % create_key_response)
             self.assertEqual(
-                first=create_key_response.status_code,
-                second=204,
+                first=bool(create_key_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -150,8 +150,8 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_key_response: %s' % delete_key_response)
             self.assertEqual(
-                first=delete_key_response.status_code,
-                second=204,
+                first=bool(delete_key_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -183,8 +183,8 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('rotate_key_response: %s' % rotate_key_response)
             self.assertEqual(
-                first=rotate_key_response.status_code,
-                second=204,
+                first=bool(rotate_key_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -740,8 +740,8 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('restore_key_response: %s' % restore_key_response)
             self.assertEqual(
-                first=restore_key_response.status_code,
-                second=204,
+                first=bool(restore_key_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -796,6 +796,6 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('trim_key_response: %s' % trim_key_response)
             self.assertEqual(
-                first=trim_key_response.status_code,
-                second=204,
+                first=bool(trim_key_response),
+                second=True,
             )

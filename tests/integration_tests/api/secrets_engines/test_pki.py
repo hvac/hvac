@@ -126,8 +126,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('submit_ca_information_response: %s' % submit_ca_information_response)
         self.assertEqual(
-            first=submit_ca_information_response.status_code,
-            second=204,
+            first=bool(submit_ca_information_response),
+            second=True,
         )
 
     # Read CRL Configuration
@@ -168,8 +168,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('set_crl_configuration_response: %s' % set_crl_configuration_response)
         self.assertEqual(
-            first=set_crl_configuration_response.status_code,
-            second=204,
+            first=bool(set_crl_configuration_response),
+            second=True,
         )
 
     # Read URLs
@@ -213,8 +213,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('set_urls_response: %s' % set_urls_response)
         self.assertEqual(
-            first=set_urls_response.status_code,
-            second=204,
+            first=bool(set_urls_response),
+            second=True,
         )
 
     # Read CRL
@@ -271,8 +271,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('generate_intermediate_response: %s' % generate_intermediate_response)
         self.assertEqual(
-            first=generate_intermediate_response.status_code,
-            second=200,
+            first=bool(generate_intermediate_response),
+            second=True,
         )
 
     # Set Signed Intermediate
@@ -296,8 +296,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             common_name=common_name,
             mount_point=ca_intermediate_pki_mount_point,
         )
-        logging.debug('generate_intermediate_response: %s' % generate_intermediate_response.json())
-        csr = generate_intermediate_response.json()['data']['csr']
+        logging.debug('generate_intermediate_response: %s' % generate_intermediate_response)
+        csr = generate_intermediate_response['data']['csr']
 
         # Sign intermediate CA
         sign_intermediate_response = self.client.secrets.pki.sign_intermediate(
@@ -306,7 +306,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('sign_intermediate_response: %s' % sign_intermediate_response)
-        certificate = sign_intermediate_response.json()['data']['certificate']
+        certificate = sign_intermediate_response['data']['certificate']
 
         # Finally test Set Signed Intermediate
         set_signed_intermediate_response = self.client.secrets.pki.set_signed_intermediate(
@@ -315,8 +315,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('set_signed_intermediate_response: %s' % set_signed_intermediate_response)
         self.assertEqual(
-            first=set_signed_intermediate_response.status_code,
-            second=204,
+            first=bool(set_signed_intermediate_response),
+            second=True,
         )
 
         # Now clean intermediate CA
@@ -338,8 +338,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('generate_certificate_response: %s' % generate_certificate_response)
         self.assertEqual(
-            first=generate_certificate_response.status_code,
-            second=200,
+            first=bool(generate_certificate_response),
+            second=True,
         )
 
     # Revoke Certificate
@@ -357,7 +357,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug('generate_certificate_response: %s' % generate_certificate_response)
-        serial_number = generate_certificate_response.json()['data']['serial_number']
+        serial_number = generate_certificate_response['data']['serial_number']
         logging.debug('serial_number: %s' % serial_number)
         revoke_certificate_response = self.client.secrets.pki.revoke_certificate(
             serial_number=serial_number,
@@ -365,8 +365,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('revoke_certificate_response: %s' % revoke_certificate_response)
         self.assertEqual(
-            first=revoke_certificate_response.status_code,
-            second=200,
+            first=bool(revoke_certificate_response),
+            second=True,
         )
 
     # Create/Update Role
@@ -383,8 +383,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('create_or_update_role_response: %s' % create_or_update_role_response)
         self.assertEqual(
-            first=create_or_update_role_response.status_code,
-            second=204,
+            first=bool(create_or_update_role_response),
+            second=True,
         )
 
     # Read Role
@@ -439,8 +439,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('delete_role_response: %s' % delete_role_response)
         self.assertEqual(
-            first=delete_role_response.status_code,
-            second=204,
+            first=bool(delete_role_response),
+            second=True,
         )
 
     # Generate Root
@@ -464,8 +464,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('generate_root_response: %s' % generate_root_response)
         self.assertEqual(
-            first=generate_root_response.status_code,
-            second=200,
+            first=bool(generate_root_response),
+            second=True,
         )
         self.client.disable_secret_backend(mount_point=ca_pki_mount_point)
 
@@ -494,8 +494,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('delete_root_response: %s' % delete_root_response)
         self.assertEqual(
-            first=delete_root_response.status_code,
-            second=204,
+            first=bool(delete_root_response),
+            second=True,
         )
         self.client.disable_secret_backend(mount_point=ca_pki_mount_point)
 
@@ -519,8 +519,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             common_name=common_name,
             mount_point=ca_intermediate_pki_mount_point,
         )
-        logging.debug('generate_intermediate_response: %s' % generate_intermediate_response.json())
-        csr = generate_intermediate_response.json()['data']['csr']
+        logging.debug('generate_intermediate_response: %s' % generate_intermediate_response)
+        csr = generate_intermediate_response['data']['csr']
 
         sign_intermediate_response = self.client.secrets.pki.sign_intermediate(
             csr=csr,
@@ -530,8 +530,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('sign_intermediate_response: %s' % sign_intermediate_response)
         self.assertEqual(
-            first=sign_intermediate_response.status_code,
-            second=200,
+            first=bool(sign_intermediate_response),
+            second=True,
         )
         # Now clean intermediate CA
         self.client.disable_secret_backend(mount_point=ca_intermediate_pki_mount_point)
@@ -549,8 +549,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('sign_self_issued_response: %s' % sign_self_issued_response)
         self.assertEqual(
-            first=sign_self_issued_response.status_code,
-            second=200,
+            first=bool(sign_self_issued_response),
+            second=True,
         )
 
     # Sign Certificate
@@ -570,8 +570,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('sign_certificate_response: %s' % sign_certificate_response)
         self.assertEqual(
-            first=sign_certificate_response.status_code,
-            second=200,
+            first=bool(sign_certificate_response),
+            second=True,
         )
 
     # Sign Verbatim
@@ -589,8 +589,8 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('sign_verbatim_response: %s' % sign_verbatim_response)
         self.assertEqual(
-            first=sign_verbatim_response.status_code,
-            second=200,
+            first=bool(sign_verbatim_response),
+            second=True,
         )
 
     # Tidy
@@ -605,6 +605,6 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('tidy_response: %s' % tidy_response)
         self.assertEqual(
-            first=tidy_response.status_code,
-            second=202,
+            first=bool(tidy_response),
+            second=True,
         )

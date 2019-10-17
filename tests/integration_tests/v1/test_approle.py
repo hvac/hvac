@@ -107,8 +107,11 @@ class TestApprole(HvacIntegrationTestCase, TestCase):
         result = self.client.get_role_secret_id('testrole', secret_id)
         self.assertEqual(result['data']['metadata']['foo'], 'bar')
         self.client.delete_role_secret_id('testrole', secret_id)
-        with self.assertRaises(ValueError):
-            self.client.get_role_secret_id('testrole', secret_id)
+        missing_secret_response = self.client.get_role_secret_id('testrole', secret_id)
+        self.assertEquals(
+            first=missing_secret_response.status_code,
+            second=204,
+        )
 
     def test_auth_approle(self):
         self.client.create_role('testrole')

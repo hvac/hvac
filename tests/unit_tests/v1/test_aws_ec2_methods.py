@@ -474,5 +474,5 @@ class TestAwsEc2Methods(TestCase):
 
         self.assertEqual(
             first=mock_response,
-            second=actual_response.json(),
+            second=actual_response,
         )

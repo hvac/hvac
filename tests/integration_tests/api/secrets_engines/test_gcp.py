@@ -49,8 +49,8 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
             read_configuration_response = self.client.secrets.gcp.read_config(
                 mount_point=self.TEST_MOUNT_POINT,

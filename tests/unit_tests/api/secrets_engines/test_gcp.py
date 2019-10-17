@@ -5,7 +5,7 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized, param
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.secrets_engines import Gcp
 
 
@@ -43,7 +43,7 @@ class TestGcp(TestCase):
                 'https://www.googleapis.com/auth/bigquery',
             ]
 
-        gcp = Gcp(adapter=Request())
+        gcp = Gcp(adapter=JSONAdapter())
         mock_url = 'http://localhost:8200/v1/{mount_point}/roleset/{name}'.format(
             mount_point=self.TEST_MOUNT_POINT,
             name=self.TEST_ROLESET_NAME,
