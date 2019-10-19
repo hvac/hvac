@@ -175,9 +175,19 @@ class Adapter(object):
         response = self.post(url, **kwargs)
 
         if use_token:
-            self.token = response['auth']['client_token']
+            self.token = self.get_login_token(response)
 
         return response
+
+    @abstractmethod
+    def get_login_token(self, response):
+        """Extracts the client token from a login response.
+
+        :param response: The response object returned by the login method.
+        :return: A client token.
+        :rtype: str
+        """
+        return NotImplementedError
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -218,6 +228,17 @@ class RawAdapter(Adapter):
     This adapter adds Vault-specific headers as required and optionally raises exceptions on errors,
     but always returns Response objects for requests.
     """
+
+    def get_login_token(self, response):
+        """Extracts the client token from a login response.
+
+        :param response: The response object returned by the login method.
+        :type response: requests.Response
+        :return: A client token.
+        :rtype: str
+        """
+        response_json = response.json()
+        return response_json['auth']['client_token']
 
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.
@@ -288,6 +309,16 @@ class JSONAdapter(RawAdapter):
     This adapter works just like the RawAdapter adapter except that HTTP 200 responses are returned as JSON dicts.
     All non-200 responses are returned as Response objects.
     """
+
+    def get_login_token(self, response):
+        """Extracts the client token from a login response.
+
+        :param response: The response object returned by the login method.
+        :type response: dict | requests.Response
+        :return: A client token.
+        :rtype: str
+        """
+        return response['auth']['client_token']
 
     def request(self, *args, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.
