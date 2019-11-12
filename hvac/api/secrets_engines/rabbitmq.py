@@ -136,4 +136,3 @@ class RabbitMQ(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         ).json()
-
