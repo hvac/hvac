@@ -44,5 +44,9 @@ class UnexpectedError(VaultError):
     pass
 
 
+class BadGateway(VaultError):
+    pass
+
+
 class ParamValidationError(VaultError):
     pass
