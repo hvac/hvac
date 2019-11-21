@@ -16,7 +16,7 @@ class Policy(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/policy'
-        response = self._adapter.get(
+        response = self._adapter.list(
             url=api_path,
         )
         return response.json()
