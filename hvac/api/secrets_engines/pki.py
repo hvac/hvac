@@ -203,20 +203,26 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def read_crl(self, mount_point=DEFAULT_MOUNT_POINT):
+    def read_crl(self, mount_point=DEFAULT_MOUNT_POINT, pem=False):
         """Read CRL.
 
-        Retrieves the current CRL **in raw DER-encoded form**.
+        Retrieves the current CRL **in raw DER-encoded form** by default.
+        You can retrieve CRL in the PEM format if a param 'pem' is set to True.
 
         Supported methods:
-            GET: /{mount_point}/config/crl. Produces: 200 application/json
+            GET: /{mount_point}/crl. Produces: 200 application/json
+            GET: /{mount_point}/crl/pem. Produces: 200 application/json
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param pem: Request CRL in PEM format.
+        :type pem: boolean
         :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
+        if pem:
+            api_path = utils.format_url('{api_path}/pem', api_path=api_path)
         response = self._adapter.get(
             url=api_path,
         )
