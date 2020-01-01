@@ -208,21 +208,21 @@ class Pki(VaultApiBase):
     def read_crl(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read CRL.
 
-        Retrieves the current CRL **in raw DER-encoded form**.
+        Retrieves the current CRL in PEM format.
+        This endpoint is an unauthenticated.
 
         Supported methods:
-            GET: /{mount_point}/config/crl. Produces: 200 application/json
+            GET: /{mount_point}/crl/pem. Produces: 200 application/pkix-crl
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the request.
-        :rtype: dict
+        :return: The content of the request e.g. CRL string representation.
+        :rtype: str
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
-        response = self._adapter.get(
-            url=api_path,
-        )
-        return response.json()
+        api_path = utils.format_url('/v1/{mount_point}/crl/pem', mount_point=mount_point)
+        response = self._adapter.get(url=api_path)
+        # python2.7 uses unicode
+        return str(response.text)
 
     def rotate_crl(self, mount_point=DEFAULT_MOUNT_POINT):
         """Rotate CRLs.

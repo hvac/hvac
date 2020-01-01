@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.9.6 (November 20th, 2019)
+
+### 🚀 Features
+
+- Added userpass auth method. GH-519
+- added rabbitmq secrets backend. GH-540
+- Quote/Escape all URL placeholders. GH-532
+
+### 📚 Documentation
+
+- Getting Started Guide and LDAP Auth Updates. GH-524
+
+### 🧰 Miscellaneous
+
+- Handle bad gateway from Vault. GH-542
+- Fix GET/LIST typos. GH-536
+- Fix Travis HEAD build + Overhaul install scripts. GH-535
+- Improve Integration Test Error Handling. GH-531
+
+Thanks to @DaveDeCaprio, @Dowwie, @drewmullen, @jeffwecan, @llamasoft and @vamshideveloper for their lovely contributions.
+
 ## 0.9.5 (July 19th, 2019)
 
 ### 🚀 Features

@@ -42,10 +42,12 @@ def raise_for_error(status_code, message=None, errors=None):
         raise exceptions.InternalServerError(message, errors=errors)
     elif status_code == 501:
         raise exceptions.VaultNotInitialized(message, errors=errors)
+    elif status_code == 502:
+        raise exceptions.BadGateway(message, errors=errors)
     elif status_code == 503:
         raise exceptions.VaultDown(message, errors=errors)
     else:
-        raise exceptions.UnexpectedError(message)
+        raise exceptions.UnexpectedError(message or errors)
 
 
 def generate_method_deprecation_message(to_be_removed_in_version, old_method_name, method_name=None, module_name=None):

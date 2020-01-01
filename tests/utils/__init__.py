@@ -20,12 +20,15 @@ LATEST_VAULT_VERSION = '1.1.3'
 
 
 def get_vault_version_string():
+    if 'cache' in get_vault_version_string.__dict__:
+        return get_vault_version_string.cache
     if not find_executable('vault'):
         raise SkipTest('Vault executable not found')
     command = ['vault', '-version']
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version_string = output.strip().split()[1].lstrip('v')
+    get_vault_version_string.cache = version_string
     return version_string
 
 
@@ -45,10 +48,7 @@ def is_enterprise():
 
 
 def if_vault_version(supported_version, comparison=operator.lt):
-    current_version = os.getenv('HVAC_VAULT_VERSION')
-    if current_version is None or current_version.lower() == 'head':
-        current_version = get_installed_vault_version()
-
+    current_version = get_installed_vault_version()
     return comparison(StrictVersion(current_version), StrictVersion(supported_version))
 
 
