@@ -815,6 +815,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
+        filtered = {k: v for k, v in params.items() if v is not None}
+        params.clear()
+        params.update(filtered)
         response = self._adapter.post(
             url=api_path,
             json=params,
