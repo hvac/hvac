@@ -70,13 +70,13 @@ Read the latest version of a given secret/path ("hvac"):
     secret_version_response = client.secrets.kv.v2.read_secret_version(
         path='hvac',
     )
-    print('Latest version of secret under path "hvac" contains the following keys: {data}.format(
+    print('Latest version of secret under path "hvac" contains the following keys: {data}'.format(
         data=secret_version_response['data']['data'].keys(),
     ))
-    print('Latest version of secret under path "hvac" created at: {date}.format(
+    print('Latest version of secret under path "hvac" created at: {date}'.format(
         date=secret_version_response['data']['metadata']['created_time'],
     ))
-    print('Latest version of secret under path "hvac" is version #{ver}.format(
+    print('Latest version of secret under path "hvac" is version #{ver}'.format(
         ver=secret_version_response['data']['metadata']['version'],
     ))
 
@@ -92,10 +92,10 @@ Read specific version (1) of a given secret/path ("hvac"):
         path='hvac',
         version=1,
     )
-    print('Version 1 of secret under path "hvac" contains the following keys: {data}.format(
+    print('Version 1 of secret under path "hvac" contains the following keys: {data}'.format(
         data=secret_version_response['data']['data'].keys(),
     ))
-    print('Version 1 of secret under path "hvac" created at: {date}.format(
+    print('Version 1 of secret under path "hvac" created at: {date}'.format(
         date=secret_version_response['data']['metadata']['created_time'],
     ))
 
