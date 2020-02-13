@@ -109,8 +109,8 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-                'pem_bundle': pem_bundle,
-                }
+            'pem_bundle': pem_bundle,
+        }
         api_path = utils.format_url('/v1/{mount_point}/config/ca', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -153,10 +153,12 @@ class Pki(VaultApiBase):
         """
         api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
         params = extra_params
-        if expiry is not None:
-            params['expiry'] = expiry
-        if disable is not None:
-            params['disable'] = disable
+        params.update(
+            utils.remove_nones({
+                'expiry': expiry,
+                'disable': disable,
+            })
+        )
 
         return self._adapter.post(
             url=api_path,
@@ -448,7 +450,7 @@ class Pki(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
         :return: The JSON response of the request.
-        :rname: requests.Response
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             '/v1/{mount_point}/roles/{name}',

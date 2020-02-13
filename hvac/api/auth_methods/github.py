@@ -13,7 +13,7 @@ class Github(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/github/index.html
     """
 
-    def configure(self, organization, base_url='', ttl='', max_ttl='', mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, organization, base_url=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for GitHub.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -39,13 +39,17 @@ class Github(VaultApiBase):
         """
         params = {
             'organization': organization,
-            'base_url': base_url,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
         }
+        params.update(
+            utils.remove_nones({
+                'base_url': base_url,
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+            })
+        )
         api_path = utils.format_url(
             '/v1/auth/{mount_point}/config',
-            mount_point=mount_point
+            mount_point=mount_point,
         )
         return self._adapter.post(
             url=api_path,

@@ -15,7 +15,7 @@ class Aws(VaultApiBase):
     """
 
     def configure_root_iam_credentials(self, access_key, secret_key, region=None, iam_endpoint=None, sts_endpoint=None,
-                                       max_retries=-1, mount_point=DEFAULT_MOUNT_POINT):
+                                       max_retries=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the root IAM credentials to communicate with AWS.
 
         There are multiple ways to pass root IAM credentials to the Vault server, specified below with the highest
@@ -56,11 +56,15 @@ class Aws(VaultApiBase):
         params = {
             'access_key': access_key,
             'secret_key': secret_key,
-            'region': region,
-            'iam_endpoint': iam_endpoint,
-            'sts_endpoint': sts_endpoint,
             'max_retries': max_retries,
         }
+        params.update(
+            utils.remove_nones({
+                'region': region,
+                'iam_endpoint': iam_endpoint,
+                'sts_endpoint': sts_endpoint,
+            })
+        )
         api_path = utils.format_url('/v1/{mount_point}/config/root', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -197,12 +201,16 @@ class Aws(VaultApiBase):
         else:
             params = {
                 'credential_type': credential_type,
-                'policy_document': policy_document,
-                'default_sts_ttl': default_sts_ttl,
-                'max_sts_ttl': max_sts_ttl,
-                'role_arns': role_arns,
-                'policy_arns': policy_arns,
             }
+            params.update(
+                utils.remove_nones({
+                    'policy_document': policy_document,
+                    'default_sts_ttl': default_sts_ttl,
+                    'max_sts_ttl': max_sts_ttl,
+                    'role_arns': role_arns,
+                    'policy_arns': policy_arns,
+                })
+            )
         api_path = utils.format_url(
             '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
@@ -280,7 +288,7 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
-    def generate_credentials(self, name, role_arn=None, ttl="3600s", endpoint='creds', mount_point=DEFAULT_MOUNT_POINT):
+    def generate_credentials(self, name, role_arn=None, ttl=None, endpoint='creds', mount_point=DEFAULT_MOUNT_POINT):
         """Generates credential based on the named role.
 
         This role must be created before queried.
@@ -320,9 +328,13 @@ class Aws(VaultApiBase):
             ))
         params = {
             'name': name,
-            'role_arn': role_arn,
-            'ttl': ttl,
         }
+        params.update(
+            utils.remove_nones({
+                'role_arn': role_arn,
+                'ttl': ttl,
+            })
+        )
         api_path = utils.format_url(
             '/v1/{mount_point}/{endpoint}/{name}',
             mount_point=mount_point,

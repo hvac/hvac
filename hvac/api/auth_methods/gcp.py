@@ -19,7 +19,7 @@ class Gcp(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/{mount_point}/index.html
     """
 
-    def configure(self, credentials="", google_certs_endpoint=GCP_CERTS_ENDPOINT, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, credentials=None, google_certs_endpoint=GCP_CERTS_ENDPOINT, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the credentials required for the GCP auth method to perform API calls to Google Cloud.
 
         These credentials will be used to query the status of IAM entities and get service account or other Google
@@ -42,10 +42,10 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'credentials': credentials,
             'google_certs_endpoint': google_certs_endpoint,
-        }
+        })
         api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -86,8 +86,8 @@ class Gcp(VaultApiBase):
             url=api_path,
         )
 
-    def create_role(self, name, role_type, project_id, ttl="", max_ttl="", period="", policies=None,
-                    bound_service_accounts=None, max_jwt_exp='15m', allow_gce_inference=True, bound_zones=None,
+    def create_role(self, name, role_type, project_id, ttl=None, max_ttl=None, period=None, policies=None,
+                    bound_service_accounts=None, max_jwt_exp=None, allow_gce_inference=None, bound_zones=None,
                     bound_regions=None, bound_instance_groups=None, bound_labels=None, mount_point=DEFAULT_MOUNT_POINT):
         """Register a role in the GCP auth method.
 
@@ -153,8 +153,8 @@ class Gcp(VaultApiBase):
         """
         type_specific_params = {
             'iam': {
-                'max_jwt_exp': '15m',
-                'allow_gce_inference': True,
+                'max_jwt_exp': None,
+                'allow_gce_inference': None,
             },
             'gce': {
                 'bound_zones': None,
@@ -189,15 +189,24 @@ class Gcp(VaultApiBase):
         params = {
             'type': role_type,
             'project_id': project_id,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-            'period': period,
             'policies': list_to_comma_delimited(policies),
-            'bound_service_accounts': list_to_comma_delimited(bound_service_accounts),
         }
+        params.update(
+            utils.remove_nones({
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+                'period': period,
+            })
+        )
+        if bound_service_accounts is not None:
+            params['bound_service_accounts'] = list_to_comma_delimited(bound_service_accounts)
         if role_type == 'iam':
-            params['max_jwt_exp'] = max_jwt_exp
-            params['allow_gce_inference'] = allow_gce_inference
+            params.update(
+                utils.remove_nones({
+                    'max_jwt_exp': max_jwt_exp,
+                    'allow_gce_inference': allow_gce_inference,
+                })
+            )
             for param, default_arg in type_specific_params['gce'].items():
                 if locals().get(param) != default_arg:
                     warning_msg = 'Argument for parameter "{param}" ignored for role type iam'.format(
@@ -205,10 +214,14 @@ class Gcp(VaultApiBase):
                     )
                     logger.warning(warning_msg)
         elif role_type == 'gce':
-            params['bound_zones'] = list_to_comma_delimited(bound_zones)
-            params['bound_regions'] = list_to_comma_delimited(bound_regions)
-            params['bound_instance_groups'] = list_to_comma_delimited(bound_instance_groups)
-            params['bound_labels'] = list_to_comma_delimited(bound_labels)
+            if bound_zones is not None:
+                params['bound_zones'] = list_to_comma_delimited(bound_zones)
+            if bound_regions is not None:
+                params['bound_regions'] = list_to_comma_delimited(bound_regions)
+            if bound_instance_groups is not None:
+                params['bound_instance_groups'] = list_to_comma_delimited(bound_instance_groups)
+            if bound_labels is not None:
+                params['bound_labels'] = list_to_comma_delimited(bound_labels)
             for param, default_arg in type_specific_params['iam'].items():
                 if locals().get(param) != default_arg:
                     warning_msg = 'Argument for parameter "{param}" ignored for role type gce'.format(
@@ -246,10 +259,10 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'add': add,
             'remove': remove,
-        }
+        })
         api_path = utils.format_url(
             '/v1/auth/{mount_point}/role/{name}/service-accounts',
             mount_point=mount_point,
@@ -281,10 +294,10 @@ class Gcp(VaultApiBase):
         :return: The response of the edit_labels_on_gce_role request.
         :rtype: requests.Response
         """
-        params = {
+        params = utils.remove_nones({
             'add': add,
             'remove': remove,
-        }
+        })
         api_path = utils.format_url(
             '/v1/auth/{mount_point}/role/{name}/labels',
             mount_point=mount_point,

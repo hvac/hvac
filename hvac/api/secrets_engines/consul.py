@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Consul methods module."""
-from hvac import utils
+from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = "consul"
@@ -13,7 +13,7 @@ class Consul(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/consul/index.html
     """
 
-    def configure_access(self, address, token, scheme="http", mount_point=DEFAULT_MOUNT_POINT):
+    def configure_access(self, address, token, scheme=None, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint configures the access information for Consul.
         This access information is used so that Vault can communicate with Consul and generate Consul tokens.
 
@@ -29,10 +29,14 @@ class Consul(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-          "address": address,
-          "token": token,
-          "scheme": scheme
+            "address": address,
+            "token": token,
         }
+        params.update(
+            utils.remove_nones({
+                "scheme": scheme,
+            })
+        )
 
         api_path = utils.format_url("/v1/{}/config/access", mount_point)
         return self._adapter.post(
@@ -40,7 +44,7 @@ class Consul(VaultApiBase):
             json=params,
         )
 
-    def create_or_update_role(self, name, policy="", policies=[], token_type="client", local=False, ttl="", max_ttl="",
+    def create_or_update_role(self, name, policy=None, policies=None, token_type=None, local=None, ttl=None, max_ttl=None,
                               mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the Consul role definition.
         If the role does not exist, it will be created.
@@ -49,7 +53,7 @@ class Consul(VaultApiBase):
         :param name: Specifies the name of an existing role against which to create this Consul credential.
         :type name: str | unicode
         :param token_type:  Specifies the type of token to create when using this role.
-        Valid values are "client" or "management"
+        Valid values are "client" or "management".
         :type token_type: str | unicode
         :param policy: Specifies the base64 encoded ACL policy.
         The ACL format can be found in the Consul ACL documentation (https://www.consul.io/docs/internals/acl.html).
@@ -76,14 +80,18 @@ class Consul(VaultApiBase):
         """
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
-        params = {
+        if not policy and token_type != "management":
+            error_msg = 'policy must be specified unless token_type is management'
+            raise exceptions.ParamValidationError(error_msg)
+
+        params = utils.remove_nones({
             "token_type": token_type,
             "policy": policy,
             "policies": policies,
             "local": local,
             "ttl": ttl,
             "max_ttl": max_ttl
-        }
+        })
 
         return self._adapter.post(
             url=api_path,

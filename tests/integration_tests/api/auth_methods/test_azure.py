@@ -130,6 +130,16 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             bound_service_principal_ids=['my-sp-id'],
         ),
         param(
+            'CSV policies arg',
+            bound_service_principal_ids=['my-sp-id'],
+            policies='cats,dogs',
+        ),
+        param(
+            'list policies arg',
+            bound_service_principal_ids=['my-sp-id'],
+            policies=['cats', 'dogs'],
+        ),
+        param(
             'no bound constraints',
             raises=exceptions.InvalidRequest,
             exception_message='must have at least one bound constraint when creating/updating a role',
@@ -137,7 +147,14 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         param(
             'wrong policy arg type',
             bound_service_principal_ids=['my-sp-id'],
-            policies='cats',
+            policies={'dict': 'bad'},
+            raises=exceptions.ParamValidationError,
+            exception_message='unsupported policies argument provided',
+        ),
+        param(
+            'mixed policy arg type',
+            bound_service_principal_ids=['my-sp-id'],
+            policies=['cats', 'dogs', None, 42],
             raises=exceptions.ParamValidationError,
             exception_message='unsupported policies argument provided',
         )
