@@ -763,9 +763,13 @@ class Identity(VaultApiBase):
             'type': group_type,
             'metadata': metadata,
             'policies': policies,
-            'member_group_ids': member_group_ids,
-            'member_entity_ids': member_entity_ids,
         })
+        if group_type != 'external':
+            external_only_params = utils.remove_nones({
+                'member_group_ids': member_group_ids,
+                'member_entity_ids': member_entity_ids,
+            })
+            params.update(external_only_params)
         api_path = utils.format_url(
             '/v1/{mount_point}/group/name/{name}',
             mount_point=mount_point,
