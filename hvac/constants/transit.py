@@ -44,3 +44,8 @@ ALLOWED_SIGNATURE_ALGORITHMS = [
     'pss',
     'pkcs1v15',
 ]
+
+ALLOWED_MARSHALING_ALGORITHMS = [
+    'asn1',
+    'jws',
+]

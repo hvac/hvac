@@ -236,7 +236,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         logging.debug('read_crl_response: %s' % read_crl_response)
         self.assertIsInstance(
             obj=read_crl_response,
-            cls=dict,
+            cls=str,
         )
 
     # Rotate CRLs

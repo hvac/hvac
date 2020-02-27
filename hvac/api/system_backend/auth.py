@@ -68,11 +68,15 @@ class Auth(SystemBackendMixin):
 
         params = {
             'type': method_type,
-            'description': description,
-            'config': config,
-            'plugin_name': plugin_name,
-            'local': local,
         }
+        params.update(
+            utils.remove_nones({
+                'description': description,
+                'config': config,
+                'plugin_name': plugin_name,
+                'local': local,
+            })
+        )
         params.update(kwargs)
         api_path = utils.format_url('/v1/sys/auth/{path}', path=path)
         return self._adapter.post(
@@ -122,7 +126,7 @@ class Auth(SystemBackendMixin):
         return response.json()
 
     def tune_auth_method(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
-                         audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility='',
+                         audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
                          passthrough_request_headers=None, **kwargs):
         """Tune configuration parameters for a given auth path.
 
@@ -161,7 +165,7 @@ class Auth(SystemBackendMixin):
         :rtype: requests.Response
         """
 
-        if listing_visibility not in ['unauth', '']:
+        if listing_visibility is not None and listing_visibility not in ['unauth', '']:
             error_msg = 'invalid listing_visibility argument provided: "{arg}"; valid values: "unauth" or ""'.format(
                 arg=listing_visibility,
             )

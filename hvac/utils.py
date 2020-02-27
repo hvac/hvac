@@ -286,6 +286,22 @@ def validate_pem_format(param_name, param_argument):
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
 
 
+def remove_nones(params):
+    """Removes None values from optional arguments in a parameter dictionary.
+
+    :param params: The dictionary of parameters to be filtered.
+    :type params: dict
+    :return: A filtered copy of the parameter dictionary.
+    :rtype: dict
+    """
+
+    return {
+        key: value
+        for key, value in params.items()
+        if value is not None
+    }
+
+
 def format_url(format_str, *args, **kwargs):
     """Creates a URL using the specified format after escaping the provided arguments.
 

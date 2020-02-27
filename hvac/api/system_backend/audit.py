@@ -22,7 +22,7 @@ class Audit(SystemBackendMixin):
         list_audit_devices_response = self._adapter.get('/v1/sys/audit').json()
         return list_audit_devices_response
 
-    def enable_audit_device(self, device_type, description=None, options=None, path=None):
+    def enable_audit_device(self, device_type, description=None, options=None, path=None, local=None):
         """Enable a new audit device at the supplied path.
 
         The path can be a single word name or a more complex, nested path.
@@ -40,6 +40,8 @@ class Audit(SystemBackendMixin):
         :param path: Specifies the path in which to enable the audit device. This is part of
             the request URL.
         :type path: str | unicode
+        :param local: Specifies if the audit device is a local only.
+        :type local: bool
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -49,9 +51,14 @@ class Audit(SystemBackendMixin):
 
         params = {
             'type': device_type,
-            'description': description,
-            'options': options,
         }
+        params.update(
+            utils.remove_nones({
+                'description': description,
+                'options': options,
+                'local': local,
+            })
+        )
 
         api_path = utils.format_url('/v1/sys/audit/{path}', path=path)
         return self._adapter.post(

@@ -19,7 +19,7 @@ class Aws(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/aws/index.html
     """
 
-    def configure(self, max_retries=-1, access_key=None, secret_key=None, endpoint=None, iam_endpoint=None,
+    def configure(self, max_retries=None, access_key=None, secret_key=None, endpoint=None, iam_endpoint=None,
                   sts_endpoint=None, iam_server_id_header_value=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Configures the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS
         API
@@ -66,21 +66,15 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
 
-        params = {
-            'max_retries': max_retries
-        }
-        if access_key is not None:
-            params['access_key'] = access_key
-        if secret_key is not None:
-            params['secret_key'] = secret_key
-        if endpoint is not None:
-            params['endpoint'] = endpoint
-        if iam_endpoint is not None:
-            params['iam_endpoint'] = iam_endpoint
-        if sts_endpoint is not None:
-            params['sts_endpoint'] = sts_endpoint
-        if iam_server_id_header_value is not None:
-            params['iam_server_id_header_value'] = iam_server_id_header_value
+        params = utils.remove_nones({
+            'max_retries': max_retries,
+            'access_key': access_key,
+            'secret_key': secret_key,
+            'endpoint': endpoint,
+            'iam_endpoint': iam_endpoint,
+            'sts_endpoint': sts_endpoint,
+            'iam_server_id_header_value': iam_server_id_header_value,
+        })
         api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
@@ -120,7 +114,7 @@ class Aws(VaultApiBase):
             url=api_path
         )
 
-    def configure_identity_integration(self, iam_alias='role_id', ec2_alias="role_id",
+    def configure_identity_integration(self, iam_alias=None, ec2_alias=None,
                                        mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Configures the way that Vault interacts with the Identity store. The default (as of Vault 1.0.3)
             is role_id for both values
@@ -147,22 +141,22 @@ class Aws(VaultApiBase):
         :return: The response of the request
         :rtype: request.Response
         """
-        if iam_alias not in ALLOWED_IAM_ALIAS_TYPES:
+        if iam_alias is not None and iam_alias not in ALLOWED_IAM_ALIAS_TYPES:
             error_msg = 'invalid iam alias type provided: "{arg}"; supported iam alias types: "{alias_types}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=iam_alias,
                 environments=','.join(ALLOWED_IAM_ALIAS_TYPES)
             ))
-        if ec2_alias not in ALLOWED_EC2_ALIAS_TYPES:
+        if ec2_alias is not None and ec2_alias not in ALLOWED_EC2_ALIAS_TYPES:
             error_msg = 'invalid ec2 alias type provided: "{arg}"; supported ec2 alias types: "{alias_types}"'
             raise exceptions.ParamValidationError(error_msg.format(
                 arg=ec2_alias,
                 environments=','.join(ALLOWED_EC2_ALIAS_TYPES)
             ))
-        params = {
+        params = utils.remove_nones({
             'iam_alias': iam_alias,
             'ec2_alias': ec2_alias,
-        }
+        })
         api_auth = '/v1/auth/{mount_point}/config/identity'.format(mount_point=mount_point)
         return self._adapter.post(
             url=api_auth,
@@ -186,7 +180,7 @@ class Aws(VaultApiBase):
         )
         return response.json().get('data')
 
-    def create_certificate_configuration(self, cert_name, aws_public_cert, document_type="pkcs7", mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def create_certificate_configuration(self, cert_name, aws_public_cert, document_type=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Registers an AWS public key to be used to verify the instance identity documents
 
         While the PKCS#7 signature of the identity documents have DSA digest, the identity signature will have RSA
@@ -211,8 +205,12 @@ class Aws(VaultApiBase):
         params = {
             'cert_name': cert_name,
             'aws_public_cert': aws_public_cert,
-            'document_type': document_type,
         }
+        params.update(
+            utils.remove_nones({
+                'document_type': document_type,
+            })
+        )
         api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
         return self._adapter.post(
             url=api_path,
@@ -332,7 +330,7 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
-    def configure_identity_whitelist_tidy(self, safety_buffer="72h", disable_periodic_tidy=False,
+    def configure_identity_whitelist_tidy(self, safety_buffer=None, disable_periodic_tidy=None,
                                           mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Configures the periodic tidying operation of the whitelisted identity entries
 
@@ -342,10 +340,10 @@ class Aws(VaultApiBase):
         :return:
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
-        params = {
+        params = utils.remove_nones({
             'safety_buffer': safety_buffer,
             'disable_periodic_tidy': disable_periodic_tidy,
-        }
+        })
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -374,7 +372,7 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
-    def configure_role_tag_blacklist_tidy(self, safety_buffer='72h', disable_periodic_tidy=False,
+    def configure_role_tag_blacklist_tidy(self, safety_buffer=None, disable_periodic_tidy=None,
                                           mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Configures the periodic tidying operation of the blacklisted role tag entries
 
@@ -384,10 +382,10 @@ class Aws(VaultApiBase):
         :return:
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
-        params = {
+        params = utils.remove_nones({
             'safety_buffer': safety_buffer,
             'disable_periodic_tidy': disable_periodic_tidy,
-        }
+        })
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -416,7 +414,7 @@ class Aws(VaultApiBase):
             url=api_path
         )
 
-    def create_role(self, role, auth_type="iam", bound_ami_id=None, bound_account_id=None,
+    def create_role(self, role, auth_type=None, bound_ami_id=None, bound_account_id=None,
                     bound_region=None, bound_vpc_id=None, bound_subnet_id=None, bound_iam_role_arn=None,
                     bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, role_tag=None,
                     bound_iam_principal_arn=None, inferred_entity_type=None, inferred_aws_region=None,
@@ -460,46 +458,31 @@ class Aws(VaultApiBase):
         api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
         params = {
             'role': role,
-            'auth_type': auth_type,
-            'resolve_aws_unique_ids': resolve_aws_unique_ids,
         }
-        if bound_ami_id is not None:
-            params['bound_ami_id'] = bound_ami_id
-        if bound_account_id is not None:
-            params['bound_account_id'] = bound_account_id
-        if bound_region is not None:
-            params['bound_region'] = bound_region
-        if bound_vpc_id is not None:
-            params['bound_vpc_id'] = bound_vpc_id
-        if bound_subnet_id is not None:
-            params['bound_subnet_id'] = bound_subnet_id
-        if bound_iam_role_arn is not None:
-            params['bound_iam_role_arn'] = bound_iam_role_arn
-        if bound_iam_instance_profile_arn is not None:
-            params['bound_iam_instance_profile_arn'] = bound_iam_instance_profile_arn
-        if bound_ec2_instance_id is not None:
-            params['bound_ec2_instance_id'] = bound_ec2_instance_id
-        if role_tag is not None:
-            params['role_tag'] = role_tag
-        if bound_iam_principal_arn is not None:
-            params['bound_iam_principal_arn'] = bound_iam_principal_arn
-        if inferred_entity_type is not None:
-            params['inferred_entity_type'] = inferred_entity_type
-        if inferred_aws_region is not None:
-            params['inferred_aws_region'] = inferred_aws_region
-        if ttl is not None:
-            params['ttl'] = ttl
-        if max_ttl is not None:
-            params['max_ttl'] = max_ttl
-        if period is not None:
-            params['period'] = period
-        if policies is not None:
-            params['policies'] = policies
-        if allow_instance_migration is not None:
-            params['allow_instance_migration'] = allow_instance_migration
-        if disallow_reauthentication is not None:
-            params['disallow_reauthentication'] = disallow_reauthentication
-
+        params.update(
+            utils.remove_nones({
+                'auth_type': auth_type,
+                'resolve_aws_unique_ids': resolve_aws_unique_ids,
+                'bound_ami_id': bound_ami_id,
+                'bound_account_id': bound_account_id,
+                'bound_region': bound_region,
+                'bound_vpc_id': bound_vpc_id,
+                'bound_subnet_id': bound_subnet_id,
+                'bound_iam_role_arn': bound_iam_role_arn,
+                'bound_iam_instance_profile_arn': bound_iam_instance_profile_arn,
+                'bound_ec2_instance_id': bound_ec2_instance_id,
+                'role_tag': role_tag,
+                'bound_iam_principal_arn': bound_iam_principal_arn,
+                'inferred_entity_type': inferred_entity_type,
+                'inferred_aws_region': inferred_aws_region,
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+                'period': period,
+                'policies': policies,
+                'allow_instance_migration': allow_instance_migration,
+                'disallow_reauthentication': disallow_reauthentication,
+            })
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -543,7 +526,7 @@ class Aws(VaultApiBase):
         )
 
     def create_role_tags(self, role, policies=None, max_ttl=None, instance_id=None, allow_instance_migration=None,
-                         disallow_reauthentication=False, mount_point=AWS_DEFAULT_MOUNT_POINT):
+                         disallow_reauthentication=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Creates a role tag on the role, which helps in restricting the capabilities that are set on the role.
         Role tags are not tied to any specific ec2 instance unless specified explicitly using the instance_id parameter
 
@@ -569,17 +552,13 @@ class Aws(VaultApiBase):
         """
         api_path = utils.format_url('/v1/auth/{0}/role/{1}/tag', mount_point, role)
 
-        params = {
+        params = utils.remove_nones({
             'disallow_reauthentication': disallow_reauthentication,
-        }
-        if policies is not None:
-            params['policies'] = policies
-        if max_ttl is not None:
-            params['max_ttl'] = max_ttl
-        if instance_id is not None:
-            params['instance_id'] = instance_id
-        if allow_instance_migration is not None:
-            params['allow_instance_migration'] = allow_instance_migration
+            'policies': policies,
+            'max_ttl': max_ttl,
+            'instance_id': instance_id,
+            'allow_instance_migration': allow_instance_migration,
+        })
 
         return self._adapter.post(
             url=api_path,

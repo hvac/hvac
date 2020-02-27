@@ -13,7 +13,7 @@ class Kubernetes(VaultApiBase):
 
     Reference: https://www.vaultproject.io/api/auth/kubernetes/index.html
     """
-    def configure(self, kubernetes_host, kubernetes_ca_cert='', token_reviewer_jwt='', pem_keys=None,
+    def configure(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None,
                   mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for Kubernetes.
 
@@ -40,25 +40,27 @@ class Kubernetes(VaultApiBase):
         :return: The response of the configure_method request.
         :rtype: requests.Response
         """
-        if pem_keys is None:
-            pem_keys = []
-
         list_of_pem_params = {
             'kubernetes_ca_cert': kubernetes_ca_cert,
             'pem_keys': pem_keys
         }
         for param_name, param_argument in list_of_pem_params.items():
-            validate_pem_format(
-                param_name=param_name,
-                param_argument=param_argument,
-            )
+            if param_argument is not None:
+                validate_pem_format(
+                    param_name=param_name,
+                    param_argument=param_argument,
+                )
 
         params = {
             'kubernetes_host': kubernetes_host,
-            'kubernetes_ca_cert': kubernetes_ca_cert,
-            'token_reviewer_jwt': token_reviewer_jwt,
-            'pem_keys': pem_keys,
         }
+        params.update(
+            utils.remove_nones({
+                'kubernetes_ca_cert': kubernetes_ca_cert,
+                'token_reviewer_jwt': token_reviewer_jwt,
+                'pem_keys': pem_keys,
+            })
+        )
         api_path = utils.format_url(
             '/v1/auth/{mount_point}/config',
             mount_point=mount_point
@@ -85,8 +87,8 @@ class Kubernetes(VaultApiBase):
         )
         return response.json().get('data')
 
-    def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="", max_ttl="",
-                    period="", policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl=None, max_ttl=None,
+                    period=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Registers a role in the auth method. Role types have specific entities that can perform login operations
@@ -138,11 +140,16 @@ class Kubernetes(VaultApiBase):
         params = {
             'bound_service_account_names': comma_delimited_to_list(bound_service_account_names),
             'bound_service_account_namespaces': comma_delimited_to_list(bound_service_account_namespaces),
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-            'period': period,
-            'policies': comma_delimited_to_list(policies),
         }
+        params.update(
+            utils.remove_nones({
+                'ttl': ttl,
+                'max_ttl': max_ttl,
+                'period': period,
+            })
+        )
+        if policies is not None:
+            params['policies'] = comma_delimited_to_list(policies)
 
         api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(

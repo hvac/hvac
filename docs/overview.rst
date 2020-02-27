@@ -104,7 +104,7 @@ Read and write to secrets engines
 
 .. note::
 
-    Starting with Vault v1.1.0, _no_ KV secrets engine is mounted by default. I.e., outside of dev mode, a KV engine mounted under path `secret/` much be explicitly enabled before use.
+    Starting with Vault v1.1.0, _no_ KV secrets engine is mounted by default. I.e., outside of dev mode, a KV engine mounted under path `secret/` must be explicitly enabled before use.
 
 KV Secrets Engine - Version 2
 """""""""""""""""""""""""""""

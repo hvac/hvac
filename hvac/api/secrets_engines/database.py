@@ -13,7 +13,7 @@ class Database(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/databases/index.html
     """
 
-    def configure(self, name, plugin_name, verify_connection=True, allowed_roles=[], root_rotation_statements=[],
+    def configure(self, name, plugin_name, verify_connection=None, allowed_roles=None, root_rotation_statements=None,
                   mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
         """This endpoint configures the connection string used to communicate with the desired database.
         In addition to the parameters listed here, each Database plugin has additional,
@@ -36,11 +36,15 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-          "plugin_name": plugin_name,
-          "allowed_roles": allowed_roles,
-          "verify_connection": verify_connection,
-          "root_rotation_statements": root_rotation_statements
+            "plugin_name": plugin_name,
         }
+        params.update(
+            utils.remove_nones({
+                "allowed_roles": allowed_roles,
+                "verify_connection": verify_connection,
+                "root_rotation_statements": root_rotation_statements,
+            })
+        )
 
         params.update(kwargs)
 
@@ -119,26 +123,27 @@ class Database(VaultApiBase):
             url=api_path,
         )
 
-    def create_role(self, name, db_name, creation_statements, default_ttl=0, max_ttl=0,
-                    revocation_statements=list(), rollback_statements=list(), renew_statements=list(),
+    def create_role(self, name, db_name, creation_statements, default_ttl=None, max_ttl=None,
+                    revocation_statements=None, rollback_statements=None, renew_statements=None,
                     mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates a role definition.
 
         :param name: Specifies the database role to manage.
         :type name: str | unicode
-        :param db_name: Specifies the database role to manage.
+        :param db_name: The name of the database connection to use for this role.
         :type db_name: str | unicode
-        :param creation_statements: Specifies the database role to manage.
-        :type creation_statements: str | unicode
-        :param default_ttl: Specifies the database role to manage.
+        :param creation_statements: Specifies the database statements executed to create and configure a user.
+        :type creation_statements: list
+        :param default_ttl: Specifies the TTL for the leases associated with this role.
         :type default_ttl: int
-        :param max_ttl: Specifies the database role to manage.
+        :param max_ttl: Specifies the maximum TTL for the leases associated with this role.
         :type max_ttl: int
-        :param revocation_statements: Specifies the database role to manage.
+        :param revocation_statements: Specifies the database statements to be executed to revoke a user.
         :type revocation_statements: list
-        :param rollback_statements: Specifies the database role to manage.
+        :param rollback_statements: Specifies the database statements to be executed to rollback
+        a create operation in the event of an error.
         :type rollback_statements: list
-        :param renew_statements: Specifies the database role to manage.
+        :param renew_statements: Specifies the database statements to be executed to renew a user.
         :type renew_statements: list
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -149,12 +154,16 @@ class Database(VaultApiBase):
         params = {
             "db_name": db_name,
             "creation_statements": creation_statements,
-            "default_ttl": default_ttl,
-            "max_ttl": max_ttl,
-            "revocation_statements": revocation_statements,
-            "rollback_statements": rollback_statements,
-            "renew_statements": renew_statements
         }
+        params.update(
+            utils.remove_nones({
+                "default_ttl": default_ttl,
+                "max_ttl": max_ttl,
+                "revocation_statements": revocation_statements,
+                "rollback_statements": rollback_statements,
+                "renew_statements": renew_statements,
+            })
+        )
 
         api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(
