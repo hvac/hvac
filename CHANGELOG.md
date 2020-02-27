@@ -1,5 +1,86 @@
 # Changelog
 
+## 0.10.0 (February 26th, 2020)
+
+### 🚀 Features
+- Add a correct endpoint for CRL retrieving . GH-547
+
+### 📚 Documentation
+
+- Fixes close quotes in example usage of read_secret_version. GH-557
+- Fixes typo in docs: much -> must. GH-555
+
+### 🧰 Miscellaneous
+
+- Don't send optional parameters unless explicitly specified. GH-533
+
+*Note*: [GH-533](https://github.com/hvac/hvac/pull/533) includes fundamental behavior involving sending parameters 
+to API requests to Vault. Many hvac method parameters that would have been sent with default arguments no
+longer are included in requests to Vault. Notably, the following behavioral changes should be expected (copied from the 
+related PR comments):
+
+Azure:
+  - CHANGED: `create_role` parameter `policies` now accepts CSV string or list of strings
+
+Database:
+  - CHANGED: `create_role` documentation updated to something meaningful 🙃
+
+GCP:
+  - `configure` parameter `google_certs_endpoint` is deprecated
+  - `create_role` parameter `project_id` is deprecated by `bound_projects` (list)
+
+GitHub:
+  - `configure` is missing a lot of parameters
+
+LDAP:
+  - CHANGED: `configure` parameters `user_dn` and `group_dn` made optional
+    - Retained argument position to prevent being a breaking change
+  - CHANGED: `hvac/constants/ldap.py` file removed as it is no longer used
+
+MFA:
+  - This entire endpoint is deprecated so I didn't bother updating it
+
+Okta:
+  - CHANGED: `configure` parameter `base_url` default value now differs from API documentation
+    - This is likely just a [documentation issue](https://github.com/hashicorp/vault/issues/7653)
+  - `register_user`, `read_user`, and `delete_user` duplicate URL parameter `username` in JSON payload
+    - I left this one as-is as it doesn't appear to hurt anything
+  - Ditto for `delete_group`, but `register_group` and `list_group` correctly omit it
+
+PKI:
+  - CHANGED: `sign_data` and `verify_signed_data` optional parameter `marshaling_algorithm` added
+
+RADIUS:
+  - `configure` is missing a lot of parameters
+  - BUG: `register_user` attempted to convert `username` string into a CSV list (?!) for POST data
+    - Didn't hurt anything as `username` is extracted from URL path in Vault server
+  - BUG: `register_user` parameter `policies` never actually passed as parameter
+
+System Backend:
+  - Auth
+    - `enable_auth_method` parameter `plugin_name` is deprecated
+    - CHANGED: `enable_audit_device` optional parameter `local` was added
+  - Init
+    - `initialize` provides default for required API parameters `secret_shares` and `secret_threshold`
+  - Key
+    - `start_root_token_generation` parameter `otp` is deprecated
+
+**Misc:**
+  - There seems to be some discrepancy on how "extra arguments" are accepted:
+    - Some methods use only `**kwargs` (e.g. `hvac/api/system_backend/auth.py`)
+    - Some use `*args` and `**kwargs` (e.g. `hvac/api/secrets_engines/active_directory.py`)
+    - `hvac/api/secrets_engines/pki.py` uses `extra_params={}`
+  - Most argument names match API parameter names, but some don't
+    - Example: `hvac/api/auth_methods/ldap.py` `configure` uses `user_dn` instead of `userdn`
+    - Example: `hvac/api/system_backend/auth.py` `configure` uses `method_type` instead of `type`
+  - Many methods duplicate URL parameters into JSON payload as well
+    - This isn't necessary and fortunately Vault ignores the extra parameters
+  - `ttl`, `max_ttl`, `policies`, `period`, `num_uses` and a few other fields are deprecated as of Vault version 1.2.0
+    - https://github.com/hashicorp/vault/blob/master/CHANGELOG.md#120-july-30th-2019
+
+Thanks to @findmyname666, @llamasoft, @moisesguimaraes, @philherbert and Adrian Eib for their lovely contributions.
+
+
 ## 0.9.6 (November 20th, 2019)
 
 ### 🚀 Features
