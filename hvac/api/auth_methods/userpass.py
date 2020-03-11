@@ -4,7 +4,6 @@
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'userpass'
-DEFAULT_POLICIES = 'default'
 
 
 class Userpass(VaultApiBase):
@@ -12,7 +11,7 @@ class Userpass(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/userpass/index.html
     """
 
-    def create_or_update_user(self, username, password, policies=DEFAULT_POLICIES, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_user(self, username, password, policies=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         Create/update user in userpass.
 
@@ -29,9 +28,13 @@ class Userpass(VaultApiBase):
         :type mount_point: str | unicode
         """
         params = {
-            'policies': policies,
             'password': password,
         }
+        params.update(
+            utils.remove_nones({
+                'policies': policies,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
         return self._adapter.post(
             url=api_path,
