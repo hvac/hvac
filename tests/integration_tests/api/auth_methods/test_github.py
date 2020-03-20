@@ -54,12 +54,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
     @parameterized.expand([
         ("just organization", 204, 'some-test-org', '', 0, 0, TEST_GITHUB_PATH),
     ])
-    def test_configure(self, test_label, expected_status_code, organization, base_url, ttl, max_ttl, mount_point):
+    def test_configure(self, test_label, expected_status_code, organization, base_url, token_ttl, token_max_ttl, mount_point):
         response = self.client.auth.github.configure(
             organization=organization,
             base_url=base_url,
-            ttl=ttl,
-            max_ttl=max_ttl,
+            token_ttl=token_ttl,
+            token_max_ttl=token_max_ttl,
             mount_point=mount_point,
         )
         self.assertEqual(
@@ -84,12 +84,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         ("custom ttl hours", 'some-test-org', '', '500h', ''),
         ("custom max ttl", 'some-test-org', '', '', '500s'),
     ])
-    def test_configure_and_read_configuration(self, test_label, organization, base_url, ttl, max_ttl):
+    def test_configure_and_read_configuration(self, test_label, organization, base_url, token_ttl, token_max_ttl):
         config_response = self.client.auth.github.configure(
             organization=organization,
             base_url=base_url,
-            ttl=ttl,
-            max_ttl=max_ttl,
+            token_ttl=token_ttl,
+            token_max_ttl=token_max_ttl,
             mount_point=self.TEST_GITHUB_PATH,
         )
         self.assertEqual(
@@ -109,12 +109,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             second=read_config_response['data']['base_url']
         )
         self.assertEqual(
-            first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=ttl),
-            second=read_config_response['data']['ttl']
+            first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=token_ttl),
+            second=read_config_response['data']['token_ttl']
         )
         self.assertEqual(
-            first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=max_ttl),
-            second=read_config_response['data']['max_ttl']
+            first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=token_max_ttl),
+            second=read_config_response['data']['token_max_ttl']
         )
 
     @parameterized.expand([

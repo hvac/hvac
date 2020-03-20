@@ -86,9 +86,11 @@ class Gcp(VaultApiBase):
             url=api_path,
         )
 
-    def create_role(self, name, role_type, project_id, ttl=None, max_ttl=None, period=None, policies=None,
-                    bound_service_accounts=None, max_jwt_exp=None, allow_gce_inference=None, bound_zones=None,
-                    bound_regions=None, bound_instance_groups=None, bound_labels=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, role_type, project_id, bound_service_accounts=None, max_jwt_exp=None,
+                    allow_gce_inference=None, bound_zones=None, bound_regions=None, bound_instance_groups=None,
+                    bound_labels=None, token_ttl=None, token_max_ttl=None, token_policies=None,
+                    token_bound_cidrs=None, token_explicit_max_ttl=None, token_no_default_policy=None,
+                    token_num_uses=None, token_period=None, token_type=None, mount_point=DEFAULT_MOUNT_POINT):
         """Register a role in the GCP auth method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -106,19 +108,6 @@ class Gcp(VaultApiBase):
         :type role_type: str | unicode
         :param project_id: The GCP project ID. Only entities belonging to this project can authenticate with this role.
         :type project_id: str | unicode
-        :param ttl: The TTL period of tokens issued using this role. This can be specified as an integer number of
-            seconds or as a duration value like "5m".
-        :type ttl: str | unicode
-        :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role. This can be specified
-            as an integer number of seconds or as a duration value like "5m".
-        :type max_ttl: str | unicode
-        :param period: If set, indicates that the token generated using this role should never expire. The token should
-            be renewed within the duration specified by this value. At each renewal, the token's TTL will be set to the
-            value of this parameter. This can be specified as an integer number of seconds or as a duration value like
-            "5m".
-        :type period: str | unicode
-        :param policies: The list of policies to be set on tokens issued using this role.
-        :type policies: list
         :param bound_service_accounts: <required for iam> A list of service account emails or IDs that login is
             restricted  to. If set to `*`, all service accounts are allowed (role will still be bound by project). Will be
             inferred from service account used to issue metadata token for GCE instances.
@@ -146,6 +135,34 @@ class Gcp(VaultApiBase):
             authorized GCE instances. Because GCP labels are not currently ACL'd, we recommend that this be used in
             conjunction with other restrictions.
         :type bound_labels: list
+        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_ttl: str | unicode | int
+        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_max_ttl: str | unicode | int
+        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list
+            may be supplemented by user/group/other values.
+        :type token_policies: str | unicode | list
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
+        :type token_bound_cidrs: str | unicode | list
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if `token_ttl` and `token_max_ttl` would otherwise allow a renewal.
+        :type token_explicit_max_ttl: str | unicode | int
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in `token_policies`.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited.
+        :type token_num_uses: int
+        :param token_period: The period, if any, to set on the token.
+        :type token_period: str | unicode | int
+        :param token_type: The type of token that should be generated. Can be `service`, `batch`, or `default` to use
+            the mount's tuned default (which unless changed will be `service` tokens). For token store roles, there are
+            two additional possibilities: `default-service` and `default-batch` which specify the type to return unless
+            the client requests a different type at generation time.
+        :type token_type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The data key from the JSON response of the request.
@@ -165,7 +182,6 @@ class Gcp(VaultApiBase):
         }
 
         list_of_strings_params = {
-            'policies': policies,
             'bound_service_accounts': bound_service_accounts,
             'bound_zones': bound_zones,
             'bound_regions': bound_regions,
@@ -189,13 +205,18 @@ class Gcp(VaultApiBase):
         params = {
             'type': role_type,
             'project_id': project_id,
-            'policies': list_to_comma_delimited(policies),
         }
         params.update(
             utils.remove_nones({
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
+                'token_ttl': token_ttl,
+                'token_max_ttl': token_max_ttl,
+                'token_policies': token_policies,
+                'token_bound_cidrs': token_bound_cidrs,
+                'token_explicit_max_ttl': token_explicit_max_ttl,
+                'token_no_default_policy': token_no_default_policy,
+                'token_num_uses': token_num_uses,
+                'token_period': token_period,
+                'token_type': token_type,
             })
         )
         if bound_service_accounts is not None:

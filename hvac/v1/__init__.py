@@ -667,7 +667,6 @@ class Client(object):
         :type mount_point: str.
         :return: parsed JSON response from the auth POST request
         :rtype: dict.
-
         """
         params = {'pkcs7': pkcs7}
         if nonce:
@@ -677,15 +676,34 @@ class Client(object):
 
         return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
-    def create_userpass(self, username, password, policies, mount_point='userpass', **kwargs):
+    def create_userpass(self, username, password, token_ttl=None, token_max_ttl=None, token_policies=None,
+                        token_bound_cidrs=None, token_explicit_max_ttl=None, token_no_default_policy=None,
+                        token_num_uses=None, token_period=None, token_type=None,
+                        mount_point='userpass', **kwargs):
         """POST /auth/<mount point>/users/<username>
 
         :param username:
         :type username:
         :param password:
         :type password:
-        :param policies:
-        :type policies:
+        :param token_ttl:
+        :type token_ttl:
+        :param token_max_ttl:
+        :type token_max_ttl:
+        :param token_policies:
+        :type token_policies:
+        :param token_bound_cidrs:
+        :type token_bound_cidrs:
+        :param token_explicit_max_ttl:
+        :type token_explicit_max_ttl:
+        :param token_no_default_policy:
+        :type token_no_default_policy:
+        :param token_num_uses:
+        :type token_num_uses:
+        :param token_period:
+        :type token_period:
+        :param token_type:
+        :type token_type:
         :param mount_point:
         :type mount_point:
         :param kwargs:
@@ -694,16 +712,23 @@ class Client(object):
         :rtype:
         """
 
-        # Users can have more than 1 policy. It is easier for the user to pass in the
-        # policies as a list so if they do, we need to convert to a , delimited string.
-        if isinstance(policies, (list, set, tuple)):
-            policies = ','.join(policies)
-
         params = {
             'password': password,
-            'policies': policies
         }
         params.update(kwargs)
+        params.update(
+            utils.remove_nones({
+                'token_ttl': token_ttl,
+                'token_max_ttl': token_max_ttl,
+                'token_policies': token_policies,
+                'token_bound_cidrs': token_bound_cidrs,
+                'token_explicit_max_ttl': token_explicit_max_ttl,
+                'token_no_default_policy': token_no_default_policy,
+                'token_num_uses': token_num_uses,
+                'token_period': token_period,
+                'token_type': token_type,
+            })
+        )
 
         return self._adapter.post('/v1/auth/{}/users/{}'.format(mount_point, username), json=params)
 
@@ -940,6 +965,7 @@ class Client(object):
         :type mount_point: str|unicode
         :return: The response of the request.
         :rtype: requests.Response
+
         """
         params = {
             'access_key': access_key,
@@ -1037,9 +1063,11 @@ class Client(object):
     )
     def create_ec2_role(self, role, bound_ami_id=None, bound_account_id=None, bound_iam_role_arn=None,
                         bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, bound_region=None,
-                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None,  ttl=None, max_ttl=None, period=None,
-                        policies=None, allow_instance_migration=False, disallow_reauthentication=False,
-                        resolve_aws_unique_ids=None, mount_point='aws-ec2'):
+                        bound_vpc_id=None, bound_subnet_id=None, role_tag=None, allow_instance_migration=False,
+                        disallow_reauthentication=False, resolve_aws_unique_ids=None,
+                        token_ttl=None, token_max_ttl=None, token_policies=None, token_bound_cidrs=None,
+                        token_explicit_max_ttl=None, token_no_default_policy=None,
+                        token_num_uses=None, token_period=None, token_type=None, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/role/<role>
 
         :param role:
@@ -1062,24 +1090,35 @@ class Client(object):
         :type bound_subnet_id:
         :param role_tag:
         :type role_tag:
-        :param ttl:
-        :type ttl:
-        :param max_ttl:
-        :type max_ttl:
-        :param period:
-        :type period:
-        :param policies:
-        :type policies:
         :param allow_instance_migration:
         :type allow_instance_migration:
         :param disallow_reauthentication:
         :type disallow_reauthentication:
         :param resolve_aws_unique_ids:
         :type resolve_aws_unique_ids:
+        :param token_ttl:
+        :type token_ttl:
+        :param token_max_ttl:
+        :type token_max_ttl:
+        :param token_policies:
+        :type token_policies:
+        :param token_bound_cidrs:
+        :type token_bound_cidrs:
+        :param token_explicit_max_ttl:
+        :type token_explicit_max_ttl:
+        :param token_no_default_policy:
+        :type token_no_default_policy:
+        :param token_num_uses:
+        :type token_num_uses:
+        :param token_period:
+        :type token_period:
+        :param token_type:
+        :type token_type:
         :param mount_point:
         :type mount_point:
         :return:
         :rtype:
+
         """
         params = {
             'role': role,
@@ -1106,20 +1145,20 @@ class Client(object):
             params['bound_subnet_id'] = bound_subnet_id
         if role_tag is not None:
             params['role_tag'] = role_tag
-        if ttl is not None:
-            params['ttl'] = ttl
+        if token_ttl is not None:
+            params['token_ttl'] = token_ttl
         else:
-            params['ttl'] = 0
-        if max_ttl is not None:
-            params['max_ttl'] = max_ttl
+            params['token_ttl'] = 0
+        if token_max_ttl is not None:
+            params['token_max_ttl'] = token_max_ttl
         else:
-            params['max_ttl'] = 0
-        if period is not None:
-            params['period'] = period
+            params['token_max_ttl'] = 0
+        if token_period is not None:
+            params['token_period'] = token_period
         else:
-            params['period'] = 0
-        if policies is not None:
-            params['policies'] = policies
+            params['token_period'] = 0
+        if token_policies is not None:
+            params['token_policies'] = token_policies
         if resolve_aws_unique_ids is not None:
             params['resolve_aws_unique_ids'] = resolve_aws_unique_ids
 
@@ -1198,6 +1237,7 @@ class Client(object):
         :type mount_point:
         :return:
         :rtype:
+
         """
         params = {
             'role': role,

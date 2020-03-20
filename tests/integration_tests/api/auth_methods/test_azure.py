@@ -132,12 +132,12 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         param(
             'CSV policies arg',
             bound_service_principal_ids=['my-sp-id'],
-            policies='cats,dogs',
+            token_policies='cats,dogs',
         ),
         param(
             'list policies arg',
             bound_service_principal_ids=['my-sp-id'],
-            policies=['cats', 'dogs'],
+            token_policies=['cats', 'dogs'],
         ),
         param(
             'no bound constraints',
@@ -147,24 +147,24 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         param(
             'wrong policy arg type',
             bound_service_principal_ids=['my-sp-id'],
-            policies={'dict': 'bad'},
+            token_policies={'dict': 'bad'},
             raises=exceptions.ParamValidationError,
-            exception_message='unsupported policies argument provided',
+            exception_message='unsupported token_policies argument provided',
         ),
         param(
             'mixed policy arg type',
             bound_service_principal_ids=['my-sp-id'],
-            policies=['cats', 'dogs', None, 42],
+            token_policies=['cats', 'dogs', None, 42],
             raises=exceptions.ParamValidationError,
-            exception_message='unsupported policies argument provided',
+            exception_message='unsupported token_policies argument provided',
         )
     ])
-    def test_create_role(self, label, policies=None, bound_service_principal_ids=None, raises=None, exception_message=''):
+    def test_create_role(self, label, token_policies=None, bound_service_principal_ids=None, raises=None, exception_message=''):
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.auth.azure.create_role(
                     name='my-role',
-                    policies=policies,
+                    token_policies=token_policies,
                     bound_service_principal_ids=bound_service_principal_ids,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
@@ -175,7 +175,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         else:
             create_role_response = self.client.auth.azure.create_role(
                 name='my-role',
-                policies=policies,
+                token_policies=token_policies,
                 bound_service_principal_ids=bound_service_principal_ids,
                 mount_point=self.TEST_MOUNT_POINT,
             )

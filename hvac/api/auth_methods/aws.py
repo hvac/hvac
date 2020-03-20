@@ -418,9 +418,10 @@ class Aws(VaultApiBase):
                     bound_region=None, bound_vpc_id=None, bound_subnet_id=None, bound_iam_role_arn=None,
                     bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, role_tag=None,
                     bound_iam_principal_arn=None, inferred_entity_type=None, inferred_aws_region=None,
-                    resolve_aws_unique_ids=None, ttl=None, max_ttl=None, period=None, policies=None,
-                    allow_instance_migration=None, disallow_reauthentication=None,
-                    mount_point=AWS_DEFAULT_MOUNT_POINT):
+                    resolve_aws_unique_ids=None, allow_instance_migration=None, disallow_reauthentication=None,
+                    token_ttl=None, token_max_ttl=None, token_policies=None, token_bound_cidrs=None,
+                    token_explicit_max_ttl=None, token_no_default_policy=None, token_num_uses=None,
+                    token_period=None, token_type=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Registers a role in the method. Only those instances or principals which are using the role registered
             using this endpoint, will be able to perform the login operation
 
@@ -446,12 +447,17 @@ class Aws(VaultApiBase):
         :param inferred_entity_type:
         :param inferred_aws_region:
         :param resolve_aws_unique_ids:
-        :param ttl:
-        :param max_ttl:
-        :param period:
-        :param policies:
         :param allow_instance_migration:
         :param disallow_reauthentication:
+        :param token_ttl:
+        :param token_max_ttl:
+        :param token_policies:
+        :param token_bound_cidrs:
+        :param token_explicit_max_ttl:
+        :param token_no_default_policy:
+        :param token_num_uses:
+        :param token_period:
+        :param token_type:
         :param mount_point:
         :return:
         """
@@ -462,7 +468,6 @@ class Aws(VaultApiBase):
         params.update(
             utils.remove_nones({
                 'auth_type': auth_type,
-                'resolve_aws_unique_ids': resolve_aws_unique_ids,
                 'bound_ami_id': bound_ami_id,
                 'bound_account_id': bound_account_id,
                 'bound_region': bound_region,
@@ -475,12 +480,18 @@ class Aws(VaultApiBase):
                 'bound_iam_principal_arn': bound_iam_principal_arn,
                 'inferred_entity_type': inferred_entity_type,
                 'inferred_aws_region': inferred_aws_region,
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
-                'policies': policies,
+                'resolve_aws_unique_ids': resolve_aws_unique_ids,
                 'allow_instance_migration': allow_instance_migration,
                 'disallow_reauthentication': disallow_reauthentication,
+                'token_ttl': token_ttl,
+                'token_max_ttl': token_max_ttl,
+                'token_policies': token_policies,
+                'token_bound_cidrs': token_bound_cidrs,
+                'token_explicit_max_ttl': token_explicit_max_ttl,
+                'token_no_default_policy': token_no_default_policy,
+                'token_num_uses': token_num_uses,
+                'token_period': token_period,
+                'token_type': token_type,
             })
         )
         return self._adapter.post(

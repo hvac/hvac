@@ -99,9 +99,11 @@ class Azure(VaultApiBase):
             url=api_path,
         )
 
-    def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
-                    bound_group_ids=None, bound_locations=None, bound_subscription_ids=None,
-                    bound_resource_groups=None, bound_scale_sets=None, num_uses=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, bound_service_principal_ids=None, bound_group_ids=None, bound_locations=None,
+                    bound_subscription_ids=None, bound_resource_groups=None, bound_scale_sets=None,
+                    token_ttl=None, token_max_ttl=None, token_policies=None, token_bound_cidrs=None,
+                    token_explicit_max_ttl=None, token_no_default_policy=None, token_num_uses=None,
+                    token_period=None, token_type=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -113,18 +115,6 @@ class Azure(VaultApiBase):
 
         :param name: Name of the role.
         :type name: str | unicode
-        :param policies: Policies to be set on tokens issued using this role.
-        :type policies: str | list
-        :param num_uses: Number of uses to set on a token produced by this role.
-        :type num_uses: int
-        :param ttl: The TTL period of tokens issued using this role in seconds.
-        :type ttl: str | unicode
-        :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
-        :type max_ttl: str | unicode
-        :param period: If set, indicates that the token generated using this role should never expire. The token should
-            be renewed within the duration specified by this value. At each renewal, the token's TTL will be set to the
-            value of this parameter.
-        :type period: str | unicode
         :param bound_service_principal_ids: The list of Service Principal IDs that login is restricted to.
         :type bound_service_principal_ids: list
         :param bound_group_ids: The list of group ids that login is restricted to.
@@ -137,33 +127,65 @@ class Azure(VaultApiBase):
         :type bound_resource_groups: list
         :param bound_scale_sets: The list of scale set names that the login is restricted to.
         :type bound_scale_sets: list
+        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_ttl: str | unicode | int
+        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_max_ttl: str | unicode | int
+        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list
+            may be supplemented by user/group/other values.
+        :type token_policies: str | unicode | list
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
+        :type token_bound_cidrs: str | unicode | list
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if `token_ttl` and `token_max_ttl` would otherwise allow a renewal.
+        :type token_explicit_max_ttl: str | unicode | int
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in `token_policies`.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited.
+        :type token_num_uses: int
+        :param token_period: The period, if any, to set on the token.
+        :type token_period: str | unicode | int
+        :param token_type: The type of token that should be generated. Can be `service`, `batch`, or `default` to use
+            the mount's tuned default (which unless changed will be `service` tokens). For token store roles, there are
+            two additional possibilities: `default-service` and `default-batch` which specify the type to return unless
+            the client requests a different type at generation time.
+        :type token_type: str | unicode
         :param mount_point: The "path" the azure auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        if policies is not None:
+        if token_policies is not None:
             if not (
-                isinstance(policies, str)
-                or (isinstance(policies, list) and all([isinstance(p, str) for p in policies]))
+                isinstance(token_policies, str)
+                or (isinstance(token_policies, list) and all([isinstance(p, str) for p in token_policies]))
             ):
-                error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
+                error_msg = 'unsupported token_policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
                 raise exceptions.ParamValidationError(error_msg.format(
-                    arg=policies,
-                    arg_type=type(policies),
+                    arg=token_policies,
+                    arg_type=type(token_policies),
                 ))
         params = utils.remove_nones({
-            'policies': policies,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-            'period': period,
             'bound_service_principal_ids': bound_service_principal_ids,
             'bound_group_ids': bound_group_ids,
             'bound_locations': bound_locations,
             'bound_subscription_ids': bound_subscription_ids,
             'bound_resource_groups': bound_resource_groups,
             'bound_scale_sets': bound_scale_sets,
-            'num_uses': num_uses,
+            'token_ttl': token_ttl,
+            'token_max_ttl': token_max_ttl,
+            'token_policies': token_policies,
+            'token_bound_cidrs': token_bound_cidrs,
+            'token_explicit_max_ttl': token_explicit_max_ttl,
+            'token_no_default_policy': token_no_default_policy,
+            'token_num_uses': token_num_uses,
+            'token_period': token_period,
+            'token_type': token_type,
         })
 
         api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)

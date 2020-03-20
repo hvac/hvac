@@ -81,7 +81,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         self.client.enable_auth_backend('userpass')
 
-        self.client.write('auth/userpass/users/testuser', password='testpass', policies='not_root')
+        self.client.write('auth/userpass/users/testuser', password='testpass', token_policies='not_root')
 
         result = self.client.auth_userpass('testuser', 'testpass')
 
@@ -95,7 +95,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         if 'userpass/' not in self.client.list_auth_backends()['data']:
             self.client.enable_auth_backend('userpass')
 
-        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='not_root')
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', token_policies='not_root')
 
         result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
 
@@ -104,7 +104,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # Test ttl:
         self.client.token = self.manager.root_token
-        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='not_root', ttl='10s')
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', token_policies='not_root', token_ttl='10s')
         self.client.token = result['auth']['client_token']
 
         result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
@@ -119,8 +119,8 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             self.client.enable_auth_backend('userpass')
 
         # add some users and confirm that they show up in the list
-        self.client.create_userpass('testuserone', 'testuseronepass', policies='not_root')
-        self.client.create_userpass('testusertwo', 'testusertwopass', policies='not_root')
+        self.client.create_userpass('testuserone', 'testuseronepass', token_policies='not_root')
+        self.client.create_userpass('testusertwo', 'testusertwopass', token_policies='not_root')
 
         user_list = self.client.list_userpass()
         assert 'testuserone' in user_list['data']['keys']
@@ -138,11 +138,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             self.client.enable_auth_backend('userpass')
 
         # create user to read
-        self.client.create_userpass('readme', 'mypassword', policies='not_root')
+        self.client.create_userpass('readme', 'mypassword', token_policies='not_root')
 
         # test that user can be read
         read_user = self.client.read_userpass('readme')
-        assert 'not_root' in read_user['data']['policies']
+        assert 'not_root' in read_user['data']['token_policies']
 
         # teardown
         self.client.disable_auth_backend('userpass')
@@ -152,12 +152,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             self.client.enable_auth_backend('userpass')
 
         # create user and then update its policies
-        self.client.create_userpass('updatemypolicies', 'mypassword', policies='not_root')
+        self.client.create_userpass('updatemypolicies', 'mypassword', token_policies='not_root')
         self.client.update_userpass_policies('updatemypolicies', policies='somethingelse')
 
         # test that policies have changed
         updated_user = self.client.read_userpass('updatemypolicies')
-        assert 'somethingelse' in updated_user['data']['policies']
+        assert 'somethingelse' in updated_user['data']['token_policies']
 
         # teardown
         self.client.disable_auth_backend('userpass')
@@ -167,7 +167,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             self.client.enable_auth_backend('userpass')
 
         # create user and then change its password
-        self.client.create_userpass('changeme', 'mypassword', policies='not_root')
+        self.client.create_userpass('changeme', 'mypassword', token_policies='not_root')
         self.client.update_userpass_password('changeme', 'mynewpassword')
 
         # test that new password authenticates user
@@ -183,7 +183,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         if 'userpass/' not in self.client.list_auth_backends()['data']:
             self.client.enable_auth_backend('userpass')
 
-        self.client.create_userpass('testcreateuser', 'testcreateuserpass', policies='not_root')
+        self.client.create_userpass('testcreateuser', 'testcreateuserpass', token_policies='not_root')
 
         result = self.client.auth_userpass('testcreateuser', 'testcreateuserpass')
 
@@ -600,37 +600,37 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         # test binding by AMI ID (the old way, to ensure backward compatibility)
         self.client.create_ec2_role('foo',
                                     'ami-notarealami',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by Account ID
         self.client.create_ec2_role('bar',
                                     bound_account_id='123456789012',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by IAM Role ARN
         self.client.create_ec2_role('baz',
                                     bound_iam_role_arn='arn:aws:iam::123456789012:role/mockec2role',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by instance profile ARN
         self.client.create_ec2_role('qux',
                                     bound_iam_instance_profile_arn='arn:aws:iam::123456789012:instance-profile/mockprofile',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by bound region
         self.client.create_ec2_role('quux',
                                     bound_region='ap-northeast-2',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by bound vpc id
         self.client.create_ec2_role('corge',
                                     bound_vpc_id='vpc-1a123456',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # test binding by bound subnet id
         self.client.create_ec2_role('grault',
                                     bound_subnet_id='subnet-123a456',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         roles = self.client.list_ec2_roles()
 
@@ -644,31 +644,31 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         foo_role = self.client.get_ec2_role('foo')
         assert ('ami-notarealami' in foo_role['data']['bound_ami_id'])
-        assert ('ec2rolepolicy' in foo_role['data']['policies'])
+        assert ('ec2rolepolicy' in foo_role['data']['token_policies'])
 
         bar_role = self.client.get_ec2_role('bar')
         assert ('123456789012' in bar_role['data']['bound_account_id'])
-        assert ('ec2rolepolicy' in bar_role['data']['policies'])
+        assert ('ec2rolepolicy' in bar_role['data']['token_policies'])
 
         baz_role = self.client.get_ec2_role('baz')
         assert ('arn:aws:iam::123456789012:role/mockec2role' in baz_role['data']['bound_iam_role_arn'])
-        assert ('ec2rolepolicy' in baz_role['data']['policies'])
+        assert ('ec2rolepolicy' in baz_role['data']['token_policies'])
 
         qux_role = self.client.get_ec2_role('qux')
         assert('arn:aws:iam::123456789012:instance-profile/mockprofile' in qux_role['data']['bound_iam_instance_profile_arn'])
-        assert('ec2rolepolicy' in qux_role['data']['policies'])
+        assert('ec2rolepolicy' in qux_role['data']['token_policies'])
 
         quux_role = self.client.get_ec2_role('quux')
         assert('ap-northeast-2' in quux_role['data']['bound_region'])
-        assert('ec2rolepolicy' in quux_role['data']['policies'])
+        assert('ec2rolepolicy' in quux_role['data']['token_policies'])
 
         corge_role = self.client.get_ec2_role('corge')
         assert('vpc-1a123456' in corge_role['data']['bound_vpc_id'])
-        assert('ec2rolepolicy' in corge_role['data']['policies'])
+        assert('ec2rolepolicy' in corge_role['data']['token_policies'])
 
         grault_role = self.client.get_ec2_role('grault')
         assert('subnet-123a456' in grault_role['data']['bound_subnet_id'])
-        assert('ec2rolepolicy' in grault_role['data']['policies'])
+        assert('ec2rolepolicy' in grault_role['data']['token_policies'])
 
         # teardown
         self.client.delete_ec2_role('foo')
@@ -693,37 +693,37 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         # create a role with no TTL
         self.client.create_ec2_role('foo',
                                     'ami-notarealami',
-                                    policies='ec2rolepolicy')
+                                    token_policies='ec2rolepolicy')
 
         # create a role with a 1hr TTL
         self.client.create_ec2_role('bar',
                                     'ami-notarealami',
-                                    ttl='1h',
-                                    policies='ec2rolepolicy')
+                                    token_ttl='1h',
+                                    token_policies='ec2rolepolicy')
 
         # create a role with a 3-day max TTL
         self.client.create_ec2_role('baz',
                                     'ami-notarealami',
-                                    max_ttl='72h',
-                                    policies='ec2rolepolicy')
+                                    token_max_ttl='72h',
+                                    token_policies='ec2rolepolicy')
 
         # create a role with 1-day period
         self.client.create_ec2_role('qux',
                                     'ami-notarealami',
-                                    period='24h',
-                                    policies='ec2rolepolicy')
+                                    token_period='24h',
+                                    token_policies='ec2rolepolicy')
 
         foo_role = self.client.get_ec2_role('foo')
-        assert (foo_role['data']['ttl'] == 0)
+        assert (foo_role['data']['token_ttl'] == 0)
 
         bar_role = self.client.get_ec2_role('bar')
-        assert (bar_role['data']['ttl'] == 3600)
+        assert (bar_role['data']['token_ttl'] == 3600)
 
         baz_role = self.client.get_ec2_role('baz')
-        assert (baz_role['data']['max_ttl'] == 259200)
+        assert (baz_role['data']['token_max_ttl'] == 259200)
 
         qux_role = self.client.get_ec2_role('qux')
-        assert (qux_role['data']['period'] == 86400)
+        assert (qux_role['data']['token_period'] == 86400)
 
         # teardown
         self.client.delete_ec2_role('foo')

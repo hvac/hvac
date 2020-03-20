@@ -13,7 +13,9 @@ class Github(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/github/index.html
     """
 
-    def configure(self, organization, base_url=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, organization, base_url=None, token_ttl=None, token_max_ttl=None, token_policies=None,
+                  token_bound_cidrs=None, token_explicit_max_ttl=None, token_no_default_policy=None,
+                  token_num_uses=None, token_period=None, token_type=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for GitHub.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -27,11 +29,34 @@ class Github(VaultApiBase):
         :param base_url: The API endpoint to use. Useful if you are running GitHub Enterprise or an API-compatible
             authentication server.
         :type base_url: str | unicode
-        :param ttl: Duration after which authentication will be expired.
-        :type ttl: str | unicode
-        :param max_ttl: Maximum duration after which authentication will
-            be expired.
-        :type max_ttl: str | unicode
+        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_ttl: str | unicode | int
+        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_max_ttl: str | unicode | int
+        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list
+            may be supplemented by user/group/other values.
+        :type token_policies: str | unicode | list
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
+        :type token_bound_cidrs: str | unicode | list
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if `token_ttl` and `token_max_ttl` would otherwise allow a renewal.
+        :type token_explicit_max_ttl: str | unicode | int
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in `token_policies`.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited.
+        :type token_num_uses: int
+        :param token_period: The period, if any, to set on the token.
+        :type token_period: str | unicode | int
+        :param token_type: The type of token that should be generated. Can be `service`, `batch`, or `default` to use
+            the mount's tuned default (which unless changed will be `service` tokens). For token store roles, there are
+            two additional possibilities: `default-service` and `default-batch` which specify the type to return unless
+            the client requests a different type at generation time.
+        :type token_type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the configure_method request.
@@ -43,8 +68,15 @@ class Github(VaultApiBase):
         params.update(
             utils.remove_nones({
                 'base_url': base_url,
-                'ttl': ttl,
-                'max_ttl': max_ttl,
+                'token_ttl': token_ttl,
+                'token_max_ttl': token_max_ttl,
+                'token_policies': token_policies,
+                'token_bound_cidrs': token_bound_cidrs,
+                'token_explicit_max_ttl': token_explicit_max_ttl,
+                'token_no_default_policy': token_no_default_policy,
+                'token_num_uses': token_num_uses,
+                'token_period': token_period,
+                'token_type': token_type,
             })
         )
         api_path = utils.format_url(

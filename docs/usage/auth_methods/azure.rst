@@ -85,7 +85,7 @@ Create a Role
 
     client.auth.azure.create_role(
         name='my-role',
-        policies=policies,
+        token_policies=policies,
         bound_service_principal_ids=bound_service_principal_ids,
     )
 
@@ -105,7 +105,7 @@ Read A Role
     )
     print('Policies for role "{name}": {policies}'.format(
         name='my-role',
-        policies=','.join(read_role_response['policies']),
+        policies=','.join(read_role_response['token_policies']),
     ))
 
 List Roles

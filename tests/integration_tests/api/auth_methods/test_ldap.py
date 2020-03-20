@@ -56,6 +56,8 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         ('update binddn', dict(url=MockLdapServer.ldap_url, bind_dn='cn=vault,ou=Users,dc=hvac,dc=network')),
         ('update upn_domain', dict(url=MockLdapServer.ldap_url, upn_domain='python-hvac.org')),
         ('update certificate', dict(url=MockLdapServer.ldap_url, certificate=utils.load_config_file('server-cert.pem'))),
+        ('update token_explicit_max_ttl', dict(url=MockLdapServer.ldap_url, token_explicit_max_ttl=28800)),
+        ('token_bound_cidrs as list', dict(url=MockLdapServer.ldap_url, token_bound_cidrs=["192.168.26.30/16"])),
         ('incorrect tls version', dict(url=MockLdapServer.ldap_url, tls_min_version='cats'), exceptions.InvalidRequest,
          "invalid 'tls_min_version'"),
     ])

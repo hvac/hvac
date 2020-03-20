@@ -142,7 +142,7 @@ Source reference: :py:meth:`hvac.api.auth.Gcp.read_role`
 
     print('Policies for role "{name}": {policies}'.format(
         name='my-role',
-        policies=','.join(read_role_response['policies']),
+        policies=','.join(read_role_response['token_policies']),
     ))
 
 List Roles

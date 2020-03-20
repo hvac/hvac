@@ -150,7 +150,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             exception_message='unsupported role_type argument provided',
         ),
     ])
-    def test_create_role(self, label, role_type, policies=None, bound_service_accounts=None, raises=None, exception_message=''):
+    def test_create_role(self, label, role_type, token_policies=None, bound_service_accounts=None, raises=None, exception_message=''):
         role_name = 'hvac'
         project_id = 'test-hvac-project-not-a-real-project'
         if raises:
@@ -159,7 +159,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                     name=role_name,
                     role_type=role_type,
                     project_id=project_id,
-                    policies=policies,
+                    token_policies=token_policies,
                     bound_service_accounts=bound_service_accounts,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
@@ -172,7 +172,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 name=role_name,
                 role_type=role_type,
                 project_id=project_id,
-                policies=policies,
+                token_policies=token_policies,
                 bound_service_accounts=bound_service_accounts,
                 mount_point=self.TEST_MOUNT_POINT,
             )

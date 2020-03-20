@@ -87,8 +87,10 @@ class Kubernetes(VaultApiBase):
         )
         return response.json().get('data')
 
-    def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl=None, max_ttl=None,
-                    period=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, audience=None,
+                    token_ttl=None, token_max_ttl=None, token_policies=None, token_bound_cidrs=None,
+                    token_explicit_max_ttl=None, token_no_default_policy=None, token_num_uses=None,
+                    token_period=None, token_type=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a role in the method.
 
         Registers a role in the auth method. Role types have specific entities that can perform login operations
@@ -106,16 +108,35 @@ class Kubernetes(VaultApiBase):
         :param bound_service_account_namespaces: List of namespaces allowed to access this role. If set to "*" all
             namespaces are allowed, both this and bound_service_account_names can not be set to "*".
         :type bound_service_account_namespaces: list | str | unicode
-        :param ttl: The TTL period of tokens issued using this role in seconds.
-        :type ttl: str | unicode
-        :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
-        :type max_ttl: str | unicode
-        :param period: If set, indicates that the token generated using this role should never expire. The token should
-            be renewed within the duration specified by this value. At each renewal, the token's TTL will be set to the
-            value of this parameter.
-        :type period: str | unicode
-        :param policies: Policies to be set on tokens issued using this role.
-        :type policies: list | str | unicode
+        :param audience: Optional Audience claim to verify in the JWT.
+        :type audience: str | unicode
+        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_ttl: str | unicode | int
+        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
+        :type token_max_ttl: str | unicode | int
+        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list
+            may be supplemented by user/group/other values.
+        :type token_policies: str | unicode | list
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
+        :type token_bound_cidrs: str | unicode | list
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if `token_ttl` and `token_max_ttl` would otherwise allow a renewal.
+        :type token_explicit_max_ttl: str | unicode | int
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in `token_policies`.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited.
+        :type token_num_uses: int
+        :param token_period: The period, if any, to set on the token.
+        :type token_period: str | unicode | int
+        :param token_type: The type of token that should be generated. Can be `service`, `batch`, or `default` to use
+            the mount's tuned default (which unless changed will be `service` tokens). For token store roles, there are
+            two additional possibilities: `default-service` and `default-batch` which specify the type to return unless
+            the client requests a different type at generation time.
         :param mount_point: The "path" the azure auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -124,7 +145,6 @@ class Kubernetes(VaultApiBase):
         list_of_strings_params = {
             'bound_service_account_names': bound_service_account_names,
             'bound_service_account_namespaces': bound_service_account_namespaces,
-            'policies': policies
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -143,13 +163,18 @@ class Kubernetes(VaultApiBase):
         }
         params.update(
             utils.remove_nones({
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
+                'audience': audience,
+                'token_ttl': token_ttl,
+                'token_max_ttl': token_max_ttl,
+                'token_policies': token_policies,
+                'token_bound_cidrs': token_bound_cidrs,
+                'token_explicit_max_ttl': token_explicit_max_ttl,
+                'token_no_default_policy': token_no_default_policy,
+                'token_num_uses': token_num_uses,
+                'token_period': token_period,
+                'token_type': token_type,
             })
         )
-        if policies is not None:
-            params['policies'] = comma_delimited_to_list(policies)
 
         api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
         return self._adapter.post(

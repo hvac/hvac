@@ -39,7 +39,7 @@ Configure Connection Parameters
 
     client.auth.github.configure(
         organization='our-lovely-company',
-        max_ttl='48h',  # i.e., A given token can only be renewed for up to 48 hours
+        token_max_ttl='48h',  # i.e., A given token can only be renewed for up to 48 hours
     )
 
 Reading Configuration
@@ -54,7 +54,7 @@ Reading Configuration
 
     github_config = client.auth.github.read_configuration()
     print('The Github auth method is configured with a ttl of: {ttl}'.format(
-        ttl=github_config['data']['ttl']
+        ttl=github_config['data']['token_ttl']
     )
 
 
