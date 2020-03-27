@@ -48,7 +48,12 @@ function install_vault_release() {
     esac
 
     if [[ "${HVAC_VAULT_LICENSE}" == "enterprise" ]]; then
-        download_url="https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_${machine}_amd64.zip"
+        download_url="https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}+ent/vault_${HVAC_VAULT_VERSION}+ent_${machine}_amd64.zip"
+        if ! curl --head "${download_url}" | head -1 | grep '\b200\b'; then
+            # Vault enterprise binaries earlier than v1.2.3 have different release downlaod URLs, so we
+            # fallback to this S3 URL in such cases.
+            download_url="https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_${machine}_amd64.zip"
+        fi
     else
         download_url="https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_${machine}_amd64.zip"
     fi
