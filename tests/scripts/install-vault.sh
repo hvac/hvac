@@ -39,10 +39,18 @@ function build_and_install_vault_ref() {
 function install_vault_release() {
     cd "/tmp"
 
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Linux*)     machine='linux';;
+        Darwin*)    machine='darwin';;
+        MINGW*)     machine='windows';;
+        *)          machine='linux'
+    esac
+
     if [[ "${HVAC_VAULT_LICENSE}" == "enterprise" ]]; then
-        download_url="https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_linux_amd64.zip"
+        download_url="https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${HVAC_VAULT_VERSION}/vault-enterprise_${HVAC_VAULT_VERSION}%2Bent_${machine}_amd64.zip"
     else
-        download_url="https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_linux_amd64.zip"
+        download_url="https://releases.hashicorp.com/vault/${HVAC_VAULT_VERSION}/vault_${HVAC_VAULT_VERSION}_${machine}_amd64.zip"
     fi
     download_file="vault_${HVAC_VAULT_LICENSE}_${HVAC_VAULT_VERSION}.zip"
 
