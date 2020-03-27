@@ -42,6 +42,9 @@ class Adapter(object):
         :type session: request.Session
         :param namespace: Optional Vault Namespace.
         :type namespace: str
+        :param ignore_exceptions: If True, _always_ return the response object for a given request. I.e., don't raise an exception
+            based on response status code, etc.
+        :type ignore_exceptions: bool
         """
         if not session:
             session = requests.Session()
