@@ -68,12 +68,12 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         )
 
     @parameterized.expand([
-        ("just organization", 'some-test-org', '', '', ''),
-        ("different base url", 'some-test-org', 'https://cathub.example', '', ''),
-        ("custom ttl seconds", 'some-test-org', '', '500s', ''),
-        ("custom ttl minutes", 'some-test-org', '', '500m', ''),
-        ("custom ttl hours", 'some-test-org', '', '500h', ''),
-        ("custom max ttl", 'some-test-org', '', '', '500s'),
+        ("just organization", 'some-test-org', '/', '', ''),
+        ("different base url", 'some-test-org', 'https://cathub.example/', '', ''),
+        ("custom ttl seconds", 'some-test-org', '/', '500s', ''),
+        ("custom ttl minutes", 'some-test-org', '/', '500m', ''),
+        ("custom ttl hours", 'some-test-org', '/', '500h', ''),
+        ("custom max ttl", 'some-test-org', '/', '', '500s'),
     ])
     def test_configure_and_read_configuration(self, test_label, organization, base_url, ttl, max_ttl):
         config_response = self.client.auth.github.configure(
