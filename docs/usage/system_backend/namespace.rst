@@ -69,13 +69,17 @@ Delete Namespace
 Examples
 ````````
 
-.. testcode:: sys_namespace
-    :skipif: not test_utils.is_enterprise()
+.. This example would ideally be a doctest, but is currently not due to itermittent consistency issues from an unknown origin.
+.. E.g., "hvac.exceptions.InvalidRequest: child namespaces exist under path "team1/", cannot remove"
+
+.. code:: python
+
+    import hvac
 
     # Delete namespace app1 where app1 is a child of team1
     client2 = hvac.Client(url='https://127.0.0.1:8200', namespace="team1")
     client2.sys.delete_namespace(path="app1")
 
-    # Delete namespace team1 (a namespace can not be deleted if child namespaces are extant under it)
+    # Delete namespace team1
     client = hvac.Client(url='https://127.0.0.1:8200')
     client.sys.delete_namespace(path="team1")
