@@ -67,15 +67,6 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             second=bool(response),
         )
 
-    def test_read_configuration(self):
-        response = self.client.auth.github.read_configuration(
-            mount_point=self.TEST_GITHUB_PATH,
-        )
-        self.assertIn(
-            member='data',
-            container=response,
-        )
-
     @parameterized.expand([
         ("just organization", 'some-test-org', '', '', ''),
         ("different base url", 'some-test-org', 'https://cathub.example', '', ''),
