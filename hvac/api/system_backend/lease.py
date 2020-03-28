@@ -19,11 +19,10 @@ class Lease(SystemBackendMixin):
             'lease_id': lease_id
         }
         api_path = '/v1/sys/leases/lookup'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params
         )
-        return response.json()
 
     def list_leases(self, prefix):
         """Retrieve a list of lease ids.
@@ -37,10 +36,9 @@ class Lease(SystemBackendMixin):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/sys/leases/lookup/{prefix}', prefix=prefix)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def renew_lease(self, lease_id, increment=None):
         """Renew a lease, requesting to extend the lease.
@@ -60,11 +58,10 @@ class Lease(SystemBackendMixin):
             'increment': increment,
         }
         api_path = '/v1/sys/leases/renew'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def revoke_lease(self, lease_id):
         """Revoke a lease immediately.

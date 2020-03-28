@@ -135,5 +135,7 @@ class HvacIntegrationTestCase(object):
         vault_addresses = self.manager.get_active_vault_addresses()
         for vault_address in vault_addresses:
             health_status = create_client(url=vault_address).sys.read_health_status(method='GET')
+            if not isinstance(health_status, dict):
+                health_status = health_status.json()
             if health_status['standby'] == standby_status:
                 return vault_address

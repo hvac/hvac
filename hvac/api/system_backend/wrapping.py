@@ -24,9 +24,7 @@ class Wrapping(SystemBackendMixin):
             params['token'] = token
 
         api_path = '/v1/sys/wrapping/unwrap'
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-
-        return response.json()

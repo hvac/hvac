@@ -16,10 +16,9 @@ class Policy(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/policy'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def read_policy(self, name):
         """Retrieve the policy body for the named policy.
@@ -33,10 +32,9 @@ class Policy(SystemBackendMixin):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/sys/policy/{name}', name=name)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_policy(self, name, policy, pretty_print=True):
         """Add a new or update an existing policy.

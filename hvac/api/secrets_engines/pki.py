@@ -71,10 +71,9 @@ class Pki(VaultApiBase):
             mount_point=mount_point,
             serial=serial,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_certificates(self, mount_point=DEFAULT_MOUNT_POINT):
         """List Certificates.
@@ -90,10 +89,9 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/certs', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def submit_ca_information(self, pem_bundle, mount_point=DEFAULT_MOUNT_POINT):
         """Submit CA Information.
@@ -131,10 +129,9 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def set_crl_configuration(self, expiry=None, disable=None, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Set CRL Configuration.
@@ -179,10 +176,9 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config/urls', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def set_urls(self, params, mount_point=DEFAULT_MOUNT_POINT):
         """Set URLs.
@@ -220,7 +216,9 @@ class Pki(VaultApiBase):
         :rtype: str
         """
         api_path = utils.format_url('/v1/{mount_point}/crl/pem', mount_point=mount_point)
-        response = self._adapter.get(url=api_path)
+        response = self._adapter.get(
+            url=api_path,
+        )
         # python2.7 uses unicode
         return str(response.text)
 
@@ -238,10 +236,9 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/crl/rotate', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def generate_intermediate(self, type, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Intermediate.
@@ -413,10 +410,9 @@ class Pki(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List Roles.
@@ -432,10 +428,9 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete Role.

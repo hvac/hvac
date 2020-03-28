@@ -62,10 +62,9 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_roleset(self, name, project, bindings, secret_type=None, token_scopes=None,
                                  mount_point=DEFAULT_MOUNT_POINT):
@@ -193,10 +192,9 @@ class Gcp(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_rolesets(self, mount_point=DEFAULT_MOUNT_POINT):
         """List configured rolesets.
@@ -210,10 +208,9 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/rolesets', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def delete_roleset(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete an existing roleset by the given name.
@@ -233,10 +230,9 @@ class Gcp(VaultApiBase):
             name=name,
             mount_point=mount_point,
         )
-        response = self._adapter.delete(
+        return self._adapter.delete(
             url=api_path,
         )
-        return response
 
     def generate_oauth2_access_token(self, roleset, mount_point=DEFAULT_MOUNT_POINT):
         """Generate an OAuth2 token with the scopes defined on the roleset.
@@ -258,10 +254,9 @@ class Gcp(VaultApiBase):
             mount_point=mount_point,
             roleset=roleset,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def generate_service_account_key(self, roleset, key_algorithm='KEY_ALG_RSA_2048',
                                      key_type='TYPE_GOOGLE_CREDENTIALS_FILE', method='POST',
@@ -324,4 +319,4 @@ class Gcp(VaultApiBase):
             error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response

@@ -58,8 +58,7 @@ class KvV2(VaultApiBase):
             '/v1/{mount_point}/config',
             mount_point=mount_point,
         )
-        response = self._adapter.get(url=api_path)
-        return response.json()
+        return self._adapter.get(url=api_path)
 
     def read_secret_version(self, path, version=None, mount_point=DEFAULT_MOUNT_POINT):
         """Retrieve the secret at the specified location.
@@ -81,11 +80,10 @@ class KvV2(VaultApiBase):
         if version is not None:
             params['version'] = version
         api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
             params=params,
         )
-        return response.json()
 
     def create_or_update_secret(self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create a new version of a secret at the specified location.
@@ -118,11 +116,10 @@ class KvV2(VaultApiBase):
             params['options']['cas'] = cas
 
         api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def patch(self, path, secret, mount_point=DEFAULT_MOUNT_POINT):
         """Set or update data in the KV store without overwriting.
@@ -298,10 +295,9 @@ class KvV2(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def read_secret_metadata(self, path, mount_point=DEFAULT_MOUNT_POINT):
         """Retrieve the metadata and versions for the secret at the specified path.
@@ -318,10 +314,9 @@ class KvV2(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def update_metadata(self, path, max_versions=None, cas_required=None, mount_point=DEFAULT_MOUNT_POINT):
         """Updates the max_versions of cas_required setting on an existing path.

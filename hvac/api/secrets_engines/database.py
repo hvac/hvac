@@ -52,7 +52,7 @@ class Database(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
-        ).json()
+        )
 
     def rotate_root_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint is used to rotate the root superuser credentials stored for the database connection.
@@ -81,7 +81,7 @@ class Database(VaultApiBase):
 
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
 
     def list_connections(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available connections.
@@ -93,7 +93,7 @@ class Database(VaultApiBase):
         api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
-        ).json()
+        )
 
     def delete_connection(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a connection.
@@ -186,7 +186,7 @@ class Database(VaultApiBase):
 
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available roles.
@@ -200,7 +200,7 @@ class Database(VaultApiBase):
         api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
-        ).json()
+        )
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes the role definition.
@@ -232,4 +232,4 @@ class Database(VaultApiBase):
 
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )

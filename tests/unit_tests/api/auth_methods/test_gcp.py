@@ -4,7 +4,7 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.auth_methods import Gcp
 from tests import utils
 
@@ -43,7 +43,7 @@ class TestGcp(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        gcp = Gcp(adapter=Request())
+        gcp = Gcp(adapter=JSONAdapter())
         if raises is not None:
             with self.assertRaises(raises):
                 gcp.login(

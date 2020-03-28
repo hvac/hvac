@@ -14,10 +14,9 @@ class Namespace(SystemBackendMixin):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
         )
-        return response
 
     def list_namespaces(self):
         """Lists all the namespaces.
@@ -29,10 +28,9 @@ class Namespace(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/namespaces/'
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def delete_namespace(self, path):
         """Delete a namespaces. You cannot delete a namespace with existing child namespaces.
@@ -44,7 +42,6 @@ class Namespace(SystemBackendMixin):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
-        response = self._adapter.delete(
+        return self._adapter.delete(
             url=api_path,
         )
-        return response

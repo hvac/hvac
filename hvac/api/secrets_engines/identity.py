@@ -55,14 +55,10 @@ class Identity(VaultApiBase):
             'disabled': disabled,
         })
         api_path = utils.format_url('/v1/{mount_point}/entity', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def create_or_update_entity_by_name(self, name, metadata=None, policies=None, disabled=None,
                                         mount_point=DEFAULT_MOUNT_POINT):
@@ -101,14 +97,10 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def read_entity(self, entity_id, mount_point=DEFAULT_MOUNT_POINT):
         """Query an entity by its identifier.
@@ -128,8 +120,7 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=entity_id,
         )
-        response = self._adapter.get(url=api_path)
-        return response.json()
+        return self._adapter.get(url=api_path)
 
     def read_entity_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Query an entity by its name.
@@ -149,10 +140,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def update_entity(self, entity_id, name=None, metadata=None, policies=None, disabled=None,
                       mount_point=DEFAULT_MOUNT_POINT):
@@ -194,14 +184,10 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=entity_id,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def delete_entity(self, entity_id, mount_point=DEFAULT_MOUNT_POINT):
         """Delete an entity and all its associated aliases.
@@ -274,7 +260,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def list_entities_by_name(self, method='LIST', mount_point=DEFAULT_MOUNT_POINT):
         """List available entities by their names.
@@ -303,7 +289,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def merge_entities(self, from_entity_ids, to_entity_id, force=None, mount_point=DEFAULT_MOUNT_POINT):
         """Merge many entities into one entity.
@@ -364,11 +350,10 @@ class Identity(VaultApiBase):
             'mount_accessor': mount_accessor,
         })
         api_path = utils.format_url('/v1/{mount_point}/entity-alias', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def read_entity_alias(self, alias_id, mount_point=DEFAULT_MOUNT_POINT):
         """Query the entity alias by its identifier.
@@ -388,10 +373,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=alias_id,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def update_entity_alias(self, alias_id, name, canonical_id, mount_accessor, mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing entity alias.
@@ -424,14 +408,10 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=alias_id,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def list_entity_aliases(self, method='LIST', mount_point=DEFAULT_MOUNT_POINT):
         """List available entity aliases by their identifiers.
@@ -461,7 +441,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def delete_entity_alias(self, alias_id, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a entity alias.
@@ -571,14 +551,10 @@ class Identity(VaultApiBase):
         )
 
         api_path = utils.format_url('/v1/{mount_point}/group', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def read_group(self, group_id, mount_point=DEFAULT_MOUNT_POINT):
         """Query the group by its identifier.
@@ -598,10 +574,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=group_id,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def update_group(self, group_id, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
                      member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -660,14 +635,10 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=group_id,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            return response
-        else:
-            return response.json()
 
     def delete_group(self, group_id, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a group.
@@ -719,7 +690,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def list_groups_by_name(self, method='LIST', mount_point=DEFAULT_MOUNT_POINT):
         """List available groups by their names.
@@ -749,7 +720,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def create_or_update_group_by_name(self, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
                                        member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -800,11 +771,10 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response
 
     def read_group_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Query a group by its name.
@@ -824,10 +794,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def delete_group_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a group, given its name.
@@ -877,11 +846,10 @@ class Identity(VaultApiBase):
             'canonical_id': canonical_id,
         })
         api_path = utils.format_url('/v1/{mount_point}/group-alias', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def update_group_alias(self, entity_id, name, mount_accessor=None, canonical_id=None, mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing group alias.
@@ -936,10 +904,9 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
             id=alias_id,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def delete_group_alias(self, entity_id, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a group alias.
@@ -990,7 +957,7 @@ class Identity(VaultApiBase):
             error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)
 
-        return response.json()
+        return response
 
     def lookup_entity(self, name=None, entity_id=None, alias_id=None, alias_name=None, alias_mount_accessor=None, mount_point=DEFAULT_MOUNT_POINT):
         """Query an entity based on the given criteria.
@@ -1026,15 +993,10 @@ class Identity(VaultApiBase):
             params['alias_name'] = alias_name
             params['alias_mount_accessor'] = alias_mount_accessor
         api_path = utils.format_url('/v1/{mount_point}/lookup/entity', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            logger.debug('Identity.lookup_entity: no entities found with params: {params}'.format(params=params))
-            return None
-        else:
-            return response.json()
 
     def lookup_group(self, name=None, group_id=None, alias_id=None, alias_name=None, alias_mount_accessor=None, mount_point=DEFAULT_MOUNT_POINT):
         """Query a group based on the given criteria.
@@ -1070,12 +1032,7 @@ class Identity(VaultApiBase):
             params['alias_name'] = alias_name
             params['alias_mount_accessor'] = alias_mount_accessor
         api_path = utils.format_url('/v1/{mount_point}/lookup/group', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        if response.status_code == 204:
-            logger.debug('Identity.lookup_group: no groups found with params: {params}'.format(params=params))
-            return None
-        else:
-            return response.json()

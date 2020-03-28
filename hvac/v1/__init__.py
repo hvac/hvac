@@ -19,7 +19,8 @@ class Client(object):
 
     def __init__(self, url=None, token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, adapter=adapters.Request, namespace=None):
+                 allow_redirects=True, session=None, adapter=adapters.JSONAdapter,
+                 namespace=None, **kwargs):
         """Creates a new hvac client instance.
 
         :param url: Base URL for the Vault instance being addressed.
@@ -42,8 +43,10 @@ class Client(object):
         :param session: Optional session object to use when performing request.
         :type session: request.Session
         :param adapter: Optional class to be used for performing requests. If none is provided, defaults to
-            hvac.adapters.Request
+            hvac.adapters.JSONRequest
         :type adapter: hvac.adapters.Adapter
+        :param kwargs: Additional parameters to pass to the adapter constructor.
+        :type kwargs: dict
         :param namespace: Optional Vault Namespace.
         :type namespace: str
         """
@@ -59,7 +62,8 @@ class Client(object):
             proxies=proxies,
             allow_redirects=allow_redirects,
             session=session,
-            namespace=namespace
+            namespace=namespace,
+            **kwargs
         )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
@@ -192,7 +196,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._adapter.get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl).json()
+            return self._adapter.get('/v1/{0}'.format(path), wrap_ttl=wrap_ttl)
         except exceptions.InvalidPath:
             return None
 
@@ -208,7 +212,7 @@ class Client(object):
             payload = {
                 'list': True
             }
-            return self._adapter.get('/v1/{0}'.format(path), params=payload).json()
+            return self._adapter.get('/v1/{0}'.format(path), params=payload)
         except exceptions.InvalidPath:
             return None
 
@@ -224,10 +228,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        response = self._adapter.post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
-
-        if response.status_code == 200:
-            return response.json()
+        return self._adapter.post('/v1/{0}'.format(path), json=kwargs, wrap_ttl=wrap_ttl)
 
     def delete(self, path):
         """DELETE /<path>
@@ -341,11 +342,11 @@ class Client(object):
             params['type'] = token_type
 
         if orphan:
-            return self._adapter.post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create-orphan', json=params, wrap_ttl=wrap_ttl)
         elif role:
-            return self._adapter.post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create/{0}'.format(role), json=params, wrap_ttl=wrap_ttl)
         else:
-            return self._adapter.post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/create', json=params, wrap_ttl=wrap_ttl)
 
     def lookup_token(self, token=None, accessor=False, wrap_ttl=None):
         """GET /auth/token/lookup/<token>
@@ -372,13 +373,13 @@ class Client(object):
         if token:
             if accessor:
                 path = '/v1/auth/token/lookup-accessor'
-                return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl).json()
+                return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl)
             else:
                 path = '/v1/auth/token/lookup'
-                return self._adapter.post(path, json=token_param).json()
+                return self._adapter.post(path, json=token_param)
         else:
             path = '/v1/auth/token/lookup-self'
-            return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
+            return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     def revoke_token(self, token, orphan=False, accessor=False):
         """POST /auth/token/revoke
@@ -439,9 +440,9 @@ class Client(object):
 
         if token is not None:
             params['token'] = token
-            return self._adapter.post('/v1/auth/token/renew', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/renew', json=params, wrap_ttl=wrap_ttl)
         else:
-            return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl).json()
+            return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl)
 
     def create_token_role(self, role,
                           allowed_policies=None, disallowed_policies=None,
@@ -716,7 +717,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._adapter.get('/v1/auth/{}/users'.format(mount_point), params={'list': True}).json()
+            return self._adapter.get('/v1/auth/{}/users'.format(mount_point), params={'list': True})
         except exceptions.InvalidPath:
             return None
 
@@ -730,7 +731,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/auth/{}/users/{}'.format(mount_point, username)).json()
+        return self._adapter.get('/v1/auth/{}/users/{}'.format(mount_point, username))
 
     def update_userpass_policies(self, username, policies, mount_point='userpass'):
         """POST /auth/<mount point>/users/<username>/policies
@@ -832,7 +833,7 @@ class Client(object):
         :rtype:
         """
         path = '/v1/auth/{0}/map/app-id/{1}'.format(mount_point, app_id)
-        return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
+        return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     def delete_app_id(self, app_id, mount_point='app-id'):
         """DELETE /auth/<mount_point>/map/app-id/<app_id>
@@ -894,7 +895,7 @@ class Client(object):
         :rtype:
         """
         path = '/v1/auth/{0}/map/user-id/{1}'.format(mount_point, user_id)
-        return self._adapter.get(path, wrap_ttl=wrap_ttl).json()
+        return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     def delete_user_id(self, user_id, mount_point='app-id'):
         """DELETE /auth/<mount_point>/map/user-id/<user_id>
@@ -962,7 +963,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/auth/{0}/config/client'.format(mount_point)).json()
+        return self._adapter.get('/v1/auth/{0}/config/client'.format(mount_point))
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.11.2',
@@ -1014,7 +1015,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name)).json()
+        return self._adapter.get('/v1/auth/{0}/config/certificate/{1}'.format(mount_point, cert_name))
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.11.2',
@@ -1029,7 +1030,7 @@ class Client(object):
         :rtype:
         """
         params = {'list': True}
-        return self._adapter.get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params).json()
+        return self._adapter.get('/v1/auth/{0}/config/certificates'.format(mount_point), params=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.11.2',
@@ -1139,7 +1140,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role)).json()
+        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role))
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.11.2',
@@ -1170,7 +1171,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._adapter.get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True}).json()
+            return self._adapter.get('/v1/auth/{0}/roles'.format(mount_point), params={'list': True})
         except exceptions.InvalidPath:
             return None
 
@@ -1287,7 +1288,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._adapter.get('/v1/auth/{0}/role?list=true'.format(mount_point)).json()
+        return self._adapter.get('/v1/auth/{0}/role?list=true'.format(mount_point))
 
     def get_role_id(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>/role-id
@@ -1301,7 +1302,7 @@ class Client(object):
         """
 
         url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
-        return self._adapter.get(url).json()['data']['role_id']
+        return self._adapter.get(url)['data']['role_id']
 
     def set_role_id(self, role_name, role_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/role-id
@@ -1332,7 +1333,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name)).json()
+        return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
     def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id
@@ -1357,7 +1358,7 @@ class Client(object):
             params['metadata'] = json.dumps(meta)
         if cidr_list is not None:
             params['cidr_list'] = cidr_list
-        return self._adapter.post(url, json=params, wrap_ttl=wrap_ttl).json()
+        return self._adapter.post(url, json=params, wrap_ttl=wrap_ttl)
 
     def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/lookup
@@ -1375,7 +1376,7 @@ class Client(object):
         params = {
             'secret_id': secret_id
         }
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     def list_role_secrets(self, role_name, mount_point='approle'):
         """LIST /auth/<mount_point>/role/<role name>/secret-id
@@ -1391,7 +1392,7 @@ class Client(object):
             mount_point=mount_point,
             name=role_name
         )
-        return self._adapter.list(url).json()
+        return self._adapter.list(url)
 
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
@@ -1407,7 +1408,7 @@ class Client(object):
         """
         url = '/v1/auth/{0}/role/{1}/secret-id-accessor/lookup'.format(mount_point, role_name)
         params = {'secret_id_accessor': secret_id_accessor}
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/destroy
@@ -1465,7 +1466,7 @@ class Client(object):
         }
         if meta is not None:
             params['meta'] = meta
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """POST /auth/<mount_point>/login
@@ -1531,7 +1532,7 @@ class Client(object):
         """
 
         url = '/v1/auth/{0}/config'.format(mount_point)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     def create_kubernetes_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="",
                                max_ttl="", period="", policies=None, mount_point='kubernetes'):
@@ -1587,7 +1588,7 @@ class Client(object):
         """
 
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     def list_kubernetes_roles(self, mount_point='kubernetes'):
         """GET /auth/<mount_point>/role?list=true
@@ -1599,7 +1600,7 @@ class Client(object):
         """
 
         url = 'v1/auth/{0}/role?list=true'.format(mount_point)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     def delete_kubernetes_role(self, role, mount_point='kubernetes'):
         """DELETE /auth/<mount_point>/role/:role
@@ -1688,7 +1689,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys/{1}'.format(mount_point, name)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1703,7 +1704,7 @@ class Client(object):
         :rtype:
         """
         url = '/v1/{0}/keys?list=true'.format(mount_point)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1793,7 +1794,7 @@ class Client(object):
             url = '/v1/{0}/export/{1}/{2}/{3}'.format(mount_point, key_type, name, version)
         else:
             url = '/v1/{0}/export/{1}/{2}'.format(mount_point, key_type, name)
-        return self._adapter.get(url).json()
+        return self._adapter.get(url)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1841,7 +1842,7 @@ class Client(object):
         if convergent_encryption is not None:
             params['convergent_encryption'] = convergent_encryption
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1876,7 +1877,7 @@ class Client(object):
         if batch_input is not None:
             params['batch_input'] = batch_input
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1916,7 +1917,7 @@ class Client(object):
         if batch_input is not None:
             params['batch_input'] = batch_input
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1949,7 +1950,7 @@ class Client(object):
         if bits is not None:
             params['bits'] = bits
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -1976,7 +1977,7 @@ class Client(object):
         if output_format is not None:
             params["format"] = output_format
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -2007,7 +2008,7 @@ class Client(object):
         if output_format is not None:
             params['format'] = output_format
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -2039,7 +2040,7 @@ class Client(object):
         if key_version is not None:
             params['key_version'] = key_version
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -2084,7 +2085,7 @@ class Client(object):
             params['prehashed'] = prehashed
         params['signature_algorithm'] = signature_algorithm
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',
@@ -2133,7 +2134,7 @@ class Client(object):
             params['prehashed'] = prehashed
         params['signature_algorithm'] = signature_algorithm
 
-        return self._adapter.post(url, json=params).json()
+        return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version='0.9.0',

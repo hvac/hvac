@@ -71,8 +71,8 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -120,8 +120,8 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('delete_config_response: %s' % delete_config_response)
         self.assertEqual(
-            first=delete_config_response.status_code,
-            second=204,
+            first=bool(delete_config_response),
+            second=True,
         )
 
     @parameterized.expand([
@@ -181,8 +181,8 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('create_role_response: %s' % create_role_response)
             self.assertEqual(
-                first=create_role_response.status_code,
-                second=204,
+                first=bool(create_role_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -302,6 +302,6 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_role_response: %s' % delete_role_response)
             self.assertEqual(
-                first=delete_role_response.status_code,
-                second=204,
+                first=bool(delete_role_response),
+                second=True,
             )

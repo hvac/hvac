@@ -6,7 +6,7 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized, param
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.secrets_engines import Aws
 from hvac.api.secrets_engines.aws import DEFAULT_MOUNT_POINT
 from hvac.exceptions import ParamValidationError
@@ -25,7 +25,7 @@ class TestAws(TestCase):
             "access_key": "AKIA..."
           }
         }
-        aws = Aws(adapter=Request())
+        aws = Aws(adapter=JSONAdapter())
         mock_url = 'http://localhost:8200/v1/{mount_point}/config/rotate-root'.format(
             mount_point=mount_point,
         )
@@ -72,7 +72,7 @@ class TestAws(TestCase):
             role_name=role_name,
         )
         logging.debug('Mocking URL: %s' % mock_url)
-        aws = Aws(adapter=Request())
+        aws = Aws(adapter=JSONAdapter())
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
                 method='GET',
