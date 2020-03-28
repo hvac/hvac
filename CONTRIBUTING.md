@@ -1,6 +1,6 @@
 # Contributing
 
-Feel free to open issues and/or pull requests with additional features or improvements! For general questions about contributing to hvac that don't fit in the scope of a GitHub issue, and for any folks are interested in becoming a maintainer of hvac, please feel free to join our gitter chat room for discussions at [gitter.im/hvac/community](https://gitter.im/hvac/community): [![Gitter chat](https://badges.gitter.im/hvac/community.png)](https://gitter.im/hvac/community)
+Feel free to open issues and/or pull requests with additional features or improvements! For general questions about contributing to hvac that don't fit in the scope of a GitHub issue, and for any folks are interested in becoming a maintainer of hvac, please feel free to join our gitter chat room for discussions at: [gitter.im/hvac/community](https://gitter.im/hvac/community).
 
 ## Typical Devevelopment Environment Setup
 
