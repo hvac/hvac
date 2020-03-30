@@ -6,6 +6,9 @@ exclude-labels:
   - 'release'
   - 'skip-changelog'
 categories:
+  - title: '💥 Breaking Changes'
+    labels:
+      - 'breaking-change'
   - title: '🚀 Features'
     labels:
       - 'enhancement'
