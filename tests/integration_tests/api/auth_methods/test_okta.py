@@ -52,8 +52,8 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -174,8 +174,8 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('register_user_response: %s' % register_user_response)
             self.assertEqual(
-                first=register_user_response.status_code,
-                second=204,
+                first=bool(register_user_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -261,8 +261,8 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_user_response: %s' % delete_user_response)
             self.assertEqual(
-                first=delete_user_response.status_code,
-                second=204,
+                first=bool(delete_user_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -346,8 +346,8 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('register_group_response: %s' % register_group_response)
             self.assertEqual(
-                first=register_group_response.status_code,
-                second=204,
+                first=bool(register_group_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -433,6 +433,6 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_group_response: %s' % delete_group_response)
             self.assertEqual(
-                first=delete_group_response.status_code,
-                second=204,
+                first=bool(delete_group_response),
+                second=True,
             )

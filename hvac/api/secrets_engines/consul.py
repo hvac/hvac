@@ -114,7 +114,7 @@ class Consul(VaultApiBase):
 
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint lists all existing roles in the secrets engine.
@@ -126,7 +126,7 @@ class Consul(VaultApiBase):
         api_path = utils.format_url("/v1/{}/roles", mount_point)
         return self._adapter.list(
             url=api_path,
-        ).json()
+        )
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a Consul role with the given name.
@@ -158,4 +158,4 @@ class Consul(VaultApiBase):
 
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )

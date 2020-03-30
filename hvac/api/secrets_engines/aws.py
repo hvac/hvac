@@ -89,10 +89,9 @@ class Aws(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config/rotate-root', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
         )
-        return response.json()
 
     def configure_lease(self, lease, lease_max, mount_point=DEFAULT_MOUNT_POINT):
         """Configure lease settings for the AWS secrets engine.
@@ -135,10 +134,9 @@ class Aws(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config/lease', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_role(self, name, credential_type, policy_document=None, default_sts_ttl=None, max_sts_ttl=None,
                               role_arns=None, policy_arns=None, legacy_params=False, mount_point=DEFAULT_MOUNT_POINT):
@@ -241,10 +239,9 @@ class Aws(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all existing roles in the secrets engine.
@@ -258,10 +255,9 @@ class Aws(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete an existing role by the given name.
@@ -342,8 +338,7 @@ class Aws(VaultApiBase):
             name=name,
         )
 
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
             params=params,
         )
-        return response.json()

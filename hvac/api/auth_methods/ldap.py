@@ -117,10 +117,9 @@ class Ldap(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_group(self, name, policies=None, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -173,10 +172,9 @@ class Ldap(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/groups', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def read_group(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -201,11 +199,10 @@ class Ldap(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def delete_group(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -293,10 +290,9 @@ class Ldap(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def read_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -318,10 +314,9 @@ class Ldap(VaultApiBase):
             mount_point=mount_point,
             username=username,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def delete_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """

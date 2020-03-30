@@ -65,8 +65,8 @@ class TestLease(HvacIntegrationTestCase, TestCase):
         logging.debug('revoke_lease_response: %s' % revoke_lease_response)
 
         self.assertEqual(
-            first=revoke_lease_response.status_code,
-            second=204,
+            first=bool(revoke_lease_response),
+            second=True,
         )
         with self.assertRaises(exceptions.InvalidPath):
             self.client.sys.list_leases(
@@ -86,8 +86,8 @@ class TestLease(HvacIntegrationTestCase, TestCase):
         logging.debug('revoke_prefix_response: %s' % revoke_prefix_response)
 
         self.assertEqual(
-            first=revoke_prefix_response.status_code,
-            second=204,
+            first=bool(revoke_prefix_response),
+            second=True,
         )
 
     def test_revoke_force(self):
@@ -101,6 +101,6 @@ class TestLease(HvacIntegrationTestCase, TestCase):
         logging.debug('revoke_force_response: %s' % revoke_force_response)
 
         self.assertEqual(
-            first=revoke_force_response.status_code,
-            second=204,
+            first=bool(revoke_force_response),
+            second=True,
         )

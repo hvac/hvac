@@ -51,8 +51,8 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -123,8 +123,8 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_config_response: %s' % delete_config_response)
             self.assertEqual(
-                first=delete_config_response.status_code,
-                second=204,
+                first=bool(delete_config_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -177,13 +177,9 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % create_role_response)
-            if utils.vault_version_lt('0.10.0'):
-                expected_status_code = 204
-            else:
-                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
-                first=create_role_response.status_code,
-                second=expected_status_code,
+                first=bool(create_role_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -233,13 +229,9 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % edit_sa_on_iam_response)
-            if utils.vault_version_lt('0.10.0'):
-                expected_status_code = 204
-            else:
-                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
-                first=edit_sa_on_iam_response.status_code,
-                second=expected_status_code,
+                first=bool(edit_sa_on_iam_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -289,13 +281,9 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug('create_role_response: %s' % edit_labled_response)
-            if utils.vault_version_lt('0.10.0'):
-                expected_status_code = 204
-            else:
-                expected_status_code = 200  # TODO => figure out why this isn't a 204?
             self.assertEqual(
-                first=edit_labled_response.status_code,
-                second=expected_status_code,
+                first=bool(edit_labled_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -424,6 +412,6 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_role_response: %s' % delete_role_response)
             self.assertEqual(
-                first=delete_role_response.status_code,
-                second=204,
+                first=bool(delete_role_response),
+                second=True,
             )

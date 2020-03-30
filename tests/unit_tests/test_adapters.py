@@ -39,7 +39,7 @@ class TestRequest(TestCase):
         expected_status_code = 200
         mock_url = '{0}/{1}'.format(url, path)
         expected_request_urls = [mock_url]
-        adapter = adapters.Request(base_uri=url)
+        adapter = adapters.RawAdapter(base_uri=url)
         response_headers = {}
         response_status_code = 200
         if redirect_url is not None:
@@ -100,7 +100,7 @@ class TestRequest(TestCase):
             url=mock_url,
             json=mock_response
         )
-        adapter = adapters.Request()
+        adapter = adapters.RawAdapter()
         response = adapter.list(
             url=test_path,
         )

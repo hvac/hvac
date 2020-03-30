@@ -3,7 +3,7 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.auth_methods import Github
 from hvac.api.auth_methods.github import DEFAULT_MOUNT_POINT
 
@@ -25,7 +25,7 @@ class TestGithub(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.configure(
             organization='hvac',
             mount_point=mount_point,
@@ -66,7 +66,7 @@ class TestGithub(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.read_configuration(
             mount_point=mount_point,
         )
@@ -92,7 +92,7 @@ class TestGithub(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.map_team(
             team_name=team_name,
             mount_point=mount_point,
@@ -133,7 +133,7 @@ class TestGithub(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.read_team_mapping(
             team_name=team_name,
             mount_point=mount_point,
@@ -160,7 +160,7 @@ class TestGithub(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.map_user(
             user_name=user_name,
             mount_point=mount_point,
@@ -198,7 +198,7 @@ class TestGithub(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.read_user_mapping(
             user_name=user_name,
             mount_point=mount_point,
@@ -241,7 +241,7 @@ class TestGithub(TestCase):
             url=mock_url,
             json=mock_response,
         )
-        github = Github(adapter=Request())
+        github = Github(adapter=JSONAdapter())
         response = github.login(
             token='valid-token',
             mount_point=mount_point,

@@ -55,19 +55,17 @@ class Health(SystemBackendMixin):
 
         if method == 'HEAD':
             api_path = utils.format_url('/v1/sys/health')
-            response = self._adapter.head(
+            return self._adapter.head(
                 url=api_path,
                 raise_exception=False,
             )
-            return response
         elif method == 'GET':
             api_path = utils.format_url('/v1/sys/health')
-            response = self._adapter.get(
+            return self._adapter.get(
                 url=api_path,
                 json=params,
                 raise_exception=False,
             )
-            return response.json()
         else:
             error_message = '"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'.format(method=method)
             raise exceptions.ParamValidationError(error_message)

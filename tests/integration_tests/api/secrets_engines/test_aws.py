@@ -7,7 +7,7 @@ from unittest import TestCase
 from parameterized import parameterized, param
 
 from hvac.exceptions import ParamValidationError
-from tests.utils import vault_version_lt, vault_version_eq
+from tests.utils import vault_version_lt
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -68,8 +68,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -97,8 +97,8 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
-                first=configure_response.status_code,
-                second=204,
+                first=bool(configure_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -209,14 +209,9 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('role_response: %s' % role_response)
 
-            expected_status_code = 204
-            if vault_version_eq('0.11.0'):
-                # In Vault 0.11.0, this API route returns a 200 instead of a 204.
-                expected_status_code = 200
-
             self.assertEqual(
-                first=role_response.status_code,
-                second=expected_status_code,
+                first=bool(role_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -330,6 +325,6 @@ class TestAws(HvacIntegrationTestCase, TestCase):
             )
             logging.debug('delete_role_response: %s' % delete_role_response)
             self.assertEqual(
-                first=delete_role_response.status_code,
-                second=204,
+                first=bool(delete_role_response),
+                second=True,
             )

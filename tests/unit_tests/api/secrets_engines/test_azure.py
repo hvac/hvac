@@ -5,7 +5,7 @@ from unittest import skipIf
 import requests_mock
 from parameterized import parameterized
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.secrets_engines.azure import Azure, DEFAULT_MOUNT_POINT
 from tests import utils
 
@@ -37,7 +37,7 @@ class TestAzure(TestCase):
             status_code=expected_status_code,
             # json=mock_response,
         )
-        azure = Azure(adapter=Request())
+        azure = Azure(adapter=JSONAdapter())
         create_or_update_role_response = azure.create_or_update_role(
             name=role_name,
             azure_roles=azure_roles,
@@ -72,7 +72,7 @@ class TestAzure(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        azure = Azure(adapter=Request())
+        azure = Azure(adapter=JSONAdapter())
         list_roles_response = azure.list_roles(
             mount_point=DEFAULT_MOUNT_POINT
         )
@@ -107,7 +107,7 @@ class TestAzure(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        azure = Azure(adapter=Request())
+        azure = Azure(adapter=JSONAdapter())
         generate_credentials_response = azure.generate_credentials(
             name=role_name,
             mount_point=DEFAULT_MOUNT_POINT

@@ -38,8 +38,7 @@ class Capabilities(SystemBackendMixin):
             # https://www.vaultproject.io/api/system/capabilities-self.html
             api_path = '/v1/sys/capabilities-self'
 
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()

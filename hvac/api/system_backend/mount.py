@@ -13,8 +13,7 @@ class Mount(SystemBackendMixin):
         :return: JSON response of the request.
         :rtype: dict
         """
-        response = self._adapter.get('/v1/sys/mounts')
-        return response.json()
+        return self._adapter.get('/v1/sys/mounts')
 
     def retrieve_mount_option(self, mount_point, option_name, default_value=None):
         secrets_engine_path = '{mount_point}/'.format(mount_point=mount_point)
@@ -122,10 +121,9 @@ class Mount(SystemBackendMixin):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/sys/mounts/{path}/tune', path=path)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def tune_mount_configuration(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
                                  audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None,
