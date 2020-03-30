@@ -1237,21 +1237,21 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             logging.debug('create_or_update_response: %s' % create_or_update_response)
-            # if not create_first:
-            self.assertIn(
-                member='id',
-                container=create_or_update_response['data'],
-            )
-            if alias_id is not None:
-                self.assertEqual(
-                    first=alias_id,
-                    second=create_or_update_response['data']['id'],
+            if 'data' in create_or_update_response:
+                self.assertIn(
+                    member='id',
+                    container=create_or_update_response['data'],
                 )
-            # else:
-            #     self.assertEqual(
-            #         first=create_or_update_response.status_code,
-            #         second=204,
-            #     )
+                if alias_id is not None:
+                    self.assertEqual(
+                        first=alias_id,
+                        second=create_or_update_response['data']['id'],
+                    )
+            else:
+                self.assertEqual(
+                    first=create_or_update_response.status_code,
+                    second=204,
+                )
 
     @parameterized.expand([
         param(

@@ -27,10 +27,10 @@ class Database(VaultApiBase):
         :param verify_connection: Specifies if the connection is verified during initial configuration.
         :type verify_connection: bool
         :param allowed_roles: List of the roles allowed to use this connection. Defaults to empty (no roles),
-        if contains a "*" any role can use this connection.
+            if contains a "*" any role can use this connection.
         :type allowed_roles: list
         :param root_rotation_statements: Specifies the database statements to be executed to rotate
-        the root user's credentials.
+            the root user's credentials.
         :type root_rotation_statements: list
         :return: The response of the request.
         :rtype: requests.Response
@@ -141,7 +141,7 @@ class Database(VaultApiBase):
         :param revocation_statements: Specifies the database statements to be executed to revoke a user.
         :type revocation_statements: list
         :param rollback_statements: Specifies the database statements to be executed to rollback
-        a create operation in the event of an error.
+            a create operation in the event of an error.
         :type rollback_statements: list
         :param renew_statements: Specifies the database statements to be executed to renew a user.
         :type renew_statements: list

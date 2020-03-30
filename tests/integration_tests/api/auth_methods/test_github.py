@@ -1,3 +1,4 @@
+import logging
 from threading import Thread
 from unittest import TestCase
 
@@ -67,22 +68,13 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             second=bool(response),
         )
 
-    def test_read_configuration(self):
-        response = self.client.auth.github.read_configuration(
-            mount_point=self.TEST_GITHUB_PATH,
-        )
-        self.assertIn(
-            member='data',
-            container=response,
-        )
-
     @parameterized.expand([
-        ("just organization", 'some-test-org', '', '', ''),
-        ("different base url", 'some-test-org', 'https://cathub.example', '', ''),
-        ("custom ttl seconds", 'some-test-org', '', '500s', ''),
-        ("custom ttl minutes", 'some-test-org', '', '500m', ''),
-        ("custom ttl hours", 'some-test-org', '', '500h', ''),
-        ("custom max ttl", 'some-test-org', '', '', '500s'),
+        ("just organization", 'some-test-org', '/', '', ''),
+        ("different base url", 'some-test-org', 'https://cathub.example/', '', ''),
+        ("custom ttl seconds", 'some-test-org', '/', '500s', ''),
+        ("custom ttl minutes", 'some-test-org', '/', '500m', ''),
+        ("custom ttl hours", 'some-test-org', '/', '500h', ''),
+        ("custom max ttl", 'some-test-org', '/', '', '500s'),
     ])
     def test_configure_and_read_configuration(self, test_label, organization, base_url, ttl, max_ttl):
         config_response = self.client.auth.github.configure(
@@ -92,6 +84,7 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             max_ttl=max_ttl,
             mount_point=self.TEST_GITHUB_PATH,
         )
+        logging.debug('config_response: {}'.format(config_response))
         self.assertEqual(
             first=204,
             second=config_response.status_code
@@ -100,6 +93,7 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         read_config_response = self.client.auth.github.read_configuration(
             mount_point=self.TEST_GITHUB_PATH,
         )
+        logging.debug('read_config_response: {}'.format(read_config_response))
         self.assertEqual(
             first=organization,
             second=read_config_response['data']['organization']
@@ -108,13 +102,15 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             first=base_url,
             second=read_config_response['data']['base_url']
         )
+        ttl_data_key = 'token_ttl' if utils.vault_version_ge('1.2.0') else 'ttl'
+        max_ttl_data_key = 'token_max_ttl' if utils.vault_version_ge('1.2.0') else 'max_ttl'
         self.assertEqual(
             first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=ttl),
-            second=read_config_response['data']['ttl']
+            second=read_config_response['data'][ttl_data_key]
         )
         self.assertEqual(
             first=self.convert_python_ttl_value_to_expected_vault_response(ttl_value=max_ttl),
-            second=read_config_response['data']['max_ttl']
+            second=read_config_response['data'][max_ttl_data_key]
         )
 
     @parameterized.expand([

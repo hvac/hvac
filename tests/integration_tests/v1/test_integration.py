@@ -714,13 +714,15 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
                                     policies='ec2rolepolicy')
 
         foo_role = self.client.get_ec2_role('foo')
-        assert (foo_role['data']['ttl'] == 0)
+        ttl_data_key = 'token_ttl' if utils.vault_version_ge('1.2.0') else 'ttl'
+        assert (foo_role['data'][ttl_data_key] == 0)
 
         bar_role = self.client.get_ec2_role('bar')
         assert (bar_role['data']['ttl'] == 3600)
 
         baz_role = self.client.get_ec2_role('baz')
-        assert (baz_role['data']['max_ttl'] == 259200)
+        max_ttl_data_key = 'token_max_ttl' if utils.vault_version_ge('1.2.0') else 'max_ttl'
+        assert (baz_role['data'][max_ttl_data_key] == 259200)
 
         qux_role = self.client.get_ec2_role('qux')
         assert (qux_role['data']['period'] == 86400)
