@@ -2,10 +2,13 @@ name-template: 'v$NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
 branches:
   - 'develop'
-exclude-lables:
+exclude-labels:
   - 'release'
   - 'skip-changelog'
 categories:
+  - title: '💥 Breaking Changes'
+    labels:
+      - 'breaking-change'
   - title: '🚀 Features'
     labels:
       - 'enhancement'
