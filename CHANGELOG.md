@@ -34,9 +34,9 @@ Thanks to @jeffwecan, @llamasoft and @msuszko for their lovely contributions.
 
 - Don't send optional parameters unless explicitly specified. GH-533
 
-*Note*: [GH-533](https://github.com/hvac/hvac/pull/533) includes fundamental behavior involving sending parameters 
+*Note*: [GH-533](https://github.com/hvac/hvac/pull/533) includes fundamental behavior involving sending parameters
 to API requests to Vault. Many hvac method parameters that would have been sent with default arguments no
-longer are included in requests to Vault. Notably, the following behavioral changes should be expected (copied from the 
+longer are included in requests to Vault. Notably, the following behavioral changes should be expected (copied from the
 related PR comments):
 
 Azure:
@@ -257,7 +257,7 @@ BUG FIXES:
 
 BACKWARDS COMPATIBILITY NOTICE:
 
-* The `Client()` class constructor now behaves similarly to Vault CLI in that it uses the `VAULT_ADDR` environmental variable for the Client URL when that variable is set. Along the same lines, when no token is passed into the `Client()` constructor, it will attempt to load a token from the `VAULT_TOKEN` environmental variable or the `~/.vault-token` file where available. [GH-411](https://github.com/hvac/hvac/pull/411) 
+* The `Client()` class constructor now behaves similarly to Vault CLI in that it uses the `VAULT_ADDR` environmental variable for the Client URL when that variable is set. Along the same lines, when no token is passed into the `Client()` constructor, it will attempt to load a token from the `VAULT_TOKEN` environmental variable or the `~/.vault-token` file where available. [GH-411](https://github.com/hvac/hvac/pull/411)
 
 IMPROVEMENTS:
 
@@ -295,7 +295,7 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
-* Simplify redirect handling in `Adapter` class to fix issues following location headers with fully qualified URLs. Note: hvac now converts `//` to `/` within any paths. [GH-348](https://github.com/hvac/hvac/pull/348) 
+* Simplify redirect handling in `Adapter` class to fix issues following location headers with fully qualified URLs. Note: hvac now converts `//` to `/` within any paths. [GH-348](https://github.com/hvac/hvac/pull/348)
 * Fixed a bug where entity and group member IDs were not being passed in to Identity secrets engine group creation / updates. [GH-346](https://github.com/hvac/hvac/pull/346)
 * Ensure all types of responses for the `read_health_status()` system backend method can be retrieved without exceptions being raised. [GH-347](https://github.com/hvac/hvac/pull/347)
 * Fix `read_seal_status()` in `Client` class's `seal_status` property. [GH-354](https://github.com/hvac/hvac/pull/354)
@@ -309,7 +309,7 @@ MISCELLANEOUS:
 * Note: Starting after release 0.7.0, `develop` is the main integration branch for the hvac project. The `master` branch is now intended to capture the state of the most recent release.
 * Test cases for hvac are no longer included in the release artifacts published to PyPi. [GH-334](https://github.com/hvac/hvac/pull/334)
 * The `create_or_update_policy` system backend method now supports a "pretty_print" argument for different JSON formatting. This allows create more viewable policy documents when retrieve existing policies (e.g., from within the Vault UI interface). [GH-342](https://github.com/hvac/hvac/pull/342)
-* Explicit support for Vault v0.8.3 dropped. CI/CD tests updated to run against Vault v1.0.0. [GH-344](https://github.com/hvac/hvac/pull/344) 
+* Explicit support for Vault v0.8.3 dropped. CI/CD tests updated to run against Vault v1.0.0. [GH-344](https://github.com/hvac/hvac/pull/344)
 
 ## 0.7.0 (November 1st, 2018)
 
