@@ -5,7 +5,7 @@ from unittest import skipIf
 import requests_mock
 from parameterized import parameterized
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.auth_methods import Azure
 from tests import utils
 
@@ -49,7 +49,7 @@ class TestAzure(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        azure = Azure(adapter=Request())
+        azure = Azure(adapter=JSONAdapter())
         if raises is not None:
             with self.assertRaises(raises):
                 azure.login(

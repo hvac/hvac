@@ -99,10 +99,9 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_keys(self, mount_point=DEFAULT_MOUNT_POINT):
         """List keys.
@@ -118,10 +117,9 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url('/v1/{mount_point}/keys', mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path
         )
-        return response.json()
 
     def delete_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a named encryption key.
@@ -268,10 +266,9 @@ class Transit(VaultApiBase):
         )
         if version is not None:
             api_path = self._adapter.urljoin(api_path, version)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None, type=None,
                      convergent_encryption=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -337,11 +334,10 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
         """Decrypt the provided ciphertext using the named key.
@@ -384,11 +380,10 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
                     mount_point=DEFAULT_MOUNT_POINT):
@@ -438,11 +433,10 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point=DEFAULT_MOUNT_POINT):
         """Generates a new high-entropy key and the value encrypted with the named key.
@@ -500,11 +494,10 @@ class Transit(VaultApiBase):
             key_type=key_type,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def generate_random_bytes(self, n_bytes=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT):
         """Return high-quality random bytes of the specified length.
@@ -527,11 +520,10 @@ class Transit(VaultApiBase):
             'format': output_format,
         })
         api_path = utils.format_url('/v1/{mount_point}/random', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def hash_data(self, hash_input, algorithm=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT):
         """Return the cryptographic hash of given data using the specified algorithm.
@@ -573,11 +565,10 @@ class Transit(VaultApiBase):
             })
         )
         api_path = utils.format_url('/v1/{mount_point}/hash', mount_point=mount_point)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def generate_hmac(self, name, hash_input, key_version=None, algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
         """Return the digest of given data using the specified hash algorithm and the named key.
@@ -624,11 +615,10 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        resposne = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return resposne.json()
 
     def sign_data(self, name, hash_input, key_version=None, hash_algorithm=None, context=None, prehashed=None,
                   signature_algorithm=None, marshaling_algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -705,11 +695,10 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def verify_signed_data(self, name, hash_input, signature=None, hmac=None, hash_algorithm=None, context=None,
                            prehashed=None, signature_algorithm=None, marshaling_algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
@@ -784,11 +773,10 @@ class Transit(VaultApiBase):
             })
         )
         api_path = utils.format_url('/v1/{mount_point}/verify/{name}', mount_point=mount_point, name=name)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def backup_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Return a plaintext backup of a named key.
@@ -811,10 +799,9 @@ class Transit(VaultApiBase):
             mount_point=mount_point,
             name=name,
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def restore_key(self, backup, name=None, force=None, mount_point=DEFAULT_MOUNT_POINT):
         """Restore the backup as a named key.

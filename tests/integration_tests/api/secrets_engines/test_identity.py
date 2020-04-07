@@ -145,8 +145,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     )
             else:
                 self.assertEqual(
-                    first=create_or_update_response.status_code,
-                    second=204,
+                    first=bool(create_or_update_response),
+                    second=True,
                 )
 
     @parameterized.expand([
@@ -210,8 +210,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     )
             else:
                 self.assertEqual(
-                    first=create_or_update_response.status_code,
-                    second=204,
+                    first=bool(create_or_update_response),
+                    second=True,
                 )
 
     @parameterized.expand([
@@ -342,8 +342,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             else:
                 self.assertEqual(
-                    first=update_entity_response.status_code,
-                    second=204,
+                    first=bool(update_entity_response),
+                    second=True,
                 )
 
     @parameterized.expand([
@@ -381,8 +381,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             logging.debug('update_entity_response: %s' % delete_entity_response)
             self.assertEqual(
-                first=delete_entity_response.status_code,
-                second=204,
+                first=bool(delete_entity_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -419,8 +419,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             logging.debug('update_entity_response: %s' % delete_entity_response)
             self.assertEqual(
-                first=delete_entity_response.status_code,
-                second=204,
+                first=bool(delete_entity_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -549,8 +549,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             logging.debug('merge_entities_response: %s' % merge_entities_response)
             self.assertEqual(
-                first=merge_entities_response.status_code,
-                second=204,
+                first=bool(merge_entities_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -718,8 +718,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             else:
                 self.assertEqual(
-                    first=update_entity_response.status_code,
-                    second=204,
+                    first=bool(update_entity_response),
+                    second=True,
                 )
 
     @parameterized.expand([
@@ -814,8 +814,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             logging.debug('update_entity_response: %s' % delete_entity_response)
             self.assertEqual(
-                first=delete_entity_response.status_code,
-                second=204,
+                first=bool(delete_entity_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -927,8 +927,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             else:
                 self.assertEqual(
-                    first=create_or_update_response.status_code,
-                    second=204,
+                    first=bool(create_or_update_response),
+                    second=True,
                 )
 
     @parameterized.expand([
@@ -1023,8 +1023,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             else:
                 self.assertEqual(
-                    first=update_response.status_code,
-                    second=204,
+                    first=bool(update_response),
+                    second=True,
                 )
             read_group_response = self.client.secrets.identity.read_group(
                 group_id=group_id,
@@ -1146,8 +1146,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                 )
             logging.debug('update_response: %s' % update_response)
             self.assertEqual(
-                first=update_response.status_code,
-                second=204,
+                first=bool(update_response),
+                second=True,
             )
 
     @parameterized.expand([
@@ -1237,21 +1237,21 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             logging.debug('create_or_update_response: %s' % create_or_update_response)
-            # if not create_first:
-            self.assertIn(
-                member='id',
-                container=create_or_update_response['data'],
-            )
-            if alias_id is not None:
-                self.assertEqual(
-                    first=alias_id,
-                    second=create_or_update_response['data']['id'],
+            if 'data' in create_or_update_response:
+                self.assertIn(
+                    member='id',
+                    container=create_or_update_response['data'],
                 )
-            # else:
-            #     self.assertEqual(
-            #         first=create_or_update_response.status_code,
-            #         second=204,
-            #     )
+                if alias_id is not None:
+                    self.assertEqual(
+                        first=alias_id,
+                        second=create_or_update_response['data']['id'],
+                    )
+            else:
+                self.assertEqual(
+                    first=create_or_update_response.status_code,
+                    second=204,
+                )
 
     @parameterized.expand([
         param(
@@ -1424,7 +1424,10 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                         second=self.TEST_ALIAS_NAME,
                     )
             else:
-                self.assertIsNone(obj=lookup_entity_response)
+                self.assertEqual(
+                    first=lookup_entity_response.status_code,
+                    second=204,
+                )
 
     @parameterized.expand([
         param(
@@ -1508,4 +1511,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                         second=self.TEST_GROUP_ALIAS_NAME,
                     )
             else:
-                self.assertIsNone(obj=lookup_group_response)
+                self.assertEqual(
+                    first=lookup_group_response.status_code,
+                    second=204,
+                )

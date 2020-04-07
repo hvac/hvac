@@ -67,7 +67,7 @@ class Gcp(VaultApiBase):
         response = self._adapter.get(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Delete all GCP configuration data. This operation is idempotent.
@@ -334,7 +334,7 @@ class Gcp(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all the roles that are registered with the plugin.
@@ -352,7 +352,7 @@ class Gcp(VaultApiBase):
         response = self._adapter.list(
             url=api_path,
         )
-        return response.json().get('data')
+        return response.get('data')
 
     def delete_role(self, role, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously registered role.
@@ -408,9 +408,8 @@ class Gcp(VaultApiBase):
             'jwt': jwt,
         }
         api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
-        response = self._adapter.login(
+        return self._adapter.login(
             url=api_path,
             use_token=use_token,
             json=params,
         )
-        return response

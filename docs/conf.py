@@ -12,13 +12,13 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = u'hvac'
-copyright = u'2018-2019, Ian Unruh, Jeffrey Hogan'
+copyright = u'2018-2020, Ian Unruh, Jeffrey Hogan'
 author = u'Ian Unruh, Jeffrey Hogan'
 
 # The short X.Y version
-version = '0.10.0'
+version = '0.10.1'
 # The full version, including alpha/beta/rc tags
-release = '0.10.0'
+release = '0.10.1'
 
 
 # -- General configuration ---------------------------------------------------

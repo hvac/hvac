@@ -13,7 +13,6 @@ class Leader(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/leader'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()

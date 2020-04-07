@@ -86,12 +86,16 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
             method=method,
         )
         logging.debug('read_status_response: %s' % read_status_response)
-        if method == 'HEAD':
+        if expected_status_code == 200:
+            self.assertTrue(read_status_response)
+        else:
             self.assertEqual(
                 first=read_status_response.status_code,
                 second=expected_status_code,
             )
-        else:
+        if method != 'HEAD':
+            if not isinstance(read_status_response, dict):
+                read_status_response = read_status_response.json()
             self.assertTrue(
                 expr=read_status_response['initialized']
             )

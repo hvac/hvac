@@ -3,7 +3,7 @@ from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
 
-from hvac.adapters import Request
+from hvac.adapters import JSONAdapter
 from hvac.api.auth_methods import Ldap
 from hvac.api.auth_methods.ldap import DEFAULT_MOUNT_POINT
 
@@ -25,7 +25,7 @@ class TestLdap(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.configure(
             user_dn='dc=users,cn=hvac,cn=network',
             group_dn='ou=groups,cn=hvac,cn=network',
@@ -81,7 +81,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.read_configuration(
             mount_point=mount_point,
         )
@@ -107,7 +107,7 @@ class TestLdap(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.create_or_update_group(
             name=group_name,
             mount_point=mount_point,
@@ -145,7 +145,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.list_groups(
             mount_point=mount_point,
         )
@@ -184,7 +184,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.read_group(
             name=group_name,
             mount_point=mount_point,
@@ -211,7 +211,7 @@ class TestLdap(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.delete_group(
             name=group_name,
             mount_point=mount_point,
@@ -238,7 +238,7 @@ class TestLdap(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.create_or_update_user(
             username=username,
             mount_point=mount_point,
@@ -276,7 +276,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.list_users(
             mount_point=mount_point,
         )
@@ -316,7 +316,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.read_user(
             mount_point=mount_point,
             username=username,
@@ -343,7 +343,7 @@ class TestLdap(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.delete_user(
             username=username,
             mount_point=mount_point,
@@ -392,7 +392,7 @@ class TestLdap(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        ldap = Ldap(adapter=Request())
+        ldap = Ldap(adapter=JSONAdapter())
         response = ldap.login(
             mount_point=mount_point,
             username=username,

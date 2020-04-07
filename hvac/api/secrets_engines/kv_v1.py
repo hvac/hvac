@@ -28,10 +28,9 @@ class KvV1(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def list_secrets(self, path, mount_point=DEFAULT_MOUNT_POINT):
         """Return a list of key names at the specified location.
@@ -52,10 +51,9 @@ class KvV1(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/{path}', mount_point=mount_point, path=path)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_secret(self, path, secret, method=None, mount_point=DEFAULT_MOUNT_POINT):
         """Store a secret at the specified location.

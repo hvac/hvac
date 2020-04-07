@@ -72,10 +72,9 @@ class ActiveDirectory(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def create_or_update_role(self, name, service_account_name=None, ttl=None, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the ad role definition.
@@ -119,23 +118,20 @@ class ActiveDirectory(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
-
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint lists all existing roles in the secrets engine.
         :return: The response of the request.
         :rtype: requests.Response
         """
-
         api_path = utils.format_url("/v1/{}/roles", mount_point)
         return self._adapter.list(
             url=api_path,
-        ).json()
+        )
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes a ad role with the given name.

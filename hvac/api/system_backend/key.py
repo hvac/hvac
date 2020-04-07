@@ -14,10 +14,9 @@ class Key(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/generate-root/attempt'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def start_root_token_generation(self, otp=None, pgp_key=None):
         """Initialize a new root generation attempt.
@@ -46,11 +45,10 @@ class Key(SystemBackendMixin):
             params['pgp_key'] = pgp_key
 
         api_path = '/v1/sys/generate-root/attempt'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params
         )
-        return response.json()
 
     def generate_root(self, key, nonce):
         """Enter a single master key share to progress the root generation attempt.
@@ -74,11 +72,10 @@ class Key(SystemBackendMixin):
             'nonce': nonce,
         }
         api_path = '/v1/sys/generate-root/update'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def cancel_root_generation(self):
         """Cancel any in-progress root generation attempt.
@@ -92,10 +89,9 @@ class Key(SystemBackendMixin):
         :rtype: request.Response
         """
         api_path = '/v1/sys/generate-root/attempt'
-        response = self._adapter.delete(
+        return self._adapter.delete(
             url=api_path,
         )
-        return response
 
     def get_encryption_key_status(self):
         """Read information about the current encryption key used by Vault.
@@ -107,10 +103,9 @@ class Key(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/key-status'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def rotate_encryption_key(self):
         """Trigger a rotation of the backend encryption key.
@@ -128,10 +123,9 @@ class Key(SystemBackendMixin):
         :rtype: requests.Response
         """
         api_path = '/v1/sys/rotate'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
         )
-        return response
 
     def read_rekey_progress(self, recovery_key=False):
         """Read the configuration and progress of the current rekey attempt.
@@ -148,10 +142,9 @@ class Key(SystemBackendMixin):
         api_path = '/v1/sys/rekey/init'
         if recovery_key:
             api_path = '/v1/sys/rekey-recovery-key/init'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None, backup=False, require_verification=False, recovery_key=False):
         """Initializes a new rekey attempt.
@@ -205,12 +198,10 @@ class Key(SystemBackendMixin):
         api_path = '/v1/sys/rekey/init'
         if recovery_key:
             api_path = '/v1/sys/rekey-recovery-key/init'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-
-        return response.json()
 
     def cancel_rekey(self, recovery_key=False):
         """Cancel any in-progress rekey.
@@ -233,10 +224,9 @@ class Key(SystemBackendMixin):
         api_path = '/v1/sys/rekey/init'
         if recovery_key:
             api_path = '/v1/sys/rekey-recovery-key/init'
-        response = self._adapter.delete(
+        return self._adapter.delete(
             url=api_path,
         )
-        return response
 
     def rekey(self, key, nonce=None, recovery_key=False):
         """Enter a single recovery key share to progress the rekey of the Vault.
@@ -268,11 +258,10 @@ class Key(SystemBackendMixin):
         api_path = '/v1/sys/rekey/update'
         if recovery_key:
             api_path = '/v1/sys/rekey-recovery-key/update'
-        response = self._adapter.put(
+        return self._adapter.put(
             url=api_path,
             json=params,
         )
-        return response.json()
 
     def rekey_multi(self, keys, nonce=None, recovery_key=False):
         """Enter multiple recovery key shares to progress the rekey of the Vault.
@@ -319,7 +308,6 @@ class Key(SystemBackendMixin):
         api_path = '/v1/sys/rekey/backup'
         if recovery_key:
             api_path = '/v1/sys/rekey-recovery-key/backup'
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()

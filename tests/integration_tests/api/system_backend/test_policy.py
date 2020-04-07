@@ -43,8 +43,8 @@ class TestPolicy(HvacIntegrationTestCase, TestCase):
         )
         logging.debug('create_policy_response: %s' % create_policy_response)
         self.assertEqual(
-            first=create_policy_response.status_code,
-            second=204,
+            first=bool(create_policy_response),
+            second=True,
         )
 
         read_policy_response = self.client.sys.read_policy(
