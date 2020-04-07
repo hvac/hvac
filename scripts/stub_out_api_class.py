@@ -29,7 +29,7 @@ class {{ class_name }}(VaultApiBase):
         {% if method_details.routes|length <= 1 %}
         Supported methods:
             {%- for route in method_details.routes %}
-            {{ route.method }}: {{ route.path }}. Produces: {{ route.response }}
+            {{ route.method }}: {{ route.path }}.
             {%- endfor %}
         {% endif %}
         {% for param_name, param_details in method_details.params.items() %}
@@ -39,7 +39,7 @@ class {{ class_name }}(VaultApiBase):
         {%- if method_details.routes|length > 1 %}
         :param method: Supported methods:
             {%- for route in method_details.routes %}
-            {{ route.method }}: {{ route.path }}. Produces: {{ route.response }}
+            {{ route.method }}: {{ route.path }}.
             {%- endfor %}
         :type method: str | unicode
         {%- endif %}
@@ -194,9 +194,9 @@ Enabling the Auth Method
 
 def main():
     urls = {
-        'Okta': {
-            'docs_url': 'https://www.vaultproject.io/api/auth/okta/index.html',
-            'default_mount_point': 'okta',
+        'Transform': {
+            'docs_url': 'http://localhost:3000/api-docs/secret/transform',
+            'default_mount_point': 'transform',
         },
         # 'Azure': {
         #     'docs_url': 'https://www.vaultproject.io/api/secret/azure/index.html',
@@ -242,18 +242,23 @@ def main():
         methods = OrderedDict()
         inner_div = soup.find('div', id='inner')
         current_method_index = 1
-        class_docstring = ' '.join(inner_div.find('h1').text.strip().split(' ')[2:])
+        class_docstring = ' '.join(inner_div.find('h1').text.strip().split(' '))
+        print(f'class_docstring: {class_docstring}')
+        print(f'inner_div.find_all("h2"): {inner_div.find_all("h2")}')
         for method_heading in inner_div.find_all('h2'):
-            if method_heading.has_attr('class'):
-                continue
+            # if method_heading.has_attr('class'):
+            #     continue
             # load routes
             route_specs_table = method_heading.find_next_sibling('table')
             if route_specs_table is None:
                 print('No route found for %s' % method_heading)
                 continue
-            original_id = method_heading['id']
+            anchors = method_heading.find_all("a")
+            # breakpoint()
+            original_id = anchors[0]['href']
 
             name = original_id.replace('-', '_')
+            name = name.replace('#', '')
             pattern = re.compile(re.escape(class_name), re.IGNORECASE)
             name = pattern.sub('', name)
             pattern = re.compile(re.escape('method'), re.IGNORECASE)
@@ -274,12 +279,12 @@ def main():
             #     print('%s: %s' % (i, current_tag.next_sibling))
             # get docs / text about method
             methods[name]['docstring'].append(method_heading.find_next_sibling('p').text)
-
+            print(f'methods: {methods}')
             table_body = route_specs_table.find('tbody')
             rows = table_body.find_all('tr')
             for row in rows:
                 cells = row.find_all('td')
-                # print(details['default_mount_point'], cells[1].text.strip())
+                print(details['default_mount_point'], cells[1].text.strip())
                 path = cells[1].text.strip()
                 path = path.replace(details['default_mount_point'], '{mount_point}')
                 if ':path' in path:
@@ -292,7 +297,8 @@ def main():
                 methods[name]['routes'].append({
                     'method': cells[0].text.strip(),
                     'path': path,
-                    'response': cells[2].text.strip(),
+                    'response': '',
+                    # 'response': cells[2].text.strip(),
                 })
 
             # now get params
