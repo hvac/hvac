@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.10.1 (April 7th, 2020)
+
+### 💥 Breaking Changes
+
+- Make returned responses more consistent. GH-537
+
+*Note*: [GH-537](https://github.com/hvac/hvac/pull/537) changes some methods' return types from None to a request.Response
+instance. For instance the `client.secrets.identity.lookup_entity` now returns a Response[204] (truthy) value instead of
+None (falsy) when the lookup returns no results.
+This change was made to simplify maintenance of response parsing within the hvac code base.
+
+### 🚀 Features
+- Add support for Transform secrets engine. GH-569
+
+### 🐛 Bug Fixes
+
+- Fix "Exception: member entities can't be set manually for external groups". GH-558
+
+Thanks to @jeffwecan, @llamasoft and @msuszko for their lovely contributions.
+
 ## 0.10.0 (February 26th, 2020)
 
 ### 🚀 Features
