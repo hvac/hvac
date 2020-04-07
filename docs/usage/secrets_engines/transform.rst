@@ -15,6 +15,8 @@ Transform Secrets Engine
 Encode/Decode Example
 ---------------------
 
+:py:meth:`hvac.api.secrets_engines.Transform.encode`
+:py:meth:`hvac.api.secrets_engines.Transform.decode`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -65,7 +67,7 @@ Encode/Decode Example
 Create/Update Role
 ------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.create_or_update_role`
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_role`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -83,7 +85,7 @@ Create/Update Role
 Read Role
 ---------
 
-:py:meth:`hvac.api.auth_methods.Transform.read_role`
+:py:meth:`hvac.api.secrets_engines.Transform.read_role`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -113,7 +115,7 @@ Read Role
 List Roles
 ----------
 
-:py:meth:`hvac.api.auth_methods.Transform.list_roles`
+:py:meth:`hvac.api.secrets_engines.Transform.list_roles`
 
 
 .. testcode:: transform
@@ -140,7 +142,7 @@ List Roles
 Delete Role
 -----------
 
-:py:meth:`hvac.api.auth_methods.Transform.delete_role`
+:py:meth:`hvac.api.secrets_engines.Transform.delete_role`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -166,7 +168,7 @@ Delete Role
 Create/Update Transformation
 ----------------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.create_or_update_transformation`
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_transformation`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -189,7 +191,7 @@ Create/Update Transformation
 Read Transformation
 -------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.read_transformation`
+:py:meth:`hvac.api.secrets_engines.Transform.read_transformation`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -223,7 +225,7 @@ Read Transformation
 List Transformations
 --------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.list_transformations`
+:py:meth:`hvac.api.secrets_engines.Transform.list_transformations`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -254,7 +256,7 @@ List Transformations
 Delete Transformation
 ---------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.delete_transformation`
+:py:meth:`hvac.api.secrets_engines.Transform.delete_transformation`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -284,7 +286,7 @@ Delete Transformation
 Create/Update Template
 ----------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.create_or_update_template`
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_template`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -303,7 +305,7 @@ Create/Update Template
 Read Template
 -------------
 
-:py:meth:`hvac.api.auth_methods.Transform.read_template`
+:py:meth:`hvac.api.secrets_engines.Transform.read_template`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -333,7 +335,7 @@ Read Template
 List Templates
 --------------
 
-:py:meth:`hvac.api.auth_methods.Transform.list_templates`
+:py:meth:`hvac.api.secrets_engines.Transform.list_templates`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -360,7 +362,7 @@ List Templates
 Delete Template
 -------------------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.delete_template`
+:py:meth:`hvac.api.secrets_engines.Transform.delete_template`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -384,7 +386,7 @@ Delete Template
 Create/Update Alphabet
 ----------------------
 
-:py:meth:`hvac.api.auth_methods.Transform.create_or_update_alphabet`
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_alphabet`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -402,7 +404,7 @@ Create/Update Alphabet
 Read Alphabet
 -------------
 
-:py:meth:`hvac.api.auth_methods.Transform.read_alphabet`
+:py:meth:`hvac.api.secrets_engines.Transform.read_alphabet`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -431,7 +433,7 @@ Read Alphabet
 List Alphabets
 --------------
 
-:py:meth:`hvac.api.auth_methods.Transform.list_alphabets`
+:py:meth:`hvac.api.secrets_engines.Transform.list_alphabets`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
@@ -457,7 +459,7 @@ List Alphabets
 Delete Alphabet
 ---------------
 
-:py:meth:`hvac.api.auth_methods.Transform.delete_alphabet`
+:py:meth:`hvac.api.secrets_engines.Transform.delete_alphabet`
 
 .. testcode:: transform
     :skipif: test_utils.vault_version_lt('1.4.0') or not test_utils.is_enterprise()
