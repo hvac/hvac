@@ -101,7 +101,6 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         expected_config = {
             'kubernetes_host': 'https://192.168.99.100:8443',
             'kubernetes_ca_cert': '-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----',
-            'issuer': 'stanley',
         }
         if write_config_first:
             self.client.auth.kubernetes.configure(
