@@ -14,7 +14,7 @@ class Kubernetes(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/kubernetes/index.html
     """
     def configure(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None,
-                  mount_point=DEFAULT_MOUNT_POINT):
+                  issuer=None, mount_point=DEFAULT_MOUNT_POINT):
         """Configure the connection parameters for Kubernetes.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -35,6 +35,8 @@ class Kubernetes(VaultApiBase):
             Kubernetes service account JWTs. If a certificate is given, its public key will be extracted. Not every
             installation of Kubernetes exposes these keys.
         :type pem_keys: list
+        :param issuer: Optional JWT issuer.
+        :type token_reviewer_jwt: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the configure_method request.
@@ -59,6 +61,7 @@ class Kubernetes(VaultApiBase):
                 'kubernetes_ca_cert': kubernetes_ca_cert,
                 'token_reviewer_jwt': token_reviewer_jwt,
                 'pem_keys': pem_keys,
+                'issuer': issuer,
             })
         )
         api_path = utils.format_url(
