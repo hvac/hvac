@@ -20,6 +20,7 @@ the latest `vault` binary is available in your `PATH`.
 
 1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `tests/scripts/install-vault.sh`. Note: by default this script installs the OSS version of Vault. An enterprise trial version of the Vault binary is available for testing (but has an explicitly limited runtime). To run integration test cases requiring enterprise Vault, you can invoke the installation script with: `install-vault.sh <desired version> 'enterprise'`
 2. Install requirements
+
 ```
 cd hvac
 pip install -r requirements.txt
@@ -63,15 +64,18 @@ Due to the close connection between this module and HashiCorp Vault versions, br
 ## Creating / Publishing Releases
 
 - [ ] Checkout the `develop` branch:
+
   ```
   git checkout develop
   git pull
   ```
 - [ ] Update the version number using [bumpversion](https://github.com/peritus/bumpversion). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed as needed. This will also add an appropriate git commit for the new version.
+
   ```
   bumpversion --no-tag {patch|minor|major}
   ```
 - [ ] Pull up the current draft [hvac release](https://github.com/hvac/hvac/releases/) and use the [release-drafter](https://github.com/toolmantim/release-drafter) generated release body to update [CHANGELOG.md](CHANGELOG.md). Then commit the changes:
+
   ```
   git commit CHANGELOG.md -m "Changelog updates for v$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)"
   ```
