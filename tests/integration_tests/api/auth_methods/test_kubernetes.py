@@ -33,6 +33,10 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
 
         ),
         param(
+            'issuer test',
+            issuer='bob'
+        ),
+        param(
             'set invalid kubernetes_ca_cert',
             kubernetes_ca_cert='ca_cert',
             raises=exceptions.ParamValidationError,
@@ -49,12 +53,13 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             'set invalid token_reviewer_jwt',
             kubernetes_ca_cert='-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----',
             token_reviewer_jwt='reviewer_jwt',
+            issuer='bob',
             raises=exceptions.InternalServerError,
             exception_message='* not a compact JWS'
         )
     ])
     def test_configure(self, label, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None,
-                       raises=None, exception_message=''):
+                       issuer=None, raises=None, exception_message=''):
         kubernetes_host = 'https://192.168.99.100:8443'
         if raises:
             with self.assertRaises(raises) as cm:
@@ -73,7 +78,8 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             configure_response = self.client.auth.kubernetes.configure(
                 kubernetes_host=kubernetes_host,
                 kubernetes_ca_cert='-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----',
-                mount_point=self.TEST_MOUNT_POINT
+                mount_point=self.TEST_MOUNT_POINT,
+                issuer="bob"
             )
             logging.debug('configure_response: %s' % configure_response)
             self.assertEqual(
