@@ -2,7 +2,7 @@
 
 Feel free to open issues and/or pull requests with additional features or improvements! For general questions about contributing to hvac that don't fit in the scope of a GitHub issue, and for any folks are interested in becoming a maintainer of hvac, please feel free to join our gitter chat room for discussions at: [gitter.im/hvac/community](https://gitter.im/hvac/community).
 
-## Typical Devevelopment Environment Setup
+## Typical Development Environment Setup
 
 ```
 virtualenv hvac-env
@@ -69,7 +69,7 @@ Due to the close connection between this module and HashiCorp Vault versions, br
   git checkout develop
   git pull
   ```
-- [ ] Update the version number using [bumpversion](https://github.com/peritus/bumpversion). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed as needed. This will also add an appropriate git commit for the new version.
+- [ ] Update the version number using [bumpversion](https://github.com/peritus/bumpversion). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed. This will also add an appropriate git commit for the new version.
 
   ```
   bumpversion --no-tag {patch|minor|major}
