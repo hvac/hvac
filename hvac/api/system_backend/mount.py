@@ -33,7 +33,7 @@ class Mount(SystemBackendMixin):
 
         :param backend_type: The name of the backend type, such as "github" or "token".
         :type backend_type: str | unicode
-        :param path: The path to mount the method on. If not provided, defaults to the value of the "method_type"
+        :param path: The path to mount the method on. If not provided, defaults to the value of the "backend_type"
             argument.
         :type path: str | unicode
         :param description: A human-friendly description of the mount.
