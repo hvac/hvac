@@ -1335,7 +1335,7 @@ class Client(object):
         """
         return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
-    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, wrap_ttl=None, mount_point='approle'):
+    def create_role_secret_id(self, role_name, meta=None, cidr_list=None, token_bound_cidrs=None, wrap_ttl=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id
 
         :param role_name:
@@ -1344,6 +1344,8 @@ class Client(object):
         :type meta:
         :param cidr_list:
         :type cidr_list:
+        :param token_bound_cidrs:
+        :type token_bound_cidrs:
         :param wrap_ttl:
         :type wrap_ttl:
         :param mount_point:
@@ -1358,6 +1360,8 @@ class Client(object):
             params['metadata'] = json.dumps(meta)
         if cidr_list is not None:
             params['cidr_list'] = cidr_list
+        if token_bound_cidrs is not None:
+            params['token_bound_cidrs'] = token_bound_cidrs
         return self._adapter.post(url, json=params, wrap_ttl=wrap_ttl)
 
     def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
