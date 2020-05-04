@@ -301,7 +301,13 @@ class RawAdapter(Adapter):
                     pass
             if errors is None:
                 text = response.text
-            utils.raise_for_error(response.status_code, text, errors=errors)
+            utils.raise_for_error(
+                method,
+                url,
+                response.status_code,
+                text,
+                errors=errors
+            )
 
         return response
 
