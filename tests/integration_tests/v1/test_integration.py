@@ -759,7 +759,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         expected_exception_message = 'missing client token'
         actual_exception_message = str(assertRaisesContext.exception)
-        self.assertEqual(expected_exception_message, actual_exception_message)
+        self.assertIn(expected_exception_message, actual_exception_message)
 
         # Reset test state.
         self.client.token = self.manager.root_token
@@ -787,7 +787,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         expected_exception_message = 'failed to decode the PEM encoded PKCS#7 signature'
         actual_exception_message = str(assertRaisesContext.exception)
-        self.assertEqual(expected_exception_message, actual_exception_message)
+        self.assertIn(expected_exception_message, actual_exception_message)
 
         # Reset test state.
         self.client.token = self.manager.root_token
@@ -815,7 +815,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         expected_exception_message = 'missing client token'
         actual_exception_message = str(assertRaisesContext.exception)
-        self.assertEqual(expected_exception_message, actual_exception_message)
+        self.assertIn(expected_exception_message, actual_exception_message)
 
         # Reset test state.
         self.client.token = self.manager.root_token
@@ -1076,7 +1076,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         expected_exception_message = 'claim "iss" is invalid'
         actual_exception_message = str(assertRaisesContext.exception)
-        self.assertEqual(expected_exception_message, actual_exception_message)
+        self.assertIn(expected_exception_message, actual_exception_message)
 
         # Reset integration test state
         self.client.disable_auth_backend(mount_point=test_mount_point)
