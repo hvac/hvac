@@ -688,6 +688,7 @@ class Transit(VaultApiBase):
                 'context': context,
                 'prehashed': prehashed,
                 'signature_algorithm': signature_algorithm,
+                'marshaling_algorithm': marshaling_algorithm,
             })
         )
         api_path = utils.format_url(
@@ -770,6 +771,7 @@ class Transit(VaultApiBase):
                 'context': context,
                 'prehashed': prehashed,
                 'signature_algorithm': signature_algorithm,
+                'marshaling_algorithm': marshaling_algorithm,
             })
         )
         api_path = utils.format_url('/v1/{mount_point}/verify/{name}', mount_point=mount_point, name=name)
