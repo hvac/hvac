@@ -311,3 +311,89 @@ class Key(SystemBackendMixin):
         return self._adapter.get(
             url=api_path,
         )
+
+    def cancel_rekey_verify(self):
+        """Cancel any in-progress rekey verification.
+        This clears any progress made and resets the nonce. Unlike cancel_rekey, this only resets
+        the current verification operation, not the entire rekey atttempt.
+        The return value is the same as GET along with the new nonce.
+
+        Supported methods:
+            DELETE: /sys/rekey/verify. Produces: 204 (empty body)
+
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = '/v1/sys/rekey/verify'
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def rekey_verify(self, key, nonce):
+        """Enter a single new recovery key share to progress the rekey verification of the Vault.
+        If the threshold number of new recovery key shares is reached, Vault will complete the
+        rekey. Otherwise, this API must be called multiple times until that threshold is met.
+        The rekey verification nonce must be provided with each call.
+
+        Supported methods:
+            PUT: /sys/rekey/verify. Produces: 200 application/json
+
+        :param key: Specifies multiple recovery share keys.
+        :type key: str | unicode
+        :param nonce: Specifies the nonce of the rekey verify operation.
+        :type nonce: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        params = {
+            'key': key,
+            'nonce': nonce,
+        }
+
+        api_path = '/v1/sys/rekey/verify'
+        return self._adapter.put(
+            url=api_path,
+            json=params,
+        )
+
+    def rekey_verify_multi(self, keys, nonce):
+        """Enter multiple new recovery key shares to progress the rekey verification of the Vault.
+        If the threshold number of new recovery key shares is reached, Vault will complete the
+        rekey. Otherwise, this API must be called multiple times until that threshold is met.
+        The rekey verification nonce must be provided with each call.
+
+        Supported methods:
+            PUT: /sys/rekey/verify. Produces: 200 application/json
+
+        :param keys: Specifies multiple recovery share keys.
+        :type keys: list
+        :param nonce: Specifies the nonce of the rekey verify operation.
+        :type nonce: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        result = None
+
+        for key in keys:
+            result = self.rekey_verify(
+                key=key,
+                nonce=nonce,
+            )
+            if result.get('complete'):
+                break
+
+        return result
+
+    def read_rekey_verify_progress(self):
+        """Read the configuration and progress of the current rekey verify attempt.
+
+        Supported methods:
+            GET: /sys/rekey/verify. Produces: 200 application/json
+
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = '/v1/sys/rekey/verify'
+        return self._adapter.get(
+            url=api_path,
+        )
