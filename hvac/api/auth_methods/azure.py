@@ -145,7 +145,7 @@ class Azure(VaultApiBase):
         if policies is not None:
             if not (
                 isinstance(policies, str)
-                or (isinstance(policies, list) and all([isinstance(p, str) for p in policies]))
+                or (isinstance(policies, list) and all(isinstance(p, str) for p in policies))
             ):
                 error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
                 raise exceptions.ParamValidationError(error_msg.format(
