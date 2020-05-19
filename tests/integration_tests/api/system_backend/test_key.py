@@ -89,6 +89,32 @@ class TestKey(HvacIntegrationTestCase, TestCase):
         cls.manager.keys = result['keys']
         cls.manager.unseal()
 
+    def test_rekey_verify_multi(self):
+        cls = type(self)
+
+        # Start rekey process with verification required and use operator keys
+        self.assertFalse(self.client.sys.read_rekey_progress()['started'])
+        result = self.client.sys.start_rekey(require_verification=True)
+        result = self.client.sys.rekey_multi(cls.manager.keys, nonce=result['nonce'])
+        self.assertTrue(result['complete'])
+        cls.manager.keys = result['keys']
+
+        # get the initial verification nonce
+        result = self.client.sys.read_rekey_verify_progress()
+        first_nonce = result['nonce']
+
+        # now cancel the process and verify we have a new verification nonce
+        result = self.client.sys.cancel_rekey_verify()
+        second_nonce = result['nonce']
+        self.assertNotEqual(first_nonce, second_nonce)
+
+        # finally complete the verification process
+        result = self.client.sys.rekey_verify_multi(cls.manager.keys, nonce=result['nonce'])
+        self.assertTrue(result['complete'])
+
+        # now we unseal
+        cls.manager.unseal()
+
     def test_get_backed_up_keys(self):
         with self.assertRaises(exceptions.InvalidRequest) as cm:
             self.client.sys.read_backup_keys()

@@ -264,6 +264,130 @@ Examples
         nonce=nonce,
     )
 
+Read Rekey Verify Progress
+--------------------------
+
+.. automethod:: hvac.api.system_backend.Key.read_rekey_verify_progress
+   :noindex:
+
+Examples
+````````
+
+.. testsetup:: sys_key_read_rekey_verify_progress
+
+    keys = manager.keys
+    key = keys[0]
+    rekey_response = client.sys.start_rekey(require_verification=True)
+    nonce = rekey_response['nonce']
+    rekey_response = client.sys.rekey_multi(keys, nonce=nonce)
+
+.. testcode:: sys_key_read_rekey_verify_progress
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    response = client.sys.read_rekey_verify_progress()
+
+    print(
+        'Rekey verify progress is %d out of %d' % (
+            response['progress'],
+            response['t'],
+        )
+    )
+
+Example output:
+
+.. testoutput:: sys_key_read_rekey_verify_progress
+
+    Rekey verify progress is 0 out of 3
+
+
+Cancel Rekey Verify
+-------------------
+
+.. automethod:: hvac.api.system_backend.Key.cancel_rekey_verify
+   :noindex:
+
+Examples
+````````
+
+.. testsetup:: sys_key_cancel_rekey_verify
+
+    keys = manager.keys
+    key = keys[0]
+    rekey_response = client.sys.start_rekey(require_verification=True)
+    nonce = rekey_response['nonce']
+    rekey_response = client.sys.rekey_multi(keys, nonce=nonce)
+
+.. testcode:: sys_key_cancel_rekey_verify
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.cancel_rekey_verify()
+
+
+Rekey Verify
+------------
+
+.. automethod:: hvac.api.system_backend.Key.rekey_verify
+   :noindex:
+
+Examples
+````````
+
+.. testsetup:: sys_key_rekey_verify
+
+    keys = manager.keys
+    rekey_response = client.sys.start_rekey(require_verification=True)
+    nonce = rekey_response['nonce']
+    rekey_response = client.sys.rekey_multi(keys, nonce=nonce)
+    verify_nonce = rekey_response['verification_nonce']
+    manager.keys = rekey_response['keys']
+    key = manager.keys[0]
+
+.. testcode:: sys_key_rekey_verify
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.rekey_verify(
+        key,
+        nonce=verify_nonce,
+    )
+
+
+Rekey Verify Multi
+------------------
+
+.. automethod:: hvac.api.system_backend.Key.rekey_verify_multi
+   :noindex:
+
+Examples
+````````
+
+.. testsetup:: sys_key_rekey_verify_multi
+
+    keys = manager.keys
+    key = keys[0]
+    rekey_response = client.sys.start_rekey(require_verification=True)
+    nonce = rekey_response['nonce']
+    rekey_response = client.sys.rekey_multi(keys, nonce=nonce)
+    verify_nonce = rekey_response['verification_nonce']
+    manager.keys = rekey_response['keys']
+    keys = manager.keys
+
+.. testcode:: sys_key_rekey_verify_multi
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.rekey_verify_multi(
+        keys,
+        nonce=verify_nonce,
+    )
+
+
 
 Read Backup Keys
 ----------------
