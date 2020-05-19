@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.10.2 (May 19th, 2020)
+
+### 🚀 Features
+
+- Create_role_secret_id: add token_bound_cidrs parameter. GH-585
+- Add vault rekey verification methods. GH-586
+- Add request data to exception objects. GH-583
+- Add marshaling_algorithm to sign/verify params. GH-584
+- Add issuer to kubernetes configuration. GH-575
+
+### 🐛 Bug Fixes
+
+- Remove json() calls (unneeded following JSONAdapter addition) GH-589
+
+### 📚 Documentation
+
+- Fix format errors in contributing for HTML docs. GH-577
+
+Thanks to @TerryHowe, @and-semakin, @jeffwecan, @jschlyter, @jzck, @mdelaney and @scarabeusiv for their lovely contributions.
+
 ## 0.10.1 (April 7th, 2020)
 
 ### 💥 Breaking Changes
