@@ -47,10 +47,9 @@ class Userpass(VaultApiBase):
         :rtype: dict
         """
         api_path = '/v1/auth/{mount_point}/users'.format(mount_point=mount_point)
-        response = self._adapter.list(
+        return self._adapter.list(
             url=api_path,
         )
-        return response.json()
 
     def read_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -67,10 +66,9 @@ class Userpass(VaultApiBase):
         :rtype: dict
         """
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
         )
-        return response.json()
 
     def delete_user(self, username, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -87,10 +85,9 @@ class Userpass(VaultApiBase):
         :rtype: dict
         """
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
-        response = self._adapter.delete(
+        return self._adapter.delete(
             url=api_path,
         )
-        return response.json()
 
     def update_password_on_user(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
         """
@@ -133,8 +130,7 @@ class Userpass(VaultApiBase):
             'password': password,
         }
         api_path = '/v1/auth/{mount_point}/login/{username}'.format(mount_point=mount_point, username=username)
-        response = self._adapter.post(
+        return self._adapter.post(
             url=api_path,
             json=params,
         )
-        return response.json()
