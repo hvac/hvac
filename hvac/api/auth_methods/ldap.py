@@ -16,7 +16,7 @@ class Ldap(VaultApiBase):
     def configure(self, user_dn=None, group_dn=None, url=None, case_sensitive_names=None, starttls=None,
                   tls_min_version=None, tls_max_version=None, insecure_tls=None, certificate=None, bind_dn=None,
                   bind_pass=None, user_attr=None, discover_dn=None, deny_null_bind=True, upn_domain=None,
-                  group_filter=None, group_attr=None, mount_point=DEFAULT_MOUNT_POINT):
+                  group_filter=None, group_attr=None, use_token_groups=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         Configure the LDAP auth method.
 
@@ -72,6 +72,9 @@ class Ldap(VaultApiBase):
             membership. Examples: for groupfilter queries returning group objects, use: cn. For queries returning user
             objects, use: memberOf. The default is cn.
         :type group_attr: str | unicode
+        :param use_token_groups: If true, groups are resolved through Active Directory tokens. This may speed up nested
+            group membership resolution in large directories.
+        :type use_token_groups: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the configure request.
@@ -96,6 +99,7 @@ class Ldap(VaultApiBase):
             'binddn': bind_dn,
             'bindpass': bind_pass,
             'certificate': certificate,
+            'use_token_groups': use_token_groups,
         })
 
         api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
