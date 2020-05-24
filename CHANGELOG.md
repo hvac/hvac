@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.3 (May 24th, 2020)
+
+### 🚀 Features
+
+- Add Support For use_token_groups In LDAP Auth Method. GH-591
+- Add Raft System Backend Methods. GH-594
+
+Thanks to @finarfin and @jeffwecan for their lovely contributions.
+
 ## 0.10.2 (May 19th, 2020)
 
 ### 🚀 Features
