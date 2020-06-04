@@ -28,3 +28,19 @@ Example output:
 .. testoutput:: sys_leader
 
     HA status is: False
+
+Step Down
+---------
+
+.. automethod:: hvac.api.system_backend.Leader.step_down
+   :noindex:
+
+Examples
+````````
+
+.. code:: python
+
+    import hvac
+
+    client = hvac.Client(url='https://127.0.0.1:8200')
+    client.sys.step_down()
