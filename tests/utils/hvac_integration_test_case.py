@@ -153,17 +153,17 @@ class HvacIntegrationTestCase(object):
             name=test_admin_policy_name,
             policy=test_admin_policy,
         )
-        self.client.create_role(
+        self.client.auth.approle.create_or_update_approle(
             role_name=role_name,
             mount_point=path,
             token_policies=[test_admin_policy_name],
         )
-        self.client.set_role_id(
+        self.client.auth.approle.update_role_id(
             role_name=role_name,
             role_id=role_id,
             mount_point=path,
         )
-        secret_id_resp = self.client.create_role_secret_id(
+        secret_id_resp = self.client.auth.approle.generate_secret_id(
             role_name=role_name,
             mount_point=self.TEST_APPROLE_PATH,
         )
@@ -176,7 +176,7 @@ class HvacIntegrationTestCase(object):
             path=path
         )
 
-        self.client.auth_approle(
+        self.client.auth.approle.login(
             role_id=role_id,
             secret_id=secret_id,
             mount_point=path,

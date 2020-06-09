@@ -1279,6 +1279,10 @@ class Client(object):
             **kwargs
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.create_or_update_approle,
+    )
     def create_role(self, role_name, mount_point='approle', **kwargs):
         """POST /auth/<mount_point>/role/<role name>
 
@@ -1294,6 +1298,10 @@ class Client(object):
 
         return self._adapter.post('/v1/auth/{0}/role/{1}'.format(mount_point, role_name), json=kwargs)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.delete_role,
+    )
     def delete_role(self, role_name, mount_point='approle'):
         """DELETE /auth/<mount_point>/role/<role name>
 
@@ -1307,6 +1315,10 @@ class Client(object):
 
         return self._adapter.delete('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.list_roles,
+    )
     def list_roles(self, mount_point='approle'):
         """GET /auth/<mount_point>/role
 
@@ -1318,6 +1330,10 @@ class Client(object):
 
         return self._adapter.get('/v1/auth/{0}/role?list=true'.format(mount_point))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.read_role_id,
+    )
     def get_role_id(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>/role-id
 
@@ -1332,6 +1348,10 @@ class Client(object):
         url = '/v1/auth/{0}/role/{1}/role-id'.format(mount_point, role_name)
         return self._adapter.get(url)['data']['role_id']
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.update_role_id,
+    )
     def set_role_id(self, role_name, role_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/role-id
 
@@ -1351,6 +1371,10 @@ class Client(object):
         }
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.read_role,
+    )
     def get_role(self, role_name, mount_point='approle'):
         """GET /auth/<mount_point>/role/<role name>
 
@@ -1363,6 +1387,10 @@ class Client(object):
         """
         return self._adapter.get('/v1/auth/{0}/role/{1}'.format(mount_point, role_name))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.generate_secret_id,
+    )
     def create_role_secret_id(self, role_name, meta=None, cidr_list=None, token_bound_cidrs=None, wrap_ttl=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id
 
@@ -1392,6 +1420,10 @@ class Client(object):
             params['token_bound_cidrs'] = token_bound_cidrs
         return self._adapter.post(url, json=params, wrap_ttl=wrap_ttl)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.read_secret_id,
+    )
     def get_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/lookup
 
@@ -1410,6 +1442,10 @@ class Client(object):
         }
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.list_secret_id_accessors,
+    )
     def list_role_secrets(self, role_name, mount_point='approle'):
         """LIST /auth/<mount_point>/role/<role name>/secret-id
 
@@ -1426,6 +1462,10 @@ class Client(object):
         )
         return self._adapter.list(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.read_secret_id_accessor,
+    )
     def get_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/lookup
 
@@ -1442,6 +1482,10 @@ class Client(object):
         params = {'secret_id_accessor': secret_id_accessor}
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.destroy_secret_id,
+    )
     def delete_role_secret_id(self, role_name, secret_id, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id/destroy
 
@@ -1460,6 +1504,10 @@ class Client(object):
         }
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.destroy_secret_id_accessor,
+    )
     def delete_role_secret_id_accessor(self, role_name, secret_id_accessor, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/secret-id-accessor/destroy
 
@@ -1478,6 +1526,10 @@ class Client(object):
         }
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.create_custom_secret_id,
+    )
     def create_role_custom_secret_id(self, role_name, secret_id, meta=None, mount_point='approle'):
         """POST /auth/<mount_point>/role/<role name>/custom-secret-id
 
@@ -1500,6 +1552,10 @@ class Client(object):
             params['meta'] = meta
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.12.0',
+        new_method=api.auth_methods.AppRole.login,
+    )
     def auth_approle(self, role_id, secret_id=None, mount_point='approle', use_token=True):
         """POST /auth/<mount_point>/login
 
