@@ -78,6 +78,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
     def test_self_auth_token_manipulation(self):
         result = self.client.create_token(lease='1h', renewable=True)
         assert result['auth']['client_token']
+        self.client.token = result['auth']['client_token']
 
         lookup = self.client.lookup_token(result['auth']['client_token'])
         assert result['auth']['client_token'] == lookup['data']['id']
