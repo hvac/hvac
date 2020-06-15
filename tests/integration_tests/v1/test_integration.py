@@ -75,6 +75,28 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         except exceptions.InvalidRequest:
             assert True
 
+    def test_self_auth_token_manipulation(self):
+        result = self.client.create_token(lease='1h', renewable=True)
+        assert result['auth']['client_token']
+
+        lookup = self.client.lookup_token(result['auth']['client_token'])
+        assert result['auth']['client_token'] == lookup['data']['id']
+
+        renew = self.client.renew_self_token()
+        assert result['auth']['client_token'] == renew['auth']['client_token']
+
+        self.client.revoke_token(lookup['data']['id'])
+
+        try:
+            lookup = self.client.lookup_token(result['auth']['client_token'])
+            assert False
+        except exceptions.Forbidden:
+            assert True
+        except exceptions.InvalidPath:
+            assert True
+        except exceptions.InvalidRequest:
+            assert True
+
     def test_userpass_auth(self):
         if 'userpass/' in self.client.list_auth_backends()['data']:
             self.client.disable_auth_backend('userpass')
