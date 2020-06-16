@@ -208,7 +208,7 @@ def validate_list_of_strings_param(param_name, param_argument):
         param_argument = []
     if isinstance(param_argument, str):
         param_argument = param_argument.split(',')
-    if not isinstance(param_argument, list) or not all([isinstance(p, str) for p in param_argument]):
+    if not isinstance(param_argument, list) or not all(isinstance(p, str) for p in param_argument):
         error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]'
         raise exceptions.ParamValidationError(error_msg.format(
             param=param_name,

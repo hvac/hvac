@@ -16,3 +16,20 @@ class Leader(SystemBackendMixin):
         return self._adapter.get(
             url=api_path,
         )
+
+    def step_down(self):
+        """Force the node to give up active status.
+
+        If the node does not have active status, this endpoint does nothing.
+        Note that the node will sleep for ten seconds before attempting to grab
+        the active lock again, but if no standby nodes grab the active lock in
+        the interim, the same node may become the active node again. Requires a
+        token with root policy or sudo capability on the path.
+
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = '/v1/sys/step-down'
+        return self._adapter.get(
+            url=api_path,
+        )

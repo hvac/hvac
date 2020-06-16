@@ -133,7 +133,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def set_crl_configuration(self, expiry=None, disable=None, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def set_crl_configuration(self, expiry=None, disable=None, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Set CRL Configuration.
 
         Setting the duration for which the generated CRL should be marked valid.
@@ -148,6 +148,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
         params = extra_params
         params.update(
@@ -240,7 +242,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def generate_intermediate(self, type, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_intermediate(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Intermediate.
 
         Generates a new private key and a CSR for signing.
@@ -259,6 +261,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/intermediate/generate/{type}',
             mount_point=mount_point,
@@ -301,7 +305,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def generate_certificate(self, name, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_certificate(self, name, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Certificate.
 
         Generates a new set of credentials (private key and certificate) based on the role named in the endpoint.
@@ -320,6 +324,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/issue/{name}',
             mount_point=mount_point,
@@ -359,7 +365,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def create_or_update_role(self, name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(self, name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create/Update Role.
 
         Creates or updates the role definition.
@@ -376,6 +382,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rname: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/roles/{name}',
             mount_point=mount_point,
@@ -457,7 +465,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def generate_root(self, type, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_root(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Generate Root.
 
         Generates a new self-signed CA certificate and private key.
@@ -476,6 +484,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/root/generate/{type}',
             mount_point=mount_point,
@@ -512,7 +522,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def sign_intermediate(self, csr, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_intermediate(self, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Intermediate.
 
         Issue a certificate with appropriate values for acting as an intermediate CA.
@@ -531,6 +541,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url('/v1/{mount_point}/root/sign-intermediate', mount_point=mount_point)
 
         params = extra_params
@@ -567,7 +579,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def sign_certificate(self, name, csr, common_name, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_certificate(self, name, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Certificate.
 
         Signs a new certificate based upon the provided CSR and the supplied parameters.
@@ -588,6 +600,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/sign/{name}',
             mount_point=mount_point,
@@ -603,7 +617,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def sign_verbatim(self, csr, name=False, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_verbatim(self, csr, name=False, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Sign Verbatim.
 
         Signs a new certificate based upon the provided CSR.
@@ -622,6 +636,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         url_to_transform = '/v1/{mount_point}/sign-verbatim'
         if name:
             url_to_transform = url_to_transform + '/{name}'
@@ -640,7 +656,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def tidy(self, extra_params={}, mount_point=DEFAULT_MOUNT_POINT):
+    def tidy(self, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
         """Tidy.
 
         Allows tidying up the storage backend and/or CRL by removing certificates that have
@@ -656,6 +672,8 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
+        if extra_params is None:
+            extra_params = {}
         api_path = utils.format_url(
             '/v1/{mount_point}/tidy',
             mount_point=mount_point,

@@ -6,6 +6,7 @@ from base64 import b64encode
 
 from hvac import aws_utils, exceptions, adapters, utils, api
 from hvac.constants.client import DEPRECATED_PROPERTIES, DEFAULT_URL
+from hvac.utils import generate_property_deprecation_message
 
 try:
     import hcl
@@ -433,6 +434,8 @@ class Client(object):
         :type wrap_ttl:
         :return:
         :rtype:
+
+        For calls expecting to hit the renew-self endpoint please use the "renew_self_token" method instead
         """
         params = {
             'increment': increment,
@@ -442,7 +445,25 @@ class Client(object):
             params['token'] = token
             return self._adapter.post('/v1/auth/token/renew', json=params, wrap_ttl=wrap_ttl)
         else:
-            return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl)
+            generate_property_deprecation_message("1.0.0", "renew_token() without token param", "renew_self_token() without token param", "renew_self_token")
+            return self.renew_self_token(increment=increment, wrap_ttl=wrap_ttl)
+
+    def renew_self_token(self, increment=None, wrap_ttl=None):
+        """
+        POST /auth/token/renew-self
+
+        :param increment:
+        :type increment:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
+        """
+        params = {
+            'increment': increment,
+        }
+
+        return self._adapter.post('/v1/auth/token/renew-self', json=params, wrap_ttl=wrap_ttl)
 
     def create_token_role(self, role,
                           allowed_policies=None, disallowed_policies=None,

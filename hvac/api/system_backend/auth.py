@@ -172,12 +172,12 @@ class Auth(SystemBackendMixin):
         # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
         # parameters and add which parameters are set.
         optional_parameters = {
-            'default_lease_ttl': dict(),
-            'max_lease_ttl': dict(),
-            'description': dict(),
+            'default_lease_ttl': {},
+            'max_lease_ttl': {},
+            'description': {},
             'audit_non_hmac_request_keys': dict(comma_delimited_list=True),
             'audit_non_hmac_response_keys': dict(comma_delimited_list=True),
-            'listing_visibility': dict(),
+            'listing_visibility': {},
             'passthrough_request_headers': dict(comma_delimited_list=True),
         }
         params = {}
