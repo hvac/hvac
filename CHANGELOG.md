@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.4 (June 16th, 2020)
+
+### 🚀 Features
+
+- Extract "renew_self_token" from "renew_token". GH-598
+- Add convenience step_down sys backend method. GH-597
+
+### 📚 Documentation
+
+- Update AWS Auth Docs With Latest Usage . GH-599
+
+Thanks to @jeffwecan, @jm96441n and @pnijhara for their lovely contributions.
+
 ## 0.10.3 (May 24th, 2020)
 
 ### 🚀 Features
