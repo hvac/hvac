@@ -30,6 +30,6 @@ class Leader(SystemBackendMixin):
         :rtype: dict
         """
         api_path = '/v1/sys/step-down'
-        return self._adapter.get(
+        return self._adapter.put(
             url=api_path,
         )
