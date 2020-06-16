@@ -6,7 +6,7 @@ AWS
 IAM Authentication
 ------------------
 
-Source reference: :py:meth:`hvac.v1.Client.auth_aws_iam`
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.iam_login`
 
 Static Access Key Strings
 `````````````````````````
@@ -19,9 +19,9 @@ Various examples of authenticating with static access key strings:
 
     client = hvac.Client()
 
-    client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY')
-    client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', 'MY_AWS_SESSION_TOKEN')
-    client.auth_aws_iam('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', role='MY_ROLE')
+    client.auth.aws.iam_login('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY')
+    client.auth.aws.iam_login('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', 'MY_AWS_SESSION_TOKEN')
+    client.auth.aws.iam_login('MY_AWS_ACCESS_KEY_ID', 'MY_AWS_SECRET_ACCESS_KEY', role='MY_ROLE')
 
 
 Boto3 Session
@@ -38,7 +38,7 @@ Retrieving credentials from a boto3 Session object:
     credentials = session.get_credentials()
 
     client = hvac.Client()
-    client.auth_aws_iam(credentials.access_key, credentials.secret_key, credentials.token)
+    client.auth.aws.iam_login(credentials.access_key, credentials.secret_key, credentials.token)
 
 EC2 Metadata Service
 ````````````````````
@@ -76,7 +76,7 @@ Retrieving static instance role credentials within an EC2 instnace using the EC2
     credentials = load_aws_ec2_role_iam_credentials('some-instance-role')
 
     client = hvac.Client()
-    client.auth_aws_iam(credentials['AccessKeyId'], credentials['SecretAccessKey'], credentials['Token'])
+    client.auth.aws.iam_login(credentials['AccessKeyId'], credentials['SecretAccessKey'], credentials['Token'])
 
 Lambda and/or EC2 Instance
 ``````````````````````````
@@ -99,12 +99,12 @@ Lambda and/or EC2 Instance
     access_key_id, secret_access_key = infer_credentials_from_iam_role('some-role')
 
     client = hvac.Client()
-    client.auth_aws_iam(access_key_id, secret_access_key)
+    client.auth.aws.iam_login(access_key_id, secret_access_key, session_token)
 
 Caveats For Non-Default AWS Regions
 ```````````````````````````````````
 
-I.e., calling :py:meth:`hvac.v1.Client.auth_aws_iam` with a `region` argument other than its default of "**us-east-1**". For additional background / context on this matter, see the comments at `hvac#251`_ and/or `vault-ruby#161`_.
+I.e., calling :py:meth:`hvac.api.auth_methods.Aws.iam_login` with a `region` argument other than its default of "**us-east-1**". For additional background / context on this matter, see the comments at `hvac#251`_ and/or `vault-ruby#161`_.
 
 The following code snippets are for authenticating hosts in the **us-west-1** region:
 
@@ -123,7 +123,7 @@ The following code snippets are for authenticating hosts in the **us-west-1** re
 
     # One-time setup of the credentials / configuration for the Vault server to use.
     # Note the explicit region subdomain bit included in the endpoint argument.
-    client.create_vault_ec2_client_configuration(
+    client.auth.aws.configure(
         access_key='SOME_ACCESS_KEY_FOR_VAULTS_USE',
         secret_key='SOME_ACCESS_KEY_FOR_VAULTS_USE',
         endpoint='https://sts.us-west-1.amazonaws.com',
@@ -131,21 +131,21 @@ The following code snippets are for authenticating hosts in the **us-west-1** re
 
     session = boto3.Session()
     creds = session.get_credentials().get_frozen_credentials()
-    client.auth_aws_iam(
-        creds.access_key,
-        creds.secret_key,
-        creds.token,
-        region="us-west-1",
+    client.auth.aws.iam_login((
+        access_key=creds.access_key,
+        secret_key=creds.secret_key,
+        session_token=creds.token,
         header_value=VAULT_HEADER_VALUE,
         role='some-role,
         use_token=True,
+        region='us-west-1',
     )
 
 
 EC2 Authentication
 ------------------
 
-Source reference: :py:meth:`hvac.v1.Client.auth_ec2`
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.ec2_login`
 
 EC2 Metadata Service
 ````````````````````
@@ -246,7 +246,7 @@ Authentication using EC2 instance role credentials and the EC2 metadata service
             logger.debug('Attempting to retrieve information from disk.')
             nonce = load_aws_ec2_nonce_from_disk()
 
-        auth_ec2_resp = vault_client.auth_ec2(
+        auth_ec2_resp = vault_client.auth.aws.ec2_login(
             pkcs7=pkcs7,
             nonce=nonce,
             role=role,
