@@ -300,5 +300,219 @@ Authentication using EC2 instance role credentials and the EC2 metadata service
 
     authenticated_vault_client = get_vault_client()
 
+Methods
+-------
+
+Configure
+`````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.configure`
+
+
+Read Config
+```````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_config`
+
+
+Delete Config
+`````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_config`
+
+
+Configure Identity Integration
+``````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.configure_identity_integration`
+
+
+Read Identity Integration
+`````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_identity_integration`
+
+
+Create Certificate Configuration
+````````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.create_certificate_configuration`
+
+
+Read Certificate Configuration
+``````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_certificate_configuration`
+
+
+Delete Certificate Configuration
+````````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_certificate_configuration`
+
+
+List Certificate Configurations
+```````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.list_certificate_configurations`
+
+
+Create Sts Role
+```````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.create_sts_role`
+
+
+Read Sts Role
+`````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_sts_role`
+
+
+List Sts Roles
+``````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.list_sts_roles`
+
+
+Delete Sts Role
+```````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_sts_role`
+
+
+Configure Identity Whitelist Tidy
+`````````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.configure_identity_whitelist_tidy`
+
+
+Read Identity Whitelist Tidy
+````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_identity_whitelist_tidy`
+
+
+Delete Identity Whitelist Tidy
+``````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_identity_whitelist_tidy`
+
+
+Configure Role Tag Blacklist Tidy
+`````````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.configure_role_tag_blacklist_tidy`
+
+
+Read Role Tag Blacklist Tidy
+````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_role_tag_blacklist_tidy`
+
+
+Delete Role Tag Blacklist Tidy
+``````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_role_tag_blacklist_tidy`
+
+
+Create Role
+```````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.create_role`
+
+
+Read Role
+`````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_role`
+
+
+List Roles
+``````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.list_roles`
+
+
+Delete Role
+```````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_role`
+
+
+Create Role Tags
+````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.create_role_tags`
+
+
+IAM Login
+`````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.iam_login`
+
+
+EC2 Login
+`````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.ec2_login`
+
+
+Place Role Tags In Blacklist
+````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.place_role_tags_in_blacklist`
+
+
+Read Role Tag Blacklist
+```````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_role_tag_blacklist`
+
+
+List Blacklist Tags
+```````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.list_blacklist_tags`
+
+
+Delete Blacklist Tags
+`````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_blacklist_tags`
+
+
+Tidy Blacklist Tags
+```````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.tidy_blacklist_tags`
+
+
+Read Identity Whitelist
+```````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.read_identity_whitelist`
+
+
+List Identity Whitelist
+```````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.list_identity_whitelist`
+
+
+Delete Identity Whitelist Entries
+`````````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.delete_identity_whitelist_entries`
+
+
+Tidy Identity Whitelist Entries
+```````````````````````````````
+
+Source reference: :py:meth:`hvac.api.auth_methods.Aws.tidy_identity_whitelist_entries`
+
+
+
 .. _hvac#251: https://github.com/hvac/hvac/issues/251
 .. _vault-ruby#161: https://github.com/hashicorp/vault-ruby/pull/161#issuecomment-355723269
