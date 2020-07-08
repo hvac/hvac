@@ -179,7 +179,7 @@ class Mount(SystemBackendMixin):
             'audit_non_hmac_response_keys',
             'listing_visibility',
             'passthrough_request_headers',
-            'force_no_cache'
+            'force_no_cache',
             'options',
         ]
         params = {}
