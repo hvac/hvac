@@ -45,6 +45,7 @@ class Transit(VaultApiBase):
             * **ed25519**: ED25519 (asymmetric, supports derivation).
             * **ecdsa-p256**: ECDSA using the P-256 elliptic curve (asymmetric)
             * **ecdsa-p384**: ECDSA using the P-384 elliptic curve (asymmetric)
+            * **ecdsa-p521**: ECDSA using the P-521 elliptic curve (asymmetric)
             * **rsa-2048**: RSA with bit size of 2048 (asymmetric)
             * **rsa-3072**: RSA with bit size of 3072 (asymmetric)
             * **rsa-4096**: RSA with bit size of 4096 (asymmetric)
