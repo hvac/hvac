@@ -111,6 +111,8 @@ class Transit(VaultApiBase):
 
         Only the key names are returned (not the actual keys themselves).
 
+        An exception is thrown if there are no keys.
+
         Supported methods:
             LIST: /{mount_point}/keys. Produces: 200 application/json
 
