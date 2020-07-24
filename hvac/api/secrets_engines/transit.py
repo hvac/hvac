@@ -95,7 +95,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the read_key request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = utils.format_url(
             '/v1/{mount_point}/keys/{name}',
@@ -107,9 +107,11 @@ class Transit(VaultApiBase):
         )
 
     def list_keys(self, mount_point=DEFAULT_MOUNT_POINT):
-        """List keys.
+        """List keys (if there are any).
 
         Only the key names are returned (not the actual keys themselves).
+
+        An exception is thrown if there are no keys.
 
         Supported methods:
             LIST: /{mount_point}/keys. Produces: 200 application/json
@@ -117,7 +119,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = utils.format_url('/v1/{mount_point}/keys', mount_point=mount_point)
         return self._adapter.list(
@@ -253,7 +255,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if key_type not in transit_constants.ALLOWED_EXPORT_KEY_TYPES:
             error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
@@ -317,7 +319,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         params = {
             'plaintext': plaintext,
@@ -366,7 +368,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         params = {
             'ciphertext': ciphertext,
@@ -418,7 +420,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         params = {
             'ciphertext': ciphertext,
@@ -472,7 +474,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if key_type not in transit_constants.ALLOWED_DATA_KEY_TYPES:
             error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
@@ -516,7 +518,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         params = utils.remove_nones({
             'bytes': n_bytes,
@@ -544,7 +546,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if algorithm is not None and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
             error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
@@ -596,7 +598,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if algorithm is not None and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
             error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
@@ -661,7 +663,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if hash_algorithm is not None and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
             error_msg = 'invalid hash_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
@@ -739,7 +741,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         if (signature is None and hmac is None) or (signature is not None and hmac is not None):
             error_msg = 'either "signature" or "hmac" argument (but not both) must be provided to verify signature'
@@ -797,7 +799,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         api_path = utils.format_url(
             '/v1/{mount_point}/backup/{name}',
@@ -864,7 +866,7 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
-        :rtype: requests.Response
+        :rtype: dict
         """
         params = {
             'min_available_version': min_version,
