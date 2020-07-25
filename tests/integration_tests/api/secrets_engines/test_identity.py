@@ -23,21 +23,22 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestIdentity, self).setUp()
-        self.client.sys.enable_auth_method(
-            method_type='approle',
-            path=self.TEST_APPROLE_PATH,
-        )
+        if '%s/' % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type='approle',
+                path=self.TEST_APPROLE_PATH,
+            )
         list_auth_response = self.client.sys.list_auth_methods()
         self.test_approle_accessor = list_auth_response['data']['%s/' % self.TEST_APPROLE_PATH]['accessor']
 
     def tearDown(self):
+        super(TestIdentity, self).tearDown()
         self.tear_down_entities()
         self.tear_down_entity_aliases()
         self.tear_down_groups()
         self.client.sys.disable_auth_method(
             path=self.TEST_APPROLE_PATH,
         )
-        super(TestIdentity, self).tearDown()
 
     def tear_down_entities(self):
         try:
