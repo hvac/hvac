@@ -139,3 +139,45 @@ class HvacIntegrationTestCase(object):
                 health_status = health_status.json()
             if health_status['standby'] == standby_status:
                 return vault_address
+
+    def add_admin_approle_role(self, role_id, role_name='test-admin-role', path='approle'):
+        test_admin_policy = {
+            'path': {
+                '*': {
+                    'capabilities': ["sudo", "create", "read", "update", "delete", "list"],
+                },
+            },
+        }
+        test_admin_policy_name = 'test-admin-approle-policy'
+        self.client.sys.create_or_update_policy(
+            name=test_admin_policy_name,
+            policy=test_admin_policy,
+        )
+        self.client.create_role(
+            role_name=role_name,
+            mount_point=path,
+            token_policies=[test_admin_policy_name],
+        )
+        self.client.set_role_id(
+            role_name=role_name,
+            role_id=role_id,
+            mount_point=path,
+        )
+        secret_id_resp = self.client.create_role_secret_id(
+            role_name=role_name,
+            mount_point=self.TEST_APPROLE_PATH,
+        )
+        return secret_id_resp['data']['secret_id']
+
+    def login_using_admin_approle_role(self, role_id, role_name='test-admin-role', path='approle'):
+        secret_id = self.add_admin_approle_role(
+            role_id=role_id,
+            role_name=role_name,
+            path=path
+        )
+
+        self.client.auth_approle(
+            role_id=role_id,
+            secret_id=secret_id,
+            mount_point=path,
+        )
