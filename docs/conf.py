@@ -29,7 +29,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'm2r',
+    'm2r2',
+    'autodocsumm',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -100,6 +101,10 @@ manager.stop()
 '''
 
 # -- Autodoc configuration -------------------------------------------------
+
+autodoc_default_options = {
+    'autosummary': True,
+}
 
 
 def skip(app, what, name, obj, skip, options):

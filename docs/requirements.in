@@ -1,5 +1,6 @@
 -r ../requirements-dev.txt
 -r ../requirements.txt
-m2r
+autodocsumm
+m2r2
 sphinx
 sphinx_rtd_theme

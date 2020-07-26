@@ -560,30 +560,41 @@ class Aws(VaultApiBase):
 
     def create_role_tags(self, role, policies=None, max_ttl=None, instance_id=None, allow_instance_migration=None,
                          disallow_reauthentication=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
-        """Creates a role tag on the role, which helps in restricting the capabilities that are set on the role.
-        Role tags are not tied to any specific ec2 instance unless specified explicitly using the instance_id parameter
+        """Create a role tag on the role, which helps in restricting the capabilities that are set on the role.
 
+        Role tags are not tied to any specific ec2 instance unless specified explicitly using the
+        instance_id parameter. By default, role tags are designed to be used across all instances that
+        satisfies the constraints on the role. Regardless of which instances have role tags on them, capabilities
+        defined in a role tag must be a strict subset of the given role's capabilities. Note that, since adding
+        and removing a tag is often a widely distributed privilege, care needs to be taken to ensure that the
+        instances are attached with correct tags to not let them gain more privileges than what were intended.
+        If a role tag is changed, the capabilities inherited by the instance will be those defined on the new role
+        tag. Since those must be a subset of the role capabilities, the role should never provide more capabilities
+        than any given instance can be allowed to gain in a worst-case scenario
 
-            Role tags are not tied to any specific ec2 instance unless specified explicitly using the
-            instance_id parameter. By default, role tags are designed to be used across all instances that
-            satisfies the constraints on the role. Regardless of which instances have role tags on them, capabilities
-            defined in a role tag must be a strict subset of the given role's capabilities. Note that, since adding
-            and removing a tag is often a widely distributed privilege, care needs to be taken to ensure that the
-            instances are attached with correct tags to not let them gain more privileges than what were intended.
-            If a role tag is changed, the capabilities inherited by the instance will be those defined on the new role
-            tag. Since those must be a subset of the role capabilities, the role should never provide more capabilities
-            than any given instance can be allowed to gain in a worst-case scenario
-
-        :param role:
-        :param policies:
-        :param max_ttl:
-        :param instance_id:
-        :param allow_instance_migration:
-        :param disallow_reauthentication:
+        :param role: Name of the role.
+        :type role: str
+        :param policies: Policies to be associated with the tag. If set, must be a subset of the role's policies. If
+            set, but set to an empty value, only the 'default' policy will be given to issued tokens.
+        :type policies: list
+        :param max_ttl: The maximum allowed lifetime of tokens issued using this role.
+        :type max_ttl: str
+        :param instance_id: Instance ID for which this tag is intended for. If set, the created tag can only be used by
+            the instance with the given ID.
+        :type instance_id: str
+        :param disallow_reauthentication: If set, only allows a single token to be granted per instance ID. This can be
+            cleared with the auth/aws/identity-whitelist endpoint. Defaults to 'false'. Mutually exclusive with
+            allow_instance_migration.
+        :type disallow_reauthentication: bool
+        :param allow_instance_migration: If set, allows migration of the underlying instance where the client resides.
+            This keys off of pendingTime in the metadata document, so essentially, this disables the client nonce check
+            whenever the instance is migrated to a new host and pendingTime is newer than the previously-remembered
+            time. Use with caution. Defaults to 'false'. Mutually exclusive with disallow_reauthentication.
+        :type allow_instance_migration: bool
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
-        :return: The response of the request.
-        :rtype: requests.Response
+        :return: The create role tag response.
+        :rtype: dict
         """
         api_path = utils.format_url('/v1/auth/{0}/role/{1}/tag', mount_point, role)
 

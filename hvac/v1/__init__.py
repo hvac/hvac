@@ -1204,22 +1204,29 @@ class Client(object):
                             disallow_reauthentication=False, allow_instance_migration=False, mount_point='aws-ec2'):
         """POST /auth/<mount_point>/role/<role>/tag
 
-        :param role:
-        :type role:
-        :param policies:
-        :type policies:
-        :param max_ttl:
-        :type max_ttl:
-        :param instance_id:
-        :type instance_id:
-        :param disallow_reauthentication:
-        :type disallow_reauthentication:
-        :param allow_instance_migration:
-        :type allow_instance_migration:
-        :param mount_point:
-        :type mount_point:
-        :return:
-        :rtype:
+        :param role: Name of the role.
+        :type role: str
+        :param policies: Policies to be associated with the tag. If set, must be a subset of the role's policies. If
+            set, but set to an empty value, only the 'default' policy will be given to issued tokens.
+        :type policies: list
+        :param max_ttl: The maximum allowed lifetime of tokens issued using this role.
+        :type max_ttl: str
+        :param instance_id: Instance ID for which this tag is intended for. If set, the created tag can only be used by
+            the instance with the given ID.
+        :type instance_id: str
+        :param disallow_reauthentication: If set, only allows a single token to be granted per instance ID. This can be
+            cleared with the auth/aws/identity-whitelist endpoint. Defaults to 'false'. Mutually exclusive with
+            allow_instance_migration.
+        :type disallow_reauthentication: bool
+        :param allow_instance_migration: If set, allows migration of the underlying instance where the client resides.
+            This keys off of pendingTime in the metadata document, so essentially, this disables the client nonce check
+            whenever the instance is migrated to a new host and pendingTime is newer than the previously-remembered
+            time. Use with caution. Defaults to 'false'. Mutually exclusive with disallow_reauthentication.
+        :type allow_instance_migration: bool
+        :param mount_point: The path the associated AWS auth method is configured under.
+        :type mount_point: str
+        :return: The create role tag response.
+        :rtype: dict
         """
         params = {
             'role': role,
