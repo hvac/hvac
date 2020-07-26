@@ -1040,3 +1040,385 @@ class Identity(VaultApiBase):
             url=api_path,
             json=params,
         )
+
+    def configure_tokens_backend(self, issuer=None, mount_point=DEFAULT_MOUNT_POINT):
+        """Update configurations for OIDC-compliant identity tokens issued by Vault.
+
+        Supported methods:
+            POST: {mount_point}/oidc/config.
+
+        :param issuer: Issuer URL to be used in the iss claim of the token. If not set, Vault's api_addr will be used.
+            The issuer is a case sensitive URL using the https scheme that contains scheme, host, and optionally, port
+            number and path components, but no query or fragment components.
+        :type issuer: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The a dict or the response of the configure_tokens_backend request. dict returned when messages
+            are included in the response body.
+        :rtype: requests.Response
+        """
+        params = utils.remove_nones({
+            'issuer': issuer,
+        })
+
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/config',
+            mount_point=mount_point,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_tokens_backend_configuration(self, mount_point=DEFAULT_MOUNT_POINT):
+        """Query vault identity tokens configurations.
+
+        Supported methods:
+            GET: {mount_point}/oidc/config.
+
+        :return: The response of the read_tokens_backend_configuration request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/config',
+            mount_point=mount_point,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def create_named_key(self, name, rotation_period="24h", verification_ttl="24h", allowed_client_ids=None,
+                         algorithm="RS256", mount_point=DEFAULT_MOUNT_POINT):
+        """Create or update a named key which is used by a role to sign tokens.
+
+        Supported methods:
+            POST: {mount_point}/oidc/key/:name.
+
+        :param name: Name of the named key.
+        :type name: str | unicode
+        :param rotation_period: How often to generate a new signing key. Can be specified as a number of seconds or as
+            a time string like "30m" or "6h".
+        :type rotation_period: str | unicode
+        :param verification_ttl: Controls how long the public portion of a signing key will be available for
+            verification after being rotated.
+        :type verification_ttl: str | unicode
+        :param allowed_client_ids: List of role client ids allowed to use this key for signing.
+            If empty, no roles are allowed. If "*", all roles are allowed.
+        :type allowed_client_ids: list
+        :param algorithm: Signing algorithm to use. Allowed values are: RS256 (default), RS384, RS512, ES256, ES384,
+            ES512, EdDSA.
+        :type algorithm: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the create_a_named_key request.
+        :rtype: dict
+        """
+        params = {
+            'name': name,
+            'rotation_period': rotation_period,
+            'verification_ttl': verification_ttl,
+            'allowed_client_ids': allowed_client_ids,
+            'algorithm': algorithm,
+        }
+
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/key/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_named_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Query a named key and returns its configurations.
+
+        Supported methods:
+            GET: {mount_point}/oidc/key/:name.
+
+        :param name: Name of the key.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the read_a_named_key request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/key/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def delete_named_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete a named key.
+
+        Supported methods:
+            DELETE: {mount_point}/oidc/key/:name.
+
+        :param name: Name of the key.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the delete_a_named_key request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/key/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def list_named_keys(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List all named keys.
+
+        Supported methods:
+            LIST: {mount_point}/oidc/key.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the list_named_keys request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/key',
+            mount_point=mount_point,
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def rotate_named_key(self, name, verification_ttl, mount_point=DEFAULT_MOUNT_POINT):
+        """Rotate a named key.
+
+        Supported methods:
+            POST: {mount_point}/oidc/key/:name/rotate.
+
+        :param name: Name of the key to be rotated.
+        :type name: str | unicode
+        :param verification_ttl: Controls how long the public portion of the key will be available for verification after being rotated.
+            Setting verification_ttl here will override the verification_ttl set on the key.
+        :type verification_ttl: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the rotate_a_named_key request.
+        :rtype: dict
+        """
+        params = {
+            'verification_ttl': verification_ttl,
+        }
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/key/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def create_or_update_role(self, name, key, template=None, client_id=None, ttl="24h", mount_point=DEFAULT_MOUNT_POINT):
+        """Create or update a role.
+
+        ID tokens are generated against a role and signed against a named key.
+
+        Supported methods:
+            POST: {mount_point}/oidc/role/:name.
+
+        :param name: Name of the role.
+        :type name: str | unicode
+        :param key: A configured named key, the key must already exist.
+        :type key: str | unicode
+        :param template: The template string to use for generating tokens. This may be in stringified JSON or
+            base64 format.
+        :type template: str | unicode
+        :param client_id: Optional client ID. A random ID will be generated if left unset.
+        :type client_id: str | unicode
+        :param ttl: TTL of the tokens generated against the role. Can be specified as a number of seconds or as a time
+            string like "30m" or "6h".
+        :type ttl: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the create_or_update_a_role request.
+        :rtype: dict
+        """
+        params = utils.remove_nones({
+            'key': key,
+            'template': template,
+            'client_id': client_id,
+            'ttl': ttl,
+        })
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/role/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Query a role and returns its configuration.
+
+        Supported methods:
+            GET: {mount_point}/oidc/role/:name.
+
+        :param name: Name of the role.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the read_a_role request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/role/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Deletes a role.
+
+        Supported methods:
+            DELETE: {mount_point}/oidc/role/:name.
+
+
+        :param name: Name of the role.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the delete_a_role request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/role/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        This endpoint will list all signing keys.
+
+        Supported methods:
+            LIST: {mount_point}/oidc/role.
+
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the list_roles request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/role',
+            mount_point=mount_point,
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def generate_signed_id_token(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Generate a signed ID (OIDC) token.
+
+        Supported methods:
+            GET: {mount_point}/oidc/token/:name.
+
+        :param name: The name of the role against which to generate a signed ID token
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the generate_a_signed_id_token request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/token/{name}',
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def introspect_signed_id_token(self, token, client_id=None, mount_point=DEFAULT_MOUNT_POINT):
+        """Verify the authenticity and active state of a signed ID token.
+
+        Supported methods:
+            POST: {mount_point}/oidc/introspect.
+
+
+        :param token: A signed OIDC compliant ID token
+        :type token: str | unicode
+        :param client_id: Specifying the client ID optimizes validation time
+        :type client_id: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the introspect_a_signed_id_token request.
+        :rtype: dict
+        """
+        params = utils.remove_nones({
+            'token': token,
+            'client_id': client_id,
+        })
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/introspect',
+            mount_point=mount_point,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_well_known_configurations(self, mount_point=DEFAULT_MOUNT_POINT):
+        """Retrieve a set of claims about the identity tokens' configuration.
+
+        The response is a compliant OpenID Provider Configuration Response.
+
+        Supported methods:
+            GET: {mount_point}/oidc/.well-known/openid-configuration.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the read_well_known_configurations request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/.well-known/openid-configuration',
+            mount_point=mount_point,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def read_active_public_keys(self, mount_point=DEFAULT_MOUNT_POINT):
+        """Retrieve the public portion of named keys.
+
+        Clients can use this to validate the authenticity of an identity token.
+
+        Supported methods:
+            GET: {mount_point}/oidc/.well-known/openid-configuration.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the read_active_public_keys request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            '/v1/{mount_point}/oidc/.well-known/keys',
+            mount_point=mount_point,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )

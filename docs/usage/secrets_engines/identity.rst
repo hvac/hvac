@@ -534,4 +534,242 @@ Lookup Group
 	group_id = lookup_response['data']['id']
 	print('Group ID for "hvac-entity" is: {id}'.format(id=group_id))
 
+Tokens
+------
 
+Configure Tokens Backend
+````````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.configure_tokens_backend`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	client.secrets.identity.configure_tokens_backend(
+		issuer='https://python-hvac.org:1234',
+	)
+
+Read Tokens Backend Configuration
+`````````````````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.read_tokens_backend_configuration`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	config = client.secrets.identity.read_tokens_backend_configuration()
+	print('Tokens backend issuer: {issuer}'.format(issuer=config['data']['issuer']))
+
+Create Named Key
+````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.create_named_key`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	client.secrets.identity.create_named_key(
+		name='hvac',
+	)
+
+Read Named Key
+``````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.read_named_key`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	key_response = client.secrets.identity.read_named_key(
+		name='hvac',
+	)
+	print('Identity key "hvac" algorithm is: {algorithm}'.format(
+		algorithm=response['data']['algorithm'],
+	))
+
+Delete Named Key
+````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.delete_named_key`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	client.secrets.identity.delete_named_key(
+		name='hvac',
+	)
+
+List Named Keys
+```````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.delete_named_key`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	list_keys_resp = client.secrets.identity.list_named_keys()
+	print('Current token key names: {names}'.format(
+		names=', '.join(response['data']['keys']),
+	))
+
+Rotate Named Key
+````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.rotate_named_key`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	client.secrets.identity.rotate_named_key(
+		name='hvac',
+		verification_ttl='24h',
+	)
+
+Create or Update Role
+`````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.create_or_update_role`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	key_name = 'hvac-key'
+	token_client_id = 'some-client-id'
+	client.secrets.identity.create_named_key(
+		name=key_name,
+		allowed_client_ids=[token_client_id],
+	)
+	client.secrets.identity.create_or_update_role(
+		name='hvac-person',
+		key_name=key_name,
+		client_id=token_client_id,
+	)
+
+Read Role
+`````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.create_or_update_role`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	read_resp = client.secrets.identity.read_role(
+		name='hvac-person',
+	)
+	print('Identity role "hvac-person" is set to use key: {key_name}'.format(
+		key_name=read_resp['data']['key'],
+	))
+
+Delete Role
+```````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.delete_role`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	client.secrets.identity.delete_role(
+		name='hvac-person',
+	)
+
+List Roles
+``````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.list_roles`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	response = client.secrets.identity.list_roles()
+	print('Current token role names: {names}'.format(
+		names=', '.join(response['data']['keys']),
+	))
+
+Generate Signed ID Token
+````````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.generate_signed_id_token`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	# Note: the token attribute on the following Client instance must have an
+	# identity associated with it. Otherwise the request will be reject by vault due to:
+	# "no entity associated with the request's token"
+	response = client.secrets.identity.generate_signed_id_token(
+		name='hvac-person',
+	)
+	print('Generated signed id token: {token}'.format(
+		token=response['data']['token'],
+	))
+
+Introspect Signed ID Token
+``````````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.introspect_signed_id_token`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	response = client.secrets.identity.introspect_signed_id_token(
+		token='some-generated-signed-id-token',
+	)
+	print('Specified token is active?: {active}'.format(
+		active=response['active'],
+	))
+
+Read .well-known Configurations
+````````````````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.read_well_known_configurations`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	response = client.secrets.identity.read_well_known_configurations()
+	print('JWKS URI is: {jwks_uri}'.format(
+		active=response['jwks_uri'],
+	))
+
+Read Active Public Keys
+```````````````````````
+
+:py:meth:`hvac.api.secrets_engines.Identity.read_active_public_keys`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+	response = client.secrets.identity.read_active_public_keys()
+	print('Active public keys: {keys}'.format(
+		keys=response['keys'],
+	))
