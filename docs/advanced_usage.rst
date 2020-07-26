@@ -12,7 +12,7 @@ There is a not uncommon use case of people deploying Hashicorp Vault with a priv
 
 As `documented in the advanced usage section for requests`_ this environment variable should point to a file that is comprised of all CA certificates you may wish to use. This can be a single private CA, or an existing list of root certificates with the private appended to the end. The following example shows how to achieve this:
 
-.. code:: python
+.. code::
 
 	$ cp "$(python -c 'import certifi;print certifi.where();')" /tmp/bundle.pem
 	$ cat /path/to/custom.pem >> /tmp/bundle.pem
@@ -88,4 +88,3 @@ hvac does not currently offer direct support of requests to a `Vault agent proce
 		session=socket_session,
 	)
 	print(client.secrets.kv.read_secret_version(path='some-secret'))
-
