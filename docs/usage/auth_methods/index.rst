@@ -9,6 +9,7 @@ Auth Methods
    azure
    gcp
    github
+   jwt-oidc
    kubernetes
    ldap
    mfa
