@@ -59,42 +59,30 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
         param(
             'success',
         ),
-        param(
-            'no config written yet',
-            write_config_first=False,
-            raises=exceptions.InvalidPath
-        )
     ])
-    def test_read_config(self, label, write_config_first=True, raises=None):
+    def test_read_config(self, label):
 
         credentials = utils.load_config_file('example.jwt.json')
-        if write_config_first:
-            self.client.auth.gcp.configure(
-                credentials=credentials,
-                mount_point=self.TEST_MOUNT_POINT,
-            )
-        if raises is not None:
-            with self.assertRaises(raises):
-                self.client.auth.gcp.read_config(
-                    mount_point=self.TEST_MOUNT_POINT,
-                )
-        else:
-            read_config_response = self.client.auth.gcp.read_config(
-                mount_point=self.TEST_MOUNT_POINT,
-            )
-            logging.debug('read_config_response: %s' % read_config_response)
+        self.client.auth.gcp.configure(
+            credentials=credentials,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        read_config_response = self.client.auth.gcp.read_config(
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        logging.debug('read_config_response: %s' % read_config_response)
 
-            creds_dict = json.loads(credentials)
-            expected_config = {
-                'project_id': creds_dict['project_id'],
-                'client_email': creds_dict['client_email'],
-                'private_key_id': creds_dict['private_key_id'],
-            }
-            for k, v in expected_config.items():
-                self.assertEqual(
-                    first=v,
-                    second=read_config_response[k],
-                )
+        creds_dict = json.loads(credentials)
+        expected_config = {
+            'project_id': creds_dict['project_id'],
+            'client_email': creds_dict['client_email'],
+            'private_key_id': creds_dict['private_key_id'],
+        }
+        for k, v in expected_config.items():
+            self.assertEqual(
+                first=v,
+                second=read_config_response[k],
+            )
 
     @parameterized.expand([
         # param(

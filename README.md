@@ -11,8 +11,8 @@
 [![Twitter - @python_hvac](https://img.shields.io/twitter/follow/python_hvac.svg?label=Twitter%20-%20@python_hvac&style=social?style=plastic)](https://twitter.com/python_hvac)
 [![Gitter chat](https://badges.gitter.im/hvac/community.png)](https://gitter.im/hvac/community)
 
-Tested against the latest release, HEAD ref, and 3 previous minor versions (counting back from the latest release) of Vault. 
-Current official support covers Vault v1.1.5 or later.
+Tested against the latest release, HEAD ref, and 3 previous minor versions (counting back from the latest release) of Vault.
+Current official support covers Vault v1.2.4 or later.
 
 ## Installation
 
