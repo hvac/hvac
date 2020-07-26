@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.10.5 (July 26th, 2020)
+
+### 🚀 Features
+
+- Add JWT/OIDC Authentication Method Classes. GH-613
+- Add Identity Tokens Methods and Documentation. GH-611
+- Add P-521 to list of allowed key types. GH-608
+- Add P-384 and RSA-3072 to list of allowed key types. GH-606
+
+### 🐛 Bug Fixes
+
+- Options not read by tune_mount_configuration. GH-603
+
+### 📚 Documentation
+
+- Add Autodoc Summaries. GH-612
+- Correct Return Type Docstrings Within Transit Class. GH-609
+- Transit engine docs for Encrypt Data now refer to encrypt_data. GH-601
+
+### 🧰 Miscellaneous
+
+- Update Vault version test matrix / Oldest Support Vault Version. GH-610
+
+Thanks to @akdor1154, @jeffwecan, @ns-jshilkaitis and @trishankatdatadog for their lovely contributions.
+
 ## 0.10.4 (June 16th, 2020)
 
 ### 🚀 Features

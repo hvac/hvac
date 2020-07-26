@@ -132,10 +132,15 @@ class ServerManager(object):
             if process.poll() is None:
                 process.kill()
             if os.getenv('HVAC_OUTPUT_VAULT_STDERR', False):
-                _, stderr_lines = process.communicate()
+                stdout_lines, stderr_lines = process.communicate()
                 stderr_filename = 'vault{num}_stderr.log'.format(num=process_num)
                 with open(get_config_file_path(stderr_filename), 'w') as f:
-                    f.writelines(stderr_lines)
+                    logger.debug(stderr_lines.decode())
+                    f.writelines(stderr_lines.decode())
+                stdout_filename = 'vault{num}_stdout.log'.format(num=process_num)
+                with open(get_config_file_path(stdout_filename), 'w') as f:
+                    logger.debug(stdout_lines.decode())
+                    f.writelines(stdout_lines.decode())
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""

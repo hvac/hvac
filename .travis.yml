@@ -4,17 +4,17 @@ python:
   - '3.7'
   - '2.7'
 env:
-  - HVAC_VAULT_VERSION=1.4.0 HVAC_VAULT_LICENSE=enterprise
-  - HVAC_VAULT_VERSION=1.3.4 HVAC_VAULT_LICENSE=enterprise
+  - HVAC_VAULT_VERSION=1.5.0 HVAC_VAULT_LICENSE=enterprise
+  - HVAC_VAULT_VERSION=1.4.3 HVAC_VAULT_LICENSE=enterprise
+  - HVAC_VAULT_VERSION=1.3.7 HVAC_VAULT_LICENSE=enterprise
   - HVAC_VAULT_VERSION=1.2.4 HVAC_VAULT_LICENSE=enterprise
-  - HVAC_VAULT_VERSION=1.1.5 HVAC_VAULT_LICENSE=enterprise
   - HVAC_VAULT_VERSION=STABLE HVAC_VAULT_LICENSE=OSS
   - TOXENV=flake8
 matrix:
   include:
     - name: 'Vault OSS - Latest hvac-tested Release on Python 3.7'
       python: '3.7'
-      env: HVAC_VAULT_VERSION=1.1.3 HVAC_VAULT_LICENSE=OSS
+      env: HVAC_VAULT_VERSION=1.2.4 HVAC_VAULT_LICENSE=OSS
     - name: 'Test Documentation Build - Sphinx: "make html"'
       env: TOXENV=docs
     - stage: PyPi Release

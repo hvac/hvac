@@ -193,7 +193,7 @@ Example output:
 Encrypt Data
 ------------
 
-.. automethod:: hvac.api.secrets_engines.Transit.decrypt_data
+.. automethod:: hvac.api.secrets_engines.Transit.encrypt_data
    :noindex:
 
 Examples

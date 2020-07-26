@@ -12,6 +12,7 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 @skipIf(utils.vault_version_lt('0.9.0'), "Identity secrets engine open sourced in Vault version >=0.9.0")
 class TestIdentity(HvacIntegrationTestCase, TestCase):
     TEST_APPROLE_PATH = 'identity-test-approle'
+    TEST_APPROLE_ROLE_ID = 'identity-test-role-id'
     TEST_MOUNT_POINT = 'identity'
     TEST_ENTITY_NAME = 'test-entity'
     TEST_ALIAS_NAME = 'test-alias'
@@ -23,21 +24,22 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestIdentity, self).setUp()
-        self.client.sys.enable_auth_method(
-            method_type='approle',
-            path=self.TEST_APPROLE_PATH,
-        )
+        if '%s/' % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type='approle',
+                path=self.TEST_APPROLE_PATH,
+            )
         list_auth_response = self.client.sys.list_auth_methods()
         self.test_approle_accessor = list_auth_response['data']['%s/' % self.TEST_APPROLE_PATH]['accessor']
 
     def tearDown(self):
+        super(TestIdentity, self).tearDown()
         self.tear_down_entities()
         self.tear_down_entity_aliases()
         self.tear_down_groups()
         self.client.sys.disable_auth_method(
             path=self.TEST_APPROLE_PATH,
         )
-        super(TestIdentity, self).tearDown()
 
     def tear_down_entities(self):
         try:
@@ -1515,3 +1517,378 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     first=lookup_group_response.status_code,
                     second=204,
                 )
+
+    @parameterized.expand([
+        param(
+            'empty issuer',
+            issuer='',
+        ),
+        param(
+            'issuer set',
+            issuer='https://python-hvac.org:1234',
+        ),
+    ])
+    def test_configure_tokens_backend(self, label, issuer):
+        response = self.client.secrets.identity.configure_tokens_backend(
+            issuer=issuer,
+        )
+        logging.debug('configure_tokens_backend response: %s' % response)
+        if issuer:
+            # e.g.: 'warnings': ['If "issuer" is set explicitly, [...]']
+            self.assertGreaterEqual(
+                a=len(response['warnings']),
+                b=1,
+            )
+        else:
+            # No response body if we're _not_ setting the issue
+            self.assertEqual(
+                first=204,
+                second=response.status_code,
+            )
+
+    @parameterized.expand([
+        param(
+            'empty issuer',
+            issuer='',
+        ),
+        param(
+            'issuer set',
+            issuer='',
+        ),
+    ])
+    def test_read_tokens_backend_configuration(self, label, issuer):
+        configure_tokens_backend_response = self.client.secrets.identity.configure_tokens_backend(
+            issuer=issuer,
+        )
+        logging.debug('configure_tokens_backend_response: %s' % configure_tokens_backend_response)
+        response = self.client.secrets.identity.read_tokens_backend_configuration()
+        logging.debug('read_tokens_backend_configuration response: %s' % response)
+        self.assertEqual(
+            first=issuer,
+            second=response['data']['issuer'],
+        )
+
+    @parameterized.expand([
+        param(
+            'name set',
+            name='hvac',
+        ),
+    ])
+    def test_create_named_key(self, label, name):
+        response = self.client.secrets.identity.create_named_key(
+            name=name,
+        )
+        logging.debug('create_named_key response: %s' % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+            algorithm='ES256',
+        ),
+    ])
+    def test_read_named_key(self, label, name, algorithm):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=name,
+            algorithm=algorithm,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        response = self.client.secrets.identity.read_named_key(
+            name=name,
+        )
+        logging.debug('read_named_key response: %s' % response)
+        self.assertEqual(
+            first=algorithm,
+            second=response['data']['algorithm'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+        ),
+    ])
+    def test_delete_named_key(self, label, name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        response = self.client.secrets.identity.delete_named_key(
+            name=name,
+        )
+        logging.debug('delete_named_key response: %s' % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+        ),
+    ])
+    def test_list_named_keys(self, label, name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        response = self.client.secrets.identity.list_named_keys()
+        logging.debug('list_named_keys response: %s' % response)
+        self.assertIn(
+            member=name,
+            container=response['data']['keys'],
+        )
+
+    @parameterized.expand([
+        param(
+            'lower ttl than at create time',
+            name='hvac',
+            verification_ttl=1800,
+        ),
+    ])
+    def test_rotate_named_key(self, label, name, verification_ttl):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=name,
+            verification_ttl=verification_ttl + 1,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        response = self.client.secrets.identity.rotate_named_key(
+            name=name,
+            verification_ttl=verification_ttl,
+        )
+        logging.debug('rotate_named_key response: %s' % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+        post_rotate_read_response = self.client.secrets.identity.read_named_key(
+            name=name,
+        )
+        logging.debug('post_rotate_read_response response: %s' % post_rotate_read_response)
+        self.assertEqual(
+            first=verification_ttl,
+            second=post_rotate_read_response['data']['verification_ttl'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_create_or_update_role(self, label, name, key_name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        response = self.client.secrets.identity.create_or_update_role(
+            name=name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_read_role(self, label, name, key_name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        create_or_update_role_response = self.client.secrets.identity.create_or_update_role(
+            name=name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % create_or_update_role_response)
+        response = self.client.secrets.identity.read_role(
+            name=name,
+        )
+        logging.debug('read_role response: %s' % response)
+        self.assertEqual(
+            first=key_name,
+            second=response['data']['key'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_delete_role(self, label, name, key_name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        create_or_update_role_response = self.client.secrets.identity.create_or_update_role(
+            name=name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % create_or_update_role_response)
+        response = self.client.secrets.identity.delete_role(
+            name=name,
+        )
+        logging.debug('delete_role response: %s' % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_list_roles(self, label, name, key_name):
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        create_or_update_role_response = self.client.secrets.identity.create_or_update_role(
+            name=name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % create_or_update_role_response)
+        response = self.client.secrets.identity.list_roles()
+        logging.debug('list_roles response: %s' % response)
+        self.assertIn(
+            member=name,
+            container=response['data']['keys'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            role_name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_generate_signed_id_token(self, label, role_name, key_name):
+        create_or_update_role_response = self.client.secrets.identity.create_or_update_role(
+            name=role_name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % create_or_update_role_response)
+        read_role_response = self.client.secrets.identity.read_role(
+            name=role_name,
+        )
+        logging.debug('read_role response: %s' % read_role_response)
+        token_client_id = read_role_response['data']['client_id']
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+            allowed_client_ids=[
+                token_client_id,
+            ],
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        # Log in using a dummy approle role so our client token has an associated identity
+        self.login_using_admin_approle_role(
+            role_id=self.TEST_APPROLE_ROLE_ID,
+            path=self.TEST_APPROLE_PATH,
+        )
+        response = self.client.secrets.identity.generate_signed_id_token(
+            name=role_name,
+        )
+        logging.debug('generate_signed_id_token response: %s' % response)
+        self.assertIn(
+            member=token_client_id,
+            container=response['data']['client_id'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            role_name='hvac',
+            key_name='hvac_key',
+        ),
+    ])
+    def test_introspect_signed_id_token(self, label, role_name, key_name):
+        create_or_update_role_response = self.client.secrets.identity.create_or_update_role(
+            name=role_name,
+            key=key_name,
+        )
+        logging.debug('create_or_update_role response: %s' % create_or_update_role_response)
+        read_role_response = self.client.secrets.identity.read_role(
+            name=role_name,
+        )
+        logging.debug('read_role response: %s' % read_role_response)
+        token_client_id = read_role_response['data']['client_id']
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+            allowed_client_ids=[
+                token_client_id,
+            ],
+        )
+        logging.debug('create_named_key response: %s' % create_named_key_response)
+        # Log in using a dummy approle role so our client token has an associated identity
+        self.login_using_admin_approle_role(
+            role_id=self.TEST_APPROLE_ROLE_ID,
+            path=self.TEST_APPROLE_PATH,
+        )
+        generate_signed_id_token_response = self.client.secrets.identity.generate_signed_id_token(
+            name=role_name,
+        )
+        logging.debug('generate_signed_id_token response: %s' % generate_signed_id_token_response)
+        response = self.client.secrets.identity.introspect_signed_id_token(
+            token=generate_signed_id_token_response['data']['token'],
+            client_id=token_client_id,
+        )
+        logging.debug('introspect_signed_id_token response: %s' % response)
+        self.assertIn(
+            member='active',
+            container=response,
+        )
+        self.assertTrue(
+            expr=response['active'],
+        )
+
+    @parameterized.expand([
+        param(
+            'issuer set',
+            issuer='https://python-hvac.org:1234',
+        ),
+    ])
+    def test_read_well_known_configurations(self, label, issuer):
+        response = self.client.secrets.identity.configure_tokens_backend(
+            issuer=issuer,
+        )
+        response = self.client.secrets.identity.read_well_known_configurations()
+        logging.debug('read_well_known_configurations response: %s' % response)
+        self.assertIn(
+            member=issuer,
+            container=response['issuer'],
+        )
+
+    @parameterized.expand([
+        param(
+            'success',
+            issuer='https://python-hvac.org:1234',
+        ),
+    ])
+    def test_read_active_public_keys(self, label, issuer):
+        response = self.client.secrets.identity.configure_tokens_backend(
+            issuer=issuer,
+        )
+        response = self.client.secrets.identity.read_active_public_keys()
+        logging.debug('read_active_public_keys response: %s' % response)
+        self.assertIn(
+            member='keys',
+            container=response,
+        )

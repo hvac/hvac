@@ -16,9 +16,9 @@ copyright = u'2018-2020, Ian Unruh, Jeffrey Hogan'
 author = u'Ian Unruh, Jeffrey Hogan'
 
 # The short X.Y version
-version = '0.10.4'
+version = '0.10.5'
 # The full version, including alpha/beta/rc tags
-release = '0.10.4'
+release = '0.10.5'
 
 
 # -- General configuration ---------------------------------------------------
@@ -29,7 +29,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'm2r',
+    'm2r2',
+    'autodocsumm',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -100,6 +101,10 @@ manager.stop()
 '''
 
 # -- Autodoc configuration -------------------------------------------------
+
+autodoc_default_options = {
+    'autosummary': True,
+}
 
 
 def skip(app, what, name, obj, skip, options):

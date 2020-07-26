@@ -1,3 +1,6 @@
+Authlib
+Flask
+Flask-SQLAlchemy
 codecov
 coverage
 ipaddress
@@ -5,6 +8,8 @@ mock
 nose
 parameterized
 python-ldap-test
+python_jwt
 requests_mock
 semantic_version
 tox
+Werkzeug

@@ -7,7 +7,10 @@ ALLOWED_KEY_TYPES = [
     'chacha20-poly1305',
     'ed25519',
     'ecdsa-p256',
+    'ecdsa-p384',
+    'ecdsa-p521',
     'rsa-2048',
+    'rsa-3072',
     'rsa-4096',
 ]
 
