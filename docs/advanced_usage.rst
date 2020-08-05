@@ -54,7 +54,7 @@ Alternative, this envrionmental variable can be set via the `os` module in-line 
 
 		return vault_client
 
-.. _documented in the advanced usage section for requests: http://docs.python-requests.org/en/master/user/advanced/
+.. _documented in the advanced usage section for requests: https://2.python-requests.org/en/master/user/advanced/#id4
 
 Custom Requests / HTTP Adapter
 ------------------------------
