@@ -27,7 +27,7 @@ class GoogleIAP:
             print("A required payload K/V pair is missing: client_id\n"
                   "This KV pair is used to generates the Google-issued OpenID Connect token")
     @staticmethod
-    def print_modules_note_installed(e):
+    def print_modules_not_installed(e):
         print_statement = f"""
         Looks like there was an error importing google.oauth2 library. Versions in print statements were captured at time of development
         To install google.oauth2 library use the following command:
@@ -53,7 +53,7 @@ class GoogleIAP:
             self.proxy_id_token = id_token.fetch_id_token(Request(), self.client_id)
             return f"Bearer {self.proxy_id_token}"
         except Exception as e:
-            self.print_modules_note_installed(e=e)
+            self.print_modules_not_installed(e=e)
             return None
 
 
