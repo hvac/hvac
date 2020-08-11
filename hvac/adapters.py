@@ -9,6 +9,7 @@ import requests
 import requests.exceptions
 
 from hvac import utils
+from hvac.proxy import ProxyRouter
 
 DEFAULT_BASE_URI = 'http://localhost:8200'
 
@@ -18,7 +19,7 @@ class Adapter(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False):
+                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False, advanced_proxies=None):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
@@ -45,17 +46,19 @@ class Adapter(object):
         :param ignore_exceptions: If True, _always_ return the response object for a given request. I.e., don't raise an exception
             based on response status code, etc.
         :type ignore_exceptions: bool
+        :param Advanced proxy configuration dictionary can be passed in to support advanced proxy mechanisms. This is a plugable
+        design that can have custom code include via the hvac/proxy.py file to support unique needs
+        :type advanced_proxies [None, Dict]
         """
         if not session:
             session = requests.Session()
-
+        self.proxy_router = ProxyRouter(advanced_proxies)
         self.base_uri = base_uri
         self.token = token
         self.namespace = namespace
         self.session = session
         self.allow_redirects = allow_redirects
         self.ignore_exceptions = ignore_exceptions
-
         self._kwargs = {
             'cert': cert,
             'verify': verify,
@@ -283,6 +286,11 @@ class RawAdapter(Adapter):
 
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
+
+        # Support for advanced proxies
+        auth_header = self.proxy_router.get_request_authorization_header()
+        if auth_header is not None:
+            headers['Authorization'] = auth_header
 
         response = self.session.request(
             method=method,
