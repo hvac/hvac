@@ -88,3 +88,24 @@ hvac does not currently offer direct support of requests to a `Vault agent proce
 		session=socket_session,
 	)
 	print(client.secrets.kv.read_secret_version(path='some-secret'))
+
+
+
+Using Vault behind Google IAP
+--------------------------------
+
+Vault instances secured behind Google IAP enjoy an extra level of protection due to the Google Cloud Platform role required to access the web application. In order to access your vault instance each request must contain a valid Google-issued OpenID Connect token in the authorization header.
+.. code:: python
+
+    advanced_proxy = {
+        "provider": "google",
+        "payload": {
+            "client_id": "your_google_client_id.apps.googleusercontent.com"
+        }
+    }
+
+    self.client = hvac.Client(url=vault_url, namespace='your_vault_namespace', advanced_proxies=advanced_proxy)
+
+
+ttt
+
