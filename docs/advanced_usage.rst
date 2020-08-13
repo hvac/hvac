@@ -93,8 +93,12 @@ hvac does not currently offer direct support of requests to a `Vault agent proce
 
 Using Vault behind Google IAP
 --------------------------------
+Official Google product page:  https://cloud.google.com/iap
 
-Vault instances secured behind Google IAP enjoy an extra level of protection due to the Google Cloud Platform role required to access the web application. In order to access your vault instance each request must contain a valid Google-issued OpenID Connect token in the authorization header.
+Vault instances secured behind Google IAP enjoy an extra level of protection due to the Google Cloud Platform role required to access the web application. In order to access your vault instance each request must contain a valid Google-issued OpenID Connect token in the authorization header via bearer tokens.
+
+Rather than build a static feature to allow only Google IAP it was decided to build an advanced_function parameter that could support a plugable proxy backend.  This was accomplished via passing in a dictionary container a string with the provider name which will need to match a valid key in `ProxyRouter.ADVANCED_PROXIES`
+
 .. code:: python
 
     advanced_proxy = {
@@ -106,6 +110,53 @@ Vault instances secured behind Google IAP enjoy an extra level of protection due
 
     self.client = hvac.Client(url=vault_url, namespace='your_vault_namespace', advanced_proxies=advanced_proxy)
 
+When the adapter is called to complete any request, it will attempt to generate an authorization header. If this call returns None, no action is taken on the request and it continues as normal.
 
-ttt
+.. code:: python
+
+        # Support for advanced proxies
+        auth_header = self.proxy_router.get_request_authorization_header()
+        if auth_header is not None:
+            headers['Authorization'] = auth_header
+
+Creating you own advanced proxy method is relatively simple. There are two functions that MUST be used in order to maintain compataiblity between plugins.
+
+- self.add_payload()
+    - This should add the values required for your proxy to your plugin in order for generated you token to get pass the proxy. In our case this is the client_id for your IAP instance.
+- self.generate_auth_token()
+    - This function will return a valid token that can simply be passed to the Authorization header in the HTTP request
+
+An other required logic is left up to the developer of the plugin to implement.
+
+.. code:: python
+
+    class NginxProxy:
+
+        def __init__(self):
+            self.payload_value1 = None
+            self.payload_value2 = None
+
+        def add_payload(self, payload):
+            """
+            Standard function for all plugins to add the content of the advanced_proxy["payload"] into plugin.
+            """
+            self.payload_value1 = payload['password']
+            self.payload_value2 = payload['username']
+
+        def generate_auth_token(self):
+            """
+            Returns a valid bearer token.
+            This token is then added to the Authorization Header for each request
+            :return:
+            """
+            return f"Bearer {self.payload_value1}:{self.payload_value2}"
+
+The new proxy provider class mapping must be added to this dictionary to ensure only valid values are passed in and acted upon during runtime.
+
+.. code:: python
+
+        self.ADVANCED_PROXIES = {
+            "google": GoogleIAP,
+        }
+
 
