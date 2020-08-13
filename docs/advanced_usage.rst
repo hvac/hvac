@@ -99,6 +99,13 @@ Vault instances secured behind Google IAP enjoy an extra level of protection due
 
 Rather than build a static feature to allow only Google IAP it was decided to build an advanced_function parameter that could support a plugable proxy backend.  This was accomplished via passing in a dictionary container a string with the provider name which will need to match a valid key in `ProxyRouter.ADVANCED_PROXIES`
 
+In order to leverage the advanced proxy simply pass a kwarg when instantiating your hvac.Client() object. This parameter MUST contain a dictionary with two keys as shown below.
+
+- provider
+    - String: Name of the provider
+- payload
+    - Dictonary: Must contain the values for any required variables your plugin requires. For Google IAP this is "client_id" for the IAP instance you want to access
+
 .. code:: python
 
     advanced_proxy = {
