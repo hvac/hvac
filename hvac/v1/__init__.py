@@ -21,7 +21,7 @@ class Client(object):
     def __init__(self, url=None, token=None,
                  cert=None, verify=True, timeout=30, proxies=None,
                  allow_redirects=True, session=None, adapter=adapters.JSONAdapter,
-                 namespace=None, **kwargs, advanced_proxies=None):
+                 namespace=None, advanced_proxies=None, **kwargs ):
         """Creates a new hvac client instance.
 
         :param url: Base URL for the Vault instance being addressed.
