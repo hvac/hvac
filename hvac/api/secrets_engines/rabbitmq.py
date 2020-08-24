@@ -67,7 +67,7 @@ class RabbitMQ(VaultApiBase):
             json=params,
         )
 
-    def create_role(self, name, tags="", vhosts="", mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(self, name, tags="", vhosts="", vhost_topics="", mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint creates or updates the role definition.
 
         :param name:  Specifies the name of the role to create.
@@ -76,6 +76,8 @@ class RabbitMQ(VaultApiBase):
         :type tags: str | unicode
         :param vhosts:  pecifies a map of virtual hosts to permissions.
         :type vhosts: str | unicode
+        :param vhost_topics: Specifies a map of virtual hosts and exchanges to topic permissions.
+        :type vhost_topics: str | unicode
         :param mount_point: Specifies the place where the secrets engine will be accessible (default: rabbitmq).
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -85,6 +87,7 @@ class RabbitMQ(VaultApiBase):
         params = {
             "tags": tags,
             "vhosts": vhosts,
+            "vhost_topics": vhost_topics
         }
         return self._adapter.post(
             url=api_path,
