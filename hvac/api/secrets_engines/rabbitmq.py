@@ -104,7 +104,7 @@ class RabbitMQ(VaultApiBase):
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes the role definition.
@@ -135,4 +135,4 @@ class RabbitMQ(VaultApiBase):
         api_path = utils.format_url("/v1/{}/creds/{}", mount_point, name)
         return self._adapter.get(
             url=api_path,
-        ).json()
+        )
