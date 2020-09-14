@@ -101,7 +101,7 @@ class KvV1(VaultApiBase):
 
         elif method == 'PUT':
             api_path = utils.format_url('/v1/{mount_point}/{path}', mount_point=mount_point, path=path)
-            return self._adapter.post(
+            return self._adapter.put(
                 url=api_path,
                 json=secret,
             )
