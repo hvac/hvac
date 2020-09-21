@@ -80,10 +80,6 @@ class Consul(VaultApiBase):
         """
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
-        if not policy and token_type != "management":
-            error_msg = 'policy must be specified unless token_type is management'
-            raise exceptions.ParamValidationError(error_msg)
-
         params = utils.remove_nones({
             "token_type": token_type,
             "policy": policy,
