@@ -8,7 +8,7 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 class Health(SystemBackendMixin):
     """.
 
-    Reference: https://www.vaultproject.io/api/system/index.html
+    Reference: https://www.vaultproject.io/api-docs/system/health
     """
 
     def read_health_status(self, standby_ok=None, active_code=None, standby_code=None, dr_secondary_code=None,
@@ -44,13 +44,13 @@ class Health(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = utils.remove_nones({
-            'standby_ok': standby_ok,
-            'active_code': active_code,
-            'standby_code': standby_code,
-            'dr_secondary_code': dr_secondary_code,
-            'performance_standby_code': performance_standby_code,
-            'sealed_code': sealed_code,
-            'uninit_code': uninit_code,
+            'standbyok': standby_ok,
+            'activecode': active_code,
+            'standbycode': standby_code,
+            'drsecondarycode': dr_secondary_code,
+            'performancestandbycode': performance_standby_code,
+            'sealedcode': sealed_code,
+            'uninitcode': uninit_code,
         })
 
         if method == 'HEAD':
