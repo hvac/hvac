@@ -15,7 +15,6 @@
 
 ### 🧰 Miscellaneous
 
-- Update Vault version test matrix / Oldest Support Vault Version. GH-610
 
 ## 0.10.5 (July 26th, 2020)
 
