@@ -149,22 +149,22 @@ OIDC Authorization URL Request
     client = hvac.Client()
 
     auth_url_response = client.auth.oidc.oidc_authorization_url_request(
-        role="hvac",
-        redirect_uri="http://localhost:8250/oidc/callback"
+        role='hvac',
+        redirect_uri='http://localhost:8250/oidc/callback'
     )
-    auth_url = auth_url_response["data"]["auth_url"]
-    if auth_url == "":
+    auth_url = auth_url_response['data']['auth_url']
+    if auth_url == '':
         return None
 
-    params = parse.parse_qs(auth_url.split("?")[1])
-    auth_url_nonce = params["nonce"][0]
-    auth_url_state = params["state"][0]
+    params = parse.parse_qs(auth_url.split('?')[1])
+    auth_url_nonce = params['nonce'][0]
+    auth_url_state = params['state'][0]
 
     webbrowser.open(auth_url)
     token = login_odic_get_token()
 
     auth_result = client.auth.oidc.oidc_callback(
-        code=token, path="oidc", nonce=auth_url_nonce, state=auth_url_state
+        code=token, path='oidc', nonce=auth_url_nonce, state=auth_url_state
     )
     
     print('Client token returned: %s' % auth_result['auth']['client_token'])
@@ -179,16 +179,16 @@ OIDC Authorization URL Request
                 self.token = None
 
         class AuthHandler(BaseHTTPRequestHandler):
-            token = ""
+            token = ''
 
             def do_GET(self):
-                params = parse.parse_qs(self.path.split("?")[1])
-                self.server.token = params["code"][0]
+                params = parse.parse_qs(self.path.split('?')[1])
+                self.server.token = params['code'][0]
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(str.encode("<script>window.close();</script>"))
+                self.wfile.write(str.encode('<script>window.close();</script>'))
 
-        server_address = ("", 8250)
+        server_address = ('', 8250)
         httpd = HttpServ(server_address, AuthHandler)
         httpd.handle_request()
         return httpd.token
