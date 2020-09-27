@@ -186,7 +186,7 @@ OIDC Authorization URL Request
                 self.server.token = params['code'][0]
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(str.encode('<script>window.close();</script>'))
+                self.wfile.write(str.encode('<div>Authentication successful, you can close the browser now.</div>'))
 
         server_address = ('', 8250)
         httpd = HttpServ(server_address, AuthHandler)
