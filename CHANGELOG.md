@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.10.6 ()
+
+### 🚀 Features
+
+
+### 🐛 Bug Fixes
+
+- Fixed oidc login. GH-638
+
+### 📚 Documentation
+
+- Added more detailed example for the oidc usage. GH-638
+
+### 🧰 Miscellaneous
+
+
 ## 0.10.5 (July 26th, 2020)
 
 ### 🚀 Features
