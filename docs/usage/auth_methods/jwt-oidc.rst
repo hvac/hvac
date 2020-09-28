@@ -143,23 +143,55 @@ OIDC Authorization URL Request
 :py:meth:`hvac.api.auth_methods.JWT.oidc_authorization_url_request`
 
 .. code:: python
-
-    import requests
+    import webbrowser
+    import http.server
     import hvac
     client = hvac.Client()
 
     auth_url_response = client.auth.oidc.oidc_authorization_url_request(
         role='hvac',
-        redirect_uri='https://localhost:8200/v1/auth/oidc/oidc/callback',
+        redirect_uri='http://localhost:8250/oidc/callback'
     )
     auth_url = auth_url_response['data']['auth_url']
-    print('Requested auth URL is: %s' % auth_url)
+    if auth_url == '':
+        return None
 
-    response = requests.post(
-        url=auth_url,
-        # ...,
+    params = parse.parse_qs(auth_url.split('?')[1])
+    auth_url_nonce = params['nonce'][0]
+    auth_url_state = params['state'][0]
+
+    webbrowser.open(auth_url)
+    token = login_odic_get_token()
+
+    auth_result = client.auth.oidc.oidc_callback(
+        code=token, path='oidc', nonce=auth_url_nonce, state=auth_url_state
     )
-    print('Client token returned: %s' % response['auth']['client_token'])
+    
+    print('Client token returned: %s' % auth_result['auth']['client_token'])
+
+    # handles the callback
+    def login_odic_get_token(self):
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+
+        class HttpServ(HTTPServer):
+            def __init__(self, *args, **kwargs):
+                HTTPServer.__init__(self, *args, **kwargs)
+                self.token = None
+
+        class AuthHandler(BaseHTTPRequestHandler):
+            token = ''
+
+            def do_GET(self):
+                params = parse.parse_qs(self.path.split('?')[1])
+                self.server.token = params['code'][0]
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(str.encode('<div>Authentication successful, you can close the browser now.</div>'))
+
+        server_address = ('', 8250)
+        httpd = HttpServ(server_address, AuthHandler)
+        httpd.handle_request()
+        return httpd.token
 
 
 JWT Login

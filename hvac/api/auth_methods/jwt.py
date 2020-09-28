@@ -362,8 +362,11 @@ class JWT(VaultApiBase):
             'code': code,
         }
         api_path = utils.format_url(
-            '/v1/auth/{path}/oidc/callback',
+            '/v1/auth/{path}/oidc/callback?state={state}&nonce={nonce}&code={code}',
             path=self.resolve_path(path),
+            state=state,
+            nonce=nonce,
+            code=code
         )
         return self._adapter.get(
             url=api_path,
