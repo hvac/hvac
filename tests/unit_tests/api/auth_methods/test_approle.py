@@ -609,8 +609,8 @@ class TestAppRole(TestCase):
         secret_id = 'custom_secret'
 
         mock_response = {
-            'auth': None,
-            'data': {
+            'data': None,
+            'auth': {
                 'renewable': True,
                 'lease_duration': 1200,
                 'metadata': None,
