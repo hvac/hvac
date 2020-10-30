@@ -442,7 +442,7 @@ class AppRole(VaultApiBase):
         )
         return self._adapter.post(url=api_path, json=params)
 
-    def login(self, role_id, secret_id=None, mount_point=DEFAULT_MOUNT_POINT):
+    def login(self, role_id, secret_id=None, use_token=True, mount_point=DEFAULT_MOUNT_POINT):
         """
         Login with APPROLE credentials.
 
@@ -453,6 +453,9 @@ class AppRole(VaultApiBase):
         :type role_id: str | unicode
         :param secret_id: Secret ID of the role.
         :type secret_id: str | unicode
+        :param use_token: if True, uses the token in the response received from the auth request to set the "token"
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+        :type use_token: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the read_role_id request.
@@ -466,4 +469,8 @@ class AppRole(VaultApiBase):
             '/v1/auth/{mount_point}/login',
             mount_point=mount_point
         )
-        return self._adapter.post(url=api_path, json=params)
+        return self._adapter.login(
+            url=api_path,
+            use_token=use_token,
+            json=params,
+        )
