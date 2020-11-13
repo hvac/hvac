@@ -133,7 +133,7 @@ class Adapter(object):
         return self.request('delete', url, **kwargs)
 
     def list(self, url, **kwargs):
-        """Performs a LIST request.
+        """Performs a GET request to retrieve a list.
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
@@ -143,7 +143,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('list', url, **kwargs)
+        return self.request('get', url, **kwargs)
 
     def head(self, url, **kwargs):
         """Performs a HEAD request.

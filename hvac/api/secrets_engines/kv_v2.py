@@ -284,7 +284,7 @@ class KvV2(VaultApiBase):
         themselves are not accessible via this command.
 
         Supported methods:
-            LIST: /{mount_point}/metadata/{path}. Produces: 200 application/json
+            LIST: /{mount_point}/data/{path}. Produces: 200 application/json
 
 
         :param path: Specifies the path of the secrets to list. This is specified as part of the URL.
@@ -294,7 +294,7 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
         return self._adapter.list(
             url=api_path,
         )
