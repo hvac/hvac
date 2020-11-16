@@ -25,7 +25,7 @@ Read CA Certificate Chain
 	import hvac
 	client = hvac.Client()
 
-        read_ca_certificate_chain_chain_response = self.client.secrets.pki.read_ca_certificate_chain_chain()
+        read_ca_certificate_chain_response = self.client.secrets.pki.read_ca_certificate_chain()
         print('Current PKI CA Certificate Chain: {}'.format(read_ca_certificate_chain_response))
 
 
