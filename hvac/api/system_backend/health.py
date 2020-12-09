@@ -63,7 +63,7 @@ class Health(SystemBackendMixin):
             api_path = utils.format_url('/v1/sys/health')
             return self._adapter.get(
                 url=api_path,
-                json=params,
+                params=params,
                 raise_exception=False,
             )
         else:
