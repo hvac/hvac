@@ -1,20 +1,28 @@
 # Changelog
 
-## 0.10.6 ()
+## 0.10.6 (December 14th, 2020)
 
 ### 🚀 Features
 
+- Enable response wrapping of PKI secrets. GH-649
+- Fix OIDC login and add working example. GH-638
+- Add rabbitmq vhost_topics parameter. GH-626
+- Expand auth_methods module to support AppRole. GH-637
 
 ### 🐛 Bug Fixes
 
-- Fixed oidc login. GH-638
-
-### 📚 Documentation
-
-- Added more detailed example for the oidc usage. GH-638
+- Template "auth method not implemented" error message. GH-651
+- Fix health.py read_health_status GET method. GH-653
+- Fix transit constants for "generate_data_key". GH-632
+- Fix PUT method in secrets engine kv_v1 to use PUT instead of POST. GH-629
+- Remove Erroneous json() Calls In rabbitmq Class. GH-624
 
 ### 🧰 Miscellaneous
 
+- Update health.py to match new Vault API query parameters. GH-635
+- Remove Consul Secrets Engine create_or_update_role Policy Type Validation. GH-636
+
+Thanks to @Angeall, @JJCella, @briantist, @derBroBro, @discogestalt, @dogfish182, @el-deano, @ghTravis, @godara01, @jeffwecan, @leongyh, @phickey, @tienthanh2509 and @tmcolby for their lovely contributions.
 
 ## 0.10.5 (July 26th, 2020)
 
