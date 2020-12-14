@@ -39,7 +39,7 @@ class VaultApiCategory(VaultApiBase):
             private_attr_name = self.get_private_attr_name(item)
             return getattr(self, private_attr_name)
         if item in [u.lower() for u in self.unimplemented_classes]:
-            raise NotImplementedError('"%s" auth method class not currently implemented.')
+            raise NotImplementedError('"%s" auth method class not currently implemented.' % item)
         raise AttributeError
 
     @property
