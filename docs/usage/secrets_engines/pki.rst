@@ -302,7 +302,7 @@ Generate Root
            type='exported',
            common_name='New root CA'
         )
-        print('New root CA': {}'.format(generate_root_response))
+        print('New root CA: {}'.format(generate_root_response))
 
 
 Delete Root
