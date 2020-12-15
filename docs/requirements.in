@@ -1,5 +1,5 @@
 -r ../requirements-dev.txt
--r ../requirements.txt
+-r ../requirements.in
 autodocsumm
 m2r2
 sphinx
