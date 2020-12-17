@@ -22,7 +22,7 @@ ALLOWED_EXPORT_KEY_TYPES = [
 
 ALLOWED_DATA_KEY_TYPES = [
     'plaintext',
-    'ciphertext',
+    'wrapped',
 ]
 
 ALLOWED_DATA_KEY_BITS = [

@@ -242,7 +242,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def generate_intermediate(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_intermediate(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
         """Generate Intermediate.
 
         Generates a new private key and a CSR for signing.
@@ -258,6 +258,8 @@ class Pki(VaultApiBase):
         :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: '15s', '20m', '25h'.
+        :type wrap_ttl: str | unicode
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
@@ -275,6 +277,7 @@ class Pki(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
+            wrap_ttl=wrap_ttl,
         )
 
     def set_signed_intermediate(self, certificate, mount_point=DEFAULT_MOUNT_POINT):
@@ -305,7 +308,7 @@ class Pki(VaultApiBase):
             json=params,
         )
 
-    def generate_certificate(self, name, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_certificate(self, name, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
         """Generate Certificate.
 
         Generates a new set of credentials (private key and certificate) based on the role named in the endpoint.
@@ -321,6 +324,8 @@ class Pki(VaultApiBase):
         :name extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :name mount_point: str | unicode
+        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: '15s', '20m', '25h'.
+        :type wrap_ttl: str | unicode
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
@@ -338,6 +343,7 @@ class Pki(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
+            wrap_ttl=wrap_ttl,
         )
 
     def revoke_certificate(self, serial_number, mount_point=DEFAULT_MOUNT_POINT):
@@ -465,7 +471,7 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def generate_root(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_root(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
         """Generate Root.
 
         Generates a new self-signed CA certificate and private key.
@@ -481,6 +487,8 @@ class Pki(VaultApiBase):
         :type extra_params: dict
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: '15s', '20m', '25h'.
+        :type wrap_ttl: str | unicode
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
@@ -498,6 +506,7 @@ class Pki(VaultApiBase):
         return self._adapter.post(
             url=api_path,
             json=params,
+            wrap_ttl=wrap_ttl,
         )
 
     def delete_root(self, mount_point=DEFAULT_MOUNT_POINT):

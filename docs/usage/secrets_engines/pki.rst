@@ -25,7 +25,7 @@ Read CA Certificate Chain
 	import hvac
 	client = hvac.Client()
 
-        read_ca_certificate_chain_chain_response = self.client.secrets.pki.read_ca_certificate_chain_chain()
+        read_ca_certificate_chain_response = self.client.secrets.pki.read_ca_certificate_chain()
         print('Current PKI CA Certificate Chain: {}'.format(read_ca_certificate_chain_response))
 
 
@@ -302,7 +302,7 @@ Generate Root
            type='exported',
            common_name='New root CA'
         )
-        print('New root CA': {}'.format(generate_root_response))
+        print('New root CA: {}'.format(generate_root_response))
 
 
 Delete Root

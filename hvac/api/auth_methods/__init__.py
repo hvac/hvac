@@ -2,6 +2,7 @@
 
 import warnings
 
+from hvac.api.auth_methods.approle import AppRole
 from hvac.api.auth_methods.azure import Azure
 from hvac.api.auth_methods.gcp import Gcp
 from hvac.api.auth_methods.github import Github
@@ -19,6 +20,7 @@ from hvac.utils import generate_method_deprecation_message
 
 __all__ = (
     'AuthMethods',
+    'AppRole',
     'Azure',
     'Gcp',
     'Github',
@@ -37,6 +39,7 @@ __all__ = (
 class AuthMethods(VaultApiCategory):
     """Auth Methods."""
     implemented_classes = [
+        AppRole,
         Azure,
         Github,
         Gcp,
@@ -52,7 +55,6 @@ class AuthMethods(VaultApiCategory):
     ]
     unimplemented_classes = [
         'AppId',
-        'AppRole',
         'AliCloud',
         'Cert',
         'Token',
