@@ -8,23 +8,23 @@ Advanced Usage
 Making Use of Private CA
 ------------------------
 
-There is a not uncommon use case of people deploying Hashicorp Vault with a private certificate authority. Unfortunately the `requests` module does not make use of the system CA certificates. Instead of disabling SSL verification you can make use of the `REQUESTS_CA_BUNDLE` environment variable.
+There is a not uncommon use case of people deploying Hashicorp Vault with a private certificate authority. Unfortunately the `requests` module does not make use of the system CA certificates. Instead of disabling SSL verification you can make use of the requests' `verify` parameter.
 
-As `documented in the advanced usage section for requests`_ this environment variable should point to a file that is comprised of all CA certificates you may wish to use. This can be a single private CA, or an existing list of root certificates with the private appended to the end. The following example shows how to achieve this:
+As `documented in the advanced usage section for requests`_ this variable can point to a file that is comprised of all CA certificates you may wish to use. This can be a single private CA, or an existing list of root certificates with the private appended to the end. The following example shows how to achieve this:
 
 .. code::
 
 	$ cp "$(python -c 'import certifi;print certifi.where();')" /tmp/bundle.pem
 	$ cat /path/to/custom.pem >> /tmp/bundle.pem
-	$ export REQUESTS_CA_BUNDLE=/tmp/bundle.pem
 
-Alternative, this envrionmental variable can be set via the `os` module in-line with other Python statements. The following example would be one way to manage this configuration on a Ubuntu host:
+You then use hvac's Client.session and requests.Session() to pass the new CA bundle to hvac.
 
 .. code:: python
 
 	import os
 
 	import hvac
+	import requests
 
 
 	def get_vault_client(vault_url=VAULT_URL, certs=VAULT_CERTS):
@@ -36,15 +36,16 @@ Alternative, this envrionmental variable can be set via the `os` module in-line 
 		:return: hvac.Client
 		"""
 		logger.debug('Retrieving a vault (hvac) client...')
-		if certs:
-			# When use a self-signed certificate for the vault service itself, we need to
-			# include our local ca bundle here for the underlying requests module.
-			os.environ['REQUESTS_CA_BUNDLE'] = '/etc/ssl/certs/ca-certificates.crt'
-
 		vault_client = hvac.Client(
 			url=vault_url,
 			cert=certs,
 		)
+		if certs:
+		# When use a self-signed certificate for the vault service itself, we need to
+		# include our local ca bundle here for the underlying requests module.
+			rs = requests.Session()
+			vault_client.session = rs
+			rs.verify = certs
 
 		vault_client.token = load_vault_token(vault_client)
 
@@ -54,7 +55,7 @@ Alternative, this envrionmental variable can be set via the `os` module in-line 
 
 		return vault_client
 
-.. _documented in the advanced usage section for requests: https://2.python-requests.org/en/master/user/advanced/#id4
+.. _documented in the advanced usage section for requests: https://requests.readthedocs.io/en/master/user/advanced/#ssl-cert-verification
 
 Custom Requests / HTTP Adapter
 ------------------------------
