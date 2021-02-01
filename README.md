@@ -2,7 +2,7 @@
 
 ![Header image](https://raw.githubusercontent.com/hvac/hvac/main/docs/_static/hvac_logo_800px.png)
 
-[HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2.7/3.x
+[HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 3.x
 
 [![GitHub actions badge](https://github.com/hvac/hvac/workflows/Test/badge.svg?branch=main)](https://github.com/hvac/hvac/actions)
 [![codecov](https://codecov.io/gh/hvac/hvac/branch/main/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
