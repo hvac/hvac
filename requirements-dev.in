@@ -10,6 +10,7 @@ mock
 nose
 parameterized
 pytest
+pytest-cov
 python-ldap-test
 python_jwt
 requests_mock

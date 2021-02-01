@@ -11,7 +11,7 @@ cffi==1.14.0              # via cryptography
 chardet==3.0.4            # via -r ./requirements.txt, requests
 click==7.1.2              # via flask
 codecov==2.1.8            # via -r requirements-dev.in
-coverage==5.2.1           # via -r requirements-dev.in, codecov
+coverage==5.2.1           # via -r requirements-dev.in, codecov, pytest-cov
 cryptography==3.3.1       # via authlib, jwcrypto
 flake8==3.8.4             # via -r requirements-dev.in
 flask-sqlalchemy==2.4.4   # via -r requirements-dev.in
@@ -36,7 +36,8 @@ pycparser==2.20           # via cffi
 pyflakes==2.2.0           # via flake8
 pyhcl==0.4.4              # via -r ./requirements.txt
 pyparsing==2.4.7          # via packaging
-pytest==6.2.2             # via -r requirements-dev.in
+pytest-cov==2.11.1        # via -r requirements-dev.in
+pytest==6.2.2             # via -r requirements-dev.in, pytest-cov
 python-jwt==3.2.6         # via -r requirements-dev.in
 python-ldap-test==0.3.1   # via -r requirements-dev.in
 requests-mock==1.8.0      # via -r requirements-dev.in

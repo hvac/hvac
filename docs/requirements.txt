@@ -14,7 +14,7 @@ cffi==1.14.0              # via -r docs/../requirements-dev.txt, cryptography
 chardet==3.0.4            # via -r docs/../requirements-dev.txt, requests
 click==7.1.2              # via -r docs/../requirements-dev.txt, flask
 codecov==2.1.8            # via -r docs/../requirements-dev.txt
-coverage==5.2.1           # via -r docs/../requirements-dev.txt, codecov
+coverage==5.2.1           # via -r docs/../requirements-dev.txt, codecov, pytest-cov
 cryptography==3.3.1       # via -r docs/../requirements-dev.txt, authlib, jwcrypto
 docutils==0.16            # via m2r2, sphinx
 flake8==3.8.4             # via -r docs/../requirements-dev.txt
@@ -44,7 +44,8 @@ pyflakes==2.2.0           # via -r docs/../requirements-dev.txt, flake8
 pygments==2.6.1           # via sphinx
 pyhcl==0.4.4              # via -r docs/../requirements-dev.txt
 pyparsing==2.4.7          # via -r docs/../requirements-dev.txt, packaging
-pytest==6.2.2             # via -r docs/../requirements-dev.txt
+pytest-cov==2.11.1        # via -r docs/../requirements-dev.txt
+pytest==6.2.2             # via -r docs/../requirements-dev.txt, pytest-cov
 python-jwt==3.2.6         # via -r docs/../requirements-dev.txt
 python-ldap-test==0.3.1   # via -r docs/../requirements-dev.txt
 pytz==2020.1              # via babel
