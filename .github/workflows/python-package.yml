@@ -32,6 +32,7 @@ jobs:
         tests/scripts/install-consul.sh
         tests/scripts/install-vault.sh ${{ matrix.vault-version }} enterprise
         pip install -r requirements-dev.txt
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Lint with flake8
       run: flake8 .
