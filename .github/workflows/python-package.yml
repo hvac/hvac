@@ -1,0 +1,54 @@
+name: Test
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.7]
+        include:
+          - vault_version: '1.5.0'
+            vault_license: 'enterprise'
+          - vault_version: '1.4.3'
+            vault_license: 'enterprise'
+          - vault_version: '1.3.7'
+            vault_license: 'enterprise'
+          - vault_version: '1.2.4'
+            vault_license: 'enterprise'
+          - vault_version: 'STABLE'
+            vault_license: 'OSS'
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.15.3' # "Vault requires go 1.15.3 to build"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        tests/scripts/install-consul.sh
+        tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION} ${HVAC_VAULT_LICENSE}
+        python -m pip install tox
+      env:
+        HVAC_VAULT_VERSION: ${{ matrix.vault_version }}
+        HVAC_VAULT_LICENSE: ${{ matrix.vault_license }}
+
+    - name: Lint with flake8
+      run: tox
+      env:
+        TOXENV: flake8
+
+    - name: Test with tox
+      run: tox
