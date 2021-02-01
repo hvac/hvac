@@ -171,6 +171,40 @@ class Database(VaultApiBase):
             json=params
         )
 
+    def create_static_role(self, name, db_name, username, rotation_statements,
+                           rotation_period=86400, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint creates or updates a static role definition.
+
+        :param name: Specifies the name of the role to create.
+        :type name: str | unicode
+        :param db_name: The name of the database connection to use for this role.
+        :type db_name: str | unicode
+        :param username: Specifies the database username that the Vault role `name` above corresponds to.
+        :type username: str | unicode
+        :param rotation_statements: Specifies the database statements to be executed to rotate the password for the configured database user.
+            Not every plugin type will support this functionality. See the plugin's API page for more information on support and
+            formatting for this parameter.
+        :type rotation_statements: list
+        :param rotation_period: Specifies the amount of time Vault should wait before rotating the password. The minimum is 5 seconds.
+        :type rotation_period: int
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+
+        params = {
+            "db_name": db_name,
+            "username": username,
+            "rotation_statements": rotation_statements,
+            "rotation_period": rotation_period,
+        }
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}", mount_point=mount_point, name=name
+        )
+        return self._adapter.post(url=api_path, json=params)
+
     def read_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint queries the role definition.
 
@@ -202,6 +236,20 @@ class Database(VaultApiBase):
             url=api_path,
         )
 
+    def list_static_roles(self, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint returns a list of available static roles.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles", mount_point=mount_point
+        )
+        return self._adapter.list(url=api_path,)
+
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes the role definition.
 
@@ -217,6 +265,21 @@ class Database(VaultApiBase):
             url=api_path,
         )
 
+    def delete_static_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint deletes the static role definition.
+
+        :param name: Specifies the name of the role to delete.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}", mount_point=mount_point, name=name
+        )
+        return self._adapter.delete(url=api_path,)
+
     def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a new set of dynamic credentials based on the named role.
 
@@ -229,6 +292,25 @@ class Database(VaultApiBase):
         """
 
         api_path = utils.format_url('/v1/{mount_point}/creds/{name}', mount_point=mount_point, name=name)
+
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def get_static_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint returns the current credentials based on the named static role.
+
+        :param name: Specifies the name of the role to create credentials against
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-creds/{name}", mount_point=mount_point, name=name
+        )
 
         return self._adapter.get(
             url=api_path,
