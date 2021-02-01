@@ -4,7 +4,7 @@
 
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 3.x
 
-[![GitHub actions badge](https://github.com/hvac/hvac/workflows/Test/badge.svg?branch=main)](https://github.com/hvac/hvac/actions)
+[![Test](https://github.com/hvac/hvac/workflows/Test/badge.svg)](https://github.com/hvac/hvac/actions?query=workflow%3ATest)
 [![codecov](https://codecov.io/gh/hvac/hvac/branch/main/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
 [![Documentation Status](https://readthedocs.org/projects/hvac/badge/)](https://hvac.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/hvac.svg)](https://badge.fury.io/py/hvac)
