@@ -46,15 +46,17 @@ jobs:
       run: |
         tests/scripts/install-consul.sh
         tests/scripts/install-vault.sh ${HVAC_VAULT_VERSION} ${HVAC_VAULT_LICENSE}
-        python -m pip install tox
+        pip install -r requirements-dev.txt
       env:
         HVAC_VAULT_VERSION: ${{ matrix.vault_version }}
         HVAC_VAULT_LICENSE: ${{ matrix.vault_license }}
 
     - name: Lint with flake8
-      run: tox
-      env:
-        TOXENV: flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Test with tox
-      run: tox
+    - name: Test with pytest
+      run: pytest --cov=hvac tests/

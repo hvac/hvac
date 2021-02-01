@@ -5,7 +5,6 @@
 /build
 /dist
 /*.egg-info
-/.tox
 test/*.log
 /.coverage
 /cover

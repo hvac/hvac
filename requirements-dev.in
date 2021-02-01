@@ -1,5 +1,6 @@
 -r ./requirements.txt
 Authlib
+flake8
 Flask
 Flask-SQLAlchemy
 codecov
@@ -8,9 +9,9 @@ ipaddress
 mock
 nose
 parameterized
+pytest
 python-ldap-test
 python_jwt
 requests_mock
 semantic_version
-tox
 Werkzeug

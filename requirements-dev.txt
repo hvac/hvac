@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
-appdirs==1.4.4            # via virtualenv
+attrs==20.3.0             # via pytest
 authlib==0.14.3           # via -r requirements-dev.in
 certifi==2020.6.20        # via -r ./requirements.txt, requests
 cffi==1.14.0              # via cryptography
@@ -13,35 +13,37 @@ click==7.1.2              # via flask
 codecov==2.1.8            # via -r requirements-dev.in
 coverage==5.2.1           # via -r requirements-dev.in, codecov
 cryptography==3.3.1       # via authlib, jwcrypto
-distlib==0.3.1            # via virtualenv
-filelock==3.0.12          # via tox, virtualenv
+flake8==3.8.4             # via -r requirements-dev.in
 flask-sqlalchemy==2.4.4   # via -r requirements-dev.in
 flask==1.1.2              # via -r requirements-dev.in, flask-sqlalchemy
 idna==2.10                # via -r ./requirements.txt, requests
+iniconfig==1.1.1          # via pytest
 ipaddress==1.0.23         # via -r requirements-dev.in
 itsdangerous==1.1.0       # via flask
 jinja2==2.11.2            # via flask
 jwcrypto==0.7             # via python-jwt
 markupsafe==1.1.1         # via jinja2
+mccabe==0.6.1             # via flake8
 mock==3.0.5               # via -r requirements-dev.in
 nose==1.3.7               # via -r requirements-dev.in
-packaging==20.4           # via tox
+packaging==20.4           # via pytest
 parameterized==0.7.4      # via -r requirements-dev.in
-pluggy==0.13.1            # via tox
+pluggy==0.13.1            # via pytest
 py4j==0.10.9              # via python-ldap-test
-py==1.9.0                 # via tox
+py==1.9.0                 # via pytest
+pycodestyle==2.6.0        # via flake8
 pycparser==2.20           # via cffi
+pyflakes==2.2.0           # via flake8
 pyhcl==0.4.4              # via -r ./requirements.txt
 pyparsing==2.4.7          # via packaging
+pytest==6.2.2             # via -r requirements-dev.in
 python-jwt==3.2.6         # via -r requirements-dev.in
 python-ldap-test==0.3.1   # via -r requirements-dev.in
 requests-mock==1.8.0      # via -r requirements-dev.in
 requests==2.24.0          # via -r ./requirements.txt, codecov, requests-mock
 semantic-version==2.8.5   # via -r requirements-dev.in
-six==1.15.0               # via -r ./requirements.txt, cryptography, mock, packaging, requests-mock, tox, virtualenv
+six==1.15.0               # via -r ./requirements.txt, cryptography, mock, packaging, requests-mock
 sqlalchemy==1.3.18        # via flask-sqlalchemy
-toml==0.10.1              # via tox
-tox==3.18.0               # via -r requirements-dev.in
+toml==0.10.1              # via pytest
 urllib3==1.25.10          # via -r ./requirements.txt, requests
-virtualenv==20.0.28       # via tox
 werkzeug==1.0.1           # via -r requirements-dev.in, flask
