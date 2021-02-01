@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.7 (February 1st, 2021)
+
+## 🚀 Features
+
+- Support database secrets static roles. GH-662
+
+## 🧰 Miscellaneous
+
+- Replace Travis CI w/ GitHub actions. GH-666
+
+Thanks to @jeffwecan, @krish7919 and Krish for their lovely contributions.
+
 ## 0.10.6 (December 14th, 2020)
 
 ### 🚀 Features
