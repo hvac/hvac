@@ -22,8 +22,8 @@ jobs:
             vault_license: 'enterprise'
           - vault_version: '1.2.4'
             vault_license: 'enterprise'
-          - vault_version: 'STABLE'
-            vault_license: 'OSS'
+          # - vault_version: 'STABLE'
+          #   vault_license: 'OSS'
 
     steps:
     - uses: actions/checkout@v2
@@ -33,9 +33,9 @@ jobs:
         fail_ci_if_error: true
         verbose: true
 
-    - uses: actions/setup-go@v2
-      with:
-        go-version: '^1.15.3' # "Vault requires go 1.15.3 to build"
+    # - uses: actions/setup-go@v2
+    #   with:
+    #     go-version: '^1.15.3' # "Vault requires go 1.15.3 to build"
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
