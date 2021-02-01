@@ -79,7 +79,7 @@ Due to the close connection between this module and HashiCorp Vault versions, br
   ```
   git commit CHANGELOG.md -m "Changelog updates for v$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)"
   ```
-- [ ] Git push the updated develop branch (`git push`) and open a PR to rebase merge the develop branch into master:  [https://github.com/hvac/hvac/compare/master...develop](https://github.com/hvac/hvac/compare/master...develop). Ensure the PR has the "release" label applied and then merge it.
+- [ ] Git push the updated develop branch (`git push`) and open a PR to rebase merge the develop branch into main:  [https://github.com/hvac/hvac/compare/main...develop](https://github.com/hvac/hvac/compare/main...develop). Ensure the PR has the "release" label applied and then merge it.
 
-- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases). Ensure the tag is set to the release name (e.g., vX.X.X) and the target is the master branch.
+- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases). Ensure the tag is set to the release name (e.g., vX.X.X) and the target is the main branch.
   NOTE: [release-drafter](https://github.com/toolmantim/release-drafter) sets the release name by default. If performing a minor or major update, these values will need to be manually updated before publishing the draft release subsequently.

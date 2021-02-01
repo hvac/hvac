@@ -1,6 +1,6 @@
 # hvac
 
-![Header image](https://raw.githubusercontent.com/hvac/hvac/master/docs/_static/hvac_logo_800px.png)
+![Header image](https://raw.githubusercontent.com/hvac/hvac/main/docs/_static/hvac_logo_800px.png)
 
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2.7/3.x
 
