@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.7 (February 1st, 2021)
+
+## 🚀 Features
+
+- Support database secrets static roles. GH-662
+
+## 🧰 Miscellaneous
+
+- Replace Travis CI w/ GitHub actions. GH-666
+
+Thanks to @jeffwecan, @krish7919 and Krish for their lovely contributions.
+
 ## 0.10.6 (December 14th, 2020)
 
 ### 🚀 Features
@@ -397,7 +409,7 @@ DOCUMENTATION UPDATES:
 
 MISCELLANEOUS:
 
-* Note: Starting after release 0.7.0, `develop` is the main integration branch for the hvac project. The `master` branch is now intended to capture the state of the most recent release.
+* Note: Starting after release 0.7.0, `develop` is the main integration branch for the hvac project. The `main` branch is now intended to capture the state of the most recent release.
 * Test cases for hvac are no longer included in the release artifacts published to PyPi. [GH-334](https://github.com/hvac/hvac/pull/334)
 * The `create_or_update_policy` system backend method now supports a "pretty_print" argument for different JSON formatting. This allows create more viewable policy documents when retrieve existing policies (e.g., from within the Vault UI interface). [GH-342](https://github.com/hvac/hvac/pull/342)
 * Explicit support for Vault v0.8.3 dropped. CI/CD tests updated to run against Vault v1.0.0. [GH-344](https://github.com/hvac/hvac/pull/344)

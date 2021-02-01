@@ -143,6 +143,7 @@ OIDC Authorization URL Request
 :py:meth:`hvac.api.auth_methods.JWT.oidc_authorization_url_request`
 
 .. code:: python
+
     import webbrowser
     import http.server
     import hvac
@@ -166,7 +167,7 @@ OIDC Authorization URL Request
     auth_result = client.auth.oidc.oidc_callback(
         code=token, path='oidc', nonce=auth_url_nonce, state=auth_url_state
     )
-    
+
     print('Client token returned: %s' % auth_result['auth']['client_token'])
 
     # handles the callback
