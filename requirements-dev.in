@@ -1,3 +1,4 @@
+-r ./requirements.txt
 Authlib
 Flask
 Flask-SQLAlchemy
