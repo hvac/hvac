@@ -4,13 +4,13 @@ REQUIREMENTS_FILES	:= requirements requirements-dev
 .PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt
 
 test:
-	tox
+	pytest --cov=hvac tests/
 
 clean:
 	rm -rf dist hvac.egg-info
 
 distclean: clean
-	rm -rf build .tox
+	rm -rf build
 
 package:
 	python setup.py sdist bdist_wheel

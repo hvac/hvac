@@ -1,18 +1,18 @@
 # hvac
 
-![Header image](https://raw.githubusercontent.com/hvac/hvac/master/docs/_static/hvac_logo_800px.png)
+![Header image](https://raw.githubusercontent.com/hvac/hvac/main/docs/_static/hvac_logo_800px.png)
 
-[HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 2.7/3.x
+[HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 3.x
 
-[![Travis CI](https://travis-ci.org/hvac/hvac.svg?branch=master)](https://travis-ci.org/hvac/hvac)
-[![codecov](https://codecov.io/gh/hvac/hvac/branch/master/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
+[![GitHub actions badge](https://github.com/hvac/hvac/workflows/Test/badge.svg?branch=main)](https://github.com/hvac/hvac/actions)
+[![codecov](https://codecov.io/gh/hvac/hvac/branch/main/graph/badge.svg)](https://codecov.io/gh/hvac/hvac)
 [![Documentation Status](https://readthedocs.org/projects/hvac/badge/)](https://hvac.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/hvac.svg)](https://badge.fury.io/py/hvac)
 [![Twitter - @python_hvac](https://img.shields.io/twitter/follow/python_hvac.svg?label=Twitter%20-%20@python_hvac&style=social?style=plastic)](https://twitter.com/python_hvac)
 [![Gitter chat](https://badges.gitter.im/hvac/community.png)](https://gitter.im/hvac/community)
 
 Tested against the latest release, HEAD ref, and 3 previous minor versions (counting back from the latest release) of Vault.
-Current official support covers Vault v1.2.4 or later.
+Current official support covers Vault v1.3.10 or later.
 
 ## Installation
 
