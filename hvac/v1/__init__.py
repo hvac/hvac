@@ -1623,7 +1623,7 @@ class Client(object):
         return self._adapter.get(url)
 
     def create_kubernetes_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl="",
-                               max_ttl="", period="", policies=None, mount_point='kubernetes', token_type=""):
+                               max_ttl="", period="", policies=None, token_type="", mount_point='kubernetes'):
         """POST /auth/<mount_point>/role/:name
 
         :param name: Name of the role.
