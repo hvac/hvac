@@ -108,8 +108,9 @@ autodoc_default_options = {
 
 
 def skip(app, what, name, obj, skip, options):
-    """Method to override default autodoc skip call. Ensures class constructor (e.g., __init__()) methods are included
-    regardless of if private methods are included in the documentation generally.
+    """Method to override default autodoc skip call. Ensures class constructor
+    (e.g., __init__()) methods are included regardless of if private methods
+    are included in the documentation generally.
     """
     if name == "__init__":
         return False
