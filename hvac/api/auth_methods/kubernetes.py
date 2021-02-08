@@ -104,10 +104,10 @@ class Kubernetes(VaultApiBase):
         :param name: Name of the role.
         :type name: str | unicode
         :param bound_service_account_names: List of service account names able to access this role. If set to "*"
-            all names are allowed, both this and bound_service_account_namespaces can not be "*".
+            all names are allowed.
         :type bound_service_account_names: list | str | unicode
         :param bound_service_account_namespaces: List of namespaces allowed to access this role. If set to "*" all
-            namespaces are allowed, both this and bound_service_account_names can not be set to "*".
+            namespaces are allowed.
         :type bound_service_account_namespaces: list | str | unicode
         :param ttl: The TTL period of tokens issued using this role in seconds.
         :type ttl: str | unicode
@@ -134,11 +134,6 @@ class Kubernetes(VaultApiBase):
                 param_name=param_name,
                 param_argument=param_argument,
             )
-
-        if bound_service_account_names in ("*", ["*"]) and bound_service_account_namespaces in ("*", ["*"]):
-            error_msg = 'unsupported combination of `bind_service_account_names` and ' \
-                        '`bound_service_account_namespaces` arguments. Both of them can not be set to `*`'
-            raise exceptions.ParamValidationError(error_msg)
 
         params = {
             'bound_service_account_names': comma_delimited_to_list(bound_service_account_names),

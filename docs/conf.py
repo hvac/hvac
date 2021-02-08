@@ -16,9 +16,9 @@ copyright = u'2018-2020, Ian Unruh, Jeffrey Hogan'
 author = u'Ian Unruh, Jeffrey Hogan'
 
 # The short X.Y version
-version = '0.10.7'
+version = '0.10.8'
 # The full version, including alpha/beta/rc tags
-release = '0.10.7'
+release = '0.10.8'
 
 
 # -- General configuration ---------------------------------------------------
@@ -108,8 +108,9 @@ autodoc_default_options = {
 
 
 def skip(app, what, name, obj, skip, options):
-    """Method to override default autodoc skip call. Ensures class constructor (e.g., __init__()) methods are included
-    regardless of if private methods are included in the documentation generally.
+    """Method to override default autodoc skip call. Ensures class constructor
+    (e.g., __init__()) methods are included regardless of if private methods
+    are included in the documentation generally.
     """
     if name == "__init__":
         return False

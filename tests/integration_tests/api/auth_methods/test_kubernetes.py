@@ -130,10 +130,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             bound_service_account_namespaces=['default'],
         ),
         param(
-            'both bounds wildcard',
+            'both bounds wildcard permitted',
             bound_service_account_names=['*'],
             bound_service_account_namespaces=['*'],
-            raises=exceptions.ParamValidationError,
         ),
     ])
     def test_create_role(self, label, bound_service_account_names=None, bound_service_account_namespaces=None,

@@ -1,12 +1,19 @@
 # Changelog
 
+## 0.10.8 (February 8th, 2021)
+
+### 🚀 Features
+
+- K8s Auth: Allow wildcards for service account and namespace. GH-669
+- Add token_type support to create_kubernetes_role. GH-664
+
 ## 0.10.7 (February 1st, 2021)
 
-## 🚀 Features
+### 🚀 Features
 
 - Support database secrets static roles. GH-662
 
-## 🧰 Miscellaneous
+### 🧰 Miscellaneous
 
 - Replace Travis CI w/ GitHub actions. GH-666
 
