@@ -91,7 +91,6 @@ Lambda and/or EC2 Instance
         on_lambda = 'AWS_LAMBDA_FUNCTION_NAME' in os.environ
         if on_lambda:
             return os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'], os.environ['AWS_SESSION_TOKEN']
-    else:
         else:
             security_credentials = load_aws_ec2_role_iam_credentials(iam_role)
             return security_credentials['AccessKeyId'], security_credentials['SecretAccessKey']
