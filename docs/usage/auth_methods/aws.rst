@@ -90,13 +90,13 @@ Lambda and/or EC2 Instance
     def infer_credentials_from_iam_role(iam_role):
         on_lambda = 'AWS_LAMBDA_FUNCTION_NAME' in os.environ
         if on_lambda:
-            return os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY']
+            return os.environ['AWS_ACCESS_KEY_ID'], os.environ['AWS_SECRET_ACCESS_KEY'], os.environ['AWS_SESSION_TOKEN']
         else:
             security_credentials = load_aws_ec2_role_iam_credentials(iam_role)
             return security_credentials['AccessKeyId'], security_credentials['SecretAccessKey']
 
 
-    access_key_id, secret_access_key = infer_credentials_from_iam_role('some-role')
+    access_key_id, secret_access_key, session_token = infer_credentials_from_iam_role('some-role')
 
     client = hvac.Client()
     client.auth.aws.iam_login(access_key_id, secret_access_key, session_token)
