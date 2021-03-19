@@ -25,7 +25,7 @@ Read CA Certificate Chain
 	import hvac
 	client = hvac.Client()
 
-        read_ca_certificate_chain_response = self.client.secrets.pki.read_ca_certificate_chain()
+        read_ca_certificate_chain_response = client.secrets.pki.read_ca_certificate_chain()
         print('Current PKI CA Certificate Chain: {}'.format(read_ca_certificate_chain_response))
 
 
@@ -39,7 +39,7 @@ Read Certificate
 	import hvac
 	client = hvac.Client()
 
-        read_certificate_response = self.client.secrets.pki.read_certificate(serial='crl')
+        read_certificate_response = client.secrets.pki.read_certificate(serial='crl')
         print('Current PKI CRL: {}'.format(read_certificate_response))
 
 
@@ -53,7 +53,7 @@ List Certificates
 	import hvac
 	client = hvac.Client()
 
-        list_certificate_response = self.client.secrets.pki.list_certificates()
+        list_certificate_response = client.secrets.pki.list_certificates()
         print('Current certificates (serial numbers): {}'.format(list_certificate_response))
 
 
@@ -67,7 +67,7 @@ Submit CA Information
 	import hvac
 	client = hvac.Client()
 
-        submit_ca_information_response = self.client.secrets.pki.submit_ca_information(
+        submit_ca_information_response = client.secrets.pki.submit_ca_information(
         '-----BEGIN RSA PRIVATE KEY-----\n...\n-----END CERTIFICATE-----'
         )
 
@@ -82,7 +82,7 @@ Read CRL Configuration
 	import hvac
 	client = hvac.Client()
 
-        read_crl_configuration_response = self.client.secrets.pki.read_crl_configuration()
+        read_crl_configuration_response = client.secrets.pki.read_crl_configuration()
         print('CRL configuration: {}'.format(read_crl_configuration_response))
 
 
@@ -96,7 +96,7 @@ Set CRL Configuration
 	import hvac
 	client = hvac.Client()
 
-        set_crl_configuration_response = self.client.secrets.pki.set_crl_configuration(
+        set_crl_configuration_response = client.secrets.pki.set_crl_configuration(
            expiry='72h',
            disable=False
         )
@@ -112,7 +112,7 @@ Read URLs
 	import hvac
 	client = hvac.Client()
 
-        read_urls_response = self.client.secrets.pki.read_urls()
+        read_urls_response = client.secrets.pki.read_urls()
         print('Get PKI urls: {}'.format(read_urls_response))
 
 
@@ -126,7 +126,7 @@ Set URLs
 	import hvac
 	client = hvac.Client()
 
-        set_urls_response = self.client.secrets.pki.set_urls(
+        set_urls_response = client.secrets.pki.set_urls(
         {
           'issuing_certificates': ['http://127.0.0.1:8200/v1/pki/ca'],
           'crl_distribution_points': ['http://127.0.0.1:8200/v1/pki/crl']
@@ -144,7 +144,7 @@ Read CRL
 	import hvac
 	client = hvac.Client()
 
-        read_crl_response = self.client.secrets.pki.read_crl()
+        read_crl_response = client.secrets.pki.read_crl()
         print('Current CRL: {}'.format(read_crl_response))
 
 
@@ -158,7 +158,7 @@ Rotate CRLs
 	import hvac
 	client = hvac.Client()
 
-        rotate_crl_response = self.client.secrets.pki.rotate_crl()
+        rotate_crl_response = client.secrets.pki.rotate_crl()
         print('Rotate CRL: {}'.format(rotate_crl_response))
 
 
@@ -172,7 +172,7 @@ Generate Intermediate
 	import hvac
 	client = hvac.Client()
 
-        generate_intermediate_response = self.client.secrets.pki.generate_intermediate(
+        generate_intermediate_response = client.secrets.pki.generate_intermediate(
             type='exported',
             common_name='Vault integration tests'
         )
@@ -189,7 +189,7 @@ Set Signed Intermediate
 	import hvac
 	client = hvac.Client()
 
-        set_signed_intermediate_response = self.client.secrets.pki.set_signed_intermediate(
+        set_signed_intermediate_response = client.secrets.pki.set_signed_intermediate(
             '-----BEGIN CERTIFICATE...'
         )
 
@@ -204,7 +204,7 @@ Generate Certificate
 	import hvac
 	client = hvac.Client()
 
-        generate_certificate_response = self.client.secrets.pki.generate_certificate(
+        generate_certificate_response = client.secrets.pki.generate_certificate(
            name='myrole',
            common_name='test.example.com'
         )
@@ -221,7 +221,7 @@ Revoke Certificate
 	import hvac
 	client = hvac.Client()
 
-        revoke_certificate_response = self.client.secrets.pki.revoke_certificate(
+        revoke_certificate_response = client.secrets.pki.revoke_certificate(
            serial_number='39:dd:2e...'
         )
         print('Certificate: {}'.format(revoke_certificate_response))
@@ -237,7 +237,7 @@ Create/Update Role
 	import hvac
 	client = hvac.Client()
 
-        create_or_update_role_response = self.client.secrets.pki.create_or_update_role(
+        create_or_update_role_response = client.secrets.pki.create_or_update_role(
            'mynewrole',
            {
               'ttl': '72h',
@@ -257,7 +257,7 @@ Read Role
 	import hvac
 	client = hvac.Client()
 
-        read_role_response = self.client.secrets.pki.read_role('myrole')
+        read_role_response = client.secrets.pki.read_role('myrole')
         print('Role definition: {}'.format(read_role_response))
 
 
@@ -271,7 +271,7 @@ List Roles
 	import hvac
 	client = hvac.Client()
 
-        list_roles_response = self.client.secrets.pki.list_roles()
+        list_roles_response = client.secrets.pki.list_roles()
         print('List of available roles: {}'.format(list_roles_response))
 
 
@@ -285,7 +285,7 @@ Delete Role
 	import hvac
 	client = hvac.Client()
 
-        delete_role_response = self.client.secrets.pki.delete_role('role2delete')
+        delete_role_response = client.secrets.pki.delete_role('role2delete')
 
 
 Generate Root
@@ -298,7 +298,7 @@ Generate Root
 	import hvac
 	client = hvac.Client()
 
-        generate_root_response = self.client.secrets.pki.generate_root(
+        generate_root_response = client.secrets.pki.generate_root(
            type='exported',
            common_name='New root CA'
         )
@@ -315,7 +315,7 @@ Delete Root
 	import hvac
 	client = hvac.Client()
 
-        delete_root_response = self.client.secrets.pki.delete_root()
+        delete_root_response = client.secrets.pki.delete_root()
 
 
 Sign Intermediate
@@ -328,7 +328,7 @@ Sign Intermediate
 	import hvac
 	client = hvac.Client()
 
-        sign_intermediate_response = self.client.secrets.pki.sign_intermediate(
+        sign_intermediate_response = client.secrets.pki.sign_intermediate(
             csr='....',
             common_name='example.com',
         )
@@ -345,7 +345,7 @@ Sign Self-Issued
 	import hvac
 	client = hvac.Client()
 
-        sign_self_issued_response = self.client.secrets.pki.sign_self_issued(
+        sign_self_issued_response = client.secrets.pki.sign_self_issued(
            certificate='...'
         )
         print('Signed certificate: {}'.format(sign_self_issued_response))
@@ -361,7 +361,7 @@ Sign Certificate
 	import hvac
 	client = hvac.Client()
 
-        sign_certificate_response = self.client.secrets.pki.sign_certificate(
+        sign_certificate_response = client.secrets.pki.sign_certificate(
            name='myrole',
            csr='...',
            common_name='example.com'
@@ -379,7 +379,7 @@ Sign Verbatim
 	import hvac
 	client = hvac.Client()
 
-        sign_verbatim_response = self.client.secrets.pki.sign_verbatim(
+        sign_verbatim_response = client.secrets.pki.sign_verbatim(
            name='myrole',
            csr='...'
         )
@@ -396,6 +396,6 @@ Tidy
 	import hvac
 	client = hvac.Client()
 
-        tidy_response = self.client.secrets.pki.tidy()
+        tidy_response = client.secrets.pki.tidy()
 
 
