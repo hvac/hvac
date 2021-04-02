@@ -1,18 +1,5 @@
 # Changelog
 
-## 0.10.9 (April 2nd, 2021)
-
-### 🐛 Bug Fixes
-
-- Send AppRole generate_secret_id Method Metadata Parameter as String GH-689
-
-### 📚 Documentation
-
-- Fix lambda authentication example in aws auth documentation. GH-675
-- Docs(secret_engines/pki): Remove 'self' from examples. GH-676
-
-Thanks to @JPoser, @fhemberger, @jeffwecan, @lperdereau and jposer for their lovely contributions.
-
 ## 0.10.8 (February 8th, 2021)
 
 ### 🚀 Features
