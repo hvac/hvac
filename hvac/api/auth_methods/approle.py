@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """APPROLE methods module."""
+import json
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.approle import DEFAULT_MOUNT_POINT, ALLOWED_TOKEN_TYPES
@@ -245,7 +246,7 @@ class AppRole(VaultApiBase):
             ))
 
         params = {
-            'metadata': metadata
+            'metadata': json.dumps(metadata) if metadata else metadata
         }
 
         list_of_strings_params = {
