@@ -139,7 +139,8 @@ class Aws(VaultApiBase):
         )
 
     def create_or_update_role(self, name, credential_type, policy_document=None, default_sts_ttl=None, max_sts_ttl=None,
-                              role_arns=None, policy_arns=None, legacy_params=False, mount_point=DEFAULT_MOUNT_POINT):
+                              role_arns=None, policy_arns=None, legacy_params=False, mount_point=DEFAULT_MOUNT_POINT,
+                              iam_tags=None):
         """Create or update the role with the given name.
 
         If a role with the name does not exist, it will be created. If the role exists, it will be updated with the new
@@ -178,6 +179,9 @@ class Aws(VaultApiBase):
         :type legacy_params: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param iam_tags: A list of strings representing a key/value pair to be used for any IAM user that is created by
+            this role. Format is a key and value separated by an =.
+        :type iam_tags: list
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -207,6 +211,7 @@ class Aws(VaultApiBase):
                     'max_sts_ttl': max_sts_ttl,
                     'role_arns': role_arns,
                     'policy_arns': policy_arns,
+                    'iam_tags': iam_tags,
                 })
             )
         api_path = utils.format_url(
