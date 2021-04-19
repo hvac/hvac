@@ -59,6 +59,7 @@ class KvV2(VaultApiBase):
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
+    
     def read_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
         api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
         return self._adapter.get(
