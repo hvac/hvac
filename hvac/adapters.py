@@ -18,7 +18,7 @@ class Adapter(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False):
+                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False, strict_http=False):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
@@ -45,6 +45,8 @@ class Adapter(object):
         :param ignore_exceptions: If True, _always_ return the response object for a given request. I.e., don't raise an exception
             based on response status code, etc.
         :type ignore_exceptions: bool
+        :param strict_http: If True, use only standard HTTP verbs in request with additional params, otherwise process as is
+        :type strict_http: bool
         """
         if not session:
             session = requests.Session()
@@ -55,6 +57,7 @@ class Adapter(object):
         self.session = session
         self.allow_redirects = allow_redirects
         self.ignore_exceptions = ignore_exceptions
+        self.strict_http = strict_http
 
         self._kwargs = {
             'cert': cert,
@@ -283,6 +286,14 @@ class RawAdapter(Adapter):
 
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
+
+        if self.strict_http and method.lower() in ('list',):
+            # Encty point for standard HTTP substitution
+            params = _kwargs.get('params', {})
+            if method.lower() == 'list':
+                method = 'get'
+                params.update({'list': 'true'})
+            _kwargs['params'] = params
 
         response = self.session.request(
             method=method,
