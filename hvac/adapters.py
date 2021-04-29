@@ -288,7 +288,7 @@ class RawAdapter(Adapter):
         _kwargs.update(kwargs)
 
         if self.strict_http and method.lower() in ('list',):
-            # Encty point for standard HTTP substitution
+            # Entry point for standard HTTP substitution
             params = _kwargs.get('params', {})
             if method.lower() == 'list':
                 method = 'get'
