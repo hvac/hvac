@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.10.10 (April 29th, 2021)
+
+### 🚀 Features
+
+- Add Active Directory generate credential capability. GH-657
+- Add `policies` Parameter to Userpass `create_or_update_user()` Method. GH-562
+- Add handling of unsupported HTTP methods inside adapter. GH-689
+- Add Convenience `read_secret()` Method for KVv2 Class. GH-686
+
+### 🧰 Miscellaneous
+
+- Set daemon attribute instead of using setDaemon method that was deprecated in Python 3.10. GH-688
+
+Thanks to @jeffwecan, @mblau-leaffilter, @nicholaswold, @sshishov, @tirkarthi, @tomwerneruk and @vamshideveloper for their lovely contributions.
+
 ## 0.10.9 (April 2nd, 2021)
 
 ### 🐛 Bug Fixes
