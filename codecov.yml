@@ -7,6 +7,9 @@ comment:
   branches: null
 
 coverage:
+  status:
+    project: off
+    patch: off
   notify:
     gitter:
       default:
