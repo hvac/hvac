@@ -15,6 +15,7 @@ from hvac.api.auth_methods.oidc import OIDC
 from hvac.api.auth_methods.okta import Okta
 from hvac.api.auth_methods.radius import Radius
 from hvac.api.auth_methods.aws import Aws
+from hvac.api.auth_methods.cert import Cert
 from hvac.api.vault_api_category import VaultApiCategory
 from hvac.utils import generate_method_deprecation_message
 
@@ -33,6 +34,7 @@ __all__ = (
     'Okta',
     'Radius',
     'Aws',
+    'Cert',
 )
 
 
@@ -52,11 +54,11 @@ class AuthMethods(VaultApiCategory):
         Okta,
         Radius,
         Aws,
+        Cert,
     ]
     unimplemented_classes = [
         'AppId',
         'AliCloud',
-        'Cert',
         'Token',
     ]
 

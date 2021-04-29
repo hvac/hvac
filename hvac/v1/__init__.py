@@ -582,6 +582,10 @@ class Client(object):
 
         return self.login('/v1/auth/{0}/login'.format(mount_point), json=params, use_token=use_token)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version='0.13.0',
+        new_method=api.auth_methods.Cert.login,
+    )
     def auth_tls(self, mount_point='cert', use_token=True):
         """POST /auth/<mount point>/login
 
@@ -592,7 +596,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.login('/v1/auth/{0}/login'.format(mount_point), use_token=use_token)
+        return self.auth.cert.login(mount_point=mount_point, use_token=use_token)
 
     def auth_userpass(self, username, password, mount_point='userpass', use_token=True, **kwargs):
         """POST /auth/<mount point>/login/<username>
