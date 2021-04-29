@@ -59,6 +59,9 @@ class KvV2(VaultApiBase):
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
+    
+    def read_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
+        return self.read_secret_version(path, mount_point=mount_point)
 
     def read_secret_version(self, path, version=None, mount_point=DEFAULT_MOUNT_POINT):
         """Retrieve the secret at the specified location.
