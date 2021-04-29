@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """USERPASS methods module."""
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
 DEFAULT_MOUNT_POINT = 'userpass'
@@ -11,7 +12,7 @@ class Userpass(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/userpass/index.html
     """
 
-    def create_or_update_user(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_user(self, username, password, policies=None, mount_point=DEFAULT_MOUNT_POINT):
         """
         Create/update user in userpass.
 
@@ -22,12 +23,19 @@ class Userpass(VaultApiBase):
         :type username: str | unicode
         :param password: The password for the user. Only required when creating the user.
         :type password: str | unicode
+        :param policies: The list of policies to be set on username created.
+        :type policies: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         """
         params = {
             'password': password,
         }
+        params.update(
+            utils.remove_nones({
+                'policies': policies,
+            })
+        )
         api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
         return self._adapter.post(
             url=api_path,
