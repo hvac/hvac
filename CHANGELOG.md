@@ -4,6 +4,7 @@
 
 ### 🚀 Features
 
+- AWS Secrets Engine: Add support for iam_tags when creating roles. GH-684
 - Add Active Directory generate credential capability. GH-657
 - Add `policies` Parameter to Userpass `create_or_update_user()` Method. GH-562
 - Add handling of unsupported HTTP methods inside adapter. GH-689
