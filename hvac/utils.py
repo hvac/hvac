@@ -179,14 +179,19 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
             return method(*args, **kwargs)
 
         if new_method:
-            new_func.__doc__ = """\
-                {message}
-                Docstring content from this method's replacement copied below:
-                {new_docstring}
-                """.format(
-                    message=deprecation_message,
-                    new_docstring=dedent(new_method.__doc__),
-                )
+            # Here we copy the docstring from the specified replacement method (i.e., the method to be used in place of
+            # the one we're marking as deprecated) where available to set within the deprecated method's docstring.
+            # If the "new" method has no docstring, we use a value of "N/A".
+            docstring_copy = new_method.__doc__ if new_method.__doc__ is not None else "N/A"
+            if new_method.__doc__ is not None:
+                new_func.__doc__ = """\
+                    {message}
+                    Docstring content from this method's replacement copied below:
+                    {docstring_copy}
+                    """.format(
+                        message=deprecation_message,
+                        docstring_copy=dedent(docstring_copy),
+                    )
 
         else:
             new_func.__doc__ = deprecation_message
