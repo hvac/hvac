@@ -319,6 +319,18 @@ Set cas (check-and-set) parameter as required for a given path ("hvac"):
         cas_required=True,
     )
 
+Set "delete_version_after" value to 30 minutes for all new versions written to the "hvac" path / key:
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.kv.v2.update_metadata(
+        path='hvac',
+        delete_version_after="30m",
+    )
+
 
 Delete Metadata and All Versions
 --------------------------------
