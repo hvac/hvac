@@ -65,10 +65,12 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             first=cas_required or False,
             second=read_configuration_response['data']['cas_required'],
         )
-        self.assertEqual(
-            first=delete_version_after,
-            second=read_configuration_response['data']['delete_version_after'],
-        )
+        if utils.vault_version_ge('1.5.0'):
+            # delete_version_after wasn't returned in this response when unset before 1.5.0
+            self.assertEqual(
+                first=delete_version_after,
+                second=read_configuration_response['data']['delete_version_after'],
+            )
 
     @parameterized.expand([
         ('nonexistent secret', 'no-secret-here', None, False, exceptions.InvalidPath),
