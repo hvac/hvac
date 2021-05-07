@@ -12,7 +12,7 @@
 [![Gitter chat](https://badges.gitter.im/hvac/community.png)](https://gitter.im/hvac/community)
 
 Tested against the latest release, HEAD ref, and 3 previous minor versions (counting back from the latest release) of Vault.
-Current official support covers Vault v1.3.10 or later.
+Current official support covers Vault v1.4.7 or later.
 
 ## Installation
 

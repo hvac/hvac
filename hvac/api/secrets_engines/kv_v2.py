@@ -13,7 +13,7 @@ class KvV2(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/kv/kv-v2.html
     """
 
-    def configure(self, max_versions=10, cas_required=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(self, max_versions=10, cas_required=None, delete_version_after="0s", mount_point=DEFAULT_MOUNT_POINT):
         """Configure backend level settings that are applied to every key in the key-value store.
 
         Supported methods:
@@ -28,11 +28,15 @@ class KvV2(VaultApiBase):
         :type cas_required: bool
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
+        :param delete_version_after: Specifies the length of time before a version is deleted. Accepts Go duration format string.
+            Defaults to "0s" (i.e., disabled).
+        :type delete_version_after: str
         :return: The response of the request.
         :rtype: requests.Response
         """
         params = {
             'max_versions': max_versions,
+            'delete_version_after': delete_version_after,
         }
         if cas_required is not None:
             params['cas_required'] = cas_required
@@ -59,7 +63,7 @@ class KvV2(VaultApiBase):
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
-    
+
     def read_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
         return self.read_secret_version(path, mount_point=mount_point)
 
@@ -321,7 +325,7 @@ class KvV2(VaultApiBase):
             url=api_path,
         )
 
-    def update_metadata(self, path, max_versions=None, cas_required=None, mount_point=DEFAULT_MOUNT_POINT):
+    def update_metadata(self, path, max_versions=None, cas_required=None, delete_version_after="0s", mount_point=DEFAULT_MOUNT_POINT):
         """Updates the max_versions of cas_required setting on an existing path.
 
         Supported methods:
@@ -337,12 +341,17 @@ class KvV2(VaultApiBase):
         :param cas_required: If true the key will require the cas parameter to be set on all write requests. If false,
             the backend's configuration will be used.
         :type cas_required: bool
+        :param delete_version_after: Specifies the length of time before a version is deleted. Accepts Go duration format string.
+            Defaults to "0s" (i.e., disabled).
+        :type delete_version_after: str
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = {}
+        params = {
+            'delete_version_after': delete_version_after,
+        }
         if max_versions is not None:
             params['max_versions'] = max_versions
         if cas_required is not None:

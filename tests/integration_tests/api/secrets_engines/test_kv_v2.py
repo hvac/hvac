@@ -41,9 +41,13 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         ('set max versions', 1),
         ('set cas required', 10, True),
         ('set max versions and cas required', 17, True),
+        ('set delete_version_after to thirty minutes', 10, None, "30m0s"),
     ])
-    def test_configure_and_read_configuration(self, test_label, max_versions=10, cas_required=None):
-        configure_arguments = dict(mount_point=self.DEFAULT_MOUNT_POINT)
+    def test_configure_and_read_configuration(self, test_label, max_versions=10, cas_required=None, delete_version_after="0s"):
+        configure_arguments = dict(
+            delete_version_after=delete_version_after,
+            mount_point=self.DEFAULT_MOUNT_POINT,
+        )
         if max_versions is not None:
             configure_arguments['max_versions'] = max_versions
         if cas_required is not None:
@@ -61,6 +65,12 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             first=cas_required or False,
             second=read_configuration_response['data']['cas_required'],
         )
+        if utils.vault_version_ge('1.5.0'):
+            # delete_version_after wasn't returned in this response when unset before 1.5.0
+            self.assertEqual(
+                first=delete_version_after,
+                second=read_configuration_response['data']['delete_version_after'],
+            )
 
     @parameterized.expand([
         ('nonexistent secret', 'no-secret-here', None, False, exceptions.InvalidPath),
@@ -518,9 +528,10 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         ('update max versions 0', 'hvac', 0),
         ('update cas_required true', 'hvac', None, True),
         ('update cas_required false', 'hvac', None, False),
-        ('update with invalid cas_required param', 'hvac', None, 'cats', True, exceptions.ParamValidationError, 'bool expected for cas_required param'),
+        ('update with invalid cas_required param', 'hvac', None, 'cats', "0s", True, exceptions.ParamValidationError, 'bool expected for cas_required param'),
+        ('update with delete_version_after set', 'hvac', None, True, "30s"),
     ])
-    def test_update_metadata(self, test_label, path, max_versions=None, cas_required=None, write_secret_before_test=True, raises=None, exception_message=''):
+    def test_update_metadata(self, test_label, path, max_versions=None, cas_required=None, delete_version_after="0s", write_secret_before_test=True, raises=None, exception_message=''):
         if write_secret_before_test:
             test_secret = {
                 'pssst': 'hi itsame hvac',
@@ -536,6 +547,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                     path=path,
                     max_versions=max_versions,
                     cas_required=cas_required,
+                    delete_version_after=delete_version_after,
                     mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
@@ -547,6 +559,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                 path=path,
                 max_versions=max_versions,
                 cas_required=cas_required,
+                delete_version_after=delete_version_after,
                 mount_point=self.DEFAULT_MOUNT_POINT,
             )
             logging.debug('update_metadata_result: %s' % update_metadata_result)
@@ -555,7 +568,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                 mount_point=self.DEFAULT_MOUNT_POINT,
             )
             logging.debug('read_secret_metadata_result: %s' % read_secret_metadata_result)
-            for key, argument in dict(max_versions=max_versions, cas_required=cas_required).items():
+            for key, argument in dict(max_versions=max_versions, cas_required=cas_required, delete_version_after=delete_version_after).items():
                 if argument is not None:
                     self.assertEqual(
                         first=argument,
