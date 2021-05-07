@@ -33,7 +33,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("create_response: {}".format(create_response))
-        self.assertEquals(
+        self.assertEqual(
             first=create_response.status_code,
             second=204,
         )
@@ -54,7 +54,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("read_response: {}".format(read_response))
-        self.assertEquals(
+        self.assertEqual(
             first=read_response["data"]["transformations"],
             second=transformations,
         )
@@ -75,7 +75,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("list_roles_response: {}".format(list_roles_response))
-        self.assertEquals(
+        self.assertEqual(
             first=list_roles_response["data"]["keys"],
             second=[role_name],
         )
@@ -111,7 +111,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("delete_role_response: {}".format(delete_role_response))
-        self.assertEquals(
+        self.assertEqual(
             first=delete_role_response.status_code,
             second=204,
         )
@@ -134,7 +134,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("create_response: {}".format(create_response))
-        self.assertEquals(
+        self.assertEqual(
             first=create_response.status_code,
             second=204,
         )
@@ -199,7 +199,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("delete_response: {}".format(delete_response))
-        self.assertEquals(
+        self.assertEqual(
             first=delete_response.status_code,
             second=204,
         )
@@ -214,7 +214,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("create_response: {}".format(create_response))
-        self.assertEquals(
+        self.assertEqual(
             first=create_response.status_code,
             second=204,
         )
@@ -276,7 +276,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("delete_response: {}".format(delete_response))
-        self.assertEquals(
+        self.assertEqual(
             first=delete_response.status_code,
             second=204,
         )
@@ -290,7 +290,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("create_response: {}".format(create_response))
-        self.assertEquals(
+        self.assertEqual(
             first=create_response.status_code,
             second=204,
         )
@@ -309,7 +309,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("read_response: {}".format(read_response))
-        self.assertEquals(
+        self.assertEqual(
             first=test_alphabet,
             second=read_response["data"]["alphabet"],
         )
@@ -346,7 +346,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("delete_response: {}".format(delete_response))
-        self.assertEquals(
+        self.assertEqual(
             first=delete_response.status_code,
             second=204,
         )
@@ -381,7 +381,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("encode_response: {}".format(encode_response))
-        self.assertEquals(
+        self.assertEqual(
             first=encode_response["data"]["encoded_value"],
             second=expected_output,
         )
@@ -422,7 +422,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("decode_response: {}".format(decode_response))
-        self.assertEquals(
+        self.assertEqual(
             first=decode_response["data"]["decoded_value"],
             second=test_input_value,
         )
