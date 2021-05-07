@@ -480,3 +480,193 @@ Delete Alphabet
     client.secrets.transform.delete_alphabet(
         name=alphabet_name,
     )
+
+Create Or Update FPE Transformation
+-----------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_fpe_transformation`
+
+.. automodule:: hvac.api.secrets_engines.Transform.create_or_update_fpe_transformation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+Create Or Update Masking Transformation
+---------------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_masking_transformation`
+
+.. automodule:: hvac.api.secrets_engines.Transform.create_or_update_masking_transformation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Create Or Update Tokenization Transformation
+--------------------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_tokenization_transformation`
+
+.. automodule:: hvac.api.secrets_engines.Transform.create_or_update_tokenization_transformation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Create Or Update Tokenization Store
+-----------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.create_or_update_tokenization_store`
+
+.. automodule:: hvac.api.secrets_engines.Transform.create_or_update_tokenization_store
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Encode
+--------
+
+:py:meth:`hvac.api.secrets_engines.Transform.encode`
+
+.. automodule:: hvac.api.secrets_engines.Transform.encode
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Validate Token
+--------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.validate_token`
+
+.. automodule:: hvac.api.secrets_engines.Transform.validate_token
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Check Tokenization
+------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.check_tokenization`
+
+.. automodule:: hvac.api.secrets_engines.Transform.check_tokenization
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Retrieve Token Metadata
+-----------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.retrieve_token_metadata`
+
+.. automodule:: hvac.api.secrets_engines.Transform.retrieve_token_metadata
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Snapshot Tokenization State
+---------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.snapshot_tokenization_state`
+
+.. automodule:: hvac.api.secrets_engines.Transform.snapshot_tokenization_state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Restore Tokenization State
+--------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.restore_tokenization_state`
+
+.. automodule:: hvac.api.secrets_engines.Transform.restore_tokenization_state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Export Decoded Tokenization State
+---------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.export_decoded_tokenization_state`
+
+.. automodule:: hvac.api.secrets_engines.Transform.export_decoded_tokenization_state
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Rotate Tokenization Key
+-----------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.rotate_tokenization_key`
+
+.. automodule:: hvac.api.secrets_engines.Transform.rotate_tokenization_key
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Update Tokenization Key Config
+------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.update_tokenization_key_config`
+
+.. automodule:: hvac.api.secrets_engines.Transform.update_tokenization_key_config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+List Tokenization Key Configuration
+-----------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.list_tokenization_key_configuration`
+
+.. automodule:: hvac.api.secrets_engines.Transform.list_tokenization_key_configuration
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Read Tokenization Key Configuration
+-----------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.read_tokenization_key_configuration`
+
+.. automodule:: hvac.api.secrets_engines.Transform.read_tokenization_key_configuration
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
+
+Trim Tokenization Key Version
+-----------------------------
+
+:py:meth:`hvac.api.secrets_engines.Transform.trim_tokenization_key_version`
+
+.. automodule:: hvac.api.secrets_engines.Transform.trim_tokenization_key_version
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
