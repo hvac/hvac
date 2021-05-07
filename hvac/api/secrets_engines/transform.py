@@ -4,7 +4,7 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'transform'
+DEFAULT_MOUNT_POINT = "transform"
 
 
 class Transform(VaultApiBase):
@@ -13,7 +13,9 @@ class Transform(VaultApiBase):
     Reference: https://www.vaultproject.io/api-docs/secret/transform
     """
 
-    def create_or_update_role(self, name, transformations, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(
+        self, name, transformations, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Creates or update the role with the given name.
 
         If a role with the name does not exist, it will be created. If the role exists, it will be
@@ -33,9 +35,9 @@ class Transform(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'transformations': transformations,
+            "transformations": transformations,
         }
-        api_path = '/v1/{mount_point}/role/{name}'.format(
+        api_path = "/v1/{mount_point}/role/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -57,7 +59,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_role request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/role/{name}'.format(
+        api_path = "/v1/{mount_point}/role/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -76,7 +78,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_roles request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/role'.format(mount_point=mount_point)
+        api_path = "/v1/{mount_point}/role".format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -94,7 +96,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_role request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/role/{name}'.format(
+        api_path = "/v1/{mount_point}/role/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -102,8 +104,16 @@ class Transform(VaultApiBase):
             url=api_path,
         )
 
-    def create_or_update_transformation(self, name, transform_type, template, tweak_source="supplied",
-                                        masking_character="*", allowed_roles=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_transformation(
+        self,
+        name,
+        transform_type,
+        template,
+        tweak_source="supplied",
+        masking_character="*",
+        allowed_roles=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create or update a transformation with the given name.
 
         If a transformation with the name does not exist, it will be created. If the
@@ -138,15 +148,19 @@ class Transform(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'type': transform_type,
-            'template': template,
-            'tweak_source': tweak_source,
-            'masking_character': masking_character,
+            "type": transform_type,
+            "template": template,
+            "tweak_source": tweak_source,
+            "masking_character": masking_character,
         }
-        params.update(utils.remove_nones({
-            'allowed_roles': allowed_roles,
-        }))
-        api_path = '/v1/{mount_point}/transformation/{name}'.format(
+        params.update(
+            utils.remove_nones(
+                {
+                    "allowed_roles": allowed_roles,
+                }
+            )
+        )
+        api_path = "/v1/{mount_point}/transformation/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -168,7 +182,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_ation request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/transformation/{name}'.format(
+        api_path = "/v1/{mount_point}/transformation/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -187,7 +201,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_ation request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/transformation'.format(mount_point=mount_point)
+        api_path = "/v1/{mount_point}/transformation".format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -206,7 +220,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_ation request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/transformation/{name}'.format(
+        api_path = "/v1/{mount_point}/transformation/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -214,7 +228,9 @@ class Transform(VaultApiBase):
             url=api_path,
         )
 
-    def create_or_update_template(self, name, template_type, pattern, alphabet, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_template(
+        self, name, template_type, pattern, alphabet, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Creates or update a template with the given name.
 
         If a template with the name does not exist, it will be created. If the
@@ -242,11 +258,11 @@ class Transform(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'type': template_type,
-            'pattern': pattern,
-            'alphabet': alphabet,
+            "type": template_type,
+            "pattern": pattern,
+            "alphabet": alphabet,
         }
-        api_path = '/v1/{mount_point}/template/{name}'.format(
+        api_path = "/v1/{mount_point}/template/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -268,7 +284,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_template request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/template/{name}'.format(
+        api_path = "/v1/{mount_point}/template/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -287,7 +303,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_template request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/template'.format(mount_point=mount_point)
+        api_path = "/v1/{mount_point}/template".format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -307,9 +323,9 @@ class Transform(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
+            "name": name,
         }
-        api_path = '/v1/{mount_point}/template/{name}'.format(
+        api_path = "/v1/{mount_point}/template/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -318,7 +334,9 @@ class Transform(VaultApiBase):
             json=params,
         )
 
-    def create_or_update_alphabet(self, name, alphabet, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_alphabet(
+        self, name, alphabet, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Create or update an alphabet with the given name.
 
         If an alphabet with the name does not exist, it will be created. If the
@@ -338,9 +356,9 @@ class Transform(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'alphabet': alphabet,
+            "alphabet": alphabet,
         }
-        api_path = '/v1/{mount_point}/alphabet/{name}'.format(
+        api_path = "/v1/{mount_point}/alphabet/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -363,7 +381,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_alphabet request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/alphabet/{name}'.format(
+        api_path = "/v1/{mount_point}/alphabet/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -382,7 +400,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_alphabets request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/alphabet'.format(mount_point=mount_point)
+        api_path = "/v1/{mount_point}/alphabet".format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -400,7 +418,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_alphabet request.
         :rtype: requests.Response
         """
-        api_path = '/v1/{mount_point}/alphabet/{name}'.format(
+        api_path = "/v1/{mount_point}/alphabet/{name}".format(
             mount_point=mount_point,
             name=name,
         )
@@ -408,7 +426,15 @@ class Transform(VaultApiBase):
             url=api_path,
         )
 
-    def encode(self, role_name, value=None, transformation=None, tweak=None, batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
+    def encode(
+        self,
+        role_name,
+        value=None,
+        transformation=None,
+        tweak=None,
+        batch_input=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Encode the provided value using a named role.
 
         Supported methods:
@@ -436,13 +462,15 @@ class Transform(VaultApiBase):
         :return: The response of the encode request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'value': value,
-            'transformation': transformation,
-            'tweak': tweak,
-            'batch_input': batch_input,
-        })
-        api_path = '/v1/{mount_point}/encode/{role_name}'.format(
+        params = utils.remove_nones(
+            {
+                "value": value,
+                "transformation": transformation,
+                "tweak": tweak,
+                "batch_input": batch_input,
+            }
+        )
+        api_path = "/v1/{mount_point}/encode/{role_name}".format(
             mount_point=mount_point,
             role_name=role_name,
         )
@@ -451,7 +479,15 @@ class Transform(VaultApiBase):
             json=params,
         )
 
-    def decode(self, role_name, value=None, transformation=None, tweak=None, batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
+    def decode(
+        self,
+        role_name,
+        value=None,
+        transformation=None,
+        tweak=None,
+        batch_input=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Decode the provided value using a named role.
 
         Supported methods:
@@ -479,13 +515,15 @@ class Transform(VaultApiBase):
         :return: The response of the decode request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'value': value,
-            'transformation': transformation,
-            'tweak': tweak,
-            'batch_input': batch_input,
-        })
-        api_path = '/v1/{mount_point}/decode/{role_name}'.format(
+        params = utils.remove_nones(
+            {
+                "value": value,
+                "transformation": transformation,
+                "tweak": tweak,
+                "batch_input": batch_input,
+            }
+        )
+        api_path = "/v1/{mount_point}/decode/{role_name}".format(
             mount_point=mount_point,
             role_name=role_name,
         )
