@@ -139,6 +139,66 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             second=204,
         )
 
+    @skipIf(
+        utils.vault_version_lt("1.7.0"),
+        "Expanded tokenization support added in Vault version v1.7.0",
+    )
+    def test_create_or_update_fpe_transformation(self):
+        create_response = (
+            self.client.secrets.transform.create_or_update_fpe_transformation(
+                name="test-transformation",
+                template="builtin/creditcardnumber",
+                tweak_source="internal",
+                allowed_roles=["test-role"],
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+        )
+        logging.debug("create_response: {}".format(create_response))
+        self.assertEquals(
+            first=create_response.status_code,
+            second=204,
+        )
+
+    @skipIf(
+        utils.vault_version_lt("1.7.0"),
+        "Expanded tokenization support added in Vault version v1.7.0",
+    )
+    def test_create_or_update_masking_transformation(self):
+        create_response = (
+            self.client.secrets.transform.create_or_update_masking_transformation(
+                name="test-masking",
+                template="builtin/creditcardnumber",
+                masking_character="-",
+                allowed_roles=["test-role"],
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+        )
+        logging.debug("create_response: {}".format(create_response))
+        self.assertEqual(
+            first=create_response.status_code,
+            second=204,
+        )
+
+    @skipIf(
+        utils.vault_version_lt("1.7.0"),
+        "Expanded tokenization support added in Vault version v1.7.0",
+    )
+    def test_create_or_update_tokenization_transformation(self):
+        create_response = (
+            self.client.secrets.transform.create_or_update_tokenization_transformation(
+                name="test-tokenization",
+                max_ttl="60",
+                mapping_mode="exportable",
+                allowed_roles=["test-role"],
+                mount_point=self.TEST_MOUNT_POINT,
+            )
+        )
+        logging.debug("create_response: {}".format(create_response))
+        self.assertEqual(
+            first=create_response.status_code,
+            second=204,
+        )
+
     def test_read_transformation(self):
         test_name = "test-transformation"
         template = "builtin/creditcardnumber"
