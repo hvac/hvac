@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.11 (May 7th, 2021)
+
+### 🚀 Features
+
+- Expand Transform class to include new(ish) tokenization methods. GH-696
+- Add `delete_version_after` KvV2 Param - `configure()` / `update_metadata(). GH-694
+
+### 🧰 Miscellaneous
+
+- Bump versions of Vault used in CI workflows. GH-695
+
+Thanks to @jeffwecan for their lovely contributions.
+
 ## 0.10.10 (April 29th, 2021)
 
 ### 🚀 Features
