@@ -338,6 +338,7 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
@@ -366,6 +367,7 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
@@ -395,6 +397,7 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
@@ -432,6 +435,7 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
