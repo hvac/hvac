@@ -85,4 +85,4 @@ Generate Secret ID
         role_name='some-role',
         cidr_list=['127.0.0.1/32'],
     )
-    print(f'AppRole secret ID for some-role: {resp["data"]["role_id"]}')
+    print(f'AppRole secret ID for some-role: {resp["data"]["secret_id"]}')
