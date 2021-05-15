@@ -3,7 +3,7 @@
 """Cert methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.utils import validate_pem_format
-from hvac import exceptions
+from hvac import exceptions, utils
 import os
 
 
