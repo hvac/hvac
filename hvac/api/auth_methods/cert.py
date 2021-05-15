@@ -69,26 +69,29 @@ class Cert(VaultApiBase):
                 cert = f_cert.read()
         except FileNotFoundError:
             cert = certificate
-        params = {
-            'name': name,
-            'certificate': cert,
-            'allowed_common_names': allowed_common_names,
-            'allowed_dns_sans': allowed_dns_sans,
-            'allowed_email_sans': allowed_email_sans,
-            'allowed_uri_sans': allowed_uri_sans,
-            'allowed_organizational_units': allowed_organizational_units,
-            'required_extensions': required_extensions,
-            'display_name': display_name,
-            'token_ttl': token_ttl,
-            'token_max_ttl': token_max_ttl,
-            'token_policies': token_policies,
-            'token_bound_cidrs': token_bound_cidrs,
-            'token_explicit_max_ttl': token_explicit_max_ttl,
-            'token_no_default_policy': token_no_default_policy,
-            'token_num_uses': token_num_uses,
-            'token_period': token_period,
-            'token_type': token_type
-        }
+
+        params = utils.remove_nones(
+            {
+                "name": name,
+                "certificate": cert,
+                "allowed_common_names": allowed_common_names,
+                "allowed_dns_sans": allowed_dns_sans,
+                "allowed_email_sans": allowed_email_sans,
+                "allowed_uri_sans": allowed_uri_sans,
+                "allowed_organizational_units": allowed_organizational_units,
+                "required_extensions": required_extensions,
+                "display_name": display_name,
+                "token_ttl": token_ttl,
+                "token_max_ttl": token_max_ttl,
+                "token_policies": token_policies,
+                "token_bound_cidrs": token_bound_cidrs,
+                "token_explicit_max_ttl": token_explicit_max_ttl,
+                "token_no_default_policy": token_no_default_policy,
+                "token_num_uses": token_num_uses,
+                "token_period": token_period,
+                "token_type": token_type,
+            }
+        )
 
         api_path = '/v1/auth/{mount_point}/certs/{name}'.format(mount_point=mount_point, name=name)
         return self._adapter.post(
@@ -249,4 +252,3 @@ class Cert(VaultApiBase):
 
     class CertificateAuthError(Exception):
         pass
-
