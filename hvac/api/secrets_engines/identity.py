@@ -578,7 +578,7 @@ class Identity(VaultApiBase):
             url=api_path,
         )
 
-    def update_group(self, group_id, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
+    def update_group(self, group_id, name, group_type='internal', metadata=None, policies=None, member_group_ids=None,
                      member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
         """Update an existing group.
 
@@ -722,7 +722,7 @@ class Identity(VaultApiBase):
 
         return response
 
-    def create_or_update_group_by_name(self, name, group_type=None, metadata=None, policies=None, member_group_ids=None,
+    def create_or_update_group_by_name(self, name, group_type='internal', metadata=None, policies=None, member_group_ids=None,
                                        member_entity_ids=None, mount_point=DEFAULT_MOUNT_POINT):
         """Create or update a group by its name.
 
