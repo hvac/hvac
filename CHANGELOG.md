@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.12 (May 19th, 2021)
+
+### 🚀 Features
+
+- Add default to `group_type` argument in `update_group` and `create_or_update_group_by_name`. GH-703
+- Add Certificate Authentication Methods. GH-691
+
+Thanks to @Tylerlhess, @jeffwecan, @matusf, @mblau-leaffilter and tyhess for their lovely contributions.
+
 ## 0.10.11 (May 7th, 2021)
 
 ### 🚀 Features
