@@ -9,8 +9,7 @@ import requests
 import requests.exceptions
 
 from hvac import utils
-
-DEFAULT_BASE_URI = "http://localhost:8200"
+from hvac.constants.client import *
 
 
 class Adapter(object):
@@ -18,20 +17,11 @@ class Adapter(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(
-        self,
-        base_uri=DEFAULT_BASE_URI,
-        token=None,
-        cert=None,
-        verify=True,
-        timeout=30,
-        proxies=None,
-        allow_redirects=True,
-        session=None,
-        namespace=None,
-        ignore_exceptions=False,
-        strict_http=False,
-    ):
+    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None,
+                 cert='\n'.join([VAULT_CLIENT_CERT, VAULT_CLIENT_KEY]) if VAULT_CLIENT_CERT else None,
+                 verify=VAULT_CACERT if VAULT_CACERT else VAULT_CAPATH if VAULT_CAPATH else True, timeout=30,
+                 proxies=None, allow_redirects=True, session=None, namespace=None, ignore_exceptions=False,
+                 strict_http=False):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
