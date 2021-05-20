@@ -239,15 +239,19 @@ class Cert(VaultApiBase):
                     tls_update = True
             else:
                 raise e
+
+        additional_request_kwargs = {}
         if tls_update:
-            self._adapter._kwargs = {
-                **self._adapter._kwargs,
-                **{'verify': cacert, 'cert': tuple([cert_pem, key_pem])} # need to define dict as cert is a tuple
+            additional_request_kwargs = {
+                "verify": cacert,
+                # need to define dict as cert is a tuple
+                "cert": tuple([cert_pem, key_pem]),
             }
 
         return self._adapter.login(
             url=api_path,
             json=params,
+            **additional_request_kwargs,
         )
 
     class CertificateAuthError(Exception):
