@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.13 (May 20th, 2021)
+
+### 🐛 Bug Fixes
+
+- Refactor `Cert.login()` Conditional for Python 2.7 Syntax Support. GH-708
+
 ## 0.10.12 (May 19th, 2021)
 
 ### 🚀 Features
