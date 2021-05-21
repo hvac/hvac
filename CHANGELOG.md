@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.14 (May 21st, 2021)
+
+### 🐛 Bug Fixes
+
+- Python 2.7: Drop Trailing Comma In `Cert.login()`. GH-712
+
 ## 0.10.13 (May 20th, 2021)
 
 ### 🐛 Bug Fixes
