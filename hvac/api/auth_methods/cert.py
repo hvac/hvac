@@ -251,7 +251,7 @@ class Cert(VaultApiBase):
         return self._adapter.login(
             url=api_path,
             json=params,
-            **additional_request_kwargs,
+            **additional_request_kwargs
         )
 
     class CertificateAuthError(Exception):
