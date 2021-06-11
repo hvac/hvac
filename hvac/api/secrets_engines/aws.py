@@ -313,7 +313,7 @@ class Aws(VaultApiBase):
         :type ttl: str | unicode
         :param endpoint: Supported endpoints:
             GET: /{mount_point}/creds/{name}. Produces: 200 application/json
-            GET: /{mount_point}/sts/{name}. Produces: 200 application/json
+            PUT: /{mount_point}/sts/{name}. Produces: 200 application/json
         :type endpoint: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -342,7 +342,13 @@ class Aws(VaultApiBase):
             name=name,
         )
 
-        return self._adapter.get(
-            url=api_path,
-            params=params,
-        )
+        if endpoint == 'sts':
+            return self._adapter.put(
+                url=api_path,
+                params=params,
+            )
+        else:
+            return self._adapter.get(
+                url=api_path,
+                params=params,
+            )
