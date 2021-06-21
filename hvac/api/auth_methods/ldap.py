@@ -16,7 +16,8 @@ class Ldap(VaultApiBase):
     def configure(self, user_dn=None, group_dn=None, url=None, case_sensitive_names=None, starttls=None,
                   tls_min_version=None, tls_max_version=None, insecure_tls=None, certificate=None, bind_dn=None,
                   bind_pass=None, user_attr=None, discover_dn=None, deny_null_bind=True, upn_domain=None,
-                  group_filter=None, group_attr=None, use_token_groups=None, mount_point=DEFAULT_MOUNT_POINT):
+                  group_filter=None, group_attr=None, use_token_groups=None, token_ttl=None, token_max_ttl=None,
+                  mount_point=DEFAULT_MOUNT_POINT):
         """
         Configure the LDAP auth method.
 
@@ -75,6 +76,10 @@ class Ldap(VaultApiBase):
         :param use_token_groups: If true, groups are resolved through Active Directory tokens. This may speed up nested
             group membership resolution in large directories.
         :type use_token_groups: bool
+        :param token_ttl: The incremental lifetime for generated tokens.
+        :type token_ttl: str | unicode
+        :param token_max_ttl: The maximum lifetime for generated tokens.
+        :type token_max_ttl: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the configure request.
@@ -100,6 +105,8 @@ class Ldap(VaultApiBase):
             'bindpass': bind_pass,
             'certificate': certificate,
             'use_token_groups': use_token_groups,
+            'token_ttl': token_ttl,
+            'token_max_ttl': token_max_ttl
         })
 
         api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
