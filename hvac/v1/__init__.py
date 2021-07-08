@@ -54,6 +54,21 @@ class Client(object):
 
         token = token if token is not None else utils.get_token_from_env()
         url = url if url else os.getenv('VAULT_ADDR', DEFAULT_URL)
+
+        if vault_client_cert := os.getenv('VAULT_CLIENT_CERT'):
+            cert = '\n'.join([
+                vault_client_cert,
+                os.getenv('VAULT_CLIENT_KEY'),
+            ])
+
+        # Reference: https://www.vaultproject.io/docs/commands#vault_cacert
+        # Note: "[VAULT_CACERT] takes precedence over VAULT_CAPATH." and thus we
+        # check for VAULT_CAPATH _first_.
+        if vault_ca_path := os.getenv("VAULT_CAPATH"):
+            verify = vault_ca_path
+        if vault_ca_cert := os.getenv("VAULT_CACERT"):
+            verify = vault_ca_cert
+
         self._adapter = adapter(
             base_uri=url,
             token=token,
@@ -1668,7 +1683,7 @@ class Client(object):
         }
         if token_type:
             params['token_type'] = token_type
-        
+
         url = 'v1/auth/{0}/role/{1}'.format(mount_point, name)
         return self._adapter.post(url, json=params)
 
