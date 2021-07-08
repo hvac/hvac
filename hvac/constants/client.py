@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from os import getenv
 """Constants related to the hvac.Client class."""
 
 DEPRECATED_PROPERTIES = {
@@ -25,7 +23,3 @@ DEPRECATED_PROPERTIES = {
 
 DEFAULT_URL = 'http://localhost:8200'
 DEFAULT_BASE_URI = 'http://localhost:8200'
-VAULT_CACERT = getenv("VAULT_CACERT")
-VAULT_CAPATH = getenv("VAULT_CAPATH")
-VAULT_CLIENT_CERT = getenv("VAULT_CLIENT_CERT")
-VAULT_CLIENT_KEY = getenv("VAULT_CLIENT_KEY")
