@@ -15,7 +15,8 @@ class JWT(VaultApiBase):
 
     Reference: https://www.vaultproject.io/api/auth/jwt
     """
-    DEFAULT_PATH = 'jwt'
+
+    DEFAULT_PATH = "jwt"
 
     def resolve_path(self, path):
         """Return the class's default path if no explicit path is specified.
@@ -27,10 +28,23 @@ class JWT(VaultApiBase):
         """
         return path if path is not None else self.DEFAULT_PATH
 
-    def configure(self, oidc_discovery_url=None, oidc_discovery_ca_pem=None, oidc_client_id=None,
-                  oidc_client_secret=None, oidc_response_mode=None, oidc_response_types=None, jwks_url=None,
-                  jwks_ca_pem=None, jwt_validation_pubkeys=None, bound_issuer=None, jwt_supported_algs=None,
-                  default_role=None, provider_config=None, path=None):
+    def configure(
+        self,
+        oidc_discovery_url=None,
+        oidc_discovery_ca_pem=None,
+        oidc_client_id=None,
+        oidc_client_secret=None,
+        oidc_response_mode=None,
+        oidc_response_types=None,
+        jwks_url=None,
+        jwks_ca_pem=None,
+        jwt_validation_pubkeys=None,
+        bound_issuer=None,
+        jwt_supported_algs=None,
+        default_role=None,
+        provider_config=None,
+        path=None,
+    ):
         """Configure the validation information to be used globally across all roles.
 
         One (and only one) of oidc_discovery_url and jwt_validation_pubkeys must be set.
@@ -76,23 +90,25 @@ class JWT(VaultApiBase):
         :return: The response of the configure request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'oidc_discovery_url': oidc_discovery_url,
-            'oidc_discovery_ca_pem': oidc_discovery_ca_pem,
-            'oidc_client_id': oidc_client_id,
-            'oidc_client_secret': oidc_client_secret,
-            'oidc_response_mode': oidc_response_mode,
-            'oidc_response_types': oidc_response_types,
-            'jwks_url': jwks_url,
-            'jwks_ca_pem': jwks_ca_pem,
-            'jwt_validation_pubkeys': jwt_validation_pubkeys,
-            'bound_issuer': bound_issuer,
-            'jwt_supported_algs': jwt_supported_algs,
-            'default_role': default_role,
-            'provider_config': provider_config,
-        })
+        params = utils.remove_nones(
+            {
+                "oidc_discovery_url": oidc_discovery_url,
+                "oidc_discovery_ca_pem": oidc_discovery_ca_pem,
+                "oidc_client_id": oidc_client_id,
+                "oidc_client_secret": oidc_client_secret,
+                "oidc_response_mode": oidc_response_mode,
+                "oidc_response_types": oidc_response_types,
+                "jwks_url": jwks_url,
+                "jwks_ca_pem": jwks_ca_pem,
+                "jwt_validation_pubkeys": jwt_validation_pubkeys,
+                "bound_issuer": bound_issuer,
+                "jwt_supported_algs": jwt_supported_algs,
+                "default_role": default_role,
+                "provider_config": provider_config,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/auth/{path}/config',
+            "/v1/auth/{path}/config",
             path=self.resolve_path(path),
         )
         return self._adapter.post(
@@ -100,7 +116,7 @@ class JWT(VaultApiBase):
             json=params,
         )
 
-    def read_config(self,  path=None):
+    def read_config(self, path=None):
         """Read the previously configured config.
 
         Supported methods:
@@ -110,20 +126,41 @@ class JWT(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{path}/config',
+            "/v1/auth/{path}/config",
             path=self.resolve_path(path),
         )
         return self._adapter.get(
             url=api_path,
         )
 
-    def create_role(self, name, user_claim, allowed_redirect_uris, role_type='jwt', bound_audiences=None,
-                    clock_skew_leeway=None, expiration_leeway=None, not_before_leeway=None, bound_subject=None,
-                    bound_claims=None, groups_claim=None, claim_mappings=None, oidc_scopes=None,
-                    bound_claims_type="string", verbose_oidc_logging=False, token_ttl=None, token_max_ttl=None,
-                    token_policies=None, token_bound_cidrs=None, token_explicit_max_ttl=None,
-                    token_no_default_policy=None, token_num_uses=None, token_period=None, token_type=None,
-                    path=None):
+    def create_role(
+        self,
+        name,
+        user_claim,
+        allowed_redirect_uris,
+        role_type="jwt",
+        bound_audiences=None,
+        clock_skew_leeway=None,
+        expiration_leeway=None,
+        not_before_leeway=None,
+        bound_subject=None,
+        bound_claims=None,
+        groups_claim=None,
+        claim_mappings=None,
+        oidc_scopes=None,
+        bound_claims_type="string",
+        verbose_oidc_logging=False,
+        token_ttl=None,
+        token_max_ttl=None,
+        token_policies=None,
+        token_bound_cidrs=None,
+        token_explicit_max_ttl=None,
+        token_no_default_policy=None,
+        token_num_uses=None,
+        token_period=None,
+        token_type=None,
+        path=None,
+    ):
         """Register a role in the JWT method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints
@@ -207,34 +244,36 @@ class JWT(VaultApiBase):
         :return: The response of the create_role request.
         :rtype: dict
         """
-        params = utils.remove_nones({
-            'name': name,
-            'role_type': role_type,
-            'bound_audiences': bound_audiences,
-            'user_claim': user_claim,
-            'clock_skew_leeway': clock_skew_leeway,
-            'expiration_leeway': expiration_leeway,
-            'not_before_leeway': not_before_leeway,
-            'bound_subject': bound_subject,
-            'bound_claims': bound_claims,
-            'groups_claim': groups_claim,
-            'claim_mappings': claim_mappings,
-            'oidc_scopes': oidc_scopes,
-            'allowed_redirect_uris': allowed_redirect_uris,
-            'bound_claims_type': bound_claims_type,
-            'verbose_oidc_logging': verbose_oidc_logging,
-            'token_ttl': token_ttl,
-            'token_max_ttl': token_max_ttl,
-            'token_policies': token_policies,
-            'token_bound_cidrs': token_bound_cidrs,
-            'token_explicit_max_ttl': token_explicit_max_ttl,
-            'token_no_default_policy': token_no_default_policy,
-            'token_num_uses': token_num_uses,
-            'token_period': token_period,
-            'token_type': token_type,
-        })
+        params = utils.remove_nones(
+            {
+                "name": name,
+                "role_type": role_type,
+                "bound_audiences": bound_audiences,
+                "user_claim": user_claim,
+                "clock_skew_leeway": clock_skew_leeway,
+                "expiration_leeway": expiration_leeway,
+                "not_before_leeway": not_before_leeway,
+                "bound_subject": bound_subject,
+                "bound_claims": bound_claims,
+                "groups_claim": groups_claim,
+                "claim_mappings": claim_mappings,
+                "oidc_scopes": oidc_scopes,
+                "allowed_redirect_uris": allowed_redirect_uris,
+                "bound_claims_type": bound_claims_type,
+                "verbose_oidc_logging": verbose_oidc_logging,
+                "token_ttl": token_ttl,
+                "token_max_ttl": token_max_ttl,
+                "token_policies": token_policies,
+                "token_bound_cidrs": token_bound_cidrs,
+                "token_explicit_max_ttl": token_explicit_max_ttl,
+                "token_no_default_policy": token_no_default_policy,
+                "token_num_uses": token_num_uses,
+                "token_period": token_period,
+                "token_type": token_type,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/auth/{path}/role/{name}',
+            "/v1/auth/{path}/role/{name}",
             path=self.resolve_path(path),
             name=name,
         )
@@ -257,7 +296,7 @@ class JWT(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{path}/role/{name}',
+            "/v1/auth/{path}/role/{name}",
             path=self.resolve_path(path),
             name=name,
         )
@@ -277,7 +316,7 @@ class JWT(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{path}/role',
+            "/v1/auth/{path}/role",
             path=self.resolve_path(path),
         )
         return self._adapter.list(
@@ -298,7 +337,7 @@ class JWT(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{path}/role/{name}',
+            "/v1/auth/{path}/role/{name}",
             path=self.resolve_path(path),
             name=name,
         )
@@ -322,11 +361,11 @@ class JWT(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'role': role,
-            'redirect_uri': redirect_uri,
+            "role": role,
+            "redirect_uri": redirect_uri,
         }
         api_path = utils.format_url(
-            '/v1/auth/{path}/oidc/auth_url',
+            "/v1/auth/{path}/oidc/auth_url",
             path=self.resolve_path(path),
         )
         return self._adapter.post(
@@ -357,16 +396,16 @@ class JWT(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'state': state,
-            'nonce': nonce,
-            'code': code,
+            "state": state,
+            "nonce": nonce,
+            "code": code,
         }
         api_path = utils.format_url(
-            '/v1/auth/{path}/oidc/callback?state={state}&nonce={nonce}&code={code}',
+            "/v1/auth/{path}/oidc/callback?state={state}&nonce={nonce}&code={code}",
             path=self.resolve_path(path),
             state=state,
             nonce=nonce,
-            code=code
+            code=code,
         )
         return self._adapter.get(
             url=api_path,
@@ -393,11 +432,11 @@ class JWT(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'role': role,
-            'jwt': jwt,
+            "role": role,
+            "jwt": jwt,
         }
         api_path = utils.format_url(
-            '/v1/auth/{path}/login',
+            "/v1/auth/{path}/login",
             path=self.resolve_path(path),
         )
         return self._adapter.post(

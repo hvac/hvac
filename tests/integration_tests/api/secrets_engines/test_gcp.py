@@ -8,14 +8,14 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestGcp(HvacIntegrationTestCase, TestCase):
-    TEST_MOUNT_POINT = 'test-gcp'
-    TEST_ROLESET_NAME = 'hvac-roleset'
-    TEST_PROJECT_ID = 'test-hvac'
+    TEST_MOUNT_POINT = "test-gcp"
+    TEST_ROLESET_NAME = "hvac-roleset"
+    TEST_PROJECT_ID = "test-hvac"
 
     def setUp(self):
         super(TestGcp, self).setUp()
         self.client.enable_secret_backend(
-            backend_type='gcp',
+            backend_type="gcp",
             mount_point=self.TEST_MOUNT_POINT,
         )
 
@@ -23,13 +23,17 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
         self.client.disable_secret_backend(mount_point=self.TEST_MOUNT_POINT)
         super(TestGcp, self).tearDown()
 
-    @parameterized.expand([
-        param(
-            'success',
-        ),
-    ])
-    def test_write_config(self, label, max_ttl=3600, raises=False, exception_message=''):
-        credentials = utils.load_config_file('example.jwt.json')
+    @parameterized.expand(
+        [
+            param(
+                "success",
+            ),
+        ]
+    )
+    def test_write_config(
+        self, label, max_ttl=3600, raises=False, exception_message=""
+    ):
+        credentials = utils.load_config_file("example.jwt.json")
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.secrets.gcp.configure(
@@ -47,7 +51,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 max_ttl=max_ttl,
                 mount_point=self.TEST_MOUNT_POINT,
             )
-            logging.debug('configure_response: %s' % configure_response)
+            logging.debug("configure_response: %s" % configure_response)
             self.assertEqual(
                 first=bool(configure_response),
                 second=True,
@@ -55,8 +59,10 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             read_configuration_response = self.client.secrets.gcp.read_config(
                 mount_point=self.TEST_MOUNT_POINT,
             )
-            logging.debug('read_configuration_response: %s' % read_configuration_response)
+            logging.debug(
+                "read_configuration_response: %s" % read_configuration_response
+            )
             self.assertEqual(
-                first=read_configuration_response['data']['max_ttl'],
+                first=read_configuration_response["data"]["max_ttl"],
                 second=max_ttl,
             )

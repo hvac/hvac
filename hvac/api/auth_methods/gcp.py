@@ -8,7 +8,7 @@ from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.gcp import ALLOWED_ROLE_TYPES, GCP_CERTS_ENDPOINT
 from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
 
-DEFAULT_MOUNT_POINT = 'gcp'
+DEFAULT_MOUNT_POINT = "gcp"
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,12 @@ class Gcp(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/{mount_point}/index.html
     """
 
-    def configure(self, credentials=None, google_certs_endpoint=GCP_CERTS_ENDPOINT, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        credentials=None,
+        google_certs_endpoint=GCP_CERTS_ENDPOINT,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the credentials required for the GCP auth method to perform API calls to Google Cloud.
 
         These credentials will be used to query the status of IAM entities and get service account or other Google
@@ -42,11 +47,15 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'credentials': credentials,
-            'google_certs_endpoint': google_certs_endpoint,
-        })
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        params = utils.remove_nones(
+            {
+                "credentials": credentials,
+                "google_certs_endpoint": google_certs_endpoint,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -63,11 +72,13 @@ class Gcp(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Delete all GCP configuration data. This operation is idempotent.
@@ -81,14 +92,31 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def create_role(self, name, role_type, project_id, ttl=None, max_ttl=None, period=None, policies=None,
-                    bound_service_accounts=None, max_jwt_exp=None, allow_gce_inference=None, bound_zones=None,
-                    bound_regions=None, bound_instance_groups=None, bound_labels=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(
+        self,
+        name,
+        role_type,
+        project_id,
+        ttl=None,
+        max_ttl=None,
+        period=None,
+        policies=None,
+        bound_service_accounts=None,
+        max_jwt_exp=None,
+        allow_gce_inference=None,
+        bound_zones=None,
+        bound_regions=None,
+        bound_instance_groups=None,
+        bound_labels=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Register a role in the GCP auth method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -152,26 +180,25 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         type_specific_params = {
-            'iam': {
-                'max_jwt_exp': None,
-                'allow_gce_inference': None,
+            "iam": {
+                "max_jwt_exp": None,
+                "allow_gce_inference": None,
             },
-            'gce': {
-                'bound_zones': None,
-                'bound_regions': None,
-                'bound_instance_groups': None,
-                'bound_labels': None,
+            "gce": {
+                "bound_zones": None,
+                "bound_regions": None,
+                "bound_instance_groups": None,
+                "bound_labels": None,
             },
         }
 
         list_of_strings_params = {
-            'policies': policies,
-            'bound_service_accounts': bound_service_accounts,
-            'bound_zones': bound_zones,
-            'bound_regions': bound_regions,
-            'bound_instance_groups': bound_instance_groups,
-            'bound_labels': bound_labels,
-
+            "policies": policies,
+            "bound_service_accounts": bound_service_accounts,
+            "bound_zones": bound_zones,
+            "bound_regions": bound_regions,
+            "bound_instance_groups": bound_instance_groups,
+            "bound_labels": bound_labels,
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -181,48 +208,58 @@ class Gcp(VaultApiBase):
 
         if role_type not in ALLOWED_ROLE_TYPES:
             error_msg = 'unsupported role_type argument provided "{arg}", supported types: "{role_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=type,
-                role_types=','.join(ALLOWED_ROLE_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=type,
+                    role_types=",".join(ALLOWED_ROLE_TYPES),
+                )
+            )
 
         params = {
-            'type': role_type,
-            'project_id': project_id,
-            'policies': list_to_comma_delimited(policies),
+            "type": role_type,
+            "project_id": project_id,
+            "policies": list_to_comma_delimited(policies),
         }
         params.update(
-            utils.remove_nones({
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
-            })
+            utils.remove_nones(
+                {
+                    "ttl": ttl,
+                    "max_ttl": max_ttl,
+                    "period": period,
+                }
+            )
         )
         if bound_service_accounts is not None:
-            params['bound_service_accounts'] = list_to_comma_delimited(bound_service_accounts)
-        if role_type == 'iam':
-            params.update(
-                utils.remove_nones({
-                    'max_jwt_exp': max_jwt_exp,
-                    'allow_gce_inference': allow_gce_inference,
-                })
+            params["bound_service_accounts"] = list_to_comma_delimited(
+                bound_service_accounts
             )
-            for param, default_arg in type_specific_params['gce'].items():
+        if role_type == "iam":
+            params.update(
+                utils.remove_nones(
+                    {
+                        "max_jwt_exp": max_jwt_exp,
+                        "allow_gce_inference": allow_gce_inference,
+                    }
+                )
+            )
+            for param, default_arg in type_specific_params["gce"].items():
                 if locals().get(param) != default_arg:
                     warning_msg = 'Argument for parameter "{param}" ignored for role type iam'.format(
                         param=param
                     )
                     logger.warning(warning_msg)
-        elif role_type == 'gce':
+        elif role_type == "gce":
             if bound_zones is not None:
-                params['bound_zones'] = list_to_comma_delimited(bound_zones)
+                params["bound_zones"] = list_to_comma_delimited(bound_zones)
             if bound_regions is not None:
-                params['bound_regions'] = list_to_comma_delimited(bound_regions)
+                params["bound_regions"] = list_to_comma_delimited(bound_regions)
             if bound_instance_groups is not None:
-                params['bound_instance_groups'] = list_to_comma_delimited(bound_instance_groups)
+                params["bound_instance_groups"] = list_to_comma_delimited(
+                    bound_instance_groups
+                )
             if bound_labels is not None:
-                params['bound_labels'] = list_to_comma_delimited(bound_labels)
-            for param, default_arg in type_specific_params['iam'].items():
+                params["bound_labels"] = list_to_comma_delimited(bound_labels)
+            for param, default_arg in type_specific_params["iam"].items():
                 if locals().get(param) != default_arg:
                     warning_msg = 'Argument for parameter "{param}" ignored for role type gce'.format(
                         param=param
@@ -230,7 +267,7 @@ class Gcp(VaultApiBase):
                     logger.warning(warning_msg)
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -239,7 +276,9 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def edit_service_accounts_on_iam_role(self, name, add=None, remove=None, mount_point=DEFAULT_MOUNT_POINT):
+    def edit_service_accounts_on_iam_role(
+        self, name, add=None, remove=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Edit service accounts for an existing IAM role in the GCP auth method.
 
         This allows you to add or remove service accounts from the list of service accounts on the role.
@@ -259,12 +298,14 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'add': add,
-            'remove': remove,
-        })
+        params = utils.remove_nones(
+            {
+                "add": add,
+                "remove": remove,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}/service-accounts',
+            "/v1/auth/{mount_point}/role/{name}/service-accounts",
             mount_point=mount_point,
             name=name,
         )
@@ -273,7 +314,9 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
-    def edit_labels_on_gce_role(self, name, add=None, remove=None, mount_point=DEFAULT_MOUNT_POINT):
+    def edit_labels_on_gce_role(
+        self, name, add=None, remove=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Edit labels for an existing GCE role in the backend.
 
         This allows you to add or remove labels (keys, values, or both) from the list of keys on the role.
@@ -294,12 +337,14 @@ class Gcp(VaultApiBase):
         :return: The response of the edit_labels_on_gce_role request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'add': add,
-            'remove': remove,
-        })
+        params = utils.remove_nones(
+            {
+                "add": add,
+                "remove": remove,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}/labels',
+            "/v1/auth/{mount_point}/role/{name}/labels",
             mount_point=mount_point,
             name=name,
         )
@@ -323,10 +368,10 @@ class Gcp(VaultApiBase):
         :rtype: JSON
         """
         params = {
-            'name': name,
+            "name": name,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -334,7 +379,7 @@ class Gcp(VaultApiBase):
             url=api_path,
             json=params,
         )
-        return response.get('data')
+        return response.get("data")
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all the roles that are registered with the plugin.
@@ -348,11 +393,13 @@ class Gcp(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/roles', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/roles", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_role(self, role, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously registered role.
@@ -369,10 +416,10 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'role': role,
+            "role": role,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role}',
+            "/v1/auth/{mount_point}/role/{role}",
             mount_point=mount_point,
             role=role,
         )
@@ -404,10 +451,12 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'role': role,
-            'jwt': jwt,
+            "role": role,
+            "jwt": jwt,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
         return self._adapter.login(
             url=api_path,
             use_token=use_token,

@@ -2,7 +2,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Capabilities(SystemBackendMixin):
-
     def get_capabilities(self, paths, token=None, accessor=None):
         """Get the capabilities associated with a token.
 
@@ -21,22 +20,22 @@ class Capabilities(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'paths': paths,
+            "paths": paths,
         }
 
         if token and accessor:
             raise ValueError("You can specify either token or accessor, not both.")
         elif token:
             # https://www.vaultproject.io/api/system/capabilities.html
-            params['token'] = token
-            api_path = '/v1/sys/capabilities'
+            params["token"] = token
+            api_path = "/v1/sys/capabilities"
         elif accessor:
             # https://www.vaultproject.io/api/system/capabilities-accessor.html
-            params['accessor'] = accessor
-            api_path = '/v1/sys/capabilities-accessor'
+            params["accessor"] = accessor
+            api_path = "/v1/sys/capabilities-accessor"
         else:
             # https://www.vaultproject.io/api/system/capabilities-self.html
-            api_path = '/v1/sys/capabilities-self'
+            api_path = "/v1/sys/capabilities-self"
 
         return self._adapter.post(
             url=api_path,

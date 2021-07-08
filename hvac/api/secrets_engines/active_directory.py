@@ -5,7 +5,7 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'ad'
+DEFAULT_MOUNT_POINT = "ad"
 
 
 class ActiveDirectory(VaultApiBase):
@@ -13,8 +13,19 @@ class ActiveDirectory(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/ad/index.html
     """
 
-    def configure(self, binddn=None, bindpass=None, url=None, userdn=None, upndomain=None, ttl=None, max_ttl=None,
-                  mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
+    def configure(
+        self,
+        binddn=None,
+        bindpass=None,
+        url=None,
+        userdn=None,
+        upndomain=None,
+        ttl=None,
+        max_ttl=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        *args,
+        **kwargs
+    ):
         """Configure shared information for the ad secrets engine.
 
         Supported methods:
@@ -40,19 +51,21 @@ class ActiveDirectory(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'binddn': binddn,
-            'bindpass': bindpass,
-            'url': url,
-            'userdn': userdn,
-            'upndomain': upndomain,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-        })
+        params = utils.remove_nones(
+            {
+                "binddn": binddn,
+                "bindpass": bindpass,
+                "url": url,
+                "userdn": userdn,
+                "upndomain": upndomain,
+                "ttl": ttl,
+                "max_ttl": max_ttl,
+            }
+        )
 
         params.update(kwargs)
 
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -71,12 +84,14 @@ class ActiveDirectory(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.get(
             url=api_path,
         )
 
-    def create_or_update_role(self, name, service_account_name=None, ttl=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(
+        self, name, service_account_name=None, ttl=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """This endpoint creates or updates the ad role definition.
 
         :param name: Specifies the name of an existing role against which to create this ad credential.
@@ -98,10 +113,12 @@ class ActiveDirectory(VaultApiBase):
             "name": name,
         }
         params.update(
-            utils.remove_nones({
-                "service_account_name": service_account_name,
-                "ttl": ttl,
-            })
+            utils.remove_nones(
+                {
+                    "service_account_name": service_account_name,
+                    "ttl": ttl,
+                }
+            )
         )
         return self._adapter.post(
             url=api_path,

@@ -4,7 +4,7 @@
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'secret'
+DEFAULT_MOUNT_POINT = "secret"
 
 
 class KvV2(VaultApiBase):
@@ -13,7 +13,13 @@ class KvV2(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/kv/kv-v2.html
     """
 
-    def configure(self, max_versions=10, cas_required=None, delete_version_after="0s", mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        max_versions=10,
+        cas_required=None,
+        delete_version_after="0s",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure backend level settings that are applied to every key in the key-value store.
 
         Supported methods:
@@ -35,12 +41,12 @@ class KvV2(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'max_versions': max_versions,
-            'delete_version_after': delete_version_after,
+            "max_versions": max_versions,
+            "delete_version_after": delete_version_after,
         }
         if cas_required is not None:
-            params['cas_required'] = cas_required
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+            params["cas_required"] = cas_required
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -59,7 +65,7 @@ class KvV2(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/config',
+            "/v1/{mount_point}/config",
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
@@ -85,14 +91,18 @@ class KvV2(VaultApiBase):
         """
         params = {}
         if version is not None:
-            params['version'] = version
-        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
+            params["version"] = version
+        api_path = utils.format_url(
+            "/v1/{mount_point}/data/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.get(
             url=api_path,
             params=params,
         )
 
-    def create_or_update_secret(self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_secret(
+        self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Create a new version of a secret at the specified location.
 
         If the value does not yet exist, the calling token must have an ACL policy granting the create capability. If
@@ -115,14 +125,16 @@ class KvV2(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'options': {},
-            'data': secret,
+            "options": {},
+            "data": secret,
         }
 
         if cas is not None:
-            params['options']['cas'] = cas
+            params["options"]["cas"] = cas
 
-        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/data/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -147,16 +159,20 @@ class KvV2(VaultApiBase):
                 mount_point=mount_point,
             )
         except exceptions.InvalidPath:
-            raise exceptions.InvalidPath('No value found at "{path}"; patch only works on existing data.'.format(path=path))
+            raise exceptions.InvalidPath(
+                'No value found at "{path}"; patch only works on existing data.'.format(
+                    path=path
+                )
+            )
 
         # Update existing secret dict.
-        patched_secret = current_secret_version['data']['data']
+        patched_secret = current_secret_version["data"]["data"]
         patched_secret.update(secret)
 
         # Write back updated secret.
         return self.create_or_update_secret(
             path=path,
-            cas=current_secret_version['data']['metadata']['version'],
+            cas=current_secret_version["data"]["metadata"]["version"],
             secret=patched_secret,
             mount_point=mount_point,
         )
@@ -178,7 +194,9 @@ class KvV2(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/data/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/data/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.delete(
             url=api_path,
         )
@@ -210,9 +228,11 @@ class KvV2(VaultApiBase):
             )
             raise exceptions.ParamValidationError(error_msg)
         params = {
-            'versions': versions,
+            "versions": versions,
         }
-        api_path = utils.format_url('/v1/{mount_point}/delete/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/delete/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -243,9 +263,11 @@ class KvV2(VaultApiBase):
             )
             raise exceptions.ParamValidationError(error_msg)
         params = {
-            'versions': versions,
+            "versions": versions,
         }
-        api_path = utils.format_url('/v1/{mount_point}/undelete/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/undelete/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -275,9 +297,11 @@ class KvV2(VaultApiBase):
             )
             raise exceptions.ParamValidationError(error_msg)
         params = {
-            'versions': versions,
+            "versions": versions,
         }
-        api_path = utils.format_url('/v1/{mount_point}/destroy/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/destroy/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -301,7 +325,9 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -320,12 +346,21 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.get(
             url=api_path,
         )
 
-    def update_metadata(self, path, max_versions=None, cas_required=None, delete_version_after="0s", mount_point=DEFAULT_MOUNT_POINT):
+    def update_metadata(
+        self,
+        path,
+        max_versions=None,
+        cas_required=None,
+        delete_version_after="0s",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Updates the max_versions of cas_required setting on an existing path.
 
         Supported methods:
@@ -350,16 +385,22 @@ class KvV2(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'delete_version_after': delete_version_after,
+            "delete_version_after": delete_version_after,
         }
         if max_versions is not None:
-            params['max_versions'] = max_versions
+            params["max_versions"] = max_versions
         if cas_required is not None:
             if not isinstance(cas_required, bool):
-                error_msg = 'bool expected for cas_required param, {type} received'.format(type=type(cas_required))
+                error_msg = (
+                    "bool expected for cas_required param, {type} received".format(
+                        type=type(cas_required)
+                    )
+                )
                 raise exceptions.ParamValidationError(error_msg)
-            params['cas_required'] = cas_required
-        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
+            params["cas_required"] = cas_required
+        api_path = utils.format_url(
+            "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -381,7 +422,9 @@ class KvV2(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/metadata/{path}', mount_point=mount_point, path=path)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
+        )
         return self._adapter.delete(
             url=api_path,
         )

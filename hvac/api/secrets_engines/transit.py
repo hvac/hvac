@@ -5,7 +5,7 @@ from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants import transit as transit_constants
 
-DEFAULT_MOUNT_POINT = 'transit'
+DEFAULT_MOUNT_POINT = "transit"
 
 
 class Transit(VaultApiBase):
@@ -14,8 +14,16 @@ class Transit(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/transit/index.html
     """
 
-    def create_key(self, name, convergent_encryption=None, derived=None, exportable=None, allow_plaintext_backup=None,
-                   key_type=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_key(
+        self,
+        name,
+        convergent_encryption=None,
+        derived=None,
+        exportable=None,
+        allow_plaintext_backup=None,
+        key_type=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create a new named encryption key of the specified type.
 
         The values set here cannot be changed after key creation.
@@ -56,22 +64,28 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         if convergent_encryption and not derived:
-            raise exceptions.ParamValidationError('derived must be set to True when convergent_encryption is True')
+            raise exceptions.ParamValidationError(
+                "derived must be set to True when convergent_encryption is True"
+            )
         if key_type is not None and key_type not in transit_constants.ALLOWED_KEY_TYPES:
             error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=key_type,
-                allowed_types=', '.join(transit_constants.ALLOWED_KEY_TYPES),
-            ))
-        params = utils.remove_nones({
-            'convergent_encryption': convergent_encryption,
-            'derived': derived,
-            'exportable': exportable,
-            'allow_plaintext_backup': allow_plaintext_backup,
-            'type': key_type,
-        })
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=key_type,
+                    allowed_types=", ".join(transit_constants.ALLOWED_KEY_TYPES),
+                )
+            )
+        params = utils.remove_nones(
+            {
+                "convergent_encryption": convergent_encryption,
+                "derived": derived,
+                "exportable": exportable,
+                "allow_plaintext_backup": allow_plaintext_backup,
+                "type": key_type,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}',
+            "/v1/{mount_point}/keys/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -98,7 +112,7 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}',
+            "/v1/{mount_point}/keys/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -121,10 +135,8 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/keys', mount_point=mount_point)
-        return self._adapter.list(
-            url=api_path
-        )
+        api_path = utils.format_url("/v1/{mount_point}/keys", mount_point=mount_point)
+        return self._adapter.list(url=api_path)
 
     def delete_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete a named encryption key.
@@ -143,7 +155,7 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}',
+            "/v1/{mount_point}/keys/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -151,8 +163,16 @@ class Transit(VaultApiBase):
             url=api_path,
         )
 
-    def update_key_configuration(self, name, min_decryption_version=None, min_encryption_version=None, deletion_allowed=None,
-                                 exportable=None, allow_plaintext_backup=None, mount_point=DEFAULT_MOUNT_POINT):
+    def update_key_configuration(
+        self,
+        name,
+        min_decryption_version=None,
+        min_encryption_version=None,
+        deletion_allowed=None,
+        exportable=None,
+        allow_plaintext_backup=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Tune configuration values for a given key.
 
         These values are returned during a read operation on the named key.
@@ -186,17 +206,24 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         if min_encryption_version is not None and min_decryption_version is not None:
-            if min_encryption_version != 0 and min_encryption_version <= min_decryption_version:
-                raise exceptions.ParamValidationError('min_encryption_version must be 0 or > min_decryption_version')
-        params = utils.remove_nones({
-            'min_decryption_version': min_decryption_version,
-            'min_encryption_version': min_encryption_version,
-            'deletion_allowed': deletion_allowed,
-            'exportable': exportable,
-            'allow_plaintext_backup': allow_plaintext_backup,
-        })
+            if (
+                min_encryption_version != 0
+                and min_encryption_version <= min_decryption_version
+            ):
+                raise exceptions.ParamValidationError(
+                    "min_encryption_version must be 0 or > min_decryption_version"
+                )
+        params = utils.remove_nones(
+            {
+                "min_decryption_version": min_decryption_version,
+                "min_encryption_version": min_encryption_version,
+                "deletion_allowed": deletion_allowed,
+                "exportable": exportable,
+                "allow_plaintext_backup": allow_plaintext_backup,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}/config',
+            "/v1/{mount_point}/keys/{name}/config",
             mount_point=mount_point,
             name=name,
         )
@@ -223,7 +250,7 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}/rotate',
+            "/v1/{mount_point}/keys/{name}/rotate",
             mount_point=mount_point,
             name=name,
         )
@@ -259,12 +286,14 @@ class Transit(VaultApiBase):
         """
         if key_type not in transit_constants.ALLOWED_EXPORT_KEY_TYPES:
             error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=key_type,
-                allowed_types=', '.join(transit_constants.ALLOWED_EXPORT_KEY_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=key_type,
+                    allowed_types=", ".join(transit_constants.ALLOWED_EXPORT_KEY_TYPES),
+                )
+            )
         api_path = utils.format_url(
-            '/v1/{mount_point}/export/{key_type}/{name}',
+            "/v1/{mount_point}/export/{key_type}/{name}",
             mount_point=mount_point,
             key_type=key_type,
             name=name,
@@ -275,8 +304,18 @@ class Transit(VaultApiBase):
             url=api_path,
         )
 
-    def encrypt_data(self, name, plaintext, context=None, key_version=None, nonce=None, batch_input=None, type=None,
-                     convergent_encryption=None, mount_point=DEFAULT_MOUNT_POINT):
+    def encrypt_data(
+        self,
+        name,
+        plaintext,
+        context=None,
+        key_version=None,
+        nonce=None,
+        batch_input=None,
+        type=None,
+        convergent_encryption=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Encrypt the provided plaintext using the named key.
 
         This path supports the create and update policy capabilities as follows: if the user has the create capability
@@ -322,20 +361,22 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'plaintext': plaintext,
+            "plaintext": plaintext,
         }
         params.update(
-            utils.remove_nones({
-                'context': context,
-                'key_version': key_version,
-                'nonce': nonce,
-                'batch_input': batch_input,
-                'type': type,
-                'convergent_encryption': convergent_encryption,
-            })
+            utils.remove_nones(
+                {
+                    "context": context,
+                    "key_version": key_version,
+                    "nonce": nonce,
+                    "batch_input": batch_input,
+                    "type": type,
+                    "convergent_encryption": convergent_encryption,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/encrypt/{name}',
+            "/v1/{mount_point}/encrypt/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -344,7 +385,15 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def decrypt_data(self, name, ciphertext, context=None, nonce=None, batch_input=None, mount_point=DEFAULT_MOUNT_POINT):
+    def decrypt_data(
+        self,
+        name,
+        ciphertext,
+        context=None,
+        nonce=None,
+        batch_input=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Decrypt the provided ciphertext using the named key.
 
         Supported methods:
@@ -371,17 +420,19 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'ciphertext': ciphertext,
+            "ciphertext": ciphertext,
         }
         params.update(
-            utils.remove_nones({
-                'context': context,
-                'nonce': nonce,
-                'batch_input': batch_input,
-            })
+            utils.remove_nones(
+                {
+                    "context": context,
+                    "nonce": nonce,
+                    "batch_input": batch_input,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/decrypt/{name}',
+            "/v1/{mount_point}/decrypt/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -390,8 +441,16 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def rewrap_data(self, name, ciphertext, context=None, key_version=None, nonce=None, batch_input=None,
-                    mount_point=DEFAULT_MOUNT_POINT):
+    def rewrap_data(
+        self,
+        name,
+        ciphertext,
+        context=None,
+        key_version=None,
+        nonce=None,
+        batch_input=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Rewrap the provided ciphertext using the latest version of the named key.
 
         Because this never returns plaintext, it is possible to delegate this functionality to untrusted users or scripts.
@@ -423,18 +482,20 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'ciphertext': ciphertext,
+            "ciphertext": ciphertext,
         }
         params.update(
-            utils.remove_nones({
-                'context': context,
-                'key_version': key_version,
-                'nonce': nonce,
-                'batch_input': batch_input,
-            })
+            utils.remove_nones(
+                {
+                    "context": context,
+                    "key_version": key_version,
+                    "nonce": nonce,
+                    "batch_input": batch_input,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/rewrap/{name}',
+            "/v1/{mount_point}/rewrap/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -443,7 +504,15 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def generate_data_key(self, name, key_type, context=None, nonce=None, bits=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_data_key(
+        self,
+        name,
+        key_type,
+        context=None,
+        nonce=None,
+        bits=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Generates a new high-entropy key and the value encrypted with the named key.
 
         Optionally return the plaintext of the key as well. Whether plaintext is returned depends on the path; as a
@@ -478,23 +547,31 @@ class Transit(VaultApiBase):
         """
         if key_type not in transit_constants.ALLOWED_DATA_KEY_TYPES:
             error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=key_type,
-                allowed_types=', '.join(transit_constants.ALLOWED_DATA_KEY_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=key_type,
+                    allowed_types=", ".join(transit_constants.ALLOWED_DATA_KEY_TYPES),
+                )
+            )
         if bits is not None and bits not in transit_constants.ALLOWED_DATA_KEY_BITS:
             error_msg = 'invalid bits argument provided "{arg}", supported values: "{allowed_values}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=bits,
-                allowed_values=', '.join([str(b) for b in transit_constants.ALLOWED_DATA_KEY_BITS]),
-            ))
-        params = utils.remove_nones({
-            'context': context,
-            'nonce': nonce,
-            'bits': bits,
-        })
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=bits,
+                    allowed_values=", ".join(
+                        [str(b) for b in transit_constants.ALLOWED_DATA_KEY_BITS]
+                    ),
+                )
+            )
+        params = utils.remove_nones(
+            {
+                "context": context,
+                "nonce": nonce,
+                "bits": bits,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/{mount_point}/datakey/{key_type}/{name}',
+            "/v1/{mount_point}/datakey/{key_type}/{name}",
             mount_point=mount_point,
             key_type=key_type,
             name=name,
@@ -504,7 +581,9 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def generate_random_bytes(self, n_bytes=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_random_bytes(
+        self, n_bytes=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Return high-quality random bytes of the specified length.
 
         Supported methods:
@@ -520,17 +599,25 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        params = utils.remove_nones({
-            'bytes': n_bytes,
-            'format': output_format,
-        })
-        api_path = utils.format_url('/v1/{mount_point}/random', mount_point=mount_point)
+        params = utils.remove_nones(
+            {
+                "bytes": n_bytes,
+                "format": output_format,
+            }
+        )
+        api_path = utils.format_url("/v1/{mount_point}/random", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def hash_data(self, hash_input, algorithm=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT):
+    def hash_data(
+        self,
+        hash_input,
+        algorithm=None,
+        output_format=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Return the cryptographic hash of given data using the specified algorithm.
 
         Supported methods:
@@ -548,34 +635,57 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        if algorithm is not None and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
+        if (
+            algorithm is not None
+            and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+        ):
             error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS),
-            ))
-        if output_format is not None and output_format not in transit_constants.ALLOWED_HASH_DATA_FORMATS:
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+                    ),
+                )
+            )
+        if (
+            output_format is not None
+            and output_format not in transit_constants.ALLOWED_HASH_DATA_FORMATS
+        ):
             error_msg = 'invalid output_format argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=output_format,
-                allowed_types=', '.join(transit_constants.ALLOWED_HASH_DATA_FORMATS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=output_format,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_HASH_DATA_FORMATS
+                    ),
+                )
+            )
         params = {
-            'input': hash_input,
+            "input": hash_input,
         }
         params.update(
-            utils.remove_nones({
-                'algorithm': algorithm,
-                'format': output_format,
-            })
+            utils.remove_nones(
+                {
+                    "algorithm": algorithm,
+                    "format": output_format,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/{mount_point}/hash', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/hash", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def generate_hmac(self, name, hash_input, key_version=None, algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_hmac(
+        self,
+        name,
+        hash_input,
+        key_version=None,
+        algorithm=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Return the digest of given data using the specified hash algorithm and the named key.
 
         The key can be of any type supported by transit; the raw key will be marshaled into bytes to be used for the
@@ -600,23 +710,32 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        if algorithm is not None and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
+        if (
+            algorithm is not None
+            and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+        ):
             error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+                    ),
+                )
+            )
         params = {
-            'input': hash_input,
+            "input": hash_input,
         }
         params.update(
-            utils.remove_nones({
-                'key_version': key_version,
-                'algorithm': algorithm,
-            })
+            utils.remove_nones(
+                {
+                    "key_version": key_version,
+                    "algorithm": algorithm,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/hmac/{name}',
+            "/v1/{mount_point}/hmac/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -625,8 +744,18 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def sign_data(self, name, hash_input, key_version=None, hash_algorithm=None, context=None, prehashed=None,
-                  signature_algorithm=None, marshaling_algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_data(
+        self,
+        name,
+        hash_input,
+        key_version=None,
+        hash_algorithm=None,
+        context=None,
+        prehashed=None,
+        signature_algorithm=None,
+        marshaling_algorithm=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Return the cryptographic signature of the given data using the named key and the specified hash algorithm.
 
         The key must be of a type that supports signing.
@@ -665,39 +794,64 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        if hash_algorithm is not None and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
+        if (
+            hash_algorithm is not None
+            and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+        ):
             error_msg = 'invalid hash_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=hash_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS),
-            ))
-        if signature_algorithm is not None and signature_algorithm not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS:
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=hash_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+                    ),
+                )
+            )
+        if (
+            signature_algorithm is not None
+            and signature_algorithm
+            not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
+        ):
             error_msg = 'invalid signature_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=signature_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_SIGNATURE_ALGORITHMS),
-            ))
-        if marshaling_algorithm is not None and marshaling_algorithm not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS:
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=signature_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
+                    ),
+                )
+            )
+        if (
+            marshaling_algorithm is not None
+            and marshaling_algorithm
+            not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS
+        ):
             error_msg = 'invalid marshaling_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=marshaling_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_MARSHALING_ALGORITHMS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=marshaling_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_MARSHALING_ALGORITHMS
+                    ),
+                )
+            )
         params = {
-            'input': hash_input,
+            "input": hash_input,
         }
         params.update(
-            utils.remove_nones({
-                'key_version': key_version,
-                'hash_algorithm': hash_algorithm,
-                'context': context,
-                'prehashed': prehashed,
-                'signature_algorithm': signature_algorithm,
-                'marshaling_algorithm': marshaling_algorithm,
-            })
+            utils.remove_nones(
+                {
+                    "key_version": key_version,
+                    "hash_algorithm": hash_algorithm,
+                    "context": context,
+                    "prehashed": prehashed,
+                    "signature_algorithm": signature_algorithm,
+                    "marshaling_algorithm": marshaling_algorithm,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/sign/{name}',
+            "/v1/{mount_point}/sign/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -706,8 +860,19 @@ class Transit(VaultApiBase):
             json=params,
         )
 
-    def verify_signed_data(self, name, hash_input, signature=None, hmac=None, hash_algorithm=None, context=None,
-                           prehashed=None, signature_algorithm=None, marshaling_algorithm=None, mount_point=DEFAULT_MOUNT_POINT):
+    def verify_signed_data(
+        self,
+        name,
+        hash_input,
+        signature=None,
+        hmac=None,
+        hash_algorithm=None,
+        context=None,
+        prehashed=None,
+        signature_algorithm=None,
+        marshaling_algorithm=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Return whether the provided signature is valid for the given data.
 
         Supported methods:
@@ -743,43 +908,72 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        if (signature is None and hmac is None) or (signature is not None and hmac is not None):
+        if (signature is None and hmac is None) or (
+            signature is not None and hmac is not None
+        ):
             error_msg = 'either "signature" or "hmac" argument (but not both) must be provided to verify signature'
             raise exceptions.ParamValidationError(error_msg)
-        if hash_algorithm is not None and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS:
+        if (
+            hash_algorithm is not None
+            and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+        ):
             error_msg = 'invalid hash_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=hash_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS),
-            ))
-        if signature_algorithm is not None and signature_algorithm not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS:
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=hash_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
+                    ),
+                )
+            )
+        if (
+            signature_algorithm is not None
+            and signature_algorithm
+            not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
+        ):
             error_msg = 'invalid signature_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=signature_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_SIGNATURE_ALGORITHMS),
-            ))
-        if marshaling_algorithm is not None and marshaling_algorithm not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS:
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=signature_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
+                    ),
+                )
+            )
+        if (
+            marshaling_algorithm is not None
+            and marshaling_algorithm
+            not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS
+        ):
             error_msg = 'invalid marshaling_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=marshaling_algorithm,
-                allowed_types=', '.join(transit_constants.ALLOWED_MARSHALING_ALGORITHMS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=marshaling_algorithm,
+                    allowed_types=", ".join(
+                        transit_constants.ALLOWED_MARSHALING_ALGORITHMS
+                    ),
+                )
+            )
         params = {
-            'name': name,
-            'input': hash_input,
+            "name": name,
+            "input": hash_input,
         }
         params.update(
-            utils.remove_nones({
-                'hash_algorithm': hash_algorithm,
-                'signature': signature,
-                'hmac': hmac,
-                'context': context,
-                'prehashed': prehashed,
-                'signature_algorithm': signature_algorithm,
-                'marshaling_algorithm': marshaling_algorithm,
-            })
+            utils.remove_nones(
+                {
+                    "hash_algorithm": hash_algorithm,
+                    "signature": signature,
+                    "hmac": hmac,
+                    "context": context,
+                    "prehashed": prehashed,
+                    "signature_algorithm": signature_algorithm,
+                    "marshaling_algorithm": marshaling_algorithm,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/{mount_point}/verify/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/verify/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -802,7 +996,7 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/backup/{name}',
+            "/v1/{mount_point}/backup/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -810,7 +1004,9 @@ class Transit(VaultApiBase):
             url=api_path,
         )
 
-    def restore_key(self, backup, name=None, force=None, mount_point=DEFAULT_MOUNT_POINT):
+    def restore_key(
+        self, backup, name=None, force=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Restore the backup as a named key.
 
         This will restore the key configurations and all the versions of the named key along with HMAC keys. The input
@@ -834,14 +1030,18 @@ class Transit(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'backup': backup,
+            "backup": backup,
         }
         params.update(
-            utils.remove_nones({
-                'force': force,
-            })
+            utils.remove_nones(
+                {
+                    "force": force,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/{mount_point}/restore', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/restore", mount_point=mount_point
+        )
         if name is not None:
             api_path = self._adapter.urljoin(api_path, name)
         return self._adapter.post(
@@ -869,10 +1069,10 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'min_available_version': min_version,
+            "min_available_version": min_version,
         }
         api_path = utils.format_url(
-            '/v1/{mount_point}/keys/{name}/trim',
+            "/v1/{mount_point}/keys/{name}/trim",
             mount_point=mount_point,
             name=name,
         )

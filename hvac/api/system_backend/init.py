@@ -3,7 +3,6 @@ from hvac.exceptions import ParamValidationError
 
 
 class Init(SystemBackendMixin):
-
     def read_init_status(self):
         """Read the initialization status of Vault.
 
@@ -13,7 +12,7 @@ class Init(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/init'
+        api_path = "/v1/sys/init"
         return self._adapter.get(
             url=api_path,
         )
@@ -25,10 +24,19 @@ class Init(SystemBackendMixin):
         :rtype: bool
         """
         status = self.read_init_status()
-        return status['initialized']
+        return status["initialized"]
 
-    def initialize(self, secret_shares=5, secret_threshold=3, pgp_keys=None, root_token_pgp_key=None,
-                   stored_shares=None, recovery_shares=None, recovery_threshold=None, recovery_pgp_keys=None):
+    def initialize(
+        self,
+        secret_shares=5,
+        secret_threshold=3,
+        pgp_keys=None,
+        root_token_pgp_key=None,
+        stored_shares=None,
+        recovery_shares=None,
+        recovery_threshold=None,
+        recovery_pgp_keys=None,
+    ):
         """Initialize a new Vault.
 
         The Vault must not have been previously initialized. The recovery options, as well as the stored shares option,
@@ -66,36 +74,42 @@ class Init(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'secret_shares': secret_shares,
-            'secret_threshold': secret_threshold,
-            'root_token_pgp_key': root_token_pgp_key,
+            "secret_shares": secret_shares,
+            "secret_threshold": secret_threshold,
+            "root_token_pgp_key": root_token_pgp_key,
         }
 
         if pgp_keys is not None:
             if len(pgp_keys) != secret_shares:
-                raise ParamValidationError('length of pgp_keys list argument must equal secret_shares value')
-            params['pgp_keys'] = pgp_keys
+                raise ParamValidationError(
+                    "length of pgp_keys list argument must equal secret_shares value"
+                )
+            params["pgp_keys"] = pgp_keys
 
         if stored_shares is not None:
             if stored_shares != secret_shares:
-                raise ParamValidationError('value for stored_shares argument must equal secret_shares argument')
-            params['stored_shares'] = stored_shares
+                raise ParamValidationError(
+                    "value for stored_shares argument must equal secret_shares argument"
+                )
+            params["stored_shares"] = stored_shares
 
         if recovery_shares is not None:
-            params['recovery_shares'] = recovery_shares
+            params["recovery_shares"] = recovery_shares
 
         if recovery_threshold is not None:
             if recovery_threshold > recovery_shares:
-                error_msg = 'value for recovery_threshold argument be less than or equal to recovery_shares argument'
+                error_msg = "value for recovery_threshold argument be less than or equal to recovery_shares argument"
                 raise ParamValidationError(error_msg)
-            params['recovery_threshold'] = recovery_threshold
+            params["recovery_threshold"] = recovery_threshold
 
         if recovery_pgp_keys is not None:
             if len(recovery_pgp_keys) != recovery_shares:
-                raise ParamValidationError('length of recovery_pgp_keys list argument must equal recovery_shares value')
-            params['recovery_pgp_keys'] = recovery_pgp_keys
+                raise ParamValidationError(
+                    "length of recovery_pgp_keys list argument must equal recovery_shares value"
+                )
+            params["recovery_pgp_keys"] = recovery_pgp_keys
 
-        api_path = '/v1/sys/init'
+        api_path = "/v1/sys/init"
         return self._adapter.put(
             url=api_path,
             json=params,

@@ -5,7 +5,11 @@ import json
 
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.constants.aws import DEFAULT_MOUNT_POINT, ALLOWED_CREDS_ENDPOINTS, ALLOWED_CREDS_TYPES
+from hvac.constants.aws import (
+    DEFAULT_MOUNT_POINT,
+    ALLOWED_CREDS_ENDPOINTS,
+    ALLOWED_CREDS_TYPES,
+)
 
 
 class Aws(VaultApiBase):
@@ -14,8 +18,16 @@ class Aws(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/aws/index.html
     """
 
-    def configure_root_iam_credentials(self, access_key, secret_key, region=None, iam_endpoint=None, sts_endpoint=None,
-                                       max_retries=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure_root_iam_credentials(
+        self,
+        access_key,
+        secret_key,
+        region=None,
+        iam_endpoint=None,
+        sts_endpoint=None,
+        max_retries=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the root IAM credentials to communicate with AWS.
 
         There are multiple ways to pass root IAM credentials to the Vault server, specified below with the highest
@@ -54,18 +66,22 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'access_key': access_key,
-            'secret_key': secret_key,
-            'max_retries': max_retries,
+            "access_key": access_key,
+            "secret_key": secret_key,
+            "max_retries": max_retries,
         }
         params.update(
-            utils.remove_nones({
-                'region': region,
-                'iam_endpoint': iam_endpoint,
-                'sts_endpoint': sts_endpoint,
-            })
+            utils.remove_nones(
+                {
+                    "region": region,
+                    "iam_endpoint": iam_endpoint,
+                    "sts_endpoint": sts_endpoint,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/{mount_point}/config/root', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/root", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -88,7 +104,9 @@ class Aws(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/rotate-root', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/rotate-root", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
         )
@@ -113,10 +131,12 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'lease': lease,
-            'lease_max': lease_max,
+            "lease": lease,
+            "lease_max": lease_max,
         }
-        api_path = utils.format_url('/v1/{mount_point}/config/lease', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/lease", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -133,13 +153,26 @@ class Aws(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/lease', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/lease", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
 
-    def create_or_update_role(self, name, credential_type, policy_document=None, default_sts_ttl=None, max_sts_ttl=None,
-                              role_arns=None, policy_arns=None, legacy_params=False, iam_tags=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(
+        self,
+        name,
+        credential_type,
+        policy_document=None,
+        default_sts_ttl=None,
+        max_sts_ttl=None,
+        role_arns=None,
+        policy_arns=None,
+        legacy_params=False,
+        iam_tags=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create or update the role with the given name.
 
         If a role with the name does not exist, it will be created. If the role exists, it will be updated with the new
@@ -186,35 +219,39 @@ class Aws(VaultApiBase):
         """
         if credential_type not in ALLOWED_CREDS_TYPES:
             error_msg = 'invalid credential_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=credential_type,
-                allowed_types=', '.join(ALLOWED_CREDS_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=credential_type,
+                    allowed_types=", ".join(ALLOWED_CREDS_TYPES),
+                )
+            )
         if isinstance(policy_document, dict):
             policy_document = json.dumps(policy_document, indent=4, sort_keys=True)
 
         if legacy_params:
             # Support for Vault <0.11.0
             params = {
-                'policy': policy_document,
-                'arn': policy_arns[0] if isinstance(policy_arns, list) else policy_arns,
+                "policy": policy_document,
+                "arn": policy_arns[0] if isinstance(policy_arns, list) else policy_arns,
             }
         else:
             params = {
-                'credential_type': credential_type,
+                "credential_type": credential_type,
             }
             params.update(
-                utils.remove_nones({
-                    'policy_document': policy_document,
-                    'default_sts_ttl': default_sts_ttl,
-                    'max_sts_ttl': max_sts_ttl,
-                    'role_arns': role_arns,
-                    'policy_arns': policy_arns,
-                    'iam_tags': iam_tags,
-                })
+                utils.remove_nones(
+                    {
+                        "policy_document": policy_document,
+                        "default_sts_ttl": default_sts_ttl,
+                        "max_sts_ttl": max_sts_ttl,
+                        "role_arns": role_arns,
+                        "policy_arns": policy_arns,
+                        "iam_tags": iam_tags,
+                    }
+                )
             )
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -239,7 +276,7 @@ class Aws(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -258,7 +295,7 @@ class Aws(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/roles", mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -280,7 +317,7 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -288,7 +325,14 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
-    def generate_credentials(self, name, role_arn=None, ttl=None, endpoint='creds', mount_point=DEFAULT_MOUNT_POINT):
+    def generate_credentials(
+        self,
+        name,
+        role_arn=None,
+        ttl=None,
+        endpoint="creds",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Generates credential based on the named role.
 
         This role must be created before queried.
@@ -322,27 +366,31 @@ class Aws(VaultApiBase):
         """
         if endpoint not in ALLOWED_CREDS_ENDPOINTS:
             error_msg = 'invalid endpoint argument provided "{arg}", supported types: "{allowed_endpoints}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=endpoint,
-                allowed_endpoints=', '.join(ALLOWED_CREDS_ENDPOINTS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=endpoint,
+                    allowed_endpoints=", ".join(ALLOWED_CREDS_ENDPOINTS),
+                )
+            )
         params = {
-            'name': name,
+            "name": name,
         }
         params.update(
-            utils.remove_nones({
-                'role_arn': role_arn,
-                'ttl': ttl,
-            })
+            utils.remove_nones(
+                {
+                    "role_arn": role_arn,
+                    "ttl": ttl,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/{mount_point}/{endpoint}/{name}',
+            "/v1/{mount_point}/{endpoint}/{name}",
             mount_point=mount_point,
             endpoint=endpoint,
             name=name,
         )
 
-        if endpoint == 'sts':
+        if endpoint == "sts":
             return self._adapter.put(
                 url=api_path,
                 params=params,

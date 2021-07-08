@@ -13,12 +13,25 @@ class AppRole(VaultApiBase):
     Reference: https://www.vaultproject.io/api-docs/auth/approle/index.html
     """
 
-    def create_or_update_approle(self, role_name, bind_secret_id=None, secret_id_bound_cidrs=None,
-                                 secret_id_num_uses=None, secret_id_ttl=None, enable_local_secret_ids=None,
-                                 token_ttl=None, token_max_ttl=None, token_policies=None,
-                                 token_bound_cidrs=None, token_explicit_max_ttl=None,
-                                 token_no_default_policy=None, token_num_uses=None, token_period=None,
-                                 token_type=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_approle(
+        self,
+        role_name,
+        bind_secret_id=None,
+        secret_id_bound_cidrs=None,
+        secret_id_num_uses=None,
+        secret_id_ttl=None,
+        enable_local_secret_ids=None,
+        token_ttl=None,
+        token_max_ttl=None,
+        token_policies=None,
+        token_bound_cidrs=None,
+        token_explicit_max_ttl=None,
+        token_no_default_policy=None,
+        token_num_uses=None,
+        token_period=None,
+        token_type=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """
         Create/update approle.
 
@@ -67,17 +80,19 @@ class AppRole(VaultApiBase):
         :type mount_point: str | unicode
         """
         list_of_strings_params = {
-            'secret_id_bound_cidrs': secret_id_bound_cidrs,
-            'token_policies': token_policies,
-            'token_bound_cidrs': token_bound_cidrs
+            "secret_id_bound_cidrs": secret_id_bound_cidrs,
+            "token_policies": token_policies,
+            "token_bound_cidrs": token_bound_cidrs,
         }
 
         if token_type is not None and token_type not in ALLOWED_TOKEN_TYPES:
             error_msg = 'unsupported token_type argument provided "{arg}", supported types: "{token_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=token_type,
-                token_types=','.join(ALLOWED_TOKEN_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=token_type,
+                    token_types=",".join(ALLOWED_TOKEN_TYPES),
+                )
+            )
 
         params = dict()
 
@@ -90,25 +105,27 @@ class AppRole(VaultApiBase):
                 params[param_name] = list_to_comma_delimited(param_argument)
 
         params.update(
-            utils.remove_nones({
-                'bind_secret_id': bind_secret_id,
-                'secret_id_num_uses': secret_id_num_uses,
-                'secret_id_ttl': secret_id_ttl,
-                'enable_local_secret_ids': enable_local_secret_ids,
-                'token_ttl': token_ttl,
-                'token_max_ttl': token_max_ttl,
-                'token_explicit_max_ttl': token_explicit_max_ttl,
-                'token_no_default_policy': token_no_default_policy,
-                'token_num_uses': token_num_uses,
-                'token_period': token_period,
-                'token_type': token_type
-            })
+            utils.remove_nones(
+                {
+                    "bind_secret_id": bind_secret_id,
+                    "secret_id_num_uses": secret_id_num_uses,
+                    "secret_id_ttl": secret_id_ttl,
+                    "enable_local_secret_ids": enable_local_secret_ids,
+                    "token_ttl": token_ttl,
+                    "token_max_ttl": token_max_ttl,
+                    "token_explicit_max_ttl": token_explicit_max_ttl,
+                    "token_no_default_policy": token_no_default_policy,
+                    "token_num_uses": token_num_uses,
+                    "token_period": token_period,
+                    "token_type": token_type,
+                }
+            )
         )
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
-            name=role_name
+            name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
@@ -125,8 +142,7 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role',
-            mount_point=mount_point
+            "/v1/auth/{mount_point}/role", mount_point=mount_point
         )
         return self._adapter.list(url=api_path)
 
@@ -145,9 +161,9 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}',
+            "/v1/auth/{mount_point}/role/{role_name}",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.get(url=api_path)
 
@@ -164,9 +180,9 @@ class AppRole(VaultApiBase):
         :type mount_point: str | unicode
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}',
+            "/v1/auth/{mount_point}/role/{role_name}",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.delete(url=api_path)
 
@@ -185,9 +201,9 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/role-id',
+            "/v1/auth/{mount_point}/role/{role_name}/role-id",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.get(url=api_path)
 
@@ -207,18 +223,23 @@ class AppRole(VaultApiBase):
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
-        params = {
-            'role_id': role_id
-        }
+        params = {"role_id": role_id}
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/role-id',
+            "/v1/auth/{mount_point}/role/{role_name}/role-id",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
-    def generate_secret_id(self, role_name, metadata=None, cidr_list=None, token_bound_cidrs=None, mount_point=DEFAULT_MOUNT_POINT):
+    def generate_secret_id(
+        self,
+        role_name,
+        metadata=None,
+        cidr_list=None,
+        token_bound_cidrs=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
 
@@ -240,18 +261,18 @@ class AppRole(VaultApiBase):
         """
         if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=metadata,
-                arg_type=type(metadata),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=metadata,
+                    arg_type=type(metadata),
+                )
+            )
 
-        params = {
-            'metadata': json.dumps(metadata) if metadata else metadata
-        }
+        params = {"metadata": json.dumps(metadata) if metadata else metadata}
 
         list_of_strings_params = {
-            'cidr_list': cidr_list,
-            'token_bound_cidrs': token_bound_cidrs
+            "cidr_list": cidr_list,
+            "token_bound_cidrs": token_bound_cidrs,
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -262,14 +283,21 @@ class AppRole(VaultApiBase):
                 params[param_name] = list_to_comma_delimited(param_argument)
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
-    def create_custom_secret_id(self, role_name, secret_id, metadata=None, cidr_list=None, token_bound_cidrs=None,
-                                mount_point=DEFAULT_MOUNT_POINT):
+    def create_custom_secret_id(
+        self,
+        role_name,
+        secret_id,
+        metadata=None,
+        cidr_list=None,
+        token_bound_cidrs=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
 
@@ -293,19 +321,18 @@ class AppRole(VaultApiBase):
         """
         if metadata is not None and not isinstance(metadata, dict):
             error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=metadata,
-                arg_type=type(metadata),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=metadata,
+                    arg_type=type(metadata),
+                )
+            )
 
-        params = {
-            'secret_id': secret_id,
-            'metadata': metadata
-        }
+        params = {"secret_id": secret_id, "metadata": metadata}
 
         list_of_strings_params = {
-            'cidr_list': cidr_list,
-            'token_bound_cidrs': token_bound_cidrs
+            "cidr_list": cidr_list,
+            "token_bound_cidrs": token_bound_cidrs,
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -316,9 +343,9 @@ class AppRole(VaultApiBase):
                 params[param_name] = list_to_comma_delimited(param_argument)
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/custom-secret-id',
+            "/v1/auth/{mount_point}/role/{role_name}/custom-secret-id",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
@@ -338,13 +365,11 @@ class AppRole(VaultApiBase):
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
-        params = {
-            'secret_id': secret_id
-        }
+        params = {"secret_id": secret_id}
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id/lookup',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id/lookup",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
@@ -362,13 +387,11 @@ class AppRole(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         """
-        params = {
-            'secret_id': secret_id
-        }
+        params = {"secret_id": secret_id}
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id/destroy',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id/destroy",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
@@ -387,13 +410,15 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.list(url=api_path)
 
-    def read_secret_id_accessor(self, role_name, secret_id_accessor, mount_point=DEFAULT_MOUNT_POINT):
+    def read_secret_id_accessor(
+        self, role_name, secret_id_accessor, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Read the properties of a Secret ID for a role in the auth method.
 
@@ -409,17 +434,17 @@ class AppRole(VaultApiBase):
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
-        params = {
-            'secret_id_accessor': secret_id_accessor
-        }
+        params = {"secret_id_accessor": secret_id_accessor}
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id-accessor/lookup',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id-accessor/lookup",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
-    def destroy_secret_id_accessor(self, role_name, secret_id_accessor, mount_point=DEFAULT_MOUNT_POINT):
+    def destroy_secret_id_accessor(
+        self, role_name, secret_id_accessor, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Destroys a Secret ID for a role in the auth method.
 
@@ -433,17 +458,17 @@ class AppRole(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         """
-        params = {
-            'secret_id_accessor': secret_id_accessor
-        }
+        params = {"secret_id_accessor": secret_id_accessor}
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{role_name}/secret-id-accessor/destroy',
+            "/v1/auth/{mount_point}/role/{role_name}/secret-id-accessor/destroy",
             mount_point=mount_point,
-            role_name=role_name
+            role_name=role_name,
         )
         return self._adapter.post(url=api_path, json=params)
 
-    def login(self, role_id, secret_id=None, use_token=True, mount_point=DEFAULT_MOUNT_POINT):
+    def login(
+        self, role_id, secret_id=None, use_token=True, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Login with APPROLE credentials.
 
@@ -462,13 +487,9 @@ class AppRole(VaultApiBase):
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
-        params = {
-            'role_id': role_id,
-            'secret_id': secret_id
-        }
+        params = {"role_id": role_id, "secret_id": secret_id}
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/login',
-            mount_point=mount_point
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
         )
         return self._adapter.login(
             url=api_path,

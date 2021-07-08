@@ -4,7 +4,7 @@
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'radius'
+DEFAULT_MOUNT_POINT = "radius"
 
 
 class Radius(VaultApiBase):
@@ -13,8 +13,16 @@ class Radius(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/auth/radius.html
     """
 
-    def configure(self, host, secret, port=None, unregistered_user_policies=None, dial_timeout=None, nas_port=None,
-                  mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        host,
+        secret,
+        port=None,
+        unregistered_user_policies=None,
+        dial_timeout=None,
+        nas_port=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """
         Configure the RADIUS auth method.
 
@@ -39,15 +47,17 @@ class Radius(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'host': host,
-            'secret': secret,
+            "host": host,
+            "secret": secret,
         }
         params.update(
-            utils.remove_nones({
-                'port': port,
-                'dial_timeout': dial_timeout,
-                'nas_port': nas_port,
-            })
+            utils.remove_nones(
+                {
+                    "port": port,
+                    "dial_timeout": dial_timeout,
+                    "nas_port": nas_port,
+                }
+            )
         )
         # Fill out params dictionary with any optional parameters provided
         if unregistered_user_policies is not None:
@@ -58,9 +68,11 @@ class Radius(VaultApiBase):
                 ).format(unregistered_user_policies=type(unregistered_user_policies))
                 raise exceptions.ParamValidationError(error_msg)
 
-            params['unregistered_user_policies'] = ','.join(unregistered_user_policies)
+            params["unregistered_user_policies"] = ",".join(unregistered_user_policies)
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -78,7 +90,9 @@ class Radius(VaultApiBase):
         :return: The JSON response of the read_configuration request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
@@ -108,9 +122,9 @@ class Radius(VaultApiBase):
 
         params = {}
         if policies is not None:
-            params['policies'] = ','.join(policies)
+            params["policies"] = ",".join(policies)
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{name}',
+            "/v1/auth/{mount_point}/users/{name}",
             mount_point=mount_point,
             name=username,
         )
@@ -132,7 +146,9 @@ class Radius(VaultApiBase):
         :return: The JSON response of the list_users request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/users", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -153,7 +169,7 @@ class Radius(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -177,7 +193,7 @@ class Radius(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -185,7 +201,9 @@ class Radius(VaultApiBase):
             url=api_path,
         )
 
-    def login(self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT):
+    def login(
+        self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Log in with RADIUS credentials.
 
@@ -206,10 +224,10 @@ class Radius(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'password': password,
+            "password": password,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/login/{username}',
+            "/v1/auth/{mount_point}/login/{username}",
             mount_point=mount_point,
             username=username,
         )

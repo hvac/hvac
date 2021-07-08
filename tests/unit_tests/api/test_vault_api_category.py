@@ -6,9 +6,7 @@ from hvac.adapters import Adapter
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.api.vault_api_category import VaultApiCategory
 
-UNIMPLEMENTED_CLASSES = [
-    'not_implemented'
-]
+UNIMPLEMENTED_CLASSES = ["not_implemented"]
 
 
 class ImplementedVaultApiBase(VaultApiBase):
@@ -16,7 +14,6 @@ class ImplementedVaultApiBase(VaultApiBase):
 
 
 class ImplementedVaultApiCategory(VaultApiCategory):
-
     @property
     def implemented_classes(self):
         return [ImplementedVaultApiBase]
@@ -64,7 +61,7 @@ class TestVaultApiCategory(TestCase):
             cls=Adapter,
         )
 
-        new_adapter = 'this is my new adapter'
+        new_adapter = "this is my new adapter"
         self.mock_vault_api_category.adapter = new_adapter
 
         self.assertEqual(

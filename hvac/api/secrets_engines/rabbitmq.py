@@ -4,16 +4,22 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'rabbitmq'
+DEFAULT_MOUNT_POINT = "rabbitmq"
 
 
 class RabbitMQ(VaultApiBase):
     """RabbitMQ Secrets Engine (API).
-       Reference: https://www.vaultproject.io/api/secret/rabbitmq/index.html
+    Reference: https://www.vaultproject.io/api/secret/rabbitmq/index.html
     """
 
-    def configure(self, connection_uri="", username="", password="", verify_connection=True,
-                  mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        connection_uri="",
+        username="",
+        password="",
+        verify_connection=True,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure shared information for the rabbitmq secrets engine.
 
         Supported methods:
@@ -33,13 +39,15 @@ class RabbitMQ(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-          "connection_uri": connection_uri,
-          "verify_connection": verify_connection,
-          "username": username,
-          "password": password
+            "connection_uri": connection_uri,
+            "verify_connection": verify_connection,
+            "username": username,
+            "password": password,
         }
 
-        api_path = utils.format_url('/v1/{mount_point}/config/connection', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/connection", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -67,7 +75,9 @@ class RabbitMQ(VaultApiBase):
             json=params,
         )
 
-    def create_role(self, name, tags="", vhosts="", vhost_topics="", mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(
+        self, name, tags="", vhosts="", vhost_topics="", mount_point=DEFAULT_MOUNT_POINT
+    ):
         """This endpoint creates or updates the role definition.
 
         :param name:  Specifies the name of the role to create.
@@ -84,11 +94,7 @@ class RabbitMQ(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
-        params = {
-            "tags": tags,
-            "vhosts": vhosts,
-            "vhost_topics": vhost_topics
-        }
+        params = {"tags": tags, "vhosts": vhosts, "vhost_topics": vhost_topics}
         return self._adapter.post(
             url=api_path,
             json=params,

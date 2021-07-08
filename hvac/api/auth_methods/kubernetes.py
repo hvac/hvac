@@ -3,9 +3,13 @@
 """Kubernetes methods module."""
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.utils import validate_list_of_strings_param, comma_delimited_to_list, validate_pem_format
+from hvac.utils import (
+    validate_list_of_strings_param,
+    comma_delimited_to_list,
+    validate_pem_format,
+)
 
-DEFAULT_MOUNT_POINT = 'kubernetes'
+DEFAULT_MOUNT_POINT = "kubernetes"
 
 
 class Kubernetes(VaultApiBase):
@@ -13,8 +17,16 @@ class Kubernetes(VaultApiBase):
 
     Reference: https://www.vaultproject.io/api/auth/kubernetes/index.html
     """
-    def configure(self, kubernetes_host, kubernetes_ca_cert=None, token_reviewer_jwt=None, pem_keys=None,
-                  issuer=None, mount_point=DEFAULT_MOUNT_POINT):
+
+    def configure(
+        self,
+        kubernetes_host,
+        kubernetes_ca_cert=None,
+        token_reviewer_jwt=None,
+        pem_keys=None,
+        issuer=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the connection parameters for Kubernetes.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -43,8 +55,8 @@ class Kubernetes(VaultApiBase):
         :rtype: requests.Response
         """
         list_of_pem_params = {
-            'kubernetes_ca_cert': kubernetes_ca_cert,
-            'pem_keys': pem_keys
+            "kubernetes_ca_cert": kubernetes_ca_cert,
+            "pem_keys": pem_keys,
         }
         for param_name, param_argument in list_of_pem_params.items():
             if param_argument is not None:
@@ -54,19 +66,20 @@ class Kubernetes(VaultApiBase):
                 )
 
         params = {
-            'kubernetes_host': kubernetes_host,
+            "kubernetes_host": kubernetes_host,
         }
         params.update(
-            utils.remove_nones({
-                'kubernetes_ca_cert': kubernetes_ca_cert,
-                'token_reviewer_jwt': token_reviewer_jwt,
-                'pem_keys': pem_keys,
-                'issuer': issuer,
-            })
+            utils.remove_nones(
+                {
+                    "kubernetes_ca_cert": kubernetes_ca_cert,
+                    "token_reviewer_jwt": token_reviewer_jwt,
+                    "pem_keys": pem_keys,
+                    "issuer": issuer,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/config',
-            mount_point=mount_point
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
         )
         return self._adapter.post(
             url=api_path,
@@ -84,14 +97,25 @@ class Kubernetes(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
-    def create_role(self, name, bound_service_account_names, bound_service_account_namespaces, ttl=None, max_ttl=None,
-                    period=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(
+        self,
+        name,
+        bound_service_account_names,
+        bound_service_account_namespaces,
+        ttl=None,
+        max_ttl=None,
+        period=None,
+        policies=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create a role in the method.
 
         Registers a role in the auth method. Role types have specific entities that can perform login operations
@@ -125,9 +149,9 @@ class Kubernetes(VaultApiBase):
         :rtype: requests.Response
         """
         list_of_strings_params = {
-            'bound_service_account_names': bound_service_account_names,
-            'bound_service_account_namespaces': bound_service_account_namespaces,
-            'policies': policies
+            "bound_service_account_names": bound_service_account_names,
+            "bound_service_account_namespaces": bound_service_account_namespaces,
+            "policies": policies,
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -136,20 +160,28 @@ class Kubernetes(VaultApiBase):
             )
 
         params = {
-            'bound_service_account_names': comma_delimited_to_list(bound_service_account_names),
-            'bound_service_account_namespaces': comma_delimited_to_list(bound_service_account_namespaces),
+            "bound_service_account_names": comma_delimited_to_list(
+                bound_service_account_names
+            ),
+            "bound_service_account_namespaces": comma_delimited_to_list(
+                bound_service_account_namespaces
+            ),
         }
         params.update(
-            utils.remove_nones({
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
-            })
+            utils.remove_nones(
+                {
+                    "ttl": ttl,
+                    "max_ttl": max_ttl,
+                    "period": period,
+                }
+            )
         )
         if policies is not None:
-            params['policies'] = comma_delimited_to_list(policies)
+            params["policies"] = comma_delimited_to_list(policies)
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/role/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -169,14 +201,14 @@ class Kubernetes(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all the roles that are registered with the plugin.
@@ -189,11 +221,13 @@ class Kubernetes(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/role", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously registered role.
@@ -210,7 +244,7 @@ class Kubernetes(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -240,11 +274,13 @@ class Kubernetes(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'role': role,
-            'jwt': jwt,
+            "role": role,
+            "jwt": jwt,
         }
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
         response = self._adapter.login(
             url=api_path,
             use_token=use_token,

@@ -3,7 +3,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Lease(SystemBackendMixin):
-
     def read_lease(self, lease_id):
         """Retrieve lease metadata.
 
@@ -15,14 +14,9 @@ class Lease(SystemBackendMixin):
         :return: Parsed JSON response from the leases PUT request
         :rtype: dict.
         """
-        params = {
-            'lease_id': lease_id
-        }
-        api_path = '/v1/sys/leases/lookup'
-        return self._adapter.put(
-            url=api_path,
-            json=params
-        )
+        params = {"lease_id": lease_id}
+        api_path = "/v1/sys/leases/lookup"
+        return self._adapter.put(url=api_path, json=params)
 
     def list_leases(self, prefix):
         """Retrieve a list of lease ids.
@@ -35,7 +29,7 @@ class Lease(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/sys/leases/lookup/{prefix}', prefix=prefix)
+        api_path = utils.format_url("/v1/sys/leases/lookup/{prefix}", prefix=prefix)
         return self._adapter.list(
             url=api_path,
         )
@@ -54,10 +48,10 @@ class Lease(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'lease_id': lease_id,
-            'increment': increment,
+            "lease_id": lease_id,
+            "increment": increment,
         }
-        api_path = '/v1/sys/leases/renew'
+        api_path = "/v1/sys/leases/renew"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -75,9 +69,9 @@ class Lease(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = {
-            'lease_id': lease_id,
+            "lease_id": lease_id,
         }
-        api_path = '/v1/sys/leases/revoke'
+        api_path = "/v1/sys/leases/revoke"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -100,9 +94,11 @@ class Lease(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = {
-            'prefix': prefix,
+            "prefix": prefix,
         }
-        api_path = utils.format_url('/v1/sys/leases/revoke-prefix/{prefix}', prefix=prefix)
+        api_path = utils.format_url(
+            "/v1/sys/leases/revoke-prefix/{prefix}", prefix=prefix
+        )
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -124,9 +120,11 @@ class Lease(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = {
-            'prefix': prefix,
+            "prefix": prefix,
         }
-        api_path = utils.format_url('/v1/sys/leases/revoke-force/{prefix}', prefix=prefix)
+        api_path = utils.format_url(
+            "/v1/sys/leases/revoke-force/{prefix}", prefix=prefix
+        )
         return self._adapter.put(
             url=api_path,
             json=params,

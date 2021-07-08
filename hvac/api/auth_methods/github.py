@@ -4,7 +4,7 @@
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'github'
+DEFAULT_MOUNT_POINT = "github"
 
 
 class Github(VaultApiBase):
@@ -13,7 +13,14 @@ class Github(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/github/index.html
     """
 
-    def configure(self, organization, base_url=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        organization,
+        base_url=None,
+        ttl=None,
+        max_ttl=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the connection parameters for GitHub.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -38,17 +45,19 @@ class Github(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'organization': organization,
+            "organization": organization,
         }
         params.update(
-            utils.remove_nones({
-                'base_url': base_url,
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-            })
+            utils.remove_nones(
+                {
+                    "base_url": base_url,
+                    "ttl": ttl,
+                    "max_ttl": max_ttl,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/config',
+            "/v1/auth/{mount_point}/config",
             mount_point=mount_point,
         )
         return self._adapter.post(
@@ -69,7 +78,7 @@ class Github(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/config',
+            "/v1/auth/{mount_point}/config",
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
@@ -93,18 +102,22 @@ class Github(VaultApiBase):
         # First, perform parameter validation.
         if policies is None:
             policies = []
-        if not isinstance(policies, list) or not all(isinstance(p, str) for p in policies):
+        if not isinstance(policies, list) or not all(
+            isinstance(p, str) for p in policies
+        ):
             error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=policies,
-                arg_type=type(policies),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=policies,
+                    arg_type=type(policies),
+                )
+            )
         # Then, perform request.
         params = {
-            'value': ','.join(policies),
+            "value": ",".join(policies),
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/map/teams/{team_name}',
+            "/v1/auth/{mount_point}/map/teams/{team_name}",
             mount_point=mount_point,
             team_name=team_name,
         )
@@ -128,7 +141,7 @@ class Github(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/map/teams/{team_name}',
+            "/v1/auth/{mount_point}/map/teams/{team_name}",
             mount_point=mount_point,
             team_name=team_name,
         )
@@ -153,19 +166,23 @@ class Github(VaultApiBase):
         # First, perform parameter validation.
         if policies is None:
             policies = []
-        if not isinstance(policies, list) or not all(isinstance(p, str) for p in policies):
+        if not isinstance(policies, list) or not all(
+            isinstance(p, str) for p in policies
+        ):
             error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=policies,
-                arg_type=type(policies),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=policies,
+                    arg_type=type(policies),
+                )
+            )
 
         # Then, perform request.
         params = {
-            'value': ','.join(policies),
+            "value": ",".join(policies),
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/map/users/{user_name}',
+            "/v1/auth/{mount_point}/map/users/{user_name}",
             mount_point=mount_point,
             user_name=user_name,
         )
@@ -189,7 +206,7 @@ class Github(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/map/users/{user_name}',
+            "/v1/auth/{mount_point}/map/users/{user_name}",
             mount_point=mount_point,
             user_name=user_name,
         )
@@ -213,9 +230,11 @@ class Github(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'token': token,
+            "token": token,
         }
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
         return self._adapter.login(
             url=api_path,
             use_token=use_token,
