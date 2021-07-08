@@ -23,8 +23,7 @@ DEPRECATED_PROPERTIES = {
     ),
 }
 
-DEFAULT_URL = 'http://localhost:8200'
-DEFAULT_BASE_URI = 'http://localhost:8200'
+DEFAULT_URL = "http://localhost:8200"
 VAULT_CACERT = getenv("VAULT_CACERT")
 VAULT_CAPATH = getenv("VAULT_CAPATH")
 VAULT_CLIENT_CERT = getenv("VAULT_CLIENT_CERT")

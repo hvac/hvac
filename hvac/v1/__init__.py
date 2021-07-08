@@ -4,8 +4,15 @@ import json
 import os
 from base64 import b64encode
 
-from hvac import aws_utils, exceptions, adapters, utils, api
-from hvac.constants.client import DEPRECATED_PROPERTIES, DEFAULT_URL
+from hvac import adapters, api, aws_utils, exceptions, utils
+from hvac.constants.client import (
+    DEFAULT_URL,
+    DEPRECATED_PROPERTIES,
+    VAULT_CACERT,
+    VAULT_CAPATH,
+    VAULT_CLIENT_CERT,
+    VAULT_CLIENT_KEY,
+)
 from hvac.utils import generate_property_deprecation_message
 
 try:
@@ -65,6 +72,26 @@ class Client(object):
 
         token = token if token is not None else utils.get_token_from_env()
         url = url if url else os.getenv("VAULT_ADDR", DEFAULT_URL)
+
+        if cert is not None and VAULT_CLIENT_CERT:
+            cert = "\n".join(
+                [
+                    VAULT_CLIENT_CERT,
+                    VAULT_CLIENT_KEY,
+                ]
+            )
+
+        # Consider related CA env vars _only if_ no argument is passed in under the
+        # `verify` parameter.
+        if verify is not None:
+            # Reference: https://www.vaultproject.io/docs/commands#vault_cacert
+            # Note: "[VAULT_CACERT] takes precedence over VAULT_CAPATH." and thus we
+            # check for VAULT_CAPATH _first_.
+            if VAULT_CAPATH:
+                verify = VAULT_CAPATH
+            if VAULT_CACERT:
+                verify = VAULT_CACERT
+
         self._adapter = adapter(
             base_uri=url,
             token=token,

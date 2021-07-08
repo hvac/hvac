@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import requests_mock
 from parameterized import parameterized, param
-
+from hvac.constants.client import DEFAULT_URL
 from hvac import adapters
 
 
@@ -95,7 +95,7 @@ class TestRequest(TestCase):
             "wrap_info": None,
         }
         expected_status_code = 200
-        mock_url = "{0}/{1}".format(adapters.DEFAULT_BASE_URI, test_path)
+        mock_url = "{0}/{1}".format(DEFAULT_URL, test_path)
         requests_mocker.register_uri(method="LIST", url=mock_url, json=mock_response)
         adapter = adapters.RawAdapter()
         response = adapter.list(
