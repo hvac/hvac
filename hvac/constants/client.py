@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Constants related to the hvac.Client class."""
 
 from os import getenv
-"""Constants related to the hvac.Client class."""
 
 DEPRECATED_PROPERTIES = {
     "github": dict(
