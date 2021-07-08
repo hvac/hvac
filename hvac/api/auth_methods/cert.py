@@ -207,7 +207,7 @@ class Cert(VaultApiBase):
         :return: The response of the login request.
         :rtype: requests.Response
         """
-        params = {'use_token': use_token}
+        params = {}
         if name != "":
             params['name'] = name
         api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
@@ -250,6 +250,7 @@ class Cert(VaultApiBase):
 
         return self._adapter.login(
             url=api_path,
+            use_token=use_token,
             json=params,
             **additional_request_kwargs
         )
