@@ -29,8 +29,8 @@ jobs:
         pip install -r requirements-dev.txt
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Lint with flake8
-      run: flake8 . --count --exit-zero --statistics
+    - name: Lint with black
+      run: black --check .
 
     - name: Test with pytest
       run: pytest --cov=hvac tests/
