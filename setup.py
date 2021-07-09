@@ -28,6 +28,7 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     packages=find_packages(exclude=["docs*", "tests*"]),
+    python_requires=">=2.7",
     install_requires=[
         "requests>=2.21.0",
         "six>=1.5.0",
