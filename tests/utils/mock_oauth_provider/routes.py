@@ -12,7 +12,7 @@ from tests.utils.mock_oauth_provider.models import OAuth2Client, User, db
 from tests.utils.mock_oauth_provider.oauth2 import authorization, require_oauth
 
 logger = logging.getLogger(__name__)
-bp = Blueprint(__name__, "home")
+bp = Blueprint("mock-oauth-provider", "home")
 
 
 def current_user():
