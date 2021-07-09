@@ -1,19 +1,14 @@
 import logging
 from unittest import TestCase
+from urllib.parse import parse_qs, urlparse
 
 from parameterized import param, parameterized
-
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 from tests.utils.mock_oauth_provider.mock_oauth_provider import (
     MockOauthProviderServerThread,
     create_user_session_and_client,
 )
-
-try:
-    from urllib.parse import urlparse, parse_qs
-except ImportError:
-    from urlparse import urlparse, parse_qs
 
 
 class TestOIDC(HvacIntegrationTestCase, TestCase):

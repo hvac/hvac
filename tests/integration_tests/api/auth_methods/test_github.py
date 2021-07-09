@@ -1,20 +1,13 @@
 import logging
+from http.server import HTTPServer
 from threading import Thread
 from unittest import TestCase
 
-from parameterized import parameterized
-
 from hvac import exceptions
+from parameterized import parameterized
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 from tests.utils.mock_github_request_handler import MockGithubRequestHandler
-
-try:
-    # Python 2.7
-    from http.server import HTTPServer
-except ImportError:
-    # Python 3.x
-    from BaseHTTPServer import HTTPServer
 
 
 class TestGithub(HvacIntegrationTestCase, TestCase):

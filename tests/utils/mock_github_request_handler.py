@@ -2,12 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-try:
-    # Python 2.7
-    from http.server import BaseHTTPRequestHandler
-except ImportError:
-    # Python 3.x
-    from BaseHTTPServer import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 
 
 class MockGithubRequestHandler(BaseHTTPRequestHandler):
