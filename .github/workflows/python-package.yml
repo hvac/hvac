@@ -8,12 +8,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6]
-        vault-version: [1.4.7, 1.5.8, 1.6.4, 1.7.1]
+        python-version:
+          - 3.6
+        vault-version:
+          - 1.4.7
+          - 1.5.8
+          - 1.6.4
+          - 1.7.1
+
     steps:
     - uses: actions/checkout@v2
 
