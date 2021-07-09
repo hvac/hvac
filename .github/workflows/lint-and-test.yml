@@ -11,7 +11,64 @@ on:
       - develop
 
 jobs:
-  lint-and-test-python:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.6
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install black
+      run: pip install black
+
+    - name: Lint with black
+      run: black --check .
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.6
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Python dependencies
+      run: pip install -r requirements-dev.txt
+
+    - name: pytest tests/unit_tests
+      run: pytest --cov=hvac tests/unit_tests
+
+    - name: Upload unit tests coverage artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: integration
+        path: ./coverage.xml
+
+    - name: Codecov - Process coverage
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
+        verbose: false
+
+  integration-tests:
+    name: Integration Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -54,14 +111,33 @@ jobs:
         # Actions' runtime environments.
         sudo setcap cap_ipc_lock= /usr/bin/vault
 
-    - name: Lint with black
-      run: black --check .
+    - name: pytest tests/integration_tests
+      run: pytest --cov=hvac tests/integration_tests
 
-    - name: Test with pytest
-      run: pytest --cov=hvac tests/
+    - name: Upload integration tests coverage artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: integration
+        path: ./coverage.xml
 
     - name: Codecov - Process coverage
       uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: true
         verbose: false
+
+  upload-to-codecov:
+    name: Upload to Codecov
+    runs-on: ubuntu-latest
+    needs:
+      - unit-tests
+      - integration-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1
