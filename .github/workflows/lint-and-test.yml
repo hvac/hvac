@@ -2,9 +2,13 @@ name: Lint and Test
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ develop ]
+    branches:
+      - main
+      - develop
 
 jobs:
   lint-and-test-python:
