@@ -32,9 +32,23 @@ jobs:
 
     - name: Install Vault and Consul (for integration tests)
       run: |
-        tests/scripts/install-consul.sh
-        tests/scripts/install-vault.sh ${{ matrix.vault-version }} enterprise
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+        sudo apt update \
+          -o Dir::Etc::sourceparts="-" \
+          -o APT::Get::List-Cleanup="0" \
+          -o Dir::Etc::sourcelist="sources.list.d/hashicorp.list"
+
+        sudo apt install \
+          consul \
+          vault-enterprise \
+          ;
+
+        # We disble cap_ipc_lock here as its generally incompatabile with GitHub
+        # Actions' runtime environments.
+        sudo setcap cap_ipc_lock= /usr/bin/vault
 
     - name: Lint with black
       run: black --check .
