@@ -176,11 +176,17 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
     """
 
     def decorator(method):
+        if new_method is not None:
+            new_method_name = new_method.__name__
+            new_module_name = inspect.getmodule(new_method).__name__
+        else:
+            new_method_name, new_module_name = (None, None)
+
         deprecation_message = generate_method_deprecation_message(
             to_be_removed_in_version=to_be_removed_in_version,
             old_method_name=method.__name__,
-            method_name=new_method.__name__,
-            module_name=inspect.getmodule(new_method).__name__,
+            method_name=new_method_name,
+            module_name=new_module_name,
         )
 
         @functools.wraps(method)
