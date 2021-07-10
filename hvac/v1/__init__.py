@@ -689,22 +689,6 @@ class Client(object):
         )
 
     @utils.deprecated_method(
-        to_be_removed_in_version="0.13.0",
-        new_method=api.auth_methods.Cert.login,
-    )
-    def auth_tls(self, mount_point="cert", use_token=True):
-        """POST /auth/<mount point>/login
-
-        :param mount_point:
-        :type mount_point:
-        :param use_token:
-        :type use_token:
-        :return:
-        :rtype:
-        """
-        return self.auth.cert.login(mount_point=mount_point, use_token=use_token)
-
-    @utils.deprecated_method(
         to_be_removed_in_version="1.0.0",
         new_method=api.auth_methods.Userpass.login,
     )
