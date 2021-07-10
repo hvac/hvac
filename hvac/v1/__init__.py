@@ -1,10 +1,8 @@
 from __future__ import unicode_literals
 
-import json
 import os
-from base64 import b64encode
 
-from hvac import adapters, api, aws_utils, exceptions, utils
+from hvac import adapters, api, exceptions, utils
 from hvac.constants.client import (
     DEFAULT_URL,
     DEPRECATED_PROPERTIES,
@@ -13,7 +11,6 @@ from hvac.constants.client import (
     VAULT_CLIENT_CERT,
     VAULT_CLIENT_KEY,
 )
-from hvac.utils import generate_property_deprecation_message
 
 try:
     import hcl
