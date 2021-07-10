@@ -109,7 +109,7 @@ class TestPolicy(HvacIntegrationTestCase, TestCase):
             container=self.client.sys.list_policies()["data"]["policies"],
         )
 
-        self.client.delete_policy("test")
+        self.client.sys.delete_policy("test")
         self.assertNotIn(
             member="test",
             container=self.client.sys.list_policies()["data"]["policies"],

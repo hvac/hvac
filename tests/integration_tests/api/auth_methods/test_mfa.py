@@ -22,20 +22,20 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestMfa, self).setUp()
-        if "%s/" % TEST_AUTH_PATH not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type="userpass", mount_point=TEST_AUTH_PATH
+        if "%s/" % TEST_AUTH_PATH not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type="userpass", path=TEST_AUTH_PATH
             )
-        if "%s/" % UNSUPPORTED_AUTH_PATH not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type="approle", mount_point=UNSUPPORTED_AUTH_PATH
+        if "%s/" % UNSUPPORTED_AUTH_PATH not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type="approle", path=UNSUPPORTED_AUTH_PATH
             )
 
     def tearDown(self):
         super(TestMfa, self).tearDown()
         for path in [TEST_AUTH_PATH, UNSUPPORTED_AUTH_PATH]:
-            self.client.disable_auth_backend(
-                mount_point=path,
+            self.client.sys.disable_auth_method(
+                path=path,
             )
 
     @parameterized.expand(

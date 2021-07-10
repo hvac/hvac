@@ -29,11 +29,11 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.create_role(
+            actual_response = client.auth.approle.create_or_update_approle(
                 role_name=role_name,
             )
         else:
-            actual_response = client.create_role(
+            actual_response = client.auth.approle.create_or_update_approle(
                 role_name=role_name,
                 mount_point=mount_point,
             )
@@ -66,20 +66,20 @@ class TestApproleRoutes(TestCase):
             "warnings": None,
             "wrap_info": None,
         }
-        mock_url = "http://localhost:8200/v1/auth/{0}/role?list=true".format(
+        mock_url = "http://localhost:8200/v1/auth/{0}/role".format(
             "approle" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="GET",
+            method="LIST",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.list_roles()
+            actual_response = client.auth.approle.list_roles()
         else:
-            actual_response = client.list_roles(
+            actual_response = client.auth.approle.list_roles(
                 mount_point=mount_point,
             )
 
@@ -129,14 +129,14 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.get_role_id(role_name=role_name)
+            actual_response = client.auth.approle.read_role_id(role_name=role_name)
         else:
-            actual_response = client.get_role_id(
+            actual_response = client.auth.approle.read_role_id(
                 role_name=role_name, mount_point=mount_point
             )
 
         # ensure we received our mock response data back successfully
-        self.assertEqual(first=role_id, second=actual_response)
+        self.assertEqual(first=role_id, second=actual_response["data"]["role_id"])
 
     @parameterized.expand(
         [
@@ -165,9 +165,11 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.set_role_id(role_name=role_name, role_id=role_id)
+            actual_response = client.auth.approle.update_role_id(
+                role_name=role_name, role_id=role_id
+            )
         else:
-            actual_response = client.set_role_id(
+            actual_response = client.auth.approle.update_role_id(
                 role_name=role_name,
                 role_id=role_id,
                 mount_point=mount_point,
@@ -219,11 +221,11 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.get_role(
+            actual_response = client.auth.approle.read_role(
                 role_name=role_name,
             )
         else:
-            actual_response = client.get_role(
+            actual_response = client.auth.approle.read_role(
                 role_name=role_name,
                 mount_point=mount_point,
             )
@@ -270,11 +272,11 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.create_role_secret_id(
+            actual_response = client.auth.approle.generate_secret_id(
                 role_name=role_name,
             )
         else:
-            actual_response = client.create_role_secret_id(
+            actual_response = client.auth.approle.generate_secret_id(
                 role_name=role_name,
                 mount_point=mount_point,
             )
@@ -337,12 +339,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.get_role_secret_id(
+            actual_response = client.auth.approle.read_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
             )
         else:
-            actual_response = client.get_role_secret_id(
+            actual_response = client.auth.approle.read_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
                 mount_point=mount_point,
@@ -397,11 +399,11 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.list_role_secrets(
+            actual_response = client.auth.approle.list_secret_id_accessors(
                 role_name=role_name,
             )
         else:
-            actual_response = client.list_role_secrets(
+            actual_response = client.auth.approle.list_secret_id_accessors(
                 role_name=role_name,
                 mount_point=mount_point,
             )
@@ -464,12 +466,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.get_role_secret_id_accessor(
+            actual_response = client.auth.approle.read_secret_id_accessor(
                 role_name=role_name,
                 secret_id_accessor=secret_id_accessor,
             )
         else:
-            actual_response = client.get_role_secret_id_accessor(
+            actual_response = client.auth.approle.read_secret_id_accessor(
                 role_name=role_name,
                 secret_id_accessor=secret_id_accessor,
                 mount_point=mount_point,
@@ -515,12 +517,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.delete_role_secret_id(
+            actual_response = client.auth.approle.destroy_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
             )
         else:
-            actual_response = client.delete_role_secret_id(
+            actual_response = client.auth.approle.destroy_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
                 mount_point=mount_point,
@@ -564,12 +566,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.delete_role_secret_id_accessor(
+            actual_response = client.auth.approle.destroy_secret_id_accessor(
                 role_name=role_name,
                 secret_id_accessor=secret_id_accessor,
             )
         else:
-            actual_response = client.delete_role_secret_id_accessor(
+            actual_response = client.auth.approle.destroy_secret_id_accessor(
                 role_name=role_name,
                 secret_id_accessor=secret_id_accessor,
                 mount_point=mount_point,
@@ -626,12 +628,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.create_role_custom_secret_id(
+            actual_response = client.auth.approle.create_custom_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
             )
         else:
-            actual_response = client.create_role_custom_secret_id(
+            actual_response = client.auth.approle.create_custom_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
                 mount_point=mount_point,
@@ -691,12 +693,12 @@ class TestApproleRoutes(TestCase):
         )
         client = Client()
         if mount_point is None:
-            actual_response = client.auth_approle(
+            actual_response = client.auth.approle.login(
                 role_id=role_id,
                 secret_id=secret_id,
             )
         else:
-            actual_response = client.auth_approle(
+            actual_response = client.auth.approle.login(
                 role_id=role_id,
                 secret_id=secret_id,
                 mount_point=mount_point,

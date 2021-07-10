@@ -13,9 +13,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestPki, self).setUp()
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="pki",
-            mount_point=self.TEST_MOUNT_POINT,
+            path=self.TEST_MOUNT_POINT,
         )
         common_name = "Vault integration tests"
         generate_type = "exported"
@@ -36,7 +36,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
 
     def tearDown(self):
-        self.client.disable_secret_backend(mount_point=self.TEST_MOUNT_POINT)
+        self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
         super(TestPki, self).tearDown()
 
     # Read CA Certificate
@@ -327,9 +327,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ca_intermediate_pki_mount_point = "{}-signed-intermediate-ca".format(
             self.TEST_MOUNT_POINT
         )
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="pki",
-            mount_point=ca_intermediate_pki_mount_point,
+            path=ca_intermediate_pki_mount_point,
         )
         # Generate intermediate CA
         common_name = "Vault integration tests intermediate CA"
@@ -369,7 +369,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
 
         # Now clean intermediate CA
-        self.client.disable_secret_backend(mount_point=ca_intermediate_pki_mount_point)
+        self.client.sys.disable_secrets_engine(path=ca_intermediate_pki_mount_point)
 
     # Generate Certificate
     @parameterized.expand(
@@ -520,9 +520,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     )
     def test_generate_root(self, label, raises=False, exception_message=""):
         ca_pki_mount_point = "{}-test-ca".format(self.TEST_MOUNT_POINT)
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="pki",
-            mount_point=ca_pki_mount_point,
+            path=ca_pki_mount_point,
         )
         common_name = "Vault integration tests"
         generate_type = "exported"
@@ -536,7 +536,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             first=bool(generate_root_response),
             second=True,
         )
-        self.client.disable_secret_backend(mount_point=ca_pki_mount_point)
+        self.client.sys.disable_secrets_engine(path=ca_pki_mount_point)
 
     # Delete Root
     @parameterized.expand(
@@ -548,9 +548,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     )
     def test_delete_root(self, label, raises=False, exception_message=""):
         ca_pki_mount_point = "{}-test-ca".format(self.TEST_MOUNT_POINT)
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="pki",
-            mount_point=ca_pki_mount_point,
+            path=ca_pki_mount_point,
         )
         common_name = "Vault integration tests"
         generate_type = "exported"
@@ -568,7 +568,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             first=bool(delete_root_response),
             second=True,
         )
-        self.client.disable_secret_backend(mount_point=ca_pki_mount_point)
+        self.client.sys.disable_secrets_engine(path=ca_pki_mount_point)
 
     # Sign Intermediate
     @parameterized.expand(
@@ -583,9 +583,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ca_intermediate_pki_mount_point = "{}-intermediate-ca".format(
             self.TEST_MOUNT_POINT
         )
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="pki",
-            mount_point=ca_intermediate_pki_mount_point,
+            path=ca_intermediate_pki_mount_point,
         )
         common_name = "Vault integration tests intermediate CA"
         generate_type = "exported"
@@ -611,7 +611,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             second=True,
         )
         # Now clean intermediate CA
-        self.client.disable_secret_backend(mount_point=ca_intermediate_pki_mount_point)
+        self.client.sys.disable_secrets_engine(path=ca_intermediate_pki_mount_point)
 
     # Sign Self-Issued
     @parameterized.expand(

@@ -12,7 +12,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
@@ -43,15 +43,15 @@ class TestAwsEc2Methods(TestCase):
             "wrap_info": None,
         }
         mock_url = "http://localhost:8200/v1/auth/{0}/login".format(
-            "aws-ec2" if mount_point is None else mount_point
+            "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(method="POST", url=mock_url, json=mock_response)
         client = Client()
 
         if mount_point is None:
-            actual_response = client.auth_ec2(pkcs7="mock_pcks7")
+            actual_response = client.auth.aws.ec2_login(pkcs7="mock_pcks7")
         else:
-            actual_response = client.auth_ec2(
+            actual_response = client.auth.aws.ec2_login(
                 pkcs7="mock_pcks7", mount_point=mount_point
             )
 
@@ -61,7 +61,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
@@ -72,7 +72,7 @@ class TestAwsEc2Methods(TestCase):
         test_secret_key = "thisisasecretyall"
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
-            "aws-ec2" if mount_point is None else mount_point
+            "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
             method="POST",
@@ -82,12 +82,12 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.create_vault_ec2_client_configuration(
+            actual_response = client.auth.aws.configure(
                 access_key=test_access_key,
                 secret_key=test_secret_key,
             )
         else:
-            actual_response = client.create_vault_ec2_client_configuration(
+            actual_response = client.auth.aws.configure(
                 access_key=test_access_key,
                 secret_key=test_secret_key,
                 mount_point=mount_point,
@@ -98,7 +98,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
@@ -117,7 +117,7 @@ class TestAwsEc2Methods(TestCase):
         }
         expected_status_code = 200
         mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
-            "aws-ec2" if mount_point is None else mount_point
+            "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
             method="GET",
@@ -128,21 +128,19 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.get_vault_ec2_client_configuration()
+            actual_response = client.auth.aws.read_config()
         else:
-            actual_response = client.get_vault_ec2_client_configuration(
-                mount_point=mount_point
-            )
+            actual_response = client.auth.aws.read_config(mount_point=mount_point)
 
         self.assertEqual(
-            first=mock_response,
+            first=mock_response.get("data"),
             second=actual_response,
         )
 
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
@@ -151,7 +149,7 @@ class TestAwsEc2Methods(TestCase):
     ):
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
-            "aws-ec2" if mount_point is None else mount_point
+            "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
             method="DELETE",
@@ -161,11 +159,9 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.delete_vault_ec2_client_configuration()
+            actual_response = client.auth.aws.delete_config()
         else:
-            actual_response = client.delete_vault_ec2_client_configuration(
-                mount_point=mount_point
-            )
+            actual_response = client.auth.aws.delete_config(mount_point=mount_point)
 
         self.assertEqual(
             first=expected_status_code,
@@ -175,7 +171,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None, "my-cool-cert-1"),
-            ("custom mount point", "aws-ec2", "my-cool-cert-2"),
+            ("custom mount point", "aws", "my-cool-cert-2"),
         ]
     )
     @requests_mock.Mocker()
@@ -185,7 +181,7 @@ class TestAwsEc2Methods(TestCase):
         test_cert_info = "this is some test cert info"
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/auth/{0}/config/certificate/{1}".format(
-            "aws-ec2" if mount_point is None else mount_point,
+            "aws" if mount_point is None else mount_point,
             cert_name,
         )
         requests_mocker.register_uri(
@@ -196,12 +192,12 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.create_vault_ec2_certificate_configuration(
+            actual_response = client.auth.aws.create_certificate_configuration(
                 cert_name=cert_name,
                 aws_public_cert=test_cert_info,
             )
         else:
-            actual_response = client.create_vault_ec2_certificate_configuration(
+            actual_response = client.auth.aws.create_certificate_configuration(
                 cert_name=cert_name,
                 aws_public_cert=test_cert_info,
                 mount_point=mount_point,
@@ -215,7 +211,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None, "my-cool-cert-1"),
-            ("custom mount point", "aws-ec2", "my-cool-cert-2"),
+            ("custom mount point", "aws", "my-cool-cert-2"),
         ]
     )
     @requests_mock.Mocker()
@@ -230,7 +226,7 @@ class TestAwsEc2Methods(TestCase):
         }
         expected_status_code = 200
         mock_url = "http://localhost:8200/v1/auth/{0}/config/certificate/{1}".format(
-            "aws-ec2" if mount_point is None else mount_point,
+            "aws" if mount_point is None else mount_point,
             cert_name,
         )
         requests_mocker.register_uri(
@@ -242,23 +238,23 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.get_vault_ec2_certificate_configuration(
+            actual_response = client.auth.aws.read_certificate_configuration(
                 cert_name=cert_name,
             )
         else:
-            actual_response = client.get_vault_ec2_certificate_configuration(
+            actual_response = client.auth.aws.read_certificate_configuration(
                 cert_name=cert_name, mount_point=mount_point
             )
 
         self.assertEqual(
-            first=mock_response,
+            first=mock_response.get("data"),
             second=actual_response,
         )
 
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
@@ -268,13 +264,11 @@ class TestAwsEc2Methods(TestCase):
         mock_response = {"data": {"keys": ["cert1"]}}
 
         expected_status_code = 200
-        mock_url = (
-            "http://localhost:8200/v1/auth/{0}/config/certificates?list=true".format(
-                "aws-ec2" if mount_point is None else mount_point,
-            )
+        mock_url = "http://localhost:8200/v1/auth/{0}/config/certificates".format(
+            "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="GET",
+            method="LIST",
             url=mock_url,
             json=mock_response,
             status_code=expected_status_code,
@@ -282,28 +276,28 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.list_vault_ec2_certificate_configurations()
+            actual_response = client.auth.aws.list_certificate_configurations()
         else:
-            actual_response = client.list_vault_ec2_certificate_configurations(
+            actual_response = client.auth.aws.list_certificate_configurations(
                 mount_point=mount_point
             )
 
         self.assertEqual(
-            first=mock_response,
+            first=mock_response.get("data"),
             second=actual_response,
         )
 
     @parameterized.expand(
         [
             ("default mount point", None, "my-role-1"),
-            ("custom mount point", "aws-ec2", "my-role-2"),
+            ("custom mount point", "aws", "my-role-2"),
         ]
     )
     @requests_mock.Mocker()
     def test_create_ec2_role(self, test_label, mount_point, role_name, requests_mocker):
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
-            "aws-ec2" if mount_point is None else mount_point,
+            "aws" if mount_point is None else mount_point,
             role_name,
         )
         requests_mocker.register_uri(
@@ -314,9 +308,9 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.create_ec2_role(role=role_name)
+            actual_response = client.auth.aws.create_role(role=role_name)
         else:
-            actual_response = client.create_ec2_role(
+            actual_response = client.auth.aws.create_role(
                 role=role_name, mount_point=mount_point
             )
 
@@ -328,7 +322,7 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None, "my-role-1"),
-            ("custom mount point", "aws-ec2", "my-role-2"),
+            ("custom mount point", "aws", "my-role-2"),
         ]
     )
     @requests_mock.Mocker()
@@ -345,7 +339,7 @@ class TestAwsEc2Methods(TestCase):
         }
         expected_status_code = 200
         mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
-            "aws-ec2" if mount_point is None else mount_point,
+            "aws" if mount_point is None else mount_point,
             role_name,
         )
         requests_mocker.register_uri(
@@ -357,28 +351,28 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.get_ec2_role(role=role_name)
+            actual_response = client.auth.aws.read_role(role=role_name)
         else:
-            actual_response = client.get_ec2_role(
+            actual_response = client.auth.aws.read_role(
                 role=role_name, mount_point=mount_point
             )
 
         self.assertEqual(
-            first=mock_response,
+            first=mock_response.get("data"),
             second=actual_response,
         )
 
     @parameterized.expand(
         [
             ("default mount point", None, "my-role-1"),
-            ("custom mount point", "aws-ec2", "my-role-2"),
+            ("custom mount point", "aws", "my-role-2"),
         ]
     )
     @requests_mock.Mocker()
     def test_delete_ec2_role(self, test_label, mount_point, role_name, requests_mocker):
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
-            "aws-ec2" if mount_point is None else mount_point,
+            "aws" if mount_point is None else mount_point,
             role_name,
         )
         requests_mocker.register_uri(
@@ -389,9 +383,9 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.delete_ec2_role(role=role_name)
+            actual_response = client.auth.aws.delete_role(role=role_name)
         else:
-            actual_response = client.delete_ec2_role(
+            actual_response = client.auth.aws.delete_role(
                 role=role_name, mount_point=mount_point
             )
 
@@ -403,18 +397,18 @@ class TestAwsEc2Methods(TestCase):
     @parameterized.expand(
         [
             ("default mount point", None),
-            ("custom mount point", "aws-ec2"),
+            ("custom mount point", "aws"),
         ]
     )
     @requests_mock.Mocker()
     def test_list_ec2_roles(self, test_label, mount_point, requests_mocker):
         mock_response = {"data": {"keys": ["dev-role", "prod-role"]}}
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/roles?list=true".format(
-            "aws-ec2" if mount_point is None else mount_point,
+        mock_url = "http://localhost:8200/v1/auth/{0}/roles".format(
+            "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="GET",
+            method="LIST",
             url=mock_url,
             json=mock_response,
             status_code=expected_status_code,
@@ -422,19 +416,19 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.list_ec2_roles()
+            actual_response = client.auth.aws.list_roles()
         else:
-            actual_response = client.list_ec2_roles(mount_point=mount_point)
+            actual_response = client.auth.aws.list_roles(mount_point=mount_point)
 
         self.assertEqual(
-            first=mock_response,
+            first=mock_response.get("data"),
             second=actual_response,
         )
 
     @parameterized.expand(
         [
             ("default mount point", None, "my-role-1"),
-            ("custom mount point", "aws-ec2", "my-role-2"),
+            ("custom mount point", "aws", "my-role-2"),
         ]
     )
     @requests_mock.Mocker()
@@ -449,7 +443,7 @@ class TestAwsEc2Methods(TestCase):
         }
         expected_status_code = 200
         mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}/tag".format(
-            "aws-ec2" if mount_point is None else mount_point, role_name
+            "aws" if mount_point is None else mount_point, role_name
         )
         requests_mocker.register_uri(
             method="POST",
@@ -460,11 +454,11 @@ class TestAwsEc2Methods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.create_ec2_role_tag(
+            actual_response = client.auth.aws.create_role_tags(
                 role=role_name,
             )
         else:
-            actual_response = client.create_ec2_role_tag(
+            actual_response = client.auth.aws.create_role_tags(
                 role=role_name, mount_point=mount_point
             )
 

@@ -57,9 +57,9 @@ class TestGcpMethods(TestCase):
         client = Client()
 
         if mount_point is None:
-            actual_response = client.auth_gcp(role=test_role, jwt=test_jwt)
+            actual_response = client.auth.gcp.login(role=test_role, jwt=test_jwt)
         else:
-            actual_response = client.auth_gcp(
+            actual_response = client.auth.gcp.login(
                 role=test_role, jwt=test_jwt, mount_point=mount_point
             )
 

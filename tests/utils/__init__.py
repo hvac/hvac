@@ -1,5 +1,6 @@
 """Collection of methods used by various hvac test cases."""
 import base64
+import json
 import logging
 import operator
 import os
@@ -7,9 +8,9 @@ import re
 import socket
 import subprocess
 import sys
-from unittest import SkipTest
 from distutils.spawn import find_executable
 from distutils.version import StrictVersion
+from unittest import SkipTest
 
 from hvac import Client
 
@@ -180,7 +181,11 @@ def decode_generated_root_token(encoded_token, otp):
     if stderr != "":
         logging.error("decode_generated_root_token stderr: %s" % stderr)
 
-    new_token = stdout.replace("Root token:", "")
+    try:
+        # On the off chance VAULT_FORMAT=json or such is set in the test environment:
+        new_token = json.loads(stdout)["token"]
+    except ValueError:
+        new_token = stdout.replace("Root token:", "")
     new_token = new_token.strip()
     return new_token
 
