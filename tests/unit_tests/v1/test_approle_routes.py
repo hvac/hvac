@@ -38,7 +38,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -173,7 +173,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -228,7 +228,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -279,7 +279,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -348,7 +348,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -406,7 +406,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -475,7 +475,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -526,7 +526,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -575,7 +575,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -637,7 +637,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -702,7 +702,7 @@ class TestApproleRoutes(TestCase):
                 mount_point=mount_point,
             )
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )

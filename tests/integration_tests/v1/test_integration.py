@@ -982,7 +982,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(
+        self.assertEqual(
             first=test_host, second=response["data"].get("kubernetes_host")
         )
 
@@ -1055,7 +1055,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(
+        self.assertEqual(
             first=test_bound_service_account_namespaces,
             second=response["data"].get("bound_service_account_namespaces"),
         )
@@ -1094,7 +1094,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(first=[test_role_name], second=response["data"].get("keys"))
+        self.assertEqual(first=[test_role_name], second=response["data"].get("keys"))
         # Reset integration test state
         self.client.disable_auth_backend(mount_point=test_mount_point)
 

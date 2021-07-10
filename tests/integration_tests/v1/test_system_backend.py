@@ -393,7 +393,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         read_lease_response = self.client.read_lease(pki_issue_response["lease_id"])
 
         # Validate we received the expected lease ID back in our response.
-        self.assertEquals(
+        self.assertEqual(
             first=pki_issue_response["lease_id"],
             second=read_lease_response["data"]["id"],
         )

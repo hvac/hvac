@@ -154,7 +154,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             )
         )
         logging.debug("create_response: {}".format(create_response))
-        self.assertEquals(
+        self.assertEqual(
             first=create_response.status_code,
             second=204,
         )

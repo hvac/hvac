@@ -30,7 +30,7 @@ class TestLease(HvacIntegrationTestCase, TestCase):
         logging.debug("read_lease_response: %s" % read_lease_response)
 
         # Validate we received the expected lease ID back in our response.
-        self.assertEquals(
+        self.assertEqual(
             first=pki_issue_response["lease_id"],
             second=read_lease_response["data"]["id"],
         )

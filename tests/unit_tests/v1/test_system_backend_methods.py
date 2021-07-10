@@ -34,7 +34,7 @@ class TestSystemBackendMethods(TestCase):
         response = client.read_lease(
             lease_id=test_lease_id,
         )
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=response,
         )

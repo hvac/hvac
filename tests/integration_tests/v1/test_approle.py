@@ -110,7 +110,7 @@ class TestApprole(HvacIntegrationTestCase, TestCase):
         self.assertEqual(result["data"]["metadata"]["foo"], "bar")
         self.client.delete_role_secret_id("testrole", secret_id)
         missing_secret_response = self.client.get_role_secret_id("testrole", secret_id)
-        self.assertEquals(
+        self.assertEqual(
             first=missing_secret_response.status_code,
             second=204,
         )
