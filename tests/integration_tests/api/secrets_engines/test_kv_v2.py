@@ -18,9 +18,9 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestKvV2, self).setUp()
-        self.client.enable_secret_backend(
+        self.client.sys.enable_secrets_engine(
             backend_type="kv",
-            mount_point=self.DEFAULT_MOUNT_POINT,
+            path=self.DEFAULT_MOUNT_POINT,
             options=dict(version=2),
         )
 
@@ -41,7 +41,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             sleep(1)
 
     def tearDown(self):
-        self.client.disable_secret_backend(mount_point=self.DEFAULT_MOUNT_POINT)
+        self.client.sys.disable_secrets_engine(path=self.DEFAULT_MOUNT_POINT)
         super(TestKvV2, self).tearDown()
 
     @parameterized.expand(

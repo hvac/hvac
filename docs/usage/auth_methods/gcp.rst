@@ -19,14 +19,14 @@ Source reference: :py:meth:`hvac.v1.Client.enable_auth_backend`
     gcp_auth_path = 'company-gcp'
     description = 'Auth method for use by team members in our company's Gcp organization'
 
-    if '%s/' % gcp_auth_path not in vault_client.list_auth_backends():
+    if '%s/' % gcp_auth_path not in vault_client.sys.list_auth_methods()['data']:
         print('Enabling the gcp auth backend at mount_point: {path}'.format(
             path=gcp_auth_path,
         ))
-        client.enable_auth_backend(
-            backend_type='gcp',
+        client.sys.enable_auth_method(
+            method_type='gcp',
             description=description,
-            mount_point=gcp_auth_path,
+            path=gcp_auth_path,
         )
 
 

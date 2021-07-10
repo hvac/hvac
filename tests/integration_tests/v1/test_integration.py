@@ -10,9 +10,9 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
     def setUp(self):
         super(IntegrationTest, self).setUp()
         if "secret/" not in self.client.sys.list_mounted_secrets_engines()["data"]:
-            self.client.enable_secret_backend(
+            self.client.sys.enable_secrets_engine(
                 backend_type="kv",
-                mount_point="secret",
+                path="secret",
                 options=dict(version=1),
             )
 
@@ -35,9 +35,9 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.delete("secret/test-list/foo")
 
     def test_write_with_response(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
+        if "transit/" in self.client.sys.list_mounted_secrets_engines()["data"]:
+            self.client.sys.disable_secrets_engine("transit")
+        self.client.sys.enable_secrets_engine("transit")
 
         plaintext = "test"
 
@@ -98,10 +98,10 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             assert True
 
     def test_userpass_auth(self):
-        if "userpass/" in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend("userpass")
+        if "userpass/" in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.disable_auth_method("userpass")
 
-        self.client.enable_auth_backend("userpass")
+        self.client.sys.enable_auth_method("userpass")
 
         self.client.write(
             "auth/userpass/users/testuser", password="testpass", policies="not_root"
@@ -113,11 +113,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert self.client.is_authenticated()
 
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("userpass")
+        self.client.sys.disable_auth_method("userpass")
 
     def test_create_userpass(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         self.client.create_userpass(
             "testcreateuser", "testcreateuserpass", policies="not_root"
@@ -140,11 +140,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert result["auth"]["lease_duration"] == 10
 
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("userpass")
+        self.client.sys.disable_auth_method("userpass")
 
     def test_list_userpass(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         # add some users and confirm that they show up in the list
         self.client.create_userpass(
@@ -166,8 +166,8 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert no_users_list is None
 
     def test_read_userpass(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         # create user to read
         self.client.create_userpass("readme", "mypassword", policies="not_root")
@@ -177,11 +177,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert "not_root" in read_user["data"]["policies"]
 
         # teardown
-        self.client.disable_auth_backend("userpass")
+        self.client.sys.disable_auth_method("userpass")
 
     def test_update_userpass_policies(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         # create user and then update its policies
         self.client.create_userpass(
@@ -196,11 +196,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert "somethingelse" in updated_user["data"]["policies"]
 
         # teardown
-        self.client.disable_auth_backend("userpass")
+        self.client.sys.disable_auth_method("userpass")
 
     def test_update_userpass_password(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         # create user and then change its password
         self.client.create_userpass("changeme", "mypassword", policies="not_root")
@@ -213,11 +213,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # teardown
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("userpass")
+        self.client.sys.disable_auth_method("userpass")
 
     def test_delete_userpass(self):
-        if "userpass/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("userpass")
+        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("userpass")
 
         self.client.create_userpass(
             "testcreateuser", "testcreateuserpass", policies="not_root"
@@ -238,10 +238,10 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         )
 
     def test_app_id_auth(self):
-        if "app-id/" in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend("app-id")
+        if "app-id/" in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.disable_auth_method("app-id")
 
-        self.client.enable_auth_backend("app-id")
+        self.client.sys.enable_auth_method("app-id")
 
         self.client.write("auth/app-id/map/app-id/foo", value="not_root")
         self.client.write("auth/app-id/map/user-id/bar", value="foo")
@@ -252,11 +252,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert self.client.is_authenticated()
 
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("app-id")
+        self.client.sys.disable_auth_method("app-id")
 
     def test_create_app_id(self):
-        if "app-id/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("app-id")
+        if "app-id/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("app-id")
 
         self.client.create_app_id(
             "testappid", policies="not_root", display_name="displayname"
@@ -275,11 +275,11 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert self.client.get_app_id("testappid")["data"] is None
 
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("app-id")
+        self.client.sys.disable_auth_method("app-id")
 
     def test_create_user_id(self):
-        if "app-id/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("app-id")
+        if "app-id/" not in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.enable_auth_method("app-id")
 
         self.client.create_app_id(
             "testappid", policies="not_root", display_name="displayname"
@@ -304,207 +304,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert self.client.get_user_id("testuserid")["data"] is None
 
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend("app-id")
-
-    def test_transit_read_write(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-        result = self.client.transit_read_key("foo")
-        assert not result["data"]["exportable"]
-
-        self.client.transit_create_key(
-            "foo_export", exportable=True, key_type="ed25519"
-        )
-        result = self.client.transit_read_key("foo_export")
-        assert result["data"]["exportable"]
-        assert result["data"]["type"] == "ed25519"
-
-        self.client.enable_secret_backend("transit", mount_point="bar")
-        self.client.transit_create_key("foo", mount_point="bar")
-        result = self.client.transit_read_key("foo", mount_point="bar")
-        assert not result["data"]["exportable"]
-
-    def test_transit_list_keys(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo1")
-        self.client.transit_create_key("foo2")
-        self.client.transit_create_key("foo3")
-
-        result = self.client.transit_list_keys()
-        assert result["data"]["keys"] == ["foo1", "foo2", "foo3"]
-
-    def test_transit_update_delete_keys(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-        self.client.transit_update_key("foo", deletion_allowed=True)
-        result = self.client.transit_read_key("foo")
-        assert result["data"]["deletion_allowed"]
-
-        self.client.transit_delete_key("foo")
-
-        try:
-            self.client.transit_read_key("foo")
-        except exceptions.InvalidPath:
-            assert True
-        else:
-            assert False
-
-    def test_transit_rotate_key(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-
-        self.client.transit_rotate_key("foo")
-        response = self.client.transit_read_key("foo")
-        assert "2" in response["data"]["keys"]
-
-        self.client.transit_rotate_key("foo")
-        response = self.client.transit_read_key("foo")
-        assert "3" in response["data"]["keys"]
-
-    def test_transit_export_key(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo", exportable=True)
-        response = self.client.transit_export_key("foo", key_type="encryption-key")
-        assert response is not None
-
-    def test_transit_encrypt_data(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-        ciphertext_resp = self.client.transit_encrypt_data("foo", "abbaabba")["data"][
-            "ciphertext"
-        ]
-        plaintext_resp = self.client.transit_decrypt_data("foo", ciphertext_resp)[
-            "data"
-        ]["plaintext"]
-        assert plaintext_resp == "abbaabba"
-
-    def test_transit_rewrap_data(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-        ciphertext_resp = self.client.transit_encrypt_data("foo", "abbaabba")["data"][
-            "ciphertext"
-        ]
-
-        self.client.transit_rotate_key("foo")
-        response_wrap = self.client.transit_rewrap_data(
-            "foo", ciphertext=ciphertext_resp
-        )["data"]["ciphertext"]
-        plaintext_resp = self.client.transit_decrypt_data("foo", response_wrap)["data"][
-            "plaintext"
-        ]
-        assert plaintext_resp == "abbaabba"
-
-    def test_transit_generate_data_key(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-
-        response_plaintext = self.client.transit_generate_data_key(
-            "foo", key_type="plaintext"
-        )["data"]["plaintext"]
-        assert response_plaintext
-
-        response_ciphertext = self.client.transit_generate_data_key(
-            "foo", key_type="wrapped"
-        )["data"]
-        assert "ciphertext" in response_ciphertext
-        assert "plaintext" not in response_ciphertext
-
-    def test_transit_generate_rand_bytes(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        response_data = self.client.transit_generate_rand_bytes(data_bytes=4)["data"][
-            "random_bytes"
-        ]
-        assert response_data
-
-    def test_transit_hash_data(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        response_hash = self.client.transit_hash_data("abbaabba")["data"]["sum"]
-        assert len(response_hash) == 64
-
-        response_hash = self.client.transit_hash_data("abbaabba", algorithm="sha2-512")[
-            "data"
-        ]["sum"]
-        assert len(response_hash) == 128
-
-    def test_transit_generate_verify_hmac(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo")
-
-        response_hmac = self.client.transit_generate_hmac("foo", "abbaabba")["data"][
-            "hmac"
-        ]
-        assert response_hmac
-        verify_resp = self.client.transit_verify_signed_data(
-            "foo", "abbaabba", hmac=response_hmac
-        )["data"]["valid"]
-        assert verify_resp
-
-        response_hmac = self.client.transit_generate_hmac(
-            "foo", "abbaabba", algorithm="sha2-512"
-        )["data"]["hmac"]
-        assert response_hmac
-        verify_resp = self.client.transit_verify_signed_data(
-            "foo", "abbaabba", algorithm="sha2-512", hmac=response_hmac
-        )["data"]["valid"]
-        assert verify_resp
-
-    def test_transit_sign_verify_signature_data(self):
-        if "transit/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("transit")
-        self.client.enable_secret_backend("transit")
-
-        self.client.transit_create_key("foo", key_type="ed25519")
-
-        signed_resp = self.client.transit_sign_data("foo", "abbaabba")["data"][
-            "signature"
-        ]
-        assert signed_resp
-        verify_resp = self.client.transit_verify_signed_data(
-            "foo", "abbaabba", signature=signed_resp
-        )["data"]["valid"]
-        assert verify_resp
-
-        signed_resp = self.client.transit_sign_data(
-            "foo", "abbaabba", algorithm="sha2-512"
-        )["data"]["signature"]
-        assert signed_resp
-        verify_resp = self.client.transit_verify_signed_data(
-            "foo", "abbaabba", algorithm="sha2-512", signature=signed_resp
-        )["data"]["valid"]
-        assert verify_resp
+        self.client.sys.disable_auth_method("app-id")
 
     def test_missing_token(self):
         client = utils.create_client()
@@ -536,10 +336,10 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert not self.client.is_authenticated()
 
     def test_revoke_self_token(self):
-        if "userpass/" in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend("userpass")
+        if "userpass/" in self.client.sys.list_auth_methods()["data"]:
+            self.client.sys.disable_auth_method("userpass")
 
-        self.client.enable_auth_backend("userpass")
+        self.client.sys.enable_auth_method("userpass")
 
         self.client.write(
             "auth/userpass/users/testuser", password="testpass", policies="not_root"
@@ -549,21 +349,6 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
-
-    def test_tls_auth(self):
-        self.client.enable_auth_backend("cert")
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-
-        self.client.write(
-            "auth/cert/certs/test",
-            display_name="test",
-            policies="not_root",
-            certificate=certificate,
-        )
-
-        self.client.auth_tls()
 
     def test_gh51(self):
         key = "secret/http://test.com"
@@ -672,228 +457,17 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # Cleanup
         self.client.delete_token_role("testrole")
-        self.client.delete_policy("testpolicy")
-
-    def test_ec2_role_crud(self):
-        if "aws-ec2/" in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend("aws-ec2")
-        self.client.enable_auth_backend("aws-ec2")
-
-        # create a policy to associate with the role
-        self.prep_policy("ec2rolepolicy")
-
-        # attempt to get a list of roles before any exist
-        no_roles = self.client.list_ec2_roles()
-        # doing so should succeed and return None
-        assert no_roles is None
-
-        # test binding by AMI ID (the old way, to ensure backward compatibility)
-        self.client.create_ec2_role("foo", "ami-notarealami", policies="ec2rolepolicy")
-
-        # test binding by Account ID
-        self.client.create_ec2_role(
-            "bar", bound_account_id="123456789012", policies="ec2rolepolicy"
-        )
-
-        # test binding by IAM Role ARN
-        self.client.create_ec2_role(
-            "baz",
-            bound_iam_role_arn="arn:aws:iam::123456789012:role/mockec2role",
-            policies="ec2rolepolicy",
-        )
-
-        # test binding by instance profile ARN
-        self.client.create_ec2_role(
-            "qux",
-            bound_iam_instance_profile_arn="arn:aws:iam::123456789012:instance-profile/mockprofile",
-            policies="ec2rolepolicy",
-        )
-
-        # test binding by bound region
-        self.client.create_ec2_role(
-            "quux", bound_region="ap-northeast-2", policies="ec2rolepolicy"
-        )
-
-        # test binding by bound vpc id
-        self.client.create_ec2_role(
-            "corge", bound_vpc_id="vpc-1a123456", policies="ec2rolepolicy"
-        )
-
-        # test binding by bound subnet id
-        self.client.create_ec2_role(
-            "grault", bound_subnet_id="subnet-123a456", policies="ec2rolepolicy"
-        )
-
-        roles = self.client.list_ec2_roles()
-
-        assert "foo" in roles["data"]["keys"]
-        assert "bar" in roles["data"]["keys"]
-        assert "baz" in roles["data"]["keys"]
-        assert "qux" in roles["data"]["keys"]
-        assert "quux" in roles["data"]["keys"]
-        assert "corge" in roles["data"]["keys"]
-        assert "grault" in roles["data"]["keys"]
-
-        foo_role = self.client.get_ec2_role("foo")
-        assert "ami-notarealami" in foo_role["data"]["bound_ami_id"]
-        assert "ec2rolepolicy" in foo_role["data"]["policies"]
-
-        bar_role = self.client.get_ec2_role("bar")
-        assert "123456789012" in bar_role["data"]["bound_account_id"]
-        assert "ec2rolepolicy" in bar_role["data"]["policies"]
-
-        baz_role = self.client.get_ec2_role("baz")
-        assert (
-            "arn:aws:iam::123456789012:role/mockec2role"
-            in baz_role["data"]["bound_iam_role_arn"]
-        )
-        assert "ec2rolepolicy" in baz_role["data"]["policies"]
-
-        qux_role = self.client.get_ec2_role("qux")
-        assert (
-            "arn:aws:iam::123456789012:instance-profile/mockprofile"
-            in qux_role["data"]["bound_iam_instance_profile_arn"]
-        )
-        assert "ec2rolepolicy" in qux_role["data"]["policies"]
-
-        quux_role = self.client.get_ec2_role("quux")
-        assert "ap-northeast-2" in quux_role["data"]["bound_region"]
-        assert "ec2rolepolicy" in quux_role["data"]["policies"]
-
-        corge_role = self.client.get_ec2_role("corge")
-        assert "vpc-1a123456" in corge_role["data"]["bound_vpc_id"]
-        assert "ec2rolepolicy" in corge_role["data"]["policies"]
-
-        grault_role = self.client.get_ec2_role("grault")
-        assert "subnet-123a456" in grault_role["data"]["bound_subnet_id"]
-        assert "ec2rolepolicy" in grault_role["data"]["policies"]
-
-        # teardown
-        self.client.delete_ec2_role("foo")
-        self.client.delete_ec2_role("bar")
-        self.client.delete_ec2_role("baz")
-        self.client.delete_ec2_role("qux")
-        self.client.delete_ec2_role("quux")
-        self.client.delete_ec2_role("corge")
-        self.client.delete_ec2_role("grault")
-
-        self.client.delete_policy("ec2rolepolicy")
-
-        self.client.disable_auth_backend("aws-ec2")
-
-    def test_ec2_role_token_lifespan(self):
-        if "aws-ec2/" not in self.client.list_auth_backends()["data"]:
-            self.client.enable_auth_backend("aws-ec2")
-
-        # create a policy to associate with the role
-        self.prep_policy("ec2rolepolicy")
-
-        # create a role with no TTL
-        self.client.create_ec2_role("foo", "ami-notarealami", policies="ec2rolepolicy")
-
-        # create a role with a 1hr TTL
-        self.client.create_ec2_role(
-            "bar", "ami-notarealami", ttl="1h", policies="ec2rolepolicy"
-        )
-
-        # create a role with a 3-day max TTL
-        self.client.create_ec2_role(
-            "baz", "ami-notarealami", max_ttl="72h", policies="ec2rolepolicy"
-        )
-
-        # create a role with 1-day period
-        self.client.create_ec2_role(
-            "qux", "ami-notarealami", period="24h", policies="ec2rolepolicy"
-        )
-
-        foo_role = self.client.get_ec2_role("foo")
-        ttl_data_key = "token_ttl" if utils.vault_version_ge("1.2.0") else "ttl"
-        assert foo_role["data"][ttl_data_key] == 0
-
-        bar_role = self.client.get_ec2_role("bar")
-        assert bar_role["data"]["ttl"] == 3600
-
-        baz_role = self.client.get_ec2_role("baz")
-        max_ttl_data_key = (
-            "token_max_ttl" if utils.vault_version_ge("1.2.0") else "max_ttl"
-        )
-        assert baz_role["data"][max_ttl_data_key] == 259200
-
-        qux_role = self.client.get_ec2_role("qux")
-        assert qux_role["data"]["period"] == 86400
-
-        # teardown
-        self.client.delete_ec2_role("foo")
-        self.client.delete_ec2_role("bar")
-        self.client.delete_ec2_role("baz")
-        self.client.delete_ec2_role("qux")
-
-        self.client.delete_policy("ec2rolepolicy")
-
-        self.client.disable_auth_backend("aws-ec2")
-
-    def test_auth_ec2_alternate_mount_point_with_no_client_token_exception(self):
-        test_mount_point = "aws-custom-path"
-        # Turn on the aws-ec2 backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("aws-ec2", mount_point=test_mount_point)
-
-        # Drop the client's token to replicate a typical end user's use of any auth method.
-        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
-        self.client.token = None
-
-        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
-        with open(utils.get_config_file_path("identity_document.p7b")) as fp:
-            pkcs7 = fp.read()
-
-        # When attempting to auth (POST) to an auth backend mounted at a different path than the default, we expect a
-        # generic 'missing client token' response from Vault.
-        with self.assertRaises(exceptions.InvalidRequest) as assertRaisesContext:
-            self.client.auth_ec2(pkcs7=pkcs7)
-
-        expected_exception_message = "missing client token"
-        actual_exception_message = str(assertRaisesContext.exception)
-        self.assertIn(expected_exception_message, actual_exception_message)
-
-        # Reset test state.
-        self.client.token = self.manager.root_token
-        self.client.disable_auth_backend(mount_point=test_mount_point)
-
-    def test_auth_ec2_alternate_mount_point_with_no_client_token(self):
-        test_mount_point = "aws-custom-path"
-        # Turn on the aws-ec2 backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("aws-ec2", mount_point=test_mount_point)
-
-        # Drop the client's token to replicate a typical end user's use of any auth method.
-        # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
-        self.client.token = None
-
-        # Load a mock PKCS7 encoded self-signed certificate to stand in for a real document from the AWS identity service.
-        with open(utils.get_config_file_path("identity_document.p7b")) as fp:
-            pkcs7 = fp.read()
-
-        # If our custom path is respected, we'll still end up with Vault's inability to decrypt our dummy PKCS7 string.
-        # However this exception indicates we're correctly hitting the expected auth endpoint.
-        with self.assertRaises(exceptions.InternalServerError) as assertRaisesContext:
-            self.client.auth_ec2(pkcs7=pkcs7, mount_point=test_mount_point)
-
-        expected_exception_message = "failed to decode the PEM encoded PKCS#7 signature"
-        actual_exception_message = str(assertRaisesContext.exception)
-        self.assertIn(expected_exception_message, actual_exception_message)
-
-        # Reset test state.
-        self.client.token = self.manager.root_token
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.delete_policy("testpolicy")
 
     def test_auth_gcp_alternate_mount_point_with_no_client_token_exception(self):
         test_mount_point = "gcp-custom-path"
         # Turn on the gcp backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("gcp", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("gcp", path=test_mount_point)
 
         # Drop the client's token to replicate a typical end user's use of any auth method.
         # I.e., its reasonable to expect the method is being called to _retrieve_ a token in the first place.
@@ -914,34 +488,37 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # Reset test state.
         self.client.token = self.manager.root_token
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     @skipIf(
         utils.if_vault_version("0.10.0"),
         "KV version 2 secret engine not available before Vault version 0.10.0",
     )
     def test_kv2_secret_backend(self):
-        if "test/" in self.client.list_secret_backends()["data"]:
-            self.client.disable_secret_backend("test")
-        self.client.enable_secret_backend(
-            "kv", mount_point="test", options={"version": "2"}
+        if "test/" in self.client.sys.list_mounted_secrets_engines()["data"]:
+            self.client.sys.disable_secrets_engine("test")
+        self.client.sys.enable_secrets_engine(
+            "kv", path="test", options={"version": "2"}
         )
 
-        secret_backends = self.client.list_secret_backends()["data"]
+        secret_backends = self.client.sys.list_mounted_secrets_engines()["data"]
 
         assert "test/" in secret_backends
         self.assertDictEqual(secret_backends["test/"]["options"], {"version": "2"})
 
-        self.client.disable_secret_backend("test")
+        self.client.sys.disable_secrets_engine("test")
 
     def test_create_kubernetes_configuration(self):
         expected_status_code = 204
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
@@ -956,16 +533,19 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         )
 
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_get_kubernetes_configuration(self):
         test_host = "127.0.0.1:80"
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
@@ -982,12 +562,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(
+        self.assertEqual(
             first=test_host, second=response["data"].get("kubernetes_host")
         )
 
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_create_kubernetes_role(self):
         test_role_name = "test_role"
@@ -995,9 +575,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
@@ -1020,7 +603,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         )
 
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_get_kubernetes_role(self):
         test_role_name = "test_role"
@@ -1028,9 +611,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_bound_service_account_namespaces = ["vault-test"]
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
@@ -1055,12 +641,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(
+        self.assertEqual(
             first=test_bound_service_account_namespaces,
             second=response["data"].get("bound_service_account_namespaces"),
         )
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_list_kubernetes_roles(self):
         test_role_name = "test_role"
@@ -1068,9 +654,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_bound_service_account_namespaces = ["vault-test"]
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
@@ -1094,9 +683,9 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             member="data",
             container=response,
         )
-        self.assertEquals(first=[test_role_name], second=response["data"].get("keys"))
+        self.assertEqual(first=[test_role_name], second=response["data"].get("keys"))
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_delete_kubernetes_role(self):
         test_role_name = "test_role"
@@ -1104,9 +693,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
@@ -1133,7 +725,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         )
 
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_auth_kubernetes(self):
         test_role_name = "test_role"
@@ -1141,9 +733,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if "{0}/".format(test_mount_point) in self.client.list_auth_backends()["data"]:
-            self.client.disable_auth_backend(test_mount_point)
-        self.client.enable_auth_backend("kubernetes", mount_point=test_mount_point)
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
             certificate = fp.read()
             self.client.create_kubernetes_configuration(
@@ -1177,7 +772,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.assertIn(expected_exception_message, actual_exception_message)
 
         # Reset integration test state
-        self.client.disable_auth_backend(mount_point=test_mount_point)
+        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_seal_status(self):
         seal_status_property = self.client.seal_status

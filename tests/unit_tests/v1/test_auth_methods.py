@@ -20,9 +20,8 @@ class TestAuthMethods(TestCase):
             status_code=expected_status_code,
         )
         client = Client()
-        actual_response = client.tune_auth_backend(
-            backend_type=test_backend_type,
-            mount_point=test_mount_point,
+        actual_response = client.sys.tune_auth_method(
+            path=test_mount_point,
             description=test_description,
         )
 
@@ -68,9 +67,8 @@ class TestAuthMethods(TestCase):
             json=mock_response,
         )
         client = Client()
-        actual_response = client.get_auth_backend_tuning(
-            backend_type=test_backend_type,
-            mount_point=test_mount_point,
+        actual_response = client.sys.read_auth_method_tuning(
+            path=test_mount_point,
         )
 
         self.assertEqual(

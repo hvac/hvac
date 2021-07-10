@@ -39,7 +39,7 @@ class TestKubernetesMethods(TestCase):
 
         actual_response = client.create_kubernetes_configuration(**test_arguments)
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -87,7 +87,7 @@ class TestKubernetesMethods(TestCase):
 
         actual_response = client.get_kubernetes_configuration(**test_arguments)
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -129,7 +129,7 @@ class TestKubernetesMethods(TestCase):
             test_arguments["mount_point"] = mount_point
         actual_response = client.create_kubernetes_role(**test_arguments)
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )
@@ -183,7 +183,7 @@ class TestKubernetesMethods(TestCase):
 
         actual_response = client.get_kubernetes_role(**test_arguments)
 
-        self.assertEquals(
+        self.assertEqual(
             first=mock_response,
             second=actual_response,
         )
@@ -260,7 +260,7 @@ class TestKubernetesMethods(TestCase):
 
         actual_response = client.delete_kubernetes_role(**test_arguments)
 
-        self.assertEquals(
+        self.assertEqual(
             first=expected_status_code,
             second=actual_response.status_code,
         )

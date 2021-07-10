@@ -18,16 +18,16 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestKubernetes, self).setUp()
-        if "%s/" % self.TEST_MOUNT_POINT not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type="kubernetes",
-                mount_point=self.TEST_MOUNT_POINT,
+        if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type="kubernetes",
+                path=self.TEST_MOUNT_POINT,
             )
 
     def tearDown(self):
         super(TestKubernetes, self).tearDown()
-        self.client.disable_auth_backend(
-            mount_point=self.TEST_MOUNT_POINT,
+        self.client.sys.disable_auth_method(
+            path=self.TEST_MOUNT_POINT,
         )
 
     @parameterized.expand(

@@ -19,10 +19,10 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestAppRole, self).setUp()
-        if "%s/" % self.TEST_MOUNT_POINT not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type="approle",
-                mount_point=self.TEST_MOUNT_POINT,
+        if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type="approle",
+                path=self.TEST_MOUNT_POINT,
             )
         _ = self.client.auth.approle.create_or_update_approle(
             role_name=self.TEST_ROLE_NAME,
@@ -37,7 +37,7 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         super(TestAppRole, self).tearDown()
-        self.client.disable_auth_backend(mount_point=self.TEST_MOUNT_POINT)
+        self.client.sys.disable_auth_method(path=self.TEST_MOUNT_POINT)
 
     def _secret_id(self):
         secret_id_response = self.client.auth.approle.generate_secret_id(

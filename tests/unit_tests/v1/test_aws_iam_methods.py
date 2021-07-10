@@ -12,11 +12,13 @@ class TestAwsIamMethods(TestCase):
     """Unit tests providing coverage for AWS (EC2) auth backend-related methods/routes."""
 
     @mock.patch("hvac.aws_utils.datetime")
-    @mock.patch("hvac.v1.Client.login")
+    @mock.patch("hvac.adapters.Adapter.login")
     def test_auth_aws_iam(self, login_mock, datetime_mock):
         datetime_mock.utcnow.return_value = datetime(2015, 8, 30, 12, 36, 0)
         client = Client()
-        client.auth_aws_iam("AKIDEXAMPLE", "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
+        client.auth.aws.iam_login(
+            "AKIDEXAMPLE", "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"
+        )
 
         login_mock.assert_called()
         args, kwargs = login_mock.call_args
@@ -59,4 +61,4 @@ class TestAwsIamMethods(TestCase):
         )
 
         actual_role = actual_params["role"]
-        self.assertEqual("", actual_role)
+        self.assertEqual(None, actual_role)

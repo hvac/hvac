@@ -120,7 +120,7 @@ class HvacIntegrationTestCase(object):
         }
         """
         obj = {"path": {"sys": {"policy": "deny"}, "secret": {"policy": "write"}}}
-        self.client.set_policy(name, text)
+        self.client.sys.create_or_update_policy(name, text)
         return text, obj
 
     def get_vault_addr_by_standby_status(self, standby_status=True):

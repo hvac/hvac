@@ -18,10 +18,10 @@ class TestCert(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestCert, self).setUp()
-        if "%s/" % self.TEST_MOUNT_POINT not in self.client.list_auth_backends():
-            self.client.enable_auth_backend(
-                backend_type="cert",
-                mount_point=self.TEST_MOUNT_POINT,
+        if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
+            self.client.sys.enable_auth_method(
+                method_type="cert",
+                path=self.TEST_MOUNT_POINT,
             )
         _ = self.client.auth.cert.create_ca_certificate_role(
             name=self.TEST_ROLE_NAME,
@@ -78,11 +78,6 @@ class TestCert(HvacIntegrationTestCase, TestCase):
         )
 
         self.assertEqual(first=204, second=response.status_code)
-
-    def test_auth_tls_deprecation(self):
-        # In order to raise this it is just easier to expect it to fail.
-        with self.assertRaises(OSError):
-            pytest.deprecated_call(Client().auth_tls())
 
     @parameterized.expand(
         [

@@ -23,7 +23,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super(TestAws, self).setUp()
-        if "%s/" % self.TEST_MOUNT_POINT not in self.client.list_auth_backends():
+        if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
             self.client.sys.enable_secrets_engine(
                 backend_type="aws",
                 path=self.TEST_MOUNT_POINT,
