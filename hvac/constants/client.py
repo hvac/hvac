@@ -4,24 +4,7 @@
 
 from os import getenv
 
-DEPRECATED_PROPERTIES = {
-    "github": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "ldap": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "mfa": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "kv": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="secrets",
-    ),
-}
+DEPRECATED_PROPERTIES = {}
 
 DEFAULT_URL = "http://localhost:8200"
 VAULT_CACERT = getenv("VAULT_CACERT")
