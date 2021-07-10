@@ -2,7 +2,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Leader(SystemBackendMixin):
-
     def read_leader_status(self):
         """Read the high availability status and current leader instance of Vault.
 
@@ -12,7 +11,7 @@ class Leader(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/leader'
+        api_path = "/v1/sys/leader"
         return self._adapter.get(
             url=api_path,
         )
@@ -29,7 +28,7 @@ class Leader(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/step-down'
+        api_path = "/v1/sys/step-down"
         return self._adapter.put(
             url=api_path,
         )

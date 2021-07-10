@@ -13,10 +13,28 @@ class Cert(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/cert/index.html
     """
 
-    def create_ca_certificate_role(self, name, certificate, allowed_common_names="", allowed_dns_sans="", allowed_email_sans="",
-                  allowed_uri_sans="", allowed_organizational_units="", required_extensions="", display_name="", token_ttl=0,
-                  token_max_ttl=0, token_policies=[], token_bound_cidrs=[], token_explicit_max_ttl=0,
-                  token_no_default_policy=False, token_num_uses=0, token_period=0, token_type="", mount_point="cert"):
+    def create_ca_certificate_role(
+        self,
+        name,
+        certificate,
+        allowed_common_names="",
+        allowed_dns_sans="",
+        allowed_email_sans="",
+        allowed_uri_sans="",
+        allowed_organizational_units="",
+        required_extensions="",
+        display_name="",
+        token_ttl=0,
+        token_max_ttl=0,
+        token_policies=[],
+        token_bound_cidrs=[],
+        token_explicit_max_ttl=0,
+        token_no_default_policy=False,
+        token_num_uses=0,
+        token_period=0,
+        token_type="",
+        mount_point="cert",
+    ):
         """
         Create CA Certificate Role
         Sets a CA cert and associated parameters in a role name.
@@ -65,7 +83,7 @@ class Cert(VaultApiBase):
         :type mount_point:
         """
         try:
-            with open(certificate, 'r') as f_cert:
+            with open(certificate, "r") as f_cert:
                 cert = f_cert.read()
         except FileNotFoundError:
             cert = certificate
@@ -93,13 +111,15 @@ class Cert(VaultApiBase):
             }
         )
 
-        api_path = '/v1/auth/{mount_point}/certs/{name}'.format(mount_point=mount_point, name=name)
+        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
+            mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def read_ca_certificate_role(self, name, mount_point='cert'):
+    def read_ca_certificate_role(self, name, mount_point="cert"):
         """
         Gets information associated with the named role.
 
@@ -114,15 +134,17 @@ class Cert(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'name': name,
+            "name": name,
         }
-        api_path = '/v1/auth/{mount_point}/certs/{name}'.format(mount_point=mount_point, name=name)
+        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
+            mount_point=mount_point, name=name
+        )
         return self._adapter.get(
             url=api_path,
             json=params,
         )
 
-    def list_certificate_roles(self, mount_point='cert'):
+    def list_certificate_roles(self, mount_point="cert"):
         """
         Lists configured certificate names.
 
@@ -134,12 +156,10 @@ class Cert(VaultApiBase):
         :return: The response of the list_certificate request.
         :rtype: requests.Response
         """
-        api_path = '/v1/auth/{mount_point}/certs'.format(mount_point=mount_point)
-        return self._adapter.list(
-            url=api_path
-        )
+        api_path = "/v1/auth/{mount_point}/certs".format(mount_point=mount_point)
+        return self._adapter.list(url=api_path)
 
-    def delete_certificate_role(self, name, mount_point='cert'):
+    def delete_certificate_role(self, name, mount_point="cert"):
         """
         List existing LDAP existing groups that have been created in this auth method.
 
@@ -151,12 +171,14 @@ class Cert(VaultApiBase):
         :param mount_point:
         :type mount_point:
         """
-        api_path = '/v1/auth/{mount_point}/certs/{name}'.format(mount_point=mount_point, name=name)
+        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
+            mount_point=mount_point, name=name
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def configure_tls_certificate(self, mount_point='cert', disable_binding=False):
+    def configure_tls_certificate(self, mount_point="cert", disable_binding=False):
         """
         Configure options for the method.
 
@@ -171,15 +193,23 @@ class Cert(VaultApiBase):
         :type mount_point:
         """
         params = {
-            'disable_binding': disable_binding,
+            "disable_binding": disable_binding,
         }
-        api_path = '/v1/auth/{mount_point}/config'.format(mount_point=mount_point)
+        api_path = "/v1/auth/{mount_point}/config".format(mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def login(self, name="", cacert=False, cert_pem="", key_pem="", mount_point='cert', use_token=True):
+    def login(
+        self,
+        name="",
+        cacert=False,
+        cert_pem="",
+        key_pem="",
+        mount_point="cert",
+        use_token=True,
+    ):
         """
         Log in and fetch a token. If there is a valid chain to a CA configured in the method and all role constraints
             are matched, a token will be issued. If the certificate has DNS SANs in it, each of those will be verified.
@@ -209,17 +239,19 @@ class Cert(VaultApiBase):
         """
         params = {}
         if name != "":
-            params['name'] = name
-        api_path = '/v1/auth/{mount_point}/login'.format(mount_point=mount_point)
+            params["name"] = name
+        api_path = "/v1/auth/{mount_point}/login".format(mount_point=mount_point)
 
         # Must have cert checking or a CA cert. This is caught lower down but harder to grok
         if not cacert:
             # If a cacert is not provided try to drop down to the adapter and get the cert there.
             # If the cacert is not in the adapter already login will also.
-            if not self._adapter._kwargs.get('verify'):
-                raise self.CertificateAuthError("cacert must be True, a file_path, or valid CA Certificate.")
+            if not self._adapter._kwargs.get("verify"):
+                raise self.CertificateAuthError(
+                    "cacert must be True, a file_path, or valid CA Certificate."
+                )
             else:
-                cacert = self._adapter._kwargs.get('verify')
+                cacert = self._adapter._kwargs.get("verify")
         else:
             validate_pem_format(cacert, "verify")
         # if cert_pem is a string its ready to be used and either has the key with it or the key is provided as an arg
@@ -229,10 +261,10 @@ class Cert(VaultApiBase):
         except exceptions.VaultError as e:
             if isinstance(e, type(exceptions.ParamValidationError())):
                 tls_update = {}
-                if not (os.path.exists(cert_pem) or self._adapter._kwargs.get('cert')):
+                if not (os.path.exists(cert_pem) or self._adapter._kwargs.get("cert")):
                     raise FileNotFoundError("Can't find the certificate.")
                 try:
-                    for tls_part, value in {'cert_pem': cert_pem, 'key_pem': key_pem}:
+                    for tls_part, value in {"cert_pem": cert_pem, "key_pem": key_pem}:
                         if value != "":
                             tls_update[tls_part] = value
                 except ValueError:
@@ -249,10 +281,7 @@ class Cert(VaultApiBase):
             }
 
         return self._adapter.login(
-            url=api_path,
-            use_token=use_token,
-            json=params,
-            **additional_request_kwargs
+            url=api_path, use_token=use_token, json=params, **additional_request_kwargs
         )
 
     class CertificateAuthError(Exception):

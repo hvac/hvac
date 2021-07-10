@@ -4,7 +4,7 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'userpass'
+DEFAULT_MOUNT_POINT = "userpass"
 
 
 class Userpass(VaultApiBase):
@@ -12,7 +12,9 @@ class Userpass(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/userpass/index.html
     """
 
-    def create_or_update_user(self, username, password=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_user(
+        self, username, password=None, policies=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Create/update user in userpass.
 
@@ -28,12 +30,16 @@ class Userpass(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         """
-        params = utils.remove_nones({
-            'password': password,
-            'policies': policies,
-        })
+        params = utils.remove_nones(
+            {
+                "password": password,
+                "policies": policies,
+            }
+        )
 
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
+        api_path = "/v1/auth/{mount_point}/users/{username}".format(
+            mount_point=mount_point, username=username
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -51,7 +57,7 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the list_groups request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/users'.format(mount_point=mount_point)
+        api_path = "/v1/auth/{mount_point}/users".format(mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -70,7 +76,9 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the read_group request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
+        api_path = "/v1/auth/{mount_point}/users/{username}".format(
+            mount_point=mount_point, username=username
+        )
         return self._adapter.get(
             url=api_path,
         )
@@ -89,12 +97,16 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the read_group request.
         :rtype: dict
         """
-        api_path = '/v1/auth/{mount_point}/users/{username}'.format(mount_point=mount_point, username=username)
+        api_path = "/v1/auth/{mount_point}/users/{username}".format(
+            mount_point=mount_point, username=username
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def update_password_on_user(self, username, password, mount_point=DEFAULT_MOUNT_POINT):
+    def update_password_on_user(
+        self, username, password, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         update password for the user in userpass.
 
@@ -109,9 +121,11 @@ class Userpass(VaultApiBase):
         :type mount_point: str | unicode
         """
         params = {
-            'password': password,
+            "password": password,
         }
-        api_path = '/v1/auth/{mount_point}/users/{username}/password'.format(mount_point=mount_point, username=username)
+        api_path = "/v1/auth/{mount_point}/users/{username}/password".format(
+            mount_point=mount_point, username=username
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -132,9 +146,11 @@ class Userpass(VaultApiBase):
         :type mount_point: str | unicode
         """
         params = {
-            'password': password,
+            "password": password,
         }
-        api_path = '/v1/auth/{mount_point}/login/{username}'.format(mount_point=mount_point, username=username)
+        api_path = "/v1/auth/{mount_point}/login/{username}".format(
+            mount_point=mount_point, username=username
+        )
         return self._adapter.post(
             url=api_path,
             json=params,

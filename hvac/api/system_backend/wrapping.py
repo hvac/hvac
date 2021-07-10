@@ -2,7 +2,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Wrapping(SystemBackendMixin):
-
     def unwrap(self, token=None):
         """Return the original response inside the given wrapping token.
 
@@ -21,9 +20,9 @@ class Wrapping(SystemBackendMixin):
         """
         params = {}
         if token is not None:
-            params['token'] = token
+            params["token"] = token
 
-        api_path = '/v1/sys/wrapping/unwrap'
+        api_path = "/v1/sys/wrapping/unwrap"
         return self._adapter.post(
             url=api_path,
             json=params,

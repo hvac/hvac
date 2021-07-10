@@ -7,7 +7,7 @@ from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.constants.azure import VALID_ENVIRONMENTS
 
-DEFAULT_MOUNT_POINT = 'azure'
+DEFAULT_MOUNT_POINT = "azure"
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +17,15 @@ class Azure(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/azure/index.html
     """
 
-    def configure(self, tenant_id, resource, environment=None, client_id=None, client_secret=None,
-                  mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        tenant_id,
+        resource,
+        environment=None,
+        client_id=None,
+        client_secret=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the credentials required for the plugin to perform API calls to Azure.
 
         These credentials will be used to query the metadata about the virtual machine.
@@ -45,22 +52,28 @@ class Azure(VaultApiBase):
         """
         if environment is not None and environment not in VALID_ENVIRONMENTS:
             error_msg = 'invalid environment argument provided: "{arg}"; supported environments: "{environments}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=environment,
-                environments=','.join(VALID_ENVIRONMENTS),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=environment,
+                    environments=",".join(VALID_ENVIRONMENTS),
+                )
+            )
         params = {
-            'tenant_id': tenant_id,
-            'resource': resource,
+            "tenant_id": tenant_id,
+            "resource": resource,
         }
         params.update(
-            utils.remove_nones({
-                'environment': environment,
-                'client_id': client_id,
-                'client_secret': client_secret,
-            })
+            utils.remove_nones(
+                {
+                    "environment": environment,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -77,11 +90,13 @@ class Azure(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously configured Azure config and credentials.
@@ -94,14 +109,29 @@ class Azure(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def create_role(self, name, policies=None, ttl=None, max_ttl=None, period=None, bound_service_principal_ids=None,
-                    bound_group_ids=None, bound_locations=None, bound_subscription_ids=None,
-                    bound_resource_groups=None, bound_scale_sets=None, num_uses=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(
+        self,
+        name,
+        policies=None,
+        ttl=None,
+        max_ttl=None,
+        period=None,
+        bound_service_principal_ids=None,
+        bound_group_ids=None,
+        bound_locations=None,
+        bound_subscription_ids=None,
+        bound_resource_groups=None,
+        bound_scale_sets=None,
+        num_uses=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create a role in the method.
 
         Role types have specific entities that can perform login operations against this endpoint. Constraints specific
@@ -145,28 +175,37 @@ class Azure(VaultApiBase):
         if policies is not None:
             if not (
                 isinstance(policies, str)
-                or (isinstance(policies, list) and all(isinstance(p, str) for p in policies))
+                or (
+                    isinstance(policies, list)
+                    and all(isinstance(p, str) for p in policies)
+                )
             ):
                 error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
-                raise exceptions.ParamValidationError(error_msg.format(
-                    arg=policies,
-                    arg_type=type(policies),
-                ))
-        params = utils.remove_nones({
-            'policies': policies,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-            'period': period,
-            'bound_service_principal_ids': bound_service_principal_ids,
-            'bound_group_ids': bound_group_ids,
-            'bound_locations': bound_locations,
-            'bound_subscription_ids': bound_subscription_ids,
-            'bound_resource_groups': bound_resource_groups,
-            'bound_scale_sets': bound_scale_sets,
-            'num_uses': num_uses,
-        })
+                raise exceptions.ParamValidationError(
+                    error_msg.format(
+                        arg=policies,
+                        arg_type=type(policies),
+                    )
+                )
+        params = utils.remove_nones(
+            {
+                "policies": policies,
+                "ttl": ttl,
+                "max_ttl": max_ttl,
+                "period": period,
+                "bound_service_principal_ids": bound_service_principal_ids,
+                "bound_group_ids": bound_group_ids,
+                "bound_locations": bound_locations,
+                "bound_subscription_ids": bound_subscription_ids,
+                "bound_resource_groups": bound_resource_groups,
+                "bound_scale_sets": bound_scale_sets,
+                "num_uses": num_uses,
+            }
+        )
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/role/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/role/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -187,14 +226,14 @@ class Azure(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """List all the roles that are registered with the plugin.
@@ -208,11 +247,11 @@ class Azure(VaultApiBase):
         :return: The "data" key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/role', mount_point=mount_point)
-        response = self._adapter.list(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/role", mount_point=mount_point
         )
-        return response.get('data')
+        response = self._adapter.list(url=api_path)
+        return response.get("data")
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the previously registered role.
@@ -229,7 +268,7 @@ class Azure(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/role/{name}',
+            "/v1/auth/{mount_point}/role/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -237,8 +276,17 @@ class Azure(VaultApiBase):
             url=api_path,
         )
 
-    def login(self, role, jwt, subscription_id=None, resource_group_name=None, vm_name=None, vmss_name=None, use_token=True,
-              mount_point=DEFAULT_MOUNT_POINT):
+    def login(
+        self,
+        role,
+        jwt,
+        subscription_id=None,
+        resource_group_name=None,
+        vm_name=None,
+        vmss_name=None,
+        use_token=True,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Fetch a token.
 
         This endpoint takes a signed JSON Web Token (JWT) and a role name for some entity. It verifies the JWT signature
@@ -273,18 +321,22 @@ class Azure(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'role': role,
-            'jwt': jwt,
+            "role": role,
+            "jwt": jwt,
         }
         params.update(
-            utils.remove_nones({
-                'subscription_id': subscription_id,
-                'resource_group_name': resource_group_name,
-                'vm_name': vm_name,
-                'vmss_name': vmss_name,
-            })
+            utils.remove_nones(
+                {
+                    "subscription_id": subscription_id,
+                    "resource_group_name": resource_group_name,
+                    "vm_name": vm_name,
+                    "vmss_name": vmss_name,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
         return self._adapter.login(
             url=api_path,
             use_token=use_token,

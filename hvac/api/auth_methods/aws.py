@@ -19,8 +19,17 @@ class Aws(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/aws/index.html
     """
 
-    def configure(self, max_retries=None, access_key=None, secret_key=None, endpoint=None, iam_endpoint=None,
-                  sts_endpoint=None, iam_server_id_header_value=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        max_retries=None,
+        access_key=None,
+        secret_key=None,
+        endpoint=None,
+        iam_endpoint=None,
+        sts_endpoint=None,
+        iam_server_id_header_value=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Configure the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS API.
 
         The instance identity document fetched from the PKCS#7 signature will provide the EC2 instance ID.
@@ -65,16 +74,20 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
 
-        params = utils.remove_nones({
-            'max_retries': max_retries,
-            'access_key': access_key,
-            'secret_key': secret_key,
-            'endpoint': endpoint,
-            'iam_endpoint': iam_endpoint,
-            'sts_endpoint': sts_endpoint,
-            'iam_server_id_header_value': iam_server_id_header_value,
-        })
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
+        params = utils.remove_nones(
+            {
+                "max_retries": max_retries,
+                "access_key": access_key,
+                "secret_key": secret_key,
+                "endpoint": endpoint,
+                "iam_endpoint": iam_endpoint,
+                "sts_endpoint": sts_endpoint,
+                "iam_server_id_header_value": iam_server_id_header_value,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/client", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -91,11 +104,13 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/client", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_config(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Delete previously configured AWS access credentials,
@@ -108,13 +123,14 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/client', mount_point=mount_point)
-        return self._adapter.delete(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/client", mount_point=mount_point
         )
+        return self._adapter.delete(url=api_path)
 
-    def configure_identity_integration(self, iam_alias=None, ec2_alias=None,
-                                       mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def configure_identity_integration(
+        self, iam_alias=None, ec2_alias=None, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Configure the way that Vault interacts with the Identity store.
 
         The default (as of Vault 1.0.3) is role_id for both values.
@@ -143,21 +159,27 @@ class Aws(VaultApiBase):
         """
         if iam_alias is not None and iam_alias not in ALLOWED_IAM_ALIAS_TYPES:
             error_msg = 'invalid iam alias type provided: "{arg}"; supported iam alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=iam_alias,
-                environments=','.join(ALLOWED_IAM_ALIAS_TYPES)
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=iam_alias, environments=",".join(ALLOWED_IAM_ALIAS_TYPES)
+                )
+            )
         if ec2_alias is not None and ec2_alias not in ALLOWED_EC2_ALIAS_TYPES:
             error_msg = 'invalid ec2 alias type provided: "{arg}"; supported ec2 alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=ec2_alias,
-                environments=','.join(ALLOWED_EC2_ALIAS_TYPES)
-            ))
-        params = utils.remove_nones({
-            'iam_alias': iam_alias,
-            'ec2_alias': ec2_alias,
-        })
-        api_auth = '/v1/auth/{mount_point}/config/identity'.format(mount_point=mount_point)
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=ec2_alias, environments=",".join(ALLOWED_EC2_ALIAS_TYPES)
+                )
+            )
+        params = utils.remove_nones(
+            {
+                "iam_alias": iam_alias,
+                "ec2_alias": ec2_alias,
+            }
+        )
+        api_auth = "/v1/auth/{mount_point}/config/identity".format(
+            mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_auth,
             json=params,
@@ -174,13 +196,21 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/identity', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/identity", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
-    def create_certificate_configuration(self, cert_name, aws_public_cert, document_type=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def create_certificate_configuration(
+        self,
+        cert_name,
+        aws_public_cert,
+        document_type=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Register AWS public key to be used to verify the instance identity documents.
 
         While the PKCS#7 signature of the identity documents have DSA digest, the identity signature will have RSA
@@ -203,21 +233,27 @@ class Aws(VaultApiBase):
         :rtype: request.Response
         """
         params = {
-            'cert_name': cert_name,
-            'aws_public_cert': aws_public_cert,
+            "cert_name": cert_name,
+            "aws_public_cert": aws_public_cert,
         }
         params.update(
-            utils.remove_nones({
-                'document_type': document_type,
-            })
+            utils.remove_nones(
+                {
+                    "document_type": document_type,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/certificate/{1}", mount_point, cert_name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def read_certificate_configuration(self, cert_name, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def read_certificate_configuration(
+        self, cert_name, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Return previously configured AWS public key.
 
         Supported methods:
@@ -229,13 +265,17 @@ class Aws(VaultApiBase):
         :return: The data key from the JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/certificate/{1}", mount_point, cert_name
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
-    def delete_certificate_configuration(self, cert_name, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def delete_certificate_configuration(
+        self, cert_name, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Remove previously configured AWS public key.
 
         Supported methods:
@@ -248,7 +288,9 @@ class Aws(VaultApiBase):
         :return: The response of the request
         :rtype: request.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/config/certificate/{1}', mount_point, cert_name)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/certificate/{1}", mount_point, cert_name
+        )
         return self._adapter.delete(
             url=api_path,
         )
@@ -264,13 +306,17 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/certificates', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/certificates", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
-    def create_sts_role(self, account_id, sts_role, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def create_sts_role(
+        self, account_id, sts_role, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Allow the explicit association of STS roles to satellite AWS accounts (i.e. those which are not the
             account in which the Vault server is running.)
 
@@ -291,10 +337,12 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/sts/{1}", mount_point, account_id
+        )
         params = {
-            'account_id': account_id,
-            'sts_role': sts_role,
+            "account_id": account_id,
+            "sts_role": sts_role,
         }
         return self._adapter.post(
             url=api_path,
@@ -311,11 +359,13 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/sts/{1}", mount_point, account_id
+        )
         response = self._adapter.get(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def list_sts_roles(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """List AWS Account IDs for which an STS role is registered.
@@ -325,11 +375,11 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/sts', mount_point=mount_point)
-        response = self._adapter.list(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/sts", mount_point=mount_point
         )
-        return response.get('data')
+        response = self._adapter.list(url=api_path)
+        return response.get("data")
 
     def delete_sts_role(self, account_id, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Delete a previously configured AWS account/STS role association.
@@ -340,13 +390,19 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/config/sts/{1}', mount_point, account_id)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/config/sts/{1}", mount_point, account_id
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def configure_identity_whitelist_tidy(self, safety_buffer=None, disable_periodic_tidy=None,
-                                          mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def configure_identity_whitelist_tidy(
+        self,
+        safety_buffer=None,
+        disable_periodic_tidy=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Configure the periodic tidying operation of the whitelisted identity entries.
 
         :param safety_buffer: The amount of extra time that must have passed beyond the roletag expiration, before
@@ -359,11 +415,16 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
-        params = utils.remove_nones({
-            'safety_buffer': safety_buffer,
-            'disable_periodic_tidy': disable_periodic_tidy,
-        })
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/identity-whitelist",
+            mount_point=mount_point,
+        )
+        params = utils.remove_nones(
+            {
+                "safety_buffer": safety_buffer,
+                "disable_periodic_tidy": disable_periodic_tidy,
+            }
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -377,11 +438,12 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
-        response = self._adapter.get(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/identity-whitelist",
+            mount_point=mount_point,
         )
-        return response.get('data')
+        response = self._adapter.get(url=api_path)
+        return response.get("data")
 
     def delete_identity_whitelist_tidy(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Delete previously configured periodic whitelist tidying settings.
@@ -391,13 +453,20 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/identity-whitelist', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/identity-whitelist",
+            mount_point=mount_point,
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def configure_role_tag_blacklist_tidy(self, safety_buffer=None, disable_periodic_tidy=None,
-                                          mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def configure_role_tag_blacklist_tidy(
+        self,
+        safety_buffer=None,
+        disable_periodic_tidy=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Configure the periodic tidying operation of the blacklisted role tag entries.
 
         :param safety_buffer: The amount of extra time that must have passed beyond the roletag expiration, before
@@ -410,11 +479,16 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
-        params = utils.remove_nones({
-            'safety_buffer': safety_buffer,
-            'disable_periodic_tidy': disable_periodic_tidy,
-        })
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/roletag-blacklist",
+            mount_point=mount_point,
+        )
+        params = utils.remove_nones(
+            {
+                "safety_buffer": safety_buffer,
+                "disable_periodic_tidy": disable_periodic_tidy,
+            }
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -428,11 +502,12 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
-        response = self._adapter.get(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/roletag-blacklist",
+            mount_point=mount_point,
         )
-        return response.get('data')
+        response = self._adapter.get(url=api_path)
+        return response.get("data")
 
     def delete_role_tag_blacklist_tidy(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Delete previously configured periodic blacklist tidying settings.
@@ -442,18 +517,37 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config/tidy/roletag-blacklist', mount_point=mount_point)
-        return self._adapter.delete(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config/tidy/roletag-blacklist",
+            mount_point=mount_point,
         )
+        return self._adapter.delete(url=api_path)
 
-    def create_role(self, role, auth_type=None, bound_ami_id=None, bound_account_id=None,
-                    bound_region=None, bound_vpc_id=None, bound_subnet_id=None, bound_iam_role_arn=None,
-                    bound_iam_instance_profile_arn=None, bound_ec2_instance_id=None, role_tag=None,
-                    bound_iam_principal_arn=None, inferred_entity_type=None, inferred_aws_region=None,
-                    resolve_aws_unique_ids=None, ttl=None, max_ttl=None, period=None, policies=None,
-                    allow_instance_migration=None, disallow_reauthentication=None,
-                    mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def create_role(
+        self,
+        role,
+        auth_type=None,
+        bound_ami_id=None,
+        bound_account_id=None,
+        bound_region=None,
+        bound_vpc_id=None,
+        bound_subnet_id=None,
+        bound_iam_role_arn=None,
+        bound_iam_instance_profile_arn=None,
+        bound_ec2_instance_id=None,
+        role_tag=None,
+        bound_iam_principal_arn=None,
+        inferred_entity_type=None,
+        inferred_aws_region=None,
+        resolve_aws_unique_ids=None,
+        ttl=None,
+        max_ttl=None,
+        period=None,
+        policies=None,
+        allow_instance_migration=None,
+        disallow_reauthentication=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Register a role in the method.
 
         :param role:
@@ -482,33 +576,35 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
+        api_path = utils.format_url("/v1/auth/{0}/role/{1}", mount_point, role)
         params = {
-            'role': role,
+            "role": role,
         }
         params.update(
-            utils.remove_nones({
-                'auth_type': auth_type,
-                'resolve_aws_unique_ids': resolve_aws_unique_ids,
-                'bound_ami_id': bound_ami_id,
-                'bound_account_id': bound_account_id,
-                'bound_region': bound_region,
-                'bound_vpc_id': bound_vpc_id,
-                'bound_subnet_id': bound_subnet_id,
-                'bound_iam_role_arn': bound_iam_role_arn,
-                'bound_iam_instance_profile_arn': bound_iam_instance_profile_arn,
-                'bound_ec2_instance_id': bound_ec2_instance_id,
-                'role_tag': role_tag,
-                'bound_iam_principal_arn': bound_iam_principal_arn,
-                'inferred_entity_type': inferred_entity_type,
-                'inferred_aws_region': inferred_aws_region,
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'period': period,
-                'policies': policies,
-                'allow_instance_migration': allow_instance_migration,
-                'disallow_reauthentication': disallow_reauthentication,
-            })
+            utils.remove_nones(
+                {
+                    "auth_type": auth_type,
+                    "resolve_aws_unique_ids": resolve_aws_unique_ids,
+                    "bound_ami_id": bound_ami_id,
+                    "bound_account_id": bound_account_id,
+                    "bound_region": bound_region,
+                    "bound_vpc_id": bound_vpc_id,
+                    "bound_subnet_id": bound_subnet_id,
+                    "bound_iam_role_arn": bound_iam_role_arn,
+                    "bound_iam_instance_profile_arn": bound_iam_instance_profile_arn,
+                    "bound_ec2_instance_id": bound_ec2_instance_id,
+                    "role_tag": role_tag,
+                    "bound_iam_principal_arn": bound_iam_principal_arn,
+                    "inferred_entity_type": inferred_entity_type,
+                    "inferred_aws_region": inferred_aws_region,
+                    "ttl": ttl,
+                    "max_ttl": max_ttl,
+                    "period": period,
+                    "policies": policies,
+                    "allow_instance_migration": allow_instance_migration,
+                    "disallow_reauthentication": disallow_reauthentication,
+                }
+            )
         )
         return self._adapter.post(
             url=api_path,
@@ -524,11 +620,9 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
-        response = self._adapter.get(
-            url=api_path
-        )
-        return response.get('data')
+        api_path = utils.format_url("/v1/auth/{0}/role/{1}", mount_point, role)
+        response = self._adapter.get(url=api_path)
+        return response.get("data")
 
     def list_roles(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the roles that are registered with the method
@@ -538,11 +632,13 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/roles', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/roles", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_role(self, role, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes the previously registered role
@@ -553,13 +649,21 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/role/{1}', mount_point, role)
+        api_path = utils.format_url("/v1/auth/{0}/role/{1}", mount_point, role)
         return self._adapter.delete(
             url=api_path,
         )
 
-    def create_role_tags(self, role, policies=None, max_ttl=None, instance_id=None, allow_instance_migration=None,
-                         disallow_reauthentication=None, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def create_role_tags(
+        self,
+        role,
+        policies=None,
+        max_ttl=None,
+        instance_id=None,
+        allow_instance_migration=None,
+        disallow_reauthentication=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Create a role tag on the role, which helps in restricting the capabilities that are set on the role.
 
         Role tags are not tied to any specific ec2 instance unless specified explicitly using the
@@ -596,23 +700,34 @@ class Aws(VaultApiBase):
         :return: The create role tag response.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{0}/role/{1}/tag', mount_point, role)
+        api_path = utils.format_url("/v1/auth/{0}/role/{1}/tag", mount_point, role)
 
-        params = utils.remove_nones({
-            'disallow_reauthentication': disallow_reauthentication,
-            'policies': policies,
-            'max_ttl': max_ttl,
-            'instance_id': instance_id,
-            'allow_instance_migration': allow_instance_migration,
-        })
+        params = utils.remove_nones(
+            {
+                "disallow_reauthentication": disallow_reauthentication,
+                "policies": policies,
+                "max_ttl": max_ttl,
+                "instance_id": instance_id,
+                "allow_instance_migration": allow_instance_migration,
+            }
+        )
 
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def iam_login(self, access_key, secret_key, session_token=None, header_value=None, role=None, use_token=True,
-                  region='us-east-1', mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def iam_login(
+        self,
+        access_key,
+        secret_key,
+        session_token=None,
+        header_value=None,
+        role=None,
+        use_token=True,
+        region="us-east-1",
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Fetch a token
 
             This endpoint verifies the pkcs7 signature of the instance identity document or the signature of the
@@ -631,7 +746,9 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
 
         request = aws_utils.generate_sigv4_auth_request(header_value=header_value)
         auth = aws_utils.SigV4Auth(access_key, secret_key, session_token, region)
@@ -640,11 +757,11 @@ class Aws(VaultApiBase):
         # https://github.com/hashicorp/vault/blob/master/builtin/credential/aws/cli.go
         headers = json.dumps({k: [request.headers[k]] for k in request.headers})
         params = {
-            'iam_http_request_method': request.method,
-            'iam_request_url': b64encode(request.url.encode('utf-8')).decode('utf-8'),
-            'iam_request_headers': b64encode(headers.encode('utf-8')).decode('utf-8'),
-            'iam_request_body': b64encode(request.body.encode('utf-8')).decode('utf-8'),
-            'role': role,
+            "iam_http_request_method": request.method,
+            "iam_request_url": b64encode(request.url.encode("utf-8")).decode("utf-8"),
+            "iam_request_headers": b64encode(headers.encode("utf-8")).decode("utf-8"),
+            "iam_request_body": b64encode(request.body.encode("utf-8")).decode("utf-8"),
+            "role": role,
         }
 
         return self._adapter.login(
@@ -653,7 +770,14 @@ class Aws(VaultApiBase):
             json=params,
         )
 
-    def ec2_login(self, pkcs7, nonce=None, role=None, use_token=True, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def ec2_login(
+        self,
+        pkcs7,
+        nonce=None,
+        role=None,
+        use_token=True,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+    ):
         """Retrieve a Vault token using an AWS authentication method mount's EC2 role.
 
         :param pkcs7: PKCS7 signature of the identity document with all newline characters removed.
@@ -670,14 +794,14 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/login', mount_point=mount_point)
-        params = {
-            'pkcs7': pkcs7
-        }
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/login", mount_point=mount_point
+        )
+        params = {"pkcs7": pkcs7}
         if nonce:
-            params['nonce'] = nonce
+            params["nonce"] = nonce
         if role:
-            params['role'] = role
+            params["role"] = role
 
         return self._adapter.login(
             url=api_path,
@@ -685,7 +809,9 @@ class Aws(VaultApiBase):
             json=params,
         )
 
-    def place_role_tags_in_blacklist(self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def place_role_tags_in_blacklist(
+        self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Places a valid role tag in a blacklist
 
             This ensures that the role tag cannot be used by any instance to perform a login operation again. Note
@@ -698,10 +824,10 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
-        return self._adapter.post(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{0}/roletag-blacklist/{1}", mount_point, role_tag
         )
+        return self._adapter.post(url=api_path)
 
     def read_role_tag_blacklist(self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Returns the blacklist entry of a previously blacklisted role tag
@@ -712,11 +838,11 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
-        response = self._adapter.get(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{0}/roletag-blacklist/{1}", mount_point, role_tag
         )
-        return response.get('data')
+        response = self._adapter.get(url=api_path)
+        return response.get("data")
 
     def list_blacklist_tags(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the role tags that are blacklisted
@@ -726,11 +852,13 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/roletag-blacklist', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/roletag-blacklist", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
     def delete_blacklist_tags(self, role_tag, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Deletes a blacklisted role tag
@@ -741,12 +869,16 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/roletag-blacklist/{1}', mount_point, role_tag)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/roletag-blacklist/{1}", mount_point, role_tag
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def tidy_blacklist_tags(self, saftey_buffer='72h', mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def tidy_blacklist_tags(
+        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Cleans up the entries in the blacklist based on expiration time on the entry and safety_buffer
 
         :param saftey_buffer:
@@ -755,9 +887,11 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/tidy/roletag-blacklist', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/tidy/roletag-blacklist", mount_point=mount_point
+        )
         params = {
-            'safety_buffer': saftey_buffer,
+            "safety_buffer": saftey_buffer,
         }
         return self._adapter.post(
             url=api_path,
@@ -773,11 +907,11 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/identity-whitelist/{1}', mount_point, instance_id)
-        response = self._adapter.get(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/auth/{0}/identity-whitelist/{1}", mount_point, instance_id
         )
-        return response.get('data')
+        response = self._adapter.get(url=api_path)
+        return response.get("data")
 
     def list_identity_whitelist(self, mount_point=AWS_DEFAULT_MOUNT_POINT):
         """Lists all the instance IDs that are in the whitelist of successful logins
@@ -787,13 +921,17 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/identity-whitelist', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/identity-whitelist", mount_point=mount_point
+        )
         response = self._adapter.list(
             url=api_path,
         )
-        return response.get('data')
+        return response.get("data")
 
-    def delete_identity_whitelist_entries(self, instance_id, mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def delete_identity_whitelist_entries(
+        self, instance_id, mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Deletes a cache of the successful login from an instance
 
         :param instance_id:
@@ -802,12 +940,16 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{0}/identity-whitelist/{1}', mount_point, instance_id)
+        api_path = utils.format_url(
+            "/v1/auth/{0}/identity-whitelist/{1}", mount_point, instance_id
+        )
         return self._adapter.delete(
             url=api_path,
         )
 
-    def tidy_identity_whitelist_entries(self, saftey_buffer='72h', mount_point=AWS_DEFAULT_MOUNT_POINT):
+    def tidy_identity_whitelist_entries(
+        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+    ):
         """Cleans up the entries in the whitelist based on expiration time and safety_buffer
 
         :param saftey_buffer:
@@ -816,11 +958,10 @@ class Aws(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/tidy/identity-whitelist', mount_point=mount_point)
-        params = {
-            'safety_buffer': saftey_buffer,
-        }
-        return self._adapter.post(
-            url=api_path,
-            json=params
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/tidy/identity-whitelist", mount_point=mount_point
         )
+        params = {
+            "safety_buffer": saftey_buffer,
+        }
+        return self._adapter.post(url=api_path, json=params)

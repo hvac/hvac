@@ -7,12 +7,12 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestKvV1(HvacIntegrationTestCase, TestCase):
-    DEFAULT_MOUNT_POINT = 'kvv1'
+    DEFAULT_MOUNT_POINT = "kvv1"
 
     def setUp(self):
         super(TestKvV1, self).setUp()
         self.client.enable_secret_backend(
-            backend_type='kv',
+            backend_type="kv",
             mount_point=self.DEFAULT_MOUNT_POINT,
             options=dict(version=1),
         )
@@ -21,13 +21,22 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
         self.client.disable_secret_backend(mount_point=self.DEFAULT_MOUNT_POINT)
         super(TestKvV1, self).tearDown()
 
-    @parameterized.expand([
-        ('nonexistent secret', 'no-secret-here', False, exceptions.InvalidPath),
-        ('read secret', 'top-secret'),
-    ])
-    def test_read_secret(self, test_label, path, write_secret_before_test=True, raises=None, exception_message=''):
+    @parameterized.expand(
+        [
+            ("nonexistent secret", "no-secret-here", False, exceptions.InvalidPath),
+            ("read secret", "top-secret"),
+        ]
+    )
+    def test_read_secret(
+        self,
+        test_label,
+        path,
+        write_secret_before_test=True,
+        raises=None,
+        exception_message="",
+    ):
         test_secret = {
-            'pssst': 'hi',
+            "pssst": "hi",
         }
         if write_secret_before_test:
             self.client.secrets.kv.v1.create_or_update_secret(
@@ -52,18 +61,32 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             )
             self.assertDictEqual(
                 d1=test_secret,
-                d2=read_secret_result['data'],
+                d2=read_secret_result["data"],
             )
 
-    @parameterized.expand([
-        ('nonexistent secret', 'hvac/no-secret-here', False, exceptions.InvalidPath),
-        ('list secret', 'hvac/top-secret'),
-    ])
-    def test_list_secrets(self, test_label, path, write_secret_before_test=True, raises=None, exception_message=''):
+    @parameterized.expand(
+        [
+            (
+                "nonexistent secret",
+                "hvac/no-secret-here",
+                False,
+                exceptions.InvalidPath,
+            ),
+            ("list secret", "hvac/top-secret"),
+        ]
+    )
+    def test_list_secrets(
+        self,
+        test_label,
+        path,
+        write_secret_before_test=True,
+        raises=None,
+        exception_message="",
+    ):
         test_secret = {
-            'pssst': 'hi',
+            "pssst": "hi",
         }
-        test_path_prefix, test_key = path.split('/')[:2]
+        test_path_prefix, test_key = path.split("/")[:2]
 
         if write_secret_before_test:
             self.client.secrets.kv.v1.create_or_update_secret(
@@ -88,20 +111,44 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
             )
             self.assertEqual(
                 first=dict(keys=[test_key]),
-                second=list_secrets_result['data'],
+                second=list_secrets_result["data"],
             )
 
-    @parameterized.expand([
-        ('create secret no method specified', 'hvac', None, False),
-        ('create secret post method specified', 'hvac', 'POST', False),
-        ('create secret invalid method specified', 'hvac', 'GET', False, exceptions.ParamValidationError, '"method" parameter provided invalid value'),
-        ('update secret no method specified', 'hvac', None),
-        ('update secret put method specified', 'hvac', 'PUT'),
-        ('update secret invalid method specified', 'hvac', 'GET', True, exceptions.ParamValidationError, '"method" parameter provided invalid value'),
-    ])
-    def test_create_or_update_secret(self, test_label, path, method=None, write_secret_before_test=True, raises=None, exception_message=''):
+    @parameterized.expand(
+        [
+            ("create secret no method specified", "hvac", None, False),
+            ("create secret post method specified", "hvac", "POST", False),
+            (
+                "create secret invalid method specified",
+                "hvac",
+                "GET",
+                False,
+                exceptions.ParamValidationError,
+                '"method" parameter provided invalid value',
+            ),
+            ("update secret no method specified", "hvac", None),
+            ("update secret put method specified", "hvac", "PUT"),
+            (
+                "update secret invalid method specified",
+                "hvac",
+                "GET",
+                True,
+                exceptions.ParamValidationError,
+                '"method" parameter provided invalid value',
+            ),
+        ]
+    )
+    def test_create_or_update_secret(
+        self,
+        test_label,
+        path,
+        method=None,
+        write_secret_before_test=True,
+        raises=None,
+        exception_message="",
+    ):
         test_secret = {
-            'pssst': 'hi',
+            "pssst": "hi",
         }
 
         if write_secret_before_test:
@@ -123,24 +170,35 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            create_or_update_secret_result = self.client.secrets.kv.v1.create_or_update_secret(
-                path=path,
-                secret=test_secret,
-                method=method,
-                mount_point=self.DEFAULT_MOUNT_POINT,
+            create_or_update_secret_result = (
+                self.client.secrets.kv.v1.create_or_update_secret(
+                    path=path,
+                    secret=test_secret,
+                    method=method,
+                    mount_point=self.DEFAULT_MOUNT_POINT,
+                )
             )
             self.assertEqual(
                 first=204,
                 second=create_or_update_secret_result.status_code,
             )
 
-    @parameterized.expand([
-        ('nonexistent secret', 'hvac/no-secret-here'),
-        ('delete secret', 'hvac/top-secret'),
-    ])
-    def test_delete_secret(self, test_label, path, write_secret_before_test=True, raises=None, exception_message=''):
+    @parameterized.expand(
+        [
+            ("nonexistent secret", "hvac/no-secret-here"),
+            ("delete secret", "hvac/top-secret"),
+        ]
+    )
+    def test_delete_secret(
+        self,
+        test_label,
+        path,
+        write_secret_before_test=True,
+        raises=None,
+        exception_message="",
+    ):
         test_secret = {
-            'pssst': 'hi',
+            "pssst": "hi",
         }
 
         if write_secret_before_test:

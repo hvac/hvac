@@ -3,7 +3,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Namespace(SystemBackendMixin):
-
     def create_namespace(self, path):
         """Create a namespace at the given path.
 
@@ -13,7 +12,7 @@ class Namespace(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
+        api_path = utils.format_url("/v1/sys/namespaces/{path}", path=path)
         return self._adapter.post(
             url=api_path,
         )
@@ -27,7 +26,7 @@ class Namespace(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/namespaces/'
+        api_path = "/v1/sys/namespaces/"
         return self._adapter.list(
             url=api_path,
         )
@@ -41,7 +40,7 @@ class Namespace(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/sys/namespaces/{path}', path=path)
+        api_path = utils.format_url("/v1/sys/namespaces/{path}", path=path)
         return self._adapter.delete(
             url=api_path,
         )

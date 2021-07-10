@@ -4,19 +4,17 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestAuth(HvacIntegrationTestCase, TestCase):
-    TEST_AUTH_METHOD_TYPE = 'github'
-    TEST_AUTH_METHOD_PATH = 'test-github'
+    TEST_AUTH_METHOD_TYPE = "github"
+    TEST_AUTH_METHOD_PATH = "test-github"
 
     def tearDown(self):
-        self.client.sys.disable_auth_method(
-            path=self.TEST_AUTH_METHOD_PATH
-        )
+        self.client.sys.disable_auth_method(path=self.TEST_AUTH_METHOD_PATH)
         super(TestAuth, self).tearDown()
 
     def test_auth_backend_manipulation(self):
         self.assertNotIn(
-            member='%s/' % self.TEST_AUTH_METHOD_PATH,
-            container=self.client.sys.list_auth_methods()['data'],
+            member="%s/" % self.TEST_AUTH_METHOD_PATH,
+            container=self.client.sys.list_auth_methods()["data"],
         )
 
         self.client.sys.enable_auth_method(
@@ -24,24 +22,23 @@ class TestAuth(HvacIntegrationTestCase, TestCase):
             path=self.TEST_AUTH_METHOD_PATH,
         )
         self.assertIn(
-            member='%s/' % self.TEST_AUTH_METHOD_PATH,
-            container=self.client.sys.list_auth_methods()['data'],
+            member="%s/" % self.TEST_AUTH_METHOD_PATH,
+            container=self.client.sys.list_auth_methods()["data"],
         )
 
         self.client.sys.disable_auth_method(
             path=self.TEST_AUTH_METHOD_PATH,
         )
         self.assertNotIn(
-            member='%s/' % self.TEST_AUTH_METHOD_PATH,
-            container=self.client.sys.list_auth_methods()['data'],
+            member="%s/" % self.TEST_AUTH_METHOD_PATH,
+            container=self.client.sys.list_auth_methods()["data"],
         )
 
     def test_tune_auth_backend(self):
-        test_description = 'this is a test auth backend'
+        test_description = "this is a test auth backend"
         test_max_lease_ttl = 12345678
         self.client.sys.enable_auth_method(
-            method_type='approle',
-            path=self.TEST_AUTH_METHOD_PATH
+            method_type="approle", path=self.TEST_AUTH_METHOD_PATH
         )
 
         expected_status_code = 204
@@ -60,6 +57,5 @@ class TestAuth(HvacIntegrationTestCase, TestCase):
         )
 
         self.assertEqual(
-            first=test_max_lease_ttl,
-            second=response['data']['max_lease_ttl']
+            first=test_max_lease_ttl, second=response["data"]["max_lease_ttl"]
         )

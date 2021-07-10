@@ -16,7 +16,14 @@ class Raft(SystemBackendMixin):
     Reference: https://www.vaultproject.io/api-docs/system/storage/raft
     """
 
-    def join_raft_cluster(self, leader_api_addr, retry=False, leader_ca_cert=None, leader_client_cert=None, leader_client_key=None):
+    def join_raft_cluster(
+        self,
+        leader_api_addr,
+        retry=False,
+        leader_ca_cert=None,
+        leader_client_cert=None,
+        leader_client_key=None,
+    ):
         """Join a new server node to the Raft cluster.
 
         When using Shamir seal, as soon as the Vault server is brought up, this API should be invoked
@@ -41,14 +48,16 @@ class Raft(SystemBackendMixin):
         :return: The response of the join_raft_cluster request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'leader_api_addr': leader_api_addr,
-            'retry': retry,
-            'leader_ca_cert': leader_ca_cert,
-            'leader_client_cert': leader_client_cert,
-            'leader_client_key': leader_client_key,
-        })
-        api_path = '/v1/sys/storage/raft/join'
+        params = utils.remove_nones(
+            {
+                "leader_api_addr": leader_api_addr,
+                "retry": retry,
+                "leader_ca_cert": leader_ca_cert,
+                "leader_client_cert": leader_client_cert,
+                "leader_client_key": leader_client_key,
+            }
+        )
+        api_path = "/v1/sys/storage/raft/join"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -63,7 +72,7 @@ class Raft(SystemBackendMixin):
         :return: The response of the read_raft_config request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/storage/raft/configuration'
+        api_path = "/v1/sys/storage/raft/configuration"
         return self._adapter.get(
             url=api_path,
         )
@@ -80,9 +89,9 @@ class Raft(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = {
-            'server_id': server_id,
+            "server_id": server_id,
         }
-        api_path = '/v1/sys/storage/raft/remove-peer'
+        api_path = "/v1/sys/storage/raft/remove-peer"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -99,7 +108,7 @@ class Raft(SystemBackendMixin):
         :return: The response of the s request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/storage/raft/snapshot'
+        api_path = "/v1/sys/storage/raft/snapshot"
         return self._adapter.get(
             url=api_path,
             stream=True,
@@ -116,7 +125,7 @@ class Raft(SystemBackendMixin):
         :return: The response of the restore_raft_snapshot request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/storage/raft/snapshot'
+        api_path = "/v1/sys/storage/raft/snapshot"
         return self._adapter.post(
             url=api_path,
             data=snapshot,
@@ -136,7 +145,7 @@ class Raft(SystemBackendMixin):
         :return: The response of the force_restore_raft_snapshot request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/storage/raft/snapshot-force'
+        api_path = "/v1/sys/storage/raft/snapshot-force"
         return self._adapter.post(
             url=api_path,
             data=snapshot,

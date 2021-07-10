@@ -7,7 +7,6 @@ from hvac import exceptions, utils
 
 
 class Auth(SystemBackendMixin):
-
     def list_auth_methods(self):
         """List all enabled auth methods.
 
@@ -17,12 +16,21 @@ class Auth(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/auth'
+        api_path = "/v1/sys/auth"
         return self._adapter.get(
             url=api_path,
         )
 
-    def enable_auth_method(self, method_type, description=None, config=None, plugin_name=None, local=False, path=None, **kwargs):
+    def enable_auth_method(
+        self,
+        method_type,
+        description=None,
+        config=None,
+        plugin_name=None,
+        local=False,
+        path=None,
+        **kwargs
+    ):
         """Enable a new auth method.
 
         After enabling, the auth method can be accessed and configured via the auth path specified as part of the URL.
@@ -66,22 +74,21 @@ class Auth(SystemBackendMixin):
             path = method_type
 
         params = {
-            'type': method_type,
+            "type": method_type,
         }
         params.update(
-            utils.remove_nones({
-                'description': description,
-                'config': config,
-                'plugin_name': plugin_name,
-                'local': local,
-            })
+            utils.remove_nones(
+                {
+                    "description": description,
+                    "config": config,
+                    "plugin_name": plugin_name,
+                    "local": local,
+                }
+            )
         )
         params.update(kwargs)
-        api_path = utils.format_url('/v1/sys/auth/{path}', path=path)
-        return self._adapter.post(
-            url=api_path,
-            json=params
-        )
+        api_path = utils.format_url("/v1/sys/auth/{path}", path=path)
+        return self._adapter.post(url=api_path, json=params)
 
     def disable_auth_method(self, path):
         """Disable the auth method at the given auth path.
@@ -95,7 +102,7 @@ class Auth(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/sys/auth/{path}', path=path)
+        api_path = utils.format_url("/v1/sys/auth/{path}", path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -116,16 +123,25 @@ class Auth(SystemBackendMixin):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/sys/auth/{path}/tune',
+            "/v1/sys/auth/{path}/tune",
             path=path,
         )
         return self._adapter.get(
             url=api_path,
         )
 
-    def tune_auth_method(self, path, default_lease_ttl=None, max_lease_ttl=None, description=None,
-                         audit_non_hmac_request_keys=None, audit_non_hmac_response_keys=None, listing_visibility=None,
-                         passthrough_request_headers=None, **kwargs):
+    def tune_auth_method(
+        self,
+        path,
+        default_lease_ttl=None,
+        max_lease_ttl=None,
+        description=None,
+        audit_non_hmac_request_keys=None,
+        audit_non_hmac_response_keys=None,
+        listing_visibility=None,
+        passthrough_request_headers=None,
+        **kwargs
+    ):
         """Tune configuration parameters for a given auth path.
 
         This endpoint requires sudo capability on the final path, but the same functionality can be achieved without
@@ -163,7 +179,7 @@ class Auth(SystemBackendMixin):
         :rtype: requests.Response
         """
 
-        if listing_visibility is not None and listing_visibility not in ['unauth', '']:
+        if listing_visibility is not None and listing_visibility not in ["unauth", ""]:
             error_msg = 'invalid listing_visibility argument provided: "{arg}"; valid values: "unauth" or ""'.format(
                 arg=listing_visibility,
             )
@@ -172,25 +188,25 @@ class Auth(SystemBackendMixin):
         # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the
         # parameters and add which parameters are set.
         optional_parameters = {
-            'default_lease_ttl': {},
-            'max_lease_ttl': {},
-            'description': {},
-            'audit_non_hmac_request_keys': dict(comma_delimited_list=True),
-            'audit_non_hmac_response_keys': dict(comma_delimited_list=True),
-            'listing_visibility': {},
-            'passthrough_request_headers': dict(comma_delimited_list=True),
+            "default_lease_ttl": {},
+            "max_lease_ttl": {},
+            "description": {},
+            "audit_non_hmac_request_keys": dict(comma_delimited_list=True),
+            "audit_non_hmac_response_keys": dict(comma_delimited_list=True),
+            "listing_visibility": {},
+            "passthrough_request_headers": dict(comma_delimited_list=True),
         }
         params = {}
         for optional_parameter, parameter_specification in optional_parameters.items():
             if locals().get(optional_parameter) is not None:
-                if parameter_specification.get('comma_delimited_list'):
+                if parameter_specification.get("comma_delimited_list"):
                     argument = locals().get(optional_parameter)
                     validate_list_of_strings_param(optional_parameter, argument)
                     params[optional_parameter] = list_to_comma_delimited(argument)
                 else:
                     params[optional_parameter] = locals().get(optional_parameter)
         params.update(kwargs)
-        api_path = utils.format_url('/v1/sys/auth/{path}/tune', path=path)
+        api_path = utils.format_url("/v1/sys/auth/{path}/tune", path=path)
         return self._adapter.post(
             url=api_path,
             json=params,

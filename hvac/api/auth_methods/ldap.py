@@ -4,7 +4,7 @@
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'ldap'
+DEFAULT_MOUNT_POINT = "ldap"
 
 
 class Ldap(VaultApiBase):
@@ -13,11 +13,30 @@ class Ldap(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/ldap/index.html
     """
 
-    def configure(self, user_dn=None, group_dn=None, url=None, case_sensitive_names=None, starttls=None,
-                  tls_min_version=None, tls_max_version=None, insecure_tls=None, certificate=None, bind_dn=None,
-                  bind_pass=None, user_attr=None, discover_dn=None, deny_null_bind=True, upn_domain=None,
-                  group_filter=None, group_attr=None, use_token_groups=None, token_ttl=None, token_max_ttl=None,
-                  mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        user_dn=None,
+        group_dn=None,
+        url=None,
+        case_sensitive_names=None,
+        starttls=None,
+        tls_min_version=None,
+        tls_max_version=None,
+        insecure_tls=None,
+        certificate=None,
+        bind_dn=None,
+        bind_pass=None,
+        user_attr=None,
+        discover_dn=None,
+        deny_null_bind=True,
+        upn_domain=None,
+        group_filter=None,
+        group_attr=None,
+        use_token_groups=None,
+        token_ttl=None,
+        token_max_ttl=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """
         Configure the LDAP auth method.
 
@@ -85,31 +104,35 @@ class Ldap(VaultApiBase):
         :return: The response of the configure request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'url': url,
-            'userdn': user_dn,
-            'groupdn': group_dn,
-            'case_sensitive_names': case_sensitive_names,
-            'starttls': starttls,
-            'tls_min_version': tls_min_version,
-            'tls_max_version': tls_max_version,
-            'insecure_tls': insecure_tls,
-            'certificate': certificate,
-            'userattr': user_attr,
-            'discoverdn': discover_dn,
-            'deny_null_bind': deny_null_bind,
-            'groupfilter': group_filter,
-            'groupattr': group_attr,
-            'upndomain': upn_domain,
-            'binddn': bind_dn,
-            'bindpass': bind_pass,
-            'certificate': certificate,
-            'use_token_groups': use_token_groups,
-            'token_ttl': token_ttl,
-            'token_max_ttl': token_max_ttl
-        })
+        params = utils.remove_nones(
+            {
+                "url": url,
+                "userdn": user_dn,
+                "groupdn": group_dn,
+                "case_sensitive_names": case_sensitive_names,
+                "starttls": starttls,
+                "tls_min_version": tls_min_version,
+                "tls_max_version": tls_max_version,
+                "insecure_tls": insecure_tls,
+                "certificate": certificate,
+                "userattr": user_attr,
+                "discoverdn": discover_dn,
+                "deny_null_bind": deny_null_bind,
+                "groupfilter": group_filter,
+                "groupattr": group_attr,
+                "upndomain": upn_domain,
+                "binddn": bind_dn,
+                "bindpass": bind_pass,
+                "certificate": certificate,
+                "use_token_groups": use_token_groups,
+                "token_ttl": token_ttl,
+                "token_max_ttl": token_max_ttl,
+            }
+        )
 
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -127,12 +150,16 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the read_configuration request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
 
-    def create_or_update_group(self, name, policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_group(
+        self, name, policies=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Create or update LDAP group policies.
 
@@ -158,9 +185,9 @@ class Ldap(VaultApiBase):
 
         params = {}
         if policies is not None:
-            params['policies'] = ','.join(policies)
+            params["policies"] = ",".join(policies)
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -182,7 +209,9 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the list_groups request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/groups', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/groups", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -203,10 +232,10 @@ class Ldap(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'name': name,
+            "name": name,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -231,7 +260,7 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -239,7 +268,9 @@ class Ldap(VaultApiBase):
             url=api_path,
         )
 
-    def create_or_update_user(self, username, policies=None, groups=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_user(
+        self, username, policies=None, groups=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Create or update LDAP users policies and group associations.
 
@@ -261,8 +292,8 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         list_required_params = {
-            'policies': policies,
-            'groups': groups,
+            "policies": policies,
+            "groups": groups,
         }
         for param_name, param_arg in list_required_params.items():
             if param_arg is not None and not isinstance(param_arg, list):
@@ -274,11 +305,11 @@ class Ldap(VaultApiBase):
 
         params = {}
         if policies is not None:
-            params['policies'] = ','.join(policies)
+            params["policies"] = ",".join(policies)
         if groups is not None:
-            params['groups'] = ','.join(groups)
+            params["groups"] = ",".join(groups)
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -300,7 +331,9 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the list_users request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/users", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -321,7 +354,7 @@ class Ldap(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -345,7 +378,7 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -353,7 +386,9 @@ class Ldap(VaultApiBase):
             url=api_path,
         )
 
-    def login(self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT):
+    def login(
+        self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """
         Log in with LDAP credentials.
 
@@ -374,10 +409,10 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'password': password,
+            "password": password,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/login/{username}',
+            "/v1/auth/{mount_point}/login/{username}",
             mount_point=mount_point,
             username=username,
         )

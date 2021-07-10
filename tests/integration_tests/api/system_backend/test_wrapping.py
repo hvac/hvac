@@ -5,8 +5,8 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestWrapping(HvacIntegrationTestCase, TestCase):
-    TEST_AUTH_METHOD_TYPE = 'approle'
-    TEST_AUTH_METHOD_PATH = 'test-approle'
+    TEST_AUTH_METHOD_TYPE = "approle"
+    TEST_AUTH_METHOD_PATH = "test-approle"
 
     def setUp(self):
         super(TestWrapping, self).setUp()
@@ -20,20 +20,14 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
             path="auth/{path}/role/testrole".format(path=self.TEST_AUTH_METHOD_PATH),
         )
         result = self.client.write(
-            path='auth/{path}/role/testrole/secret-id'.format(
+            path="auth/{path}/role/testrole/secret-id".format(
                 path=self.TEST_AUTH_METHOD_PATH
             ),
             wrap_ttl="10s",
         )
-        self.assertIn('token', result['wrap_info'])
+        self.assertIn("token", result["wrap_info"])
 
-        unwrap_response = self.client.sys.unwrap(result['wrap_info']['token'])
-        logging.debug('unwrap_response: %s' % unwrap_response)
-        self.assertIn(
-            member='secret_id_accessor',
-            container=unwrap_response['data']
-        )
-        self.assertIn(
-            member='secret_id',
-            container=unwrap_response['data']
-        )
+        unwrap_response = self.client.sys.unwrap(result["wrap_info"]["token"])
+        logging.debug("unwrap_response: %s" % unwrap_response)
+        self.assertIn(member="secret_id_accessor", container=unwrap_response["data"])
+        self.assertIn(member="secret_id", container=unwrap_response["data"])

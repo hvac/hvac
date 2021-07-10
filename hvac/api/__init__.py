@@ -6,9 +6,9 @@ from hvac.api.vault_api_base import VaultApiBase
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
-    'AuthMethods',
-    'SecretsEngines',
-    'SystemBackend',
-    'VaultApiBase',
-    'VaultApiCategory',
+    "AuthMethods",
+    "SecretsEngines",
+    "SystemBackend",
+    "VaultApiBase",
+    "VaultApiCategory",
 )

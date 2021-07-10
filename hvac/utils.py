@@ -42,11 +42,17 @@ def raise_for_error(method, url, status_code, message=None, errors=None):
     elif status_code == 404:
         raise exceptions.InvalidPath(message, errors=errors, method=method, url=url)
     elif status_code == 429:
-        raise exceptions.RateLimitExceeded(message, errors=errors, method=method, url=url)
+        raise exceptions.RateLimitExceeded(
+            message, errors=errors, method=method, url=url
+        )
     elif status_code == 500:
-        raise exceptions.InternalServerError(message, errors=errors, method=method, url=url)
+        raise exceptions.InternalServerError(
+            message, errors=errors, method=method, url=url
+        )
     elif status_code == 501:
-        raise exceptions.VaultNotInitialized(message, errors=errors, method=method, url=url)
+        raise exceptions.VaultNotInitialized(
+            message, errors=errors, method=method, url=url
+        )
     elif status_code == 502:
         raise exceptions.BadGateway(message, errors=errors, method=method, url=url)
     elif status_code == 503:
@@ -55,7 +61,9 @@ def raise_for_error(method, url, status_code, message=None, errors=None):
         raise exceptions.UnexpectedError(message or errors, method=method, url=url)
 
 
-def generate_method_deprecation_message(to_be_removed_in_version, old_method_name, method_name=None, module_name=None):
+def generate_method_deprecation_message(
+    to_be_removed_in_version, old_method_name, method_name=None, module_name=None
+):
     """Generate a message to be used when warning about the use of deprecated methods.
 
     :param to_be_removed_in_version: Version of this module the deprecated method will be removed in.
@@ -82,8 +90,9 @@ def generate_method_deprecation_message(to_be_removed_in_version, old_method_nam
     return message
 
 
-def generate_property_deprecation_message(to_be_removed_in_version, old_name, new_name, new_attribute,
-                                          module_name='Client'):
+def generate_property_deprecation_message(
+    to_be_removed_in_version, old_name, new_name, new_attribute, module_name="Client"
+):
     """Generate a message to be used when warning about the use of deprecated properties.
 
     :param to_be_removed_in_version: Version of this module the deprecated property will be removed in.
@@ -126,25 +135,31 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
     """
     if item in deprecated_properties:
         deprecation_message = generate_property_deprecation_message(
-            to_be_removed_in_version=deprecated_properties[item]['to_be_removed_in_version'],
+            to_be_removed_in_version=deprecated_properties[item][
+                "to_be_removed_in_version"
+            ],
             old_name=item,
-            new_name=deprecated_properties[item].get('new_property', item),
-            new_attribute=deprecated_properties[item]['client_property'],
+            new_name=deprecated_properties[item].get("new_property", item),
+            new_attribute=deprecated_properties[item]["client_property"],
         )
-        warnings.simplefilter('always', DeprecationWarning)
+        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             message=deprecation_message,
             category=DeprecationWarning,
             stacklevel=2,
         )
-        warnings.simplefilter('default', DeprecationWarning)
-        client_property = getattr(obj, deprecated_properties[item]['client_property'])
-        return getattr(client_property, deprecated_properties[item].get('new_property', item))
+        warnings.simplefilter("default", DeprecationWarning)
+        client_property = getattr(obj, deprecated_properties[item]["client_property"])
+        return getattr(
+            client_property, deprecated_properties[item].get("new_property", item)
+        )
 
-    raise AttributeError("'{class_name}' has no attribute '{item}'".format(
-        class_name=obj.__class__.__name__,
-        item=item,
-    ))
+    raise AttributeError(
+        "'{class_name}' has no attribute '{item}'".format(
+            class_name=obj.__class__.__name__,
+            item=item,
+        )
+    )
 
 
 def deprecated_method(to_be_removed_in_version, new_method=None):
@@ -159,6 +174,7 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
     :return: Wrapped function that includes a deprecation warning and update docstrings from the replacement method.
     :rtype: types.FunctionType
     """
+
     def decorator(method):
         deprecation_message = generate_method_deprecation_message(
             to_be_removed_in_version=to_be_removed_in_version,
@@ -169,33 +185,36 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
 
         @functools.wraps(method)
         def new_func(*args, **kwargs):
-            warnings.simplefilter('always', DeprecationWarning)  # turn off filter
+            warnings.simplefilter("always", DeprecationWarning)  # turn off filter
             warnings.warn(
                 message=deprecation_message,
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-            warnings.simplefilter('default', DeprecationWarning)  # reset filter
+            warnings.simplefilter("default", DeprecationWarning)  # reset filter
             return method(*args, **kwargs)
 
         if new_method:
             # Here we copy the docstring from the specified replacement method (i.e., the method to be used in place of
             # the one we're marking as deprecated) where available to set within the deprecated method's docstring.
             # If the "new" method has no docstring, we use a value of "N/A".
-            docstring_copy = new_method.__doc__ if new_method.__doc__ is not None else "N/A"
+            docstring_copy = (
+                new_method.__doc__ if new_method.__doc__ is not None else "N/A"
+            )
             if new_method.__doc__ is not None:
                 new_func.__doc__ = """\
                     {message}
                     Docstring content from this method's replacement copied below:
                     {docstring_copy}
                     """.format(
-                        message=deprecation_message,
-                        docstring_copy=dedent(docstring_copy),
-                    )
+                    message=deprecation_message,
+                    docstring_copy=dedent(docstring_copy),
+                )
 
         else:
             new_func.__doc__ = deprecation_message
         return new_func
+
     return decorator
 
 
@@ -212,14 +231,18 @@ def validate_list_of_strings_param(param_name, param_argument):
     if param_argument is None:
         param_argument = []
     if isinstance(param_argument, str):
-        param_argument = param_argument.split(',')
-    if not isinstance(param_argument, list) or not all(isinstance(p, str) for p in param_argument):
+        param_argument = param_argument.split(",")
+    if not isinstance(param_argument, list) or not all(
+        isinstance(p, str) for p in param_argument
+    ):
         error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]'
-        raise exceptions.ParamValidationError(error_msg.format(
-            param=param_name,
-            arg=param_argument,
-            arg_type=type(param_argument),
-        ))
+        raise exceptions.ParamValidationError(
+            error_msg.format(
+                param=param_name,
+                arg=param_argument,
+                arg_type=type(param_argument),
+            )
+        )
 
 
 def list_to_comma_delimited(list_param):
@@ -232,7 +255,7 @@ def list_to_comma_delimited(list_param):
     """
     if list_param is None:
         list_param = []
-    return ','.join(list_param)
+    return ",".join(list_param)
 
 
 def get_token_from_env():
@@ -241,11 +264,11 @@ def get_token_from_env():
     :return: The vault token if set, else None
     :rtype: str | None
     """
-    token = os.getenv('VAULT_TOKEN')
+    token = os.getenv("VAULT_TOKEN")
     if not token:
-        token_file_path = os.path.expanduser('~/.vault-token')
+        token_file_path = os.path.expanduser("~/.vault-token")
         if os.path.exists(token_file_path):
-            with open(token_file_path, 'r') as f_in:
+            with open(token_file_path, "r") as f_in:
                 token = f_in.read().strip()
 
     if not token:
@@ -265,7 +288,7 @@ def comma_delimited_to_list(list_param):
     if isinstance(list_param, list):
         return list_param
     if isinstance(list_param, str):
-        return list_param.split(',')
+        return list_param.split(",")
     else:
         return []
 
@@ -283,16 +306,21 @@ def validate_pem_format(param_name, param_argument):
 
     def _check_pem(arg):
         arg = arg.strip()
-        if not arg.startswith('-----BEGIN CERTIFICATE-----') \
-                or not arg.endswith('-----END CERTIFICATE-----'):
+        if not arg.startswith("-----BEGIN CERTIFICATE-----") or not arg.endswith(
+            "-----END CERTIFICATE-----"
+        ):
             return False
         return True
 
     if isinstance(param_argument, str):
         param_argument = [param_argument]
 
-    if not isinstance(param_argument, list) or not all(_check_pem(p) for p in param_argument):
-        error_msg = 'unsupported {param} public key / certificate format, required type: PEM'
+    if not isinstance(param_argument, list) or not all(
+        _check_pem(p) for p in param_argument
+    ):
+        error_msg = (
+            "unsupported {param} public key / certificate format, required type: PEM"
+        )
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
 
 
@@ -305,11 +333,7 @@ def remove_nones(params):
     :rtype: dict
     """
 
-    return {
-        key: value
-        for key, value in params.items()
-        if value is not None
-    }
+    return {key: value for key, value in params.items() if value is not None}
 
 
 def format_url(format_str, *args, **kwargs):
@@ -336,7 +360,4 @@ def format_url(format_str, *args, **kwargs):
     escaped_args = [url_quote(value) for value in args]
     escaped_kwargs = {key: url_quote(value) for key, value in kwargs.items()}
 
-    return format_str.format(
-        *escaped_args,
-        **escaped_kwargs
-    )
+    return format_str.format(*escaped_args, **escaped_kwargs)

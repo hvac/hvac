@@ -6,9 +6,13 @@ import logging
 
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.constants.gcp import ALLOWED_SECRETS_TYPES, SERVICE_ACCOUNT_KEY_ALGORITHMS, SERVICE_ACCOUNT_KEY_TYPES
+from hvac.constants.gcp import (
+    ALLOWED_SECRETS_TYPES,
+    SERVICE_ACCOUNT_KEY_ALGORITHMS,
+    SERVICE_ACCOUNT_KEY_TYPES,
+)
 
-DEFAULT_MOUNT_POINT = 'gcp'
+DEFAULT_MOUNT_POINT = "gcp"
 
 
 class Gcp(VaultApiBase):
@@ -17,7 +21,9 @@ class Gcp(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/gcp/index.html
     """
 
-    def configure(self, credentials=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self, credentials=None, ttl=None, max_ttl=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Configure shared information for the Gcp secrets engine.
 
         Supported methods:
@@ -37,12 +43,14 @@ class Gcp(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'credentials': credentials,
-            'ttl': ttl,
-            'max_ttl': max_ttl,
-        })
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+        params = utils.remove_nones(
+            {
+                "credentials": credentials,
+                "ttl": ttl,
+                "max_ttl": max_ttl,
+            }
+        )
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -61,13 +69,20 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.get(
             url=api_path,
         )
 
-    def create_or_update_roleset(self, name, project, bindings, secret_type=None, token_scopes=None,
-                                 mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_roleset(
+        self,
+        name,
+        project,
+        bindings,
+        secret_type=None,
+        token_scopes=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Create a roleset or update an existing roleset.
 
         See roleset docs for the GCP secrets backend to learn more about what happens when you create or update a
@@ -94,28 +109,32 @@ class Gcp(VaultApiBase):
         """
         if secret_type is not None and secret_type not in ALLOWED_SECRETS_TYPES:
             error_msg = 'unsupported secret_type argument provided "{arg}", supported types: "{secret_type}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                arg=secret_type,
-                secret_type=','.join(ALLOWED_SECRETS_TYPES),
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=secret_type,
+                    secret_type=",".join(ALLOWED_SECRETS_TYPES),
+                )
+            )
 
         if isinstance(bindings, dict):
-            bindings = json.dumps(bindings).replace(' ', '')
-            logging.debug('bindings: %s' % bindings)
+            bindings = json.dumps(bindings).replace(" ", "")
+            logging.debug("bindings: %s" % bindings)
 
         params = {
-            'project': project,
-            'bindings': bindings,
+            "project": project,
+            "bindings": bindings,
         }
         params.update(
-            utils.remove_nones({
-                'secret_type': secret_type,
-                'token_scopes': token_scopes,
-            })
+            utils.remove_nones(
+                {
+                    "secret_type": secret_type,
+                    "token_scopes": token_scopes,
+                }
+            )
         )
 
         api_path = utils.format_url(
-            '/v1/{mount_point}/roleset/{name}',
+            "/v1/{mount_point}/roleset/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -142,7 +161,7 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roleset/{name}/rotate',
+            "/v1/{mount_point}/roleset/{name}/rotate",
             mount_point=mount_point,
             name=name,
         )
@@ -166,9 +185,9 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roleset/{name}/rotate-key',
+            "/v1/{mount_point}/roleset/{name}/rotate-key",
             mount_point=mount_point,
-            name=name
+            name=name,
         )
         return self._adapter.post(
             url=api_path,
@@ -188,7 +207,7 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roleset/{name}',
+            "/v1/{mount_point}/roleset/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -207,7 +226,9 @@ class Gcp(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/rolesets', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/rolesets", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -226,7 +247,7 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roleset/{name}',
+            "/v1/{mount_point}/roleset/{name}",
             name=name,
             mount_point=mount_point,
         )
@@ -250,7 +271,7 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/token/{roleset}',
+            "/v1/{mount_point}/token/{roleset}",
             mount_point=mount_point,
             roleset=roleset,
         )
@@ -258,9 +279,14 @@ class Gcp(VaultApiBase):
             url=api_path,
         )
 
-    def generate_service_account_key(self, roleset, key_algorithm='KEY_ALG_RSA_2048',
-                                     key_type='TYPE_GOOGLE_CREDENTIALS_FILE', method='POST',
-                                     mount_point=DEFAULT_MOUNT_POINT):
+    def generate_service_account_key(
+        self,
+        roleset,
+        key_algorithm="KEY_ALG_RSA_2048",
+        key_type="TYPE_GOOGLE_CREDENTIALS_FILE",
+        method="POST",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Generate Secret (IAM Service Account Creds): Service Account Key
 
         If using GET ('read'), the  optional parameters will be set to their defaults. Use POST if you want to specify
@@ -283,40 +309,46 @@ class Gcp(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/key/{roleset}',
+            "/v1/{mount_point}/key/{roleset}",
             mount_point=mount_point,
             roleset=roleset,
         )
 
-        if method == 'POST':
+        if method == "POST":
             if key_algorithm not in SERVICE_ACCOUNT_KEY_ALGORITHMS:
                 error_msg = 'unsupported key_algorithm argument provided "{arg}", supported algorithms: "{algorithms}"'
-                raise exceptions.ParamValidationError(error_msg.format(
-                    arg=key_algorithm,
-                    algorithms=','.join(SERVICE_ACCOUNT_KEY_ALGORITHMS),
-                ))
+                raise exceptions.ParamValidationError(
+                    error_msg.format(
+                        arg=key_algorithm,
+                        algorithms=",".join(SERVICE_ACCOUNT_KEY_ALGORITHMS),
+                    )
+                )
             if key_type not in SERVICE_ACCOUNT_KEY_TYPES:
                 error_msg = 'unsupported key_type argument provided "{arg}", supported types: "{key_types}"'
-                raise exceptions.ParamValidationError(error_msg.format(
-                    arg=key_type,
-                    key_types=','.join(SERVICE_ACCOUNT_KEY_TYPES),
-                ))
+                raise exceptions.ParamValidationError(
+                    error_msg.format(
+                        arg=key_type,
+                        key_types=",".join(SERVICE_ACCOUNT_KEY_TYPES),
+                    )
+                )
             params = {
-                'key_algorithm': key_algorithm,
-                'key_type': key_type,
+                "key_algorithm": key_algorithm,
+                "key_type": key_type,
             }
             response = self._adapter.post(
                 url=api_path,
                 json=params,
             )
 
-        elif method == 'GET':
+        elif method == "GET":
             response = self._adapter.get(
                 url=api_path,
             )
 
         else:
-            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(method=method)
+            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(
+                method=method
+            )
             raise exceptions.ParamValidationError(error_message)
 
         return response

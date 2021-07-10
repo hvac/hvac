@@ -2,7 +2,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Seal(SystemBackendMixin):
-
     def is_sealed(self):
         """Determine if  Vault is sealed.
 
@@ -10,7 +9,7 @@ class Seal(SystemBackendMixin):
         :rtype: bool
         """
         seal_status = self.read_seal_status()
-        return seal_status['sealed']
+        return seal_status["sealed"]
 
     def read_seal_status(self):
         """Read the seal status of the Vault.
@@ -23,7 +22,7 @@ class Seal(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/seal-status'
+        api_path = "/v1/sys/seal-status"
         return self._adapter.get(
             url=api_path,
         )
@@ -40,7 +39,7 @@ class Seal(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/seal'
+        api_path = "/v1/sys/seal"
         return self._adapter.put(
             url=api_path,
         )
@@ -68,14 +67,14 @@ class Seal(SystemBackendMixin):
         """
 
         params = {
-            'migrate': migrate,
+            "migrate": migrate,
         }
         if not reset and key is not None:
-            params['key'] = key
+            params["key"] = key
         elif reset:
-            params['reset'] = reset
+            params["reset"] = reset
 
-        api_path = '/v1/sys/unseal'
+        api_path = "/v1/sys/unseal"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -99,7 +98,7 @@ class Seal(SystemBackendMixin):
                 key=key,
                 migrate=migrate,
             )
-            if not result['sealed']:
+            if not result["sealed"]:
                 break
 
         return result

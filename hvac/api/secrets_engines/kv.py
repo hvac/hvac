@@ -13,9 +13,10 @@ class Kv(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/secrets/kv/index.html
 
     """
-    allowed_kv_versions = ['1', '2']
 
-    def __init__(self, adapter, default_kv_version='2'):
+    allowed_kv_versions = ["1", "2"]
+
+    def __init__(self, adapter, default_kv_version="2"):
         """Create a new Kv instance.
 
         :param adapter: Instance of :py:class:`hvac.adapters.Adapter`; used for performing HTTP requests.
@@ -56,8 +57,7 @@ class Kv(VaultApiBase):
     def default_kv_version(self, default_kv_version):
         if str(default_kv_version) not in self.allowed_kv_versions:
             error_message = 'Invalid "default_kv_version"; "{allowed}" allowed, "{provided}" provided'.format(
-                allowed=','.join(self.allowed_kv_versions),
-                provided=default_kv_version
+                allowed=",".join(self.allowed_kv_versions), provided=default_kv_version
             )
             raise ValueError(error_message)
         self._default_kv_version = str(default_kv_version)
@@ -70,9 +70,9 @@ class Kv(VaultApiBase):
         :return: The selected secrets_engines class corresponding to this instance's default_kv_version setting
         :rtype: hvac.api.vault_api_base.VaultApiBase
         """
-        if self.default_kv_version == '1':
+        if self.default_kv_version == "1":
             return getattr(self._kv_v1, item)
-        elif self.default_kv_version == '2':
+        elif self.default_kv_version == "2":
             return getattr(self._kv_v2, item)
 
         raise AttributeError

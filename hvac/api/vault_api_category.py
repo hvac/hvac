@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 class VaultApiCategory(VaultApiBase):
     """Base class for API categories."""
+
     __metaclass__ = ABCMeta
 
     def __init__(self, adapter):
@@ -39,7 +40,9 @@ class VaultApiCategory(VaultApiBase):
             private_attr_name = self.get_private_attr_name(item)
             return getattr(self, private_attr_name)
         if item in [u.lower() for u in self.unimplemented_classes]:
-            raise NotImplementedError('"%s" auth method class not currently implemented.' % item)
+            raise NotImplementedError(
+                '"%s" auth method class not currently implemented.' % item
+            )
         raise AttributeError
 
     @property
@@ -92,5 +95,5 @@ class VaultApiCategory(VaultApiBase):
         :return: The private attribute label for the provided class.
         :rtype: str
         """
-        private_attr_name = '_{class_name}'.format(class_name=class_name)
+        private_attr_name = "_{class_name}".format(class_name=class_name)
         return private_attr_name

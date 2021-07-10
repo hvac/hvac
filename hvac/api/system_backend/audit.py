@@ -6,7 +6,6 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class Audit(SystemBackendMixin):
-
     def list_enabled_audit_devices(self):
         """List enabled audit devices.
 
@@ -19,9 +18,11 @@ class Audit(SystemBackendMixin):
         :return: JSON response of the request.
         :rtype: dict
         """
-        return self._adapter.get('/v1/sys/audit')
+        return self._adapter.get("/v1/sys/audit")
 
-    def enable_audit_device(self, device_type, description=None, options=None, path=None, local=None):
+    def enable_audit_device(
+        self, device_type, description=None, options=None, path=None, local=None
+    ):
         """Enable a new audit device at the supplied path.
 
         The path can be a single word name or a more complex, nested path.
@@ -49,21 +50,20 @@ class Audit(SystemBackendMixin):
             path = device_type
 
         params = {
-            'type': device_type,
+            "type": device_type,
         }
         params.update(
-            utils.remove_nones({
-                'description': description,
-                'options': options,
-                'local': local,
-            })
+            utils.remove_nones(
+                {
+                    "description": description,
+                    "options": options,
+                    "local": local,
+                }
+            )
         )
 
-        api_path = utils.format_url('/v1/sys/audit/{path}', path=path)
-        return self._adapter.post(
-            url=api_path,
-            json=params
-        )
+        api_path = utils.format_url("/v1/sys/audit/{path}", path=path)
+        return self._adapter.post(url=api_path, json=params)
 
     def disable_audit_device(self, path):
         """Disable the audit device at the given path.
@@ -76,7 +76,7 @@ class Audit(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/sys/audit/{path}', path=path)
+        api_path = utils.format_url("/v1/sys/audit/{path}", path=path)
         return self._adapter.delete(
             url=api_path,
         )
@@ -98,11 +98,8 @@ class Audit(SystemBackendMixin):
         :rtype: requests.Response
         """
         params = {
-            'input': input_to_hash,
+            "input": input_to_hash,
         }
 
-        api_path = utils.format_url('/v1/sys/audit-hash/{path}', path=path)
-        return self._adapter.post(
-            url=api_path,
-            json=params
-        )
+        api_path = utils.format_url("/v1/sys/audit-hash/{path}", path=path)
+        return self._adapter.post(url=api_path, json=params)

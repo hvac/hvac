@@ -11,8 +11,17 @@ class Health(SystemBackendMixin):
     Reference: https://www.vaultproject.io/api-docs/system/health
     """
 
-    def read_health_status(self, standby_ok=None, active_code=None, standby_code=None, dr_secondary_code=None,
-                           performance_standby_code=None, sealed_code=None, uninit_code=None, method='HEAD'):
+    def read_health_status(
+        self,
+        standby_ok=None,
+        active_code=None,
+        standby_code=None,
+        dr_secondary_code=None,
+        performance_standby_code=None,
+        sealed_code=None,
+        uninit_code=None,
+        method="HEAD",
+    ):
         """Read the health status of Vault.
 
         This matches the semantics of a Consul HTTP health check and provides a simple way to monitor the health of a
@@ -43,29 +52,33 @@ class Health(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'standbyok': standby_ok,
-            'activecode': active_code,
-            'standbycode': standby_code,
-            'drsecondarycode': dr_secondary_code,
-            'performancestandbycode': performance_standby_code,
-            'sealedcode': sealed_code,
-            'uninitcode': uninit_code,
-        })
+        params = utils.remove_nones(
+            {
+                "standbyok": standby_ok,
+                "activecode": active_code,
+                "standbycode": standby_code,
+                "drsecondarycode": dr_secondary_code,
+                "performancestandbycode": performance_standby_code,
+                "sealedcode": sealed_code,
+                "uninitcode": uninit_code,
+            }
+        )
 
-        if method == 'HEAD':
-            api_path = utils.format_url('/v1/sys/health')
+        if method == "HEAD":
+            api_path = utils.format_url("/v1/sys/health")
             return self._adapter.head(
                 url=api_path,
                 raise_exception=False,
             )
-        elif method == 'GET':
-            api_path = utils.format_url('/v1/sys/health')
+        elif method == "GET":
+            api_path = utils.format_url("/v1/sys/health")
             return self._adapter.get(
                 url=api_path,
                 params=params,
                 raise_exception=False,
             )
         else:
-            error_message = '"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'.format(method=method)
+            error_message = '"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'.format(
+                method=method
+            )
             raise exceptions.ParamValidationError(error_message)

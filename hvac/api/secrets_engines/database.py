@@ -13,8 +13,17 @@ class Database(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/databases/index.html
     """
 
-    def configure(self, name, plugin_name, verify_connection=None, allowed_roles=None, root_rotation_statements=None,
-                  mount_point=DEFAULT_MOUNT_POINT, *args, **kwargs):
+    def configure(
+        self,
+        name,
+        plugin_name,
+        verify_connection=None,
+        allowed_roles=None,
+        root_rotation_statements=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        *args,
+        **kwargs
+    ):
         """This endpoint configures the connection string used to communicate with the desired database.
         In addition to the parameters listed here, each Database plugin has additional,
         database plugin specific, parameters for this endpoint.
@@ -39,16 +48,20 @@ class Database(VaultApiBase):
             "plugin_name": plugin_name,
         }
         params.update(
-            utils.remove_nones({
-                "allowed_roles": allowed_roles,
-                "verify_connection": verify_connection,
-                "root_rotation_statements": root_rotation_statements,
-            })
+            utils.remove_nones(
+                {
+                    "allowed_roles": allowed_roles,
+                    "verify_connection": verify_connection,
+                    "root_rotation_statements": root_rotation_statements,
+                }
+            )
         )
 
         params.update(kwargs)
 
-        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -63,7 +76,9 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/rotate-root/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/rotate-root/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
         )
@@ -77,7 +92,9 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/{name}", mount_point=mount_point, name=name
+        )
 
         return self._adapter.get(
             url=api_path,
@@ -90,7 +107,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = utils.format_url('/v1/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -104,7 +121,9 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.delete(
             url=api_path,
         )
@@ -118,14 +137,25 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/reset/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/reset/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.post(
             url=api_path,
         )
 
-    def create_role(self, name, db_name, creation_statements, default_ttl=None, max_ttl=None,
-                    revocation_statements=None, rollback_statements=None, renew_statements=None,
-                    mount_point=DEFAULT_MOUNT_POINT):
+    def create_role(
+        self,
+        name,
+        db_name,
+        creation_statements,
+        default_ttl=None,
+        max_ttl=None,
+        revocation_statements=None,
+        rollback_statements=None,
+        renew_statements=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """This endpoint creates or updates a role definition.
 
         :param name: Specifies the database role to manage.
@@ -156,23 +186,31 @@ class Database(VaultApiBase):
             "creation_statements": creation_statements,
         }
         params.update(
-            utils.remove_nones({
-                "default_ttl": default_ttl,
-                "max_ttl": max_ttl,
-                "revocation_statements": revocation_statements,
-                "rollback_statements": rollback_statements,
-                "renew_statements": renew_statements,
-            })
+            utils.remove_nones(
+                {
+                    "default_ttl": default_ttl,
+                    "max_ttl": max_ttl,
+                    "revocation_statements": revocation_statements,
+                    "rollback_statements": rollback_statements,
+                    "renew_statements": renew_statements,
+                }
+            )
         )
 
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
-        return self._adapter.post(
-            url=api_path,
-            json=params
+        api_path = utils.format_url(
+            "/v1/{mount_point}/roles/{name}", mount_point=mount_point, name=name
         )
+        return self._adapter.post(url=api_path, json=params)
 
-    def create_static_role(self, name, db_name, username, rotation_statements,
-                           rotation_period=86400, mount_point=DEFAULT_MOUNT_POINT):
+    def create_static_role(
+        self,
+        name,
+        db_name,
+        username,
+        rotation_statements,
+        rotation_period=86400,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """This endpoint creates or updates a static role definition.
 
         :param name: Specifies the name of the role to create.
@@ -216,7 +254,9 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/roles/{name}", mount_point=mount_point, name=name
+        )
 
         return self._adapter.get(
             url=api_path,
@@ -231,7 +271,7 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/roles", mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -248,7 +288,9 @@ class Database(VaultApiBase):
         api_path = utils.format_url(
             "/v1/{mount_point}/static-roles", mount_point=mount_point
         )
-        return self._adapter.list(url=api_path,)
+        return self._adapter.list(
+            url=api_path,
+        )
 
     def delete_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint deletes the role definition.
@@ -260,7 +302,9 @@ class Database(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/roles/{name}", mount_point=mount_point, name=name
+        )
         return self._adapter.delete(
             url=api_path,
         )
@@ -278,7 +322,9 @@ class Database(VaultApiBase):
         api_path = utils.format_url(
             "/v1/{mount_point}/static-roles/{name}", mount_point=mount_point, name=name
         )
-        return self._adapter.delete(url=api_path,)
+        return self._adapter.delete(
+            url=api_path,
+        )
 
     def generate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint generates a new set of dynamic credentials based on the named role.
@@ -291,7 +337,9 @@ class Database(VaultApiBase):
         :rtype: requests.Response
         """
 
-        api_path = utils.format_url('/v1/{mount_point}/creds/{name}', mount_point=mount_point, name=name)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/creds/{name}", mount_point=mount_point, name=name
+        )
 
         return self._adapter.get(
             url=api_path,

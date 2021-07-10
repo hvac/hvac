@@ -10,22 +10,28 @@ from tests import utils
 
 
 class TestGcp(TestCase):
-    TEST_MOUNT_POINT = 'gcp-test'
+    TEST_MOUNT_POINT = "gcp-test"
 
-    @parameterized.expand([
-        ('success', dict(), None,),
-    ])
+    @parameterized.expand(
+        [
+            (
+                "success",
+                dict(),
+                None,
+            ),
+        ]
+    )
     @requests_mock.Mocker()
     def test_login(self, label, test_params, raises, requests_mocker):
-        role_name = 'hvac'
-        credentials = utils.load_config_file('example.jwt.json')
+        role_name = "hvac"
+        credentials = utils.load_config_file("example.jwt.json")
         test_policies = [
             "default",
             "dev",
             "prod",
         ]
         expected_status_code = 200
-        mock_url = 'http://localhost:8200/v1/auth/{mount_point}/login'.format(
+        mock_url = "http://localhost:8200/v1/auth/{mount_point}/login".format(
             mount_point=self.TEST_MOUNT_POINT,
         )
         mock_response = {
@@ -38,7 +44,7 @@ class TestGcp(TestCase):
             },
         }
         requests_mocker.register_uri(
-            method='POST',
+            method="POST",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
@@ -59,8 +65,8 @@ class TestGcp(TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
                 **test_params
             )
-            logging.debug('login_response: %s' % login_response)
+            logging.debug("login_response: %s" % login_response)
             self.assertEqual(
-                first=login_response['auth']['policies'],
+                first=login_response["auth"]["policies"],
                 second=test_policies,
             )

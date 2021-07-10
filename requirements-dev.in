@@ -1,6 +1,6 @@
 -r ./requirements.txt
 Authlib
-flake8
+black
 Flask
 Flask-SQLAlchemy
 codecov
