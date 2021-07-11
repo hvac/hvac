@@ -33,7 +33,7 @@ Authenticate to different auth backends
     client.auth_tls()
 
     # Non-default mount point (available on all auth types)
-    client.auth_userpass('MY_USERNAME', 'MY_PASSWORD', mount_point='CUSTOM_MOUNT_POINT')
+    client.auth.userpass.login('MY_USERNAME', 'MY_PASSWORD', mount_point='CUSTOM_MOUNT_POINT')
 
     # Authenticating without changing to new token (available on all auth types)
     result = client.auth_github('MY_GITHUB_TOKEN', use_token=False)

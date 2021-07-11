@@ -136,7 +136,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             "auth/userpass/users/testuser", password="testpass", policies="not_root"
         )
 
-        self.client.auth_userpass("testuser", "testpass")
+        self.client.auth.userpass.login("testuser", "testpass")
 
         self.client.revoke_self_token()
         assert not self.client.is_authenticated()
