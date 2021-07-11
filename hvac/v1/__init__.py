@@ -1745,6 +1745,10 @@ class Client(object):
             "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.configure,
+    )
     def create_kubernetes_configuration(
         self,
         kubernetes_host,
@@ -1784,6 +1788,10 @@ class Client(object):
         url = "v1/auth/{0}/config".format(mount_point)
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.read_config,
+    )
     def get_kubernetes_configuration(self, mount_point="kubernetes"):
         """GET /auth/<mount_point>/config
 
@@ -1796,6 +1804,10 @@ class Client(object):
         url = "/v1/auth/{0}/config".format(mount_point)
         return self._adapter.get(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.create_role,
+    )
     def create_kubernetes_role(
         self,
         name,
@@ -1855,6 +1867,10 @@ class Client(object):
         url = "v1/auth/{0}/role/{1}".format(mount_point, name)
         return self._adapter.post(url, json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.read_role,
+    )
     def get_kubernetes_role(self, name, mount_point="kubernetes"):
         """GET /auth/<mount_point>/role/:name
 
@@ -1869,6 +1885,10 @@ class Client(object):
         url = "v1/auth/{0}/role/{1}".format(mount_point, name)
         return self._adapter.get(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.list_roles,
+    )
     def list_kubernetes_roles(self, mount_point="kubernetes"):
         """GET /auth/<mount_point>/role?list=true
 
@@ -1881,6 +1901,10 @@ class Client(object):
         url = "v1/auth/{0}/role?list=true".format(mount_point)
         return self._adapter.get(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.delete_role,
+    )
     def delete_kubernetes_role(self, role, mount_point="kubernetes"):
         """DELETE /auth/<mount_point>/role/:role
 
@@ -1895,6 +1919,10 @@ class Client(object):
         url = "v1/auth/{0}/role/{1}".format(mount_point, role)
         return self._adapter.delete(url)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Kubernetes.login,
+    )
     def auth_kubernetes(self, role, jwt, use_token=True, mount_point="kubernetes"):
         """POST /auth/<mount_point>/login
 
