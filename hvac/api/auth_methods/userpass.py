@@ -13,7 +13,7 @@ class Userpass(VaultApiBase):
     """
 
     def create_or_update_user(
-        self, username, password=None, policies=None, mount_point=DEFAULT_MOUNT_POINT
+        self, username, password=None, policies=None, mount_point=DEFAULT_MOUNT_POINT, **kwargs
     ):
         """
         Create/update user in userpass.
@@ -29,6 +29,8 @@ class Userpass(VaultApiBase):
         :type policies: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param kwargs: Additional arguments to pass along with the corresponding request to Vault.
+        :type kwargs: dict
         """
         params = utils.remove_nones(
             {
@@ -36,6 +38,7 @@ class Userpass(VaultApiBase):
                 "policies": policies,
             }
         )
+        params.update(kwargs)
 
         api_path = "/v1/auth/{mount_point}/users/{username}".format(
             mount_point=mount_point, username=username
