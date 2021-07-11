@@ -646,6 +646,10 @@ class Client(object):
         """
         return self.auth.cert.login(mount_point=mount_point, use_token=use_token)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.login,
+    )
     def auth_userpass(
         self, username, password, mount_point="userpass", use_token=True, **kwargs
     ):
@@ -773,6 +777,10 @@ class Client(object):
             "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.create_or_update_user,
+    )
     def create_userpass(
         self, username, password, policies, mount_point="userpass", **kwargs
     ):
@@ -804,6 +812,10 @@ class Client(object):
             "/v1/auth/{}/users/{}".format(mount_point, username), json=params
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.list_user,
+    )
     def list_userpass(self, mount_point="userpass"):
         """GET /auth/<mount point>/users?list=true
 
@@ -819,6 +831,10 @@ class Client(object):
         except exceptions.InvalidPath:
             return None
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.read_user,
+    )
     def read_userpass(self, username, mount_point="userpass"):
         """GET /auth/<mount point>/users/<username>
 
@@ -831,6 +847,10 @@ class Client(object):
         """
         return self._adapter.get("/v1/auth/{}/users/{}".format(mount_point, username))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.create_or_update_user,
+    )
     def update_userpass_policies(self, username, policies, mount_point="userpass"):
         """POST /auth/<mount point>/users/<username>/policies
 
@@ -854,6 +874,10 @@ class Client(object):
             "/v1/auth/{}/users/{}/policies".format(mount_point, username), json=params
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.update_password_on_user,
+    )
     def update_userpass_password(self, username, password, mount_point="userpass"):
         """POST /auth/<mount point>/users/<username>/password
 
@@ -871,6 +895,10 @@ class Client(object):
             "/v1/auth/{}/users/{}/password".format(mount_point, username), json=params
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Userpass.delete_user,
+    )
     def delete_userpass(self, username, mount_point="userpass"):
         """DELETE /auth/<mount point>/users/<username>
 
