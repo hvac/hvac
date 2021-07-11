@@ -272,6 +272,10 @@ class Client(object):
 
         return policy
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.revoke_self,
+    )
     def revoke_self_token(self):
         """PUT /auth/token/revoke-self
 
@@ -280,6 +284,10 @@ class Client(object):
         """
         self._adapter.put("/v1/auth/token/revoke-self")
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.create,
+    )
     def create_token(
         self,
         role=None,
@@ -440,6 +448,9 @@ class Client(object):
             params = {"token": token}
             self._adapter.post("/v1/auth/token/revoke", json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+    )
     def revoke_token_prefix(self, prefix):
         """POST /auth/token/revoke-prefix/<prefix>
 
@@ -503,6 +514,10 @@ class Client(object):
             "/v1/auth/token/renew-self", json=params, wrap_ttl=wrap_ttl
         )
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.create_or_update_role,
+    )
     def create_token_role(
         self,
         role,
@@ -546,6 +561,10 @@ class Client(object):
         }
         return self._adapter.post("/v1/auth/token/roles/{0}".format(role), json=params)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.read_role,
+    )
     def token_role(self, role):
         """Returns the named token role.
 
@@ -556,6 +575,10 @@ class Client(object):
         """
         return self.read("auth/token/roles/{0}".format(role))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.delete_role,
+    )
     def delete_token_role(self, role):
         """Deletes the named token role.
 
@@ -566,6 +589,10 @@ class Client(object):
         """
         return self.delete("auth/token/roles/{0}".format(role))
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.list_roles,
+    )
     def list_token_roles(self):
         """GET /auth/token/roles?list=true
 
