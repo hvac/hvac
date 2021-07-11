@@ -606,6 +606,7 @@ class Client(object):
         except exceptions.InvalidRequest:
             return False
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def auth_app_id(self, app_id, user_id, mount_point="app-id", use_token=True):
         """POST /auth/<mount point>/login
 
@@ -884,6 +885,7 @@ class Client(object):
             "/v1/auth/{}/users/{}".format(mount_point, username)
         )
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def create_app_id(
         self, app_id, policies, display_name=None, mount_point="app-id", **kwargs
     ):
@@ -921,6 +923,7 @@ class Client(object):
             "/v1/auth/{}/map/app-id/{}".format(mount_point, app_id), json=params
         )
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def get_app_id(self, app_id, mount_point="app-id", wrap_ttl=None):
         """GET /auth/<mount_point>/map/app-id/<app_id>
 
@@ -936,6 +939,7 @@ class Client(object):
         path = "/v1/auth/{0}/map/app-id/{1}".format(mount_point, app_id)
         return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def delete_app_id(self, app_id, mount_point="app-id"):
         """DELETE /auth/<mount_point>/map/app-id/<app_id>
 
@@ -950,6 +954,7 @@ class Client(object):
             "/v1/auth/{0}/map/app-id/{1}".format(mount_point, app_id)
         )
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def create_user_id(
         self, user_id, app_id, cidr_block=None, mount_point="app-id", **kwargs
     ):
@@ -987,6 +992,7 @@ class Client(object):
             "/v1/auth/{}/map/user-id/{}".format(mount_point, user_id), json=params
         )
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def get_user_id(self, user_id, mount_point="app-id", wrap_ttl=None):
         """GET /auth/<mount_point>/map/user-id/<user_id>
 
@@ -1002,6 +1008,7 @@ class Client(object):
         path = "/v1/auth/{0}/map/user-id/{1}".format(mount_point, user_id)
         return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
+    @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def delete_user_id(self, user_id, mount_point="app-id"):
         """DELETE /auth/<mount_point>/map/user-id/<user_id>
 
