@@ -172,7 +172,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
     def test_cubbyhole_auth(self):
         orig_token = self.client.token
 
-        resp = self.client.create_token(lease="6h", wrap_ttl="1h")
+        resp = self.client.auth.token.create(ttl="6h", wrap_ttl="1h")
         self.assertEqual(resp["wrap_info"]["ttl"], 3600)
 
         wrapped_token = resp["wrap_info"]["token"]
@@ -213,18 +213,18 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         self.assertGreater(self.client.key_status["term"], status["term"])
 
     def test_wrapped_token_success(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         # Unwrap token
         result = self.client.sys.unwrap(wrap["wrap_info"]["token"])
         self.assertTrue(result["auth"]["client_token"])
 
         # Validate token
-        lookup = self.client.lookup_token(result["auth"]["client_token"])
+        lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
         self.assertEqual(result["auth"]["client_token"], lookup["data"]["id"])
 
     def test_wrapped_token_intercept(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         # Intercept wrapped token
         self.client.sys.unwrap(wrap["wrap_info"]["token"])
@@ -234,17 +234,17 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             self.client.sys.unwrap(wrap["wrap_info"]["token"])
 
     def test_wrapped_token_cleanup(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         _token = self.client.token
         self.client.sys.unwrap(wrap["wrap_info"]["token"])
         self.assertEqual(self.client.token, _token)
 
     def test_wrapped_token_revoke(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         # Revoke token before it's unwrapped
-        self.client.revoke_token(wrap["wrap_info"]["wrapped_accessor"], accessor=True)
+        self.client.auth.token.revoke_accessor(wrap["wrap_info"]["wrapped_accessor"])
 
         # Unwrap token anyway
         result = self.client.sys.unwrap(wrap["wrap_info"]["token"])
@@ -252,10 +252,10 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
-            self.client.lookup_token(result["auth"]["client_token"])
+            self.client.auth.token.lookup(result["auth"]["client_token"])
 
     def test_wrapped_client_token_success(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
         self.client.token = wrap["wrap_info"]["token"]
 
         # Unwrap token
@@ -264,11 +264,11 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
 
         # Validate token
         self.client.token = result["auth"]["client_token"]
-        lookup = self.client.lookup_token(result["auth"]["client_token"])
+        lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
         self.assertEqual(result["auth"]["client_token"], lookup["data"]["id"])
 
     def test_wrapped_client_token_intercept(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
         self.client.token = wrap["wrap_info"]["token"]
 
         # Intercept wrapped token
@@ -279,7 +279,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             self.client.sys.unwrap()
 
     def test_wrapped_client_token_cleanup(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         _token = self.client.token
         self.client.token = wrap["wrap_info"]["token"]
@@ -289,10 +289,10 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         self.assertNotEqual(self.client.token, _token)
 
     def test_wrapped_client_token_revoke(self):
-        wrap = self.client.create_token(wrap_ttl="1m")
+        wrap = self.client.auth.token.create(wrap_ttl="1m")
 
         # Revoke token before it's unwrapped
-        self.client.revoke_token(wrap["wrap_info"]["wrapped_accessor"], accessor=True)
+        self.client.auth.token.revoke_accessor(wrap["wrap_info"]["wrapped_accessor"])
 
         # Unwrap token anyway
         self.client.token = wrap["wrap_info"]["token"]
@@ -301,7 +301,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
 
         # Attempt to validate token
         with self.assertRaises(exceptions.Forbidden):
-            self.client.lookup_token(result["auth"]["client_token"])
+            self.client.auth.token.lookup(result["auth"]["client_token"])
 
     def test_start_generate_root_with_completion(self):
         test_otp = utils.get_generate_root_otp()
@@ -329,7 +329,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             otp=test_otp,
         )
         logging.debug("new_root_token: %s" % new_root_token)
-        token_lookup_resp = self.client.lookup_token(token=new_root_token)
+        token_lookup_resp = self.client.auth.token.lookup(token=new_root_token)
         logging.debug("token_lookup_resp: %s" % token_lookup_resp)
 
         # Assert our new root token is properly formed and authenticated

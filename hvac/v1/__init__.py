@@ -495,6 +495,10 @@ class Client(object):
             )
             return self.renew_self_token(increment=increment, wrap_ttl=wrap_ttl)
 
+    @utils.deprecated_method(
+        to_be_removed_in_version="1.0.0",
+        new_method=api.auth_methods.Token.renew_self,
+    )
     def renew_self_token(self, increment=None, wrap_ttl=None):
         """
         POST /auth/token/renew-self
