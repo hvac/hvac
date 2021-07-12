@@ -57,7 +57,7 @@ doctestopt_re = re.compile(r"#\s*doctest:.+$", re.MULTILINE)
 if PY2:
 
     def doctest_encode(text, encoding):
-        # type: (str, unicode) -> unicode
+        # type: (str, str) -> str
         if isinstance(text, text_type):
             text = text.encode(encoding)
             if text.startswith(codecs.BOM_UTF8):
@@ -68,12 +68,12 @@ if PY2:
 else:
 
     def doctest_encode(text, encoding):
-        # type: (unicode, unicode) -> unicode
+        # type: (str, str) -> str
         return text
 
 
 def is_allowed_version(spec, version):
-    # type: (unicode, unicode) -> bool
+    # type: (str, str) -> bool
     """Check `spec` satisfies `version` or not.
 
     This obeys PEP-440 specifiers:
@@ -94,7 +94,7 @@ def is_allowed_version(spec, version):
 class Py23DocChecker(doctest.OutputChecker):
     def check_output(self, want, got, optionflags):
         if sys.version_info[0] < 3:
-            # Ignore unicode `u` prefix in repr to simplify Python 2.7 doctest coverage
+            # Ignore str `u` prefix in repr to simplify Python 2.7 doctest coverage
             got = re.sub("u'(.*?)'", "'\\1'", got)
             got = re.sub('u"(.*?)"', '"\\1"', got)
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
@@ -234,7 +234,7 @@ parser = doctest.DocTestParser()
 
 class TestGroup(object):
     def __init__(self, name):
-        # type: (unicode) -> None
+        # type: (str) -> None
         self.name = name
         self.setup = []  # type: List[TestCode]
         self.tests = []  # type: List[List[TestCode]]
@@ -260,7 +260,7 @@ class TestGroup(object):
             raise RuntimeError(__("invalid TestCode type"))
 
     def __repr__(self):  # type: ignore
-        # type: () -> unicode
+        # type: () -> str
         return "TestGroup(name=%r, setup=%r, cleanup=%r, tests=%r)" % (
             self.name,
             self.setup,
@@ -271,7 +271,7 @@ class TestGroup(object):
 
 class TestCode(object):
     def __init__(self, code, type, filename, lineno, options=None):
-        # type: (unicode, unicode, Optional[str], int, Optional[Dict]) -> None
+        # type: (str, str, Optional[str], int, Optional[Dict]) -> None
         self.code = code
         self.type = type
         self.filename = filename
@@ -279,7 +279,7 @@ class TestCode(object):
         self.options = options or {}
 
     def __repr__(self):  # type: ignore
-        # type: () -> unicode
+        # type: () -> str
         return "TestCode(%r, %r, filename=%r, lineno=%r, options=%r)" % (
             self.code,
             self.type,
@@ -291,7 +291,7 @@ class TestCode(object):
 
 class SphinxDocTestRunner(doctest.DocTestRunner):
     def __init__(self, *args, **kwargs):
-        # HACK: workaround unicode issues for testcode directives on Python 2.7 versus 3.x
+        # HACK: workaround str issues for testcode directives on Python 2.7 versus 3.x
         doctest.DocTestRunner.__init__(self, *args, checker=Py23DocChecker(), **kwargs)
 
     def summarize(self, out, verbose=None):  # type: ignore
@@ -307,7 +307,7 @@ class SphinxDocTestRunner(doctest.DocTestRunner):
         return res
 
     def _DocTestRunner__patched_linecache_getlines(self, filename, module_globals=None):
-        # type: (unicode, Any) -> Any
+        # type: (str, Any) -> Any
         # this is overridden from DocTestRunner adding the try-except below
         m = self._DocTestRunner__LINECACHE_FILENAME_RE.match(filename)  # type: ignore
         if m and m.group("name") == self.test.name:
@@ -375,12 +375,12 @@ class DocTestBuilder(Builder):
         )
 
     def _out(self, text):
-        # type: (unicode) -> None
+        # type: (str) -> None
         logger.info(text, nonl=True)
         self.outfile.write(text)
 
     def _warn_out(self, text):
-        # type: (unicode) -> None
+        # type: (str) -> None
         if self.app.quiet or self.app.warningiserror:
             logger.warning(text)
         else:
@@ -390,18 +390,18 @@ class DocTestBuilder(Builder):
         self.outfile.write(text)
 
     def get_target_uri(self, docname, typ=None):
-        # type: (unicode, unicode) -> unicode
+        # type: (str, str) -> str
         return ""
 
     def get_outdated_docs(self):
-        # type: () -> Set[unicode]
+        # type: () -> Set[str]
         return self.env.found_docs
 
     def finish(self):
         # type: () -> None
         # write executive summary
         def s(v):
-            # type: (int) -> unicode
+            # type: (int) -> str
             return v != 1 and "s" or ""
 
         repl = (
@@ -431,7 +431,7 @@ Doctest summary
             self.app.statuscode = 1
 
     def write(self, build_docnames, updated_docnames, method="update"):
-        # type: (Iterable[unicode], Sequence[unicode], unicode) -> None
+        # type: (Iterable[str], Sequence[str], str) -> None
         if build_docnames is None:
             build_docnames = sorted(self.env.all_docs)
 
@@ -442,7 +442,7 @@ Doctest summary
             self.test_doc(docname, doctree)
 
     def get_filename_for_node(self, node, docname):
-        # type: (nodes.Node, unicode) -> str
+        # type: (nodes.Node, str) -> str
         """Try to get the file which actually contains the doctest, not the
         filename of the document it's included in."""
         try:
@@ -473,8 +473,8 @@ Doctest summary
         return None
 
     def test_doc(self, docname, doctree):
-        # type: (unicode, nodes.Node) -> None
-        groups = {}  # type: Dict[unicode, TestGroup]
+        # type: (str, nodes.Node) -> None
+        groups = {}  # type: Dict[str, TestGroup]
         add_to_all_groups = []
         self.setup_runner = SphinxDocTestRunner(verbose=False, optionflags=self.opt)
         self.test_runner = SphinxDocTestRunner(verbose=False, optionflags=self.opt)
@@ -565,7 +565,7 @@ Doctest summary
             self.cleanup_tries += res_t
 
     def compile(self, code, name, type, flags, dont_inherit):
-        # type: (unicode, unicode, unicode, Any, bool) -> Any
+        # type: (str, str, str, Any, bool) -> Any
         return compile(code, name, self.type, flags, dont_inherit)
 
     def test_group(self, group):
@@ -676,7 +676,7 @@ Doctest summary
 
 
 def setup(app):
-    # type: (Sphinx) -> Dict[unicode, Any]
+    # type: (Sphinx) -> Dict[str, Any]
     app.add_directive("testsetup", TestsetupDirective)
     app.add_directive("testcleanup", TestcleanupDirective)
     app.add_directive("doctest", DoctestDirective)
