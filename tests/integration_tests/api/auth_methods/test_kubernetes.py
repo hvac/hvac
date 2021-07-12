@@ -325,3 +325,50 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 first=bool(delete_role_response),
                 second=True,
             )
+
+    def test_auth_kubernetes(self):
+        test_role_name = "test_role"
+        test_host = "127.0.0.1:80"
+        test_mount_point = "k8s"
+
+        # Turn on the kubernetes backend with a custom mount_point path specified.
+        if (
+            "{0}/".format(test_mount_point)
+            in self.client.sys.list_auth_methods()["data"]
+        ):
+            self.client.sys.disable_auth_method(test_mount_point)
+        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
+        with open(utils.get_config_file_path("client-cert.pem")) as fp:
+            certificate = fp.read()
+            self.client.auth.kubernetes.configure(
+                kubernetes_host=test_host,
+                pem_keys=[certificate],
+                mount_point=test_mount_point,
+            )
+
+        self.client.auth.kubernetes.create_role(
+            name=test_role_name,
+            bound_service_account_names="*",
+            bound_service_account_namespaces="vault_test",
+            mount_point=test_mount_point,
+        )
+
+        # Test that we can authenticate
+        with open(utils.get_config_file_path("example.jwt")) as fp:
+            test_jwt = fp.read()
+            with self.assertRaises(
+                exceptions.InternalServerError
+            ) as assertRaisesContext:
+                # we don't actually have a valid JWT to provide, so this method will throw an exception
+                self.client.auth.kubernetes.login(
+                    role=test_role_name,
+                    jwt=test_jwt,
+                    mount_point=test_mount_point,
+                )
+
+        expected_exception_message = 'claim "iss" is invalid'
+        actual_exception_message = str(assertRaisesContext.exception)
+        self.assertIn(expected_exception_message, actual_exception_message)
+
+        # Reset integration test state
+        self.client.sys.disable_auth_method(path=test_mount_point)
