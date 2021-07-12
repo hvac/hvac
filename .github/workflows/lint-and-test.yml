@@ -30,11 +30,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install black
-      run: pip install black
+    - name: Install `black` and `flake8`
+      run: |
+        pip install \
+          black \
+          flake8 \
+          ;
 
-    - name: Lint with black
+    - name: Check formatting with `black`
       run: black --check .
+
+    - name: Lint with `flake8`
+      run: flake8 . --count --statistics
 
   unit-tests:
     name: Unit Tests

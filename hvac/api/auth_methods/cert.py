@@ -35,8 +35,8 @@ class Cert(VaultApiBase):
         token_type="",
         mount_point="cert",
     ):
-        """
-        Create CA Certificate Role
+        """Create CA Certificate Role.
+
         Sets a CA cert and associated parameters in a role name.
 
         Supported methods:
@@ -47,37 +47,60 @@ class Cert(VaultApiBase):
         :type name: str
         :param certificate: The PEM-format CA certificate.
         :type certificate: str
-        :param allowed_common_names: Constrain the Common Names in the client certificate with a globbed pattern. Value is a comma-separated list of patterns. Authentication requires at least one Name matching at least one pattern. If not set, defaults to allowing all names.
+        :param allowed_common_names: Constrain the Common Names in the client certificate with a globbed pattern. Value
+            is a comma-separated list of patterns. Authentication requires at least one Name matching at least one
+            pattern. If not set, defaults to allowing all names.
         :type allowed_common_names: str | list
-        :param allowed_dns_sans: Constrain the Alternative Names in the client certificate with a globbed pattern. Value is a comma-separated list of patterns. Authentication requires at least one DNS matching at least one pattern. If not set, defaults to allowing all dns.
+        :param allowed_dns_sans: Constrain the Alternative Names in the client certificate with a globbed pattern. Value
+            is a comma-separated list of patterns. Authentication requires at least one DNS matching at least one pattern.
+            If not set, defaults to allowing all dns.
         :type allowed_dns_sans: str | list
-        :param allowed_email_sans: Constrain the Alternative Names in the client certificate with a globbed pattern. Value is a comma-separated list of patterns. Authentication requires at least one Email matching at least one pattern. If not set, defaults to allowing all emails.
+        :param allowed_email_sans: Constrain the Alternative Names in the client certificate with a globbed pattern.
+            Value is a comma-separated list of patterns. Authentication requires at least one Email matching at least
+            one pattern. If not set, defaults to allowing all emails.
         :type allowed_email_sans: str | list
-        :param allowed_uri_sans: Constrain the Alternative Names in the client certificate with a globbed pattern. Value is a comma-separated list of URI patterns. Authentication requires at least one URI matching at least one pattern. If not set, defaults to allowing all URIs.
+        :param allowed_uri_sans: Constrain the Alternative Names in the client certificate with a globbed pattern.
+            Value is a comma-separated list of URI patterns. Authentication requires at least one URI matching at least
+            one pattern. If not set, defaults to allowing all URIs.
         :type allowed_uri_sans: str | list
-        :param allowed_organizational_units: Constrain the Organizational Units (OU) in the client certificate with a globbed pattern. Value is a comma-separated list of OU patterns. Authentication requires at least one OU matching at least one pattern. If not set, defaults to allowing all OUs.
+        :param allowed_organizational_units: Constrain the Organizational Units (OU) in the client certificate with a
+            globbed pattern. Value is a comma-separated list of OU patterns. Authentication requires at least one OU
+            matching at least one pattern. If not set, defaults to allowing all OUs.
         :type allowed_organizational_units: str | list
-        :param required_extensions: Require specific Custom Extension OIDs to exist and match the pattern. Value is a comma separated string or array of oid:value. Expects the extension value to be some type of ASN1 encoded string. All conditions must be met. Supports globbing on value.
+        :param required_extensions: Require specific Custom Extension OIDs to exist and match the pattern. Value is a
+            comma separated string or array of oid:value. Expects the extension value to be some type of ASN1 encoded
+            string. All conditions must be met. Supports globbing on value.
         :type required_extensions: str | list
-        :param display_name: The display_name to set on tokens issued when authenticating against this CA certificate. If not set, defaults to the name of the role.
+        :param display_name: The display_name to set on tokens issued when authenticating against this CA certificate.
+            If not set, defaults to the name of the role.
         :type display_name: str | unicode
-        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced at renewal time.
+        :param token_ttl: The incremental lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
         :type token_ttl: int | str
-        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced at renewal time.
+        :param token_max_ttl: The maximum lifetime for generated tokens. This current value of this will be referenced
+            at renewal time.
         :type token_max_ttl: int | str
-        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list may be supplemented by user/group/other values.
+        :param token_policies: List of policies to encode onto generated tokens. Depending on the auth method, this list
+            may be supplemented by user/group/other values.
         :type token_policies: list | str
-        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate successfully, and ties the resulting token to these blocks as well.
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
         :type token_bound_cidrs: list | str
-        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even if token_ttl and token_max_ttl would otherwise allow a renewal.
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if token_ttl and token_max_ttl would otherwise allow a renewal.
         :type token_explicit_max_ttl: int | str
-        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it will be added to the policies set in token_policies.
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in token_policies.
         :type token_no_default_policy: bool
-        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means unlimited. If you require the token to have the ability to create child tokens, you will need to set this value to 0.
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited. If you require the token to have the ability to create child tokens, you will need to set this value to 0.
         :type token_num_uses: int
         :param token_period: The period, if any, to set on the token.
         :type token_period: int | str
-        :param token_type: The type of token that should be generated. Can be service, batch, or default to use the mount's tuned default (which unless changed will be service tokens). For token store roles, there are two additional possibilities: default-service and default-batch which specify the type to return unless the client requests a different type at generation time.
+        :param token_type: The type of token that should be generated. Can be service, batch, or default to use the
+            mount's tuned default (which unless changed will be service tokens). For token store roles, there are two
+            additional possibilities: default-service and default-batch which specify the type to return unless the
+            client requests a different type at generation time.
         :type token_type: str
         :param mount_point:
         :type mount_point:

@@ -11,7 +11,6 @@ class TestAuthMethods(TestCase):
     @requests_mock.Mocker()
     def test_tune_auth_backend(self, requests_mocker):
         expected_status_code = 204
-        test_backend_type = "approle"
         test_mount_point = "approle-test"
         test_description = "this is a test description"
         requests_mocker.register_uri(
@@ -41,7 +40,6 @@ class TestAuthMethods(TestCase):
     @requests_mock.Mocker()
     def test_get_auth_backend_tuning(self, requests_mocker):
         expected_status_code = 200
-        test_backend_type = "approle"
         test_mount_point = "approle-test"
         mock_response = {
             "max_lease_ttl": 12345678,

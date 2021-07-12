@@ -1,12 +1,9 @@
 from unittest import TestCase
-from unittest import skipIf
 
+from hvac import exceptions
 from parameterized import parameterized
-
-from hvac import exceptions, Client
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
-import pytest
 
 
 class TestCert(HvacIntegrationTestCase, TestCase):

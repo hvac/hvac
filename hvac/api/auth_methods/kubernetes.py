@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Kubernetes methods module."""
-from hvac import exceptions, utils
+from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.utils import (
     validate_list_of_strings_param,

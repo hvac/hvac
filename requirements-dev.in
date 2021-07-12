@@ -3,6 +3,7 @@ Authlib
 black
 Flask
 Flask-SQLAlchemy
+flake8
 codecov
 coverage
 ipaddress
