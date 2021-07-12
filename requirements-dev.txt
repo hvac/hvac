@@ -12,13 +12,13 @@ authlib==0.15.4
     # via -r requirements-dev.in
 black==21.6b0
     # via -r requirements-dev.in
-certifi==2020.6.20
+certifi==2021.5.30
     # via
     #   -r ./requirements.txt
     #   requests
-cffi==1.14.5
+cffi==1.14.6
     # via cryptography
-chardet==3.0.4
+chardet==4.0.0
     # via
     #   -r ./requirements.txt
     #   requests
@@ -26,13 +26,8 @@ click==8.0.1
     # via
     #   black
     #   flask
-codecov==2.1.11
-    # via -r requirements-dev.in
 coverage==5.5
-    # via
-    #   -r requirements-dev.in
-    #   codecov
-    #   pytest-cov
+    # via pytest-cov
 cryptography==3.4.7
     # via
     #   authlib
@@ -55,8 +50,6 @@ idna==2.10
     #   requests
 iniconfig==1.1.1
     # via pytest
-ipaddress==1.0.23
-    # via -r requirements-dev.in
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.1
@@ -71,8 +64,6 @@ mock==4.0.3
     # via -r requirements-dev.in
 mypy-extensions==0.4.3
     # via black
-nose==1.3.7
-    # via -r requirements-dev.in
 packaging==21.0
     # via pytest
 parameterized==0.8.1
@@ -107,16 +98,13 @@ python-ldap-test==0.3.1
     # via -r requirements-dev.in
 regex==2021.7.6
     # via black
-requests==2.24.0
+requests==2.25.1
     # via
     #   -r ./requirements.txt
-    #   codecov
     #   requests-mock
 requests-mock==1.9.3
     # via -r requirements-dev.in
-semantic-version==2.8.5
-    # via -r requirements-dev.in
-six==1.15.0
+six==1.16.0
     # via
     #   -r ./requirements.txt
     #   jwcrypto
@@ -128,7 +116,7 @@ toml==0.10.2
     #   black
     #   pytest
     #   pytest-cov
-urllib3==1.25.10
+urllib3==1.26.6
     # via
     #   -r ./requirements.txt
     #   requests
