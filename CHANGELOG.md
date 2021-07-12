@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.11.0 (July 12th, 2021)
+
+### 💥 Breaking Changes
+
+- **Note**: This is intended to by the last hvac release supporting Python 2.7.
+
+  **_Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions._**
+- Userpass: Add `use_token` param on `login()`, Accept passthrough `**kwargs` on create user . GH-733
+
+### 🚀 Features
+
+- Support CA-related Environment Variables. GH-735
+- Migrate Token Auth Methods to Dedicated Class. GH-734
+- Allow Omission of Password Argument on Userpass `create_or_update_user()`. GH-714
+- Add `token_ttl` & `token_max_ttl` Arguments to `ldap.configure()`. GH-707
+
+### 🐛 Bug Fixes
+
+- Fix Cert.login() handling of use_token argument. GH-720
+- Use PUTs for AWS Secrets Engine STS Requests. GH-718
+
+### 🧰 Miscellaneous
+
+- Add deprecation notices for `Client()` k8s methods. GH-732
+- Add deprecation notices for `Client()` approle methods. GH-731
+- Deprecate AppID-related `Client()` Methods. GH-730
+- Update Deprecated Usage In Documentation & Tests. GH-728
+- Add `python_requires='>=2.7'` to setuptools Metadata. GH-727
+- Transition to `black` Formatting + Updated PR Actions Workflow. GH-726
+
+Thanks to @el-deano, @intgr, @jeffwecan, @pjaudiomv, @tp6783 and tyhess for their lovely contributions.
+
 ## 0.10.14 (May 21st, 2021)
 
 ### 🐛 Bug Fixes
