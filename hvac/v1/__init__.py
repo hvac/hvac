@@ -299,338 +299,52 @@ class Client(object):
 
         return policy
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.revoke_self,
-    )
-    def revoke_self_token(self):
-        """PUT /auth/token/revoke-self
+    def lookup_token(self, token=None, accessor=False):
+        """Lookup a token.
 
-        :return:
-        :rtype:
+        If called with no arguments, will lookup the token currently set on the Client instnace.
+
+        :param token: Token to lookup.
+        :type token: str
+        :param accessor: If provided, token lookup will be performed using this accessor; when set any argument for the
+            `token` parameter will be ignored.
+        :type accessor: str
+        :return: Token lookup response.
+        :rtype: dict
         """
-        self._adapter.put("/v1/auth/token/revoke-self")
+        if accessor:
+            return self.auth.token.lookup_accessor(accessor=accessor)
+        elif token:
+            return self.auth.token.lookup(token=token)
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.create,
-    )
-    def create_token(
-        self,
-        role=None,
-        token_id=None,
-        policies=None,
-        meta=None,
-        no_parent=False,
-        lease=None,
-        display_name=None,
-        num_uses=None,
-        no_default_policy=False,
-        ttl=None,
-        orphan=False,
-        wrap_ttl=None,
-        renewable=None,
-        explicit_max_ttl=None,
-        period=None,
-        token_type=None,
-    ):
-        """POST /auth/token/create
+        return self.auth.token.lookup_self()
 
-        POST /auth/token/create/<role>
+    def revoke_token(self, token=None, accessor=None, orphan=False):
+        """Revoke a token.
 
-        POST /auth/token/create-orphan
+        If called with no arguments, will revoke the token currently set on the Client instnace.
 
-        :param role:
-        :type role:
-        :param token_id:
-        :type token_id:
-        :param policies:
-        :type policies:
-        :param meta:
-        :type meta:
-        :param no_parent:
-        :type no_parent:
-        :param lease:
-        :type lease:
-        :param display_name:
-        :type display_name:
-        :param num_uses:
-        :type num_uses:
-        :param no_default_policy:
-        :type no_default_policy:
-        :param ttl:
-        :type ttl:
-        :param orphan:
-        :type orphan:
-        :param wrap_ttl:
-        :type wrap_ttl:
-        :param renewable:
-        :type renewable:
-        :param explicit_max_ttl:
-        :type explicit_max_ttl:
-        :param period:
-        :type period:
-        :param token_type:
-        :type token_type:
-        :return:
-        :rtype:
-        """
-        params = {
-            "id": token_id,
-            "policies": policies,
-            "meta": meta,
-            "no_parent": no_parent,
-            "display_name": display_name,
-            "num_uses": num_uses,
-            "no_default_policy": no_default_policy,
-            "renewable": renewable,
-        }
-
-        if lease:
-            params["lease"] = lease
-        else:
-            params["ttl"] = ttl
-            params["explicit_max_ttl"] = explicit_max_ttl
-
-        if explicit_max_ttl:
-            params["explicit_max_ttl"] = explicit_max_ttl
-
-        if period:
-            params["period"] = period
-        if token_type:
-            params["type"] = token_type
-
-        if orphan:
-            return self._adapter.post(
-                "/v1/auth/token/create-orphan", json=params, wrap_ttl=wrap_ttl
-            )
-        elif role:
-            return self._adapter.post(
-                "/v1/auth/token/create/{0}".format(role), json=params, wrap_ttl=wrap_ttl
-            )
-        else:
-            return self._adapter.post(
-                "/v1/auth/token/create", json=params, wrap_ttl=wrap_ttl
-            )
-
-    def lookup_token(self, token=None, accessor=False, wrap_ttl=None):
-        """GET /auth/token/lookup/<token>
-
-        GET /auth/token/lookup-accessor/<token-accessor>
-
-        GET /auth/token/lookup-self
-
-        :param token:
-        :type token: str.
-        :param accessor:
-        :type accessor: str.
-        :param wrap_ttl:
-        :type wrap_ttl: int.
-        :return:
-        :rtype:
-        """
-        token_param = {
-            "token": token,
-        }
-        accessor_param = {
-            "accessor": token,
-        }
-        if token:
-            if accessor:
-                path = "/v1/auth/token/lookup-accessor"
-                return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl)
-            else:
-                path = "/v1/auth/token/lookup"
-                return self._adapter.post(path, json=token_param)
-        else:
-            path = "/v1/auth/token/lookup-self"
-            return self._adapter.get(path, wrap_ttl=wrap_ttl)
-
-    def revoke_token(self, token, orphan=False, accessor=False):
-        """POST /auth/token/revoke
-
-        POST /auth/token/revoke-orphan
-
-        POST /auth/token/revoke-accessor
-
-        :param token:
-        :type token:
-        :param orphan:
-        :type orphan:
-        :param accessor:
-        :type accessor:
-        :return:
-        :rtype:
+        :param token: If a token value is provided, it will be revoked.
+        :type token: str
+        :param accessor: If provided, this token accessor will be revoked (and any argument for the `token` parameter
+            will be ignored.)
+        :type accessor: str
+        :param orphan: If True, orphans any children tokens tied to the token to be revoked.
+        :type orphan: bool
+        :return: Response of the revocation
+        :rtype: requests.Response
         """
         if accessor and orphan:
             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
             raise exceptions.InvalidRequest(msg)
         elif accessor:
-            params = {"accessor": token}
-            self._adapter.post("/v1/auth/token/revoke-accessor", json=params)
+            return self.auth.token.revoke_accessor(accessor=accessor)
         elif orphan:
-            params = {"token": token}
-            self._adapter.post("/v1/auth/token/revoke-orphan", json=params)
-        else:
-            params = {"token": token}
-            self._adapter.post("/v1/auth/token/revoke", json=params)
+            return self.auth.token.revoke_and_orphan_children(token=token)
+        elif token:
+            return self.auth.token.revoke(token=token)
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-    )
-    def revoke_token_prefix(self, prefix):
-        """POST /auth/token/revoke-prefix/<prefix>
-
-        :param prefix:
-        :type prefix:
-        :return:
-        :rtype:
-        """
-        self._adapter.post("/v1/auth/token/revoke-prefix/{0}".format(prefix))
-
-    def renew_token(self, token=None, increment=None, wrap_ttl=None):
-        """POST /auth/token/renew
-
-        POST /auth/token/renew-self
-
-        :param token:
-        :type token:
-        :param increment:
-        :type increment:
-        :param wrap_ttl:
-        :type wrap_ttl:
-        :return:
-        :rtype:
-
-        For calls expecting to hit the renew-self endpoint please use the "renew_self_token" method instead
-        """
-        params = {
-            "increment": increment,
-        }
-
-        if token is not None:
-            params["token"] = token
-            return self._adapter.post(
-                "/v1/auth/token/renew", json=params, wrap_ttl=wrap_ttl
-            )
-        else:
-            generate_property_deprecation_message(
-                "1.0.0",
-                "renew_token() without token param",
-                "renew_self_token() without token param",
-                "renew_self_token",
-            )
-            return self.renew_self_token(increment=increment, wrap_ttl=wrap_ttl)
-
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.renew_self,
-    )
-    def renew_self_token(self, increment=None, wrap_ttl=None):
-        """
-        POST /auth/token/renew-self
-
-        :param increment:
-        :type increment:
-        :param wrap_ttl:
-        :type wrap_ttl:
-        :return:
-        :rtype:
-        """
-        params = {
-            "increment": increment,
-        }
-
-        return self._adapter.post(
-            "/v1/auth/token/renew-self", json=params, wrap_ttl=wrap_ttl
-        )
-
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.create_or_update_role,
-    )
-    def create_token_role(
-        self,
-        role,
-        allowed_policies=None,
-        disallowed_policies=None,
-        orphan=None,
-        period=None,
-        renewable=None,
-        path_suffix=None,
-        explicit_max_ttl=None,
-    ):
-        """POST /auth/token/roles/<role>
-
-        :param role:
-        :type role:
-        :param allowed_policies:
-        :type allowed_policies:
-        :param disallowed_policies:
-        :type disallowed_policies:
-        :param orphan:
-        :type orphan:
-        :param period:
-        :type period:
-        :param renewable:
-        :type renewable:
-        :param path_suffix:
-        :type path_suffix:
-        :param explicit_max_ttl:
-        :type explicit_max_ttl:
-        :return:
-        :rtype:
-        """
-        params = {
-            "allowed_policies": allowed_policies,
-            "disallowed_policies": disallowed_policies,
-            "orphan": orphan,
-            "period": period,
-            "renewable": renewable,
-            "path_suffix": path_suffix,
-            "explicit_max_ttl": explicit_max_ttl,
-        }
-        return self._adapter.post("/v1/auth/token/roles/{0}".format(role), json=params)
-
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.read_role,
-    )
-    def token_role(self, role):
-        """Returns the named token role.
-
-        :param role:
-        :type role:
-        :return:
-        :rtype:
-        """
-        return self.read("auth/token/roles/{0}".format(role))
-
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.delete_role,
-    )
-    def delete_token_role(self, role):
-        """Deletes the named token role.
-
-        :param role:
-        :type role:
-        :return:
-        :rtype:
-        """
-        return self.delete("auth/token/roles/{0}".format(role))
-
-    @utils.deprecated_method(
-        to_be_removed_in_version="1.0.0",
-        new_method=api.auth_methods.Token.list_roles,
-    )
-    def list_token_roles(self):
-        """GET /auth/token/roles?list=true
-
-        :return:
-        :rtype:
-        """
-        return self.list("auth/token/roles")
+        return self.auth.token.revoke_self()
 
     def logout(self, revoke_token=False):
         """Clears the token used for authentication, optionally revoking it before doing so.
