@@ -17,14 +17,14 @@ Enabling the Auth Method
     github_auth_path = 'company-github'
     description = 'Auth method for use by team members in our company's Github organization'
 
-    if '%s/' % github_auth_path not in vault_client.list_auth_backends():
+    if '%s/' % github_auth_path not in vault_client.sys.list_auth_methods()['data']:
         print('Enabling the github auth backend at mount_point: {path}'.format(
             path=github_auth_path,
         ))
-        client.enable_auth_backend(
-            backend_type='github',
+        client.sys.enable_auth_method(
+            method_type='github',
             description=description,
-            mount_point=github_auth_path,
+            path=github_auth_path,
         )
 
 Configure Connection Parameters
@@ -149,6 +149,3 @@ Log in and automatically update the underlying "token" attribute on the :py:meth
     import hvac
     client = hvac.Client()
     login_response = client.auth.github.login(token='some personal github token')
-
-
-

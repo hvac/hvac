@@ -14,32 +14,35 @@ from hvac.api.auth_methods.mfa import Mfa
 from hvac.api.auth_methods.oidc import OIDC
 from hvac.api.auth_methods.okta import Okta
 from hvac.api.auth_methods.radius import Radius
+from hvac.api.auth_methods.token import Token
 from hvac.api.auth_methods.aws import Aws
 from hvac.api.auth_methods.cert import Cert
 from hvac.api.vault_api_category import VaultApiCategory
 from hvac.utils import generate_method_deprecation_message
 
 __all__ = (
-    'AuthMethods',
-    'AppRole',
-    'Azure',
-    'Gcp',
-    'Github',
-    'JWT',
-    'Kubernetes',
-    'Ldap',
-    'Userpass',
-    'Mfa',
-    'OIDC',
-    'Okta',
-    'Radius',
-    'Aws',
-    'Cert',
+    "AuthMethods",
+    "AppRole",
+    "Azure",
+    "Gcp",
+    "Github",
+    "JWT",
+    "Kubernetes",
+    "Ldap",
+    "Userpass",
+    "Mfa",
+    "OIDC",
+    "Okta",
+    "Radius",
+    "Token",
+    "Aws",
+    "Cert",
 )
 
 
 class AuthMethods(VaultApiCategory):
     """Auth Methods."""
+
     implemented_classes = [
         AppRole,
         Azure,
@@ -53,13 +56,13 @@ class AuthMethods(VaultApiCategory):
         OIDC,
         Okta,
         Radius,
+        Token,
         Aws,
         Cert,
     ]
     unimplemented_classes = [
-        'AppId',
-        'AliCloud',
-        'Token',
+        "AppId",
+        "AliCloud",
     ]
 
     def __call__(self, *args, **kwargs):
@@ -69,17 +72,17 @@ class AuthMethods(VaultApiCategory):
         this class.
         """
         deprecation_message = generate_method_deprecation_message(
-            to_be_removed_in_version='0.9.0',
-            old_method_name='auth',
-            method_name='login',
-            module_name='adapters.Request',
+            to_be_removed_in_version="0.9.0",
+            old_method_name="auth",
+            method_name="login",
+            module_name="adapters.Request",
         )
-        warnings.simplefilter('always', DeprecationWarning)
+        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             message=deprecation_message,
             category=DeprecationWarning,
             stacklevel=2,
         )
-        warnings.simplefilter('default', DeprecationWarning)
+        warnings.simplefilter("default", DeprecationWarning)
 
         return self._adapter.login(*args, **kwargs)

@@ -10,28 +10,57 @@ from hvac.api.auth_methods import Azure
 from tests import utils
 
 
-@skipIf(utils.vault_version_lt('0.10.0'), "Azure auth method not available before Vault version 0.10.0")
+@skipIf(
+    utils.vault_version_lt("0.10.0"),
+    "Azure auth method not available before Vault version 0.10.0",
+)
 class TestAzure(TestCase):
-    TEST_MOUNT_POINT = 'azure-test'
+    TEST_MOUNT_POINT = "azure-test"
 
-    @parameterized.expand([
-        ('success', dict(), None,),
-        ('with subscription_id', dict(subscription_id='my_subscription_id'), None,),
-        ('with resource_group_name', dict(resource_group_name='my_resource_group_name'), None,),
-        ('with vm_name', dict(vm_name='my_vm_name'), None,),
-        ('with vmss_name', dict(vmss_name='my_vmss_name'), None,),
-        ('with vm_name and vmss_name', dict(vm_name='my_vm_name', vmss_name='my_vmss_name'), None,),
-    ])
+    @parameterized.expand(
+        [
+            (
+                "success",
+                dict(),
+                None,
+            ),
+            (
+                "with subscription_id",
+                dict(subscription_id="my_subscription_id"),
+                None,
+            ),
+            (
+                "with resource_group_name",
+                dict(resource_group_name="my_resource_group_name"),
+                None,
+            ),
+            (
+                "with vm_name",
+                dict(vm_name="my_vm_name"),
+                None,
+            ),
+            (
+                "with vmss_name",
+                dict(vmss_name="my_vmss_name"),
+                None,
+            ),
+            (
+                "with vm_name and vmss_name",
+                dict(vm_name="my_vm_name", vmss_name="my_vmss_name"),
+                None,
+            ),
+        ]
+    )
     @requests_mock.Mocker()
     def test_login(self, label, test_params, raises, requests_mocker):
-        role_name = 'hvac'
+        role_name = "hvac"
         test_policies = [
             "default",
             "dev",
             "prod",
         ]
         expected_status_code = 200
-        mock_url = 'http://localhost:8200/v1/auth/{mount_point}/login'.format(
+        mock_url = "http://localhost:8200/v1/auth/{mount_point}/login".format(
             mount_point=self.TEST_MOUNT_POINT,
         )
         mock_response = {
@@ -44,7 +73,7 @@ class TestAzure(TestCase):
             },
         }
         requests_mocker.register_uri(
-            method='POST',
+            method="POST",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
@@ -54,19 +83,19 @@ class TestAzure(TestCase):
             with self.assertRaises(raises):
                 azure.login(
                     role=role_name,
-                    jwt='my-jwt',
+                    jwt="my-jwt",
                     mount_point=self.TEST_MOUNT_POINT,
                     **test_params
                 )
         else:
             login_response = azure.login(
                 role=role_name,
-                jwt='my-jwt',
+                jwt="my-jwt",
                 mount_point=self.TEST_MOUNT_POINT,
                 **test_params
             )
-            logging.debug('login_response: %s' % login_response)
+            logging.debug("login_response: %s" % login_response)
             self.assertEqual(
-                first=login_response['auth']['policies'],
+                first=login_response["auth"]["policies"],
                 second=test_policies,
             )

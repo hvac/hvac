@@ -1,8 +1,9 @@
 -r ./requirements.txt
 Authlib
-flake8
+black
 Flask
 Flask-SQLAlchemy
+flake8
 codecov
 coverage
 ipaddress

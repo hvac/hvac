@@ -19,30 +19,45 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
-    'Audit',
-    'Auth',
-    'Capabilities',
-    'Health',
-    'Init',
-    'Key',
-    'Leader',
-    'Lease',
-    'Mount',
-    'Namespace',
-    'Policy',
-    'Raft',
-    'Seal',
-    'SystemBackend',
-    'SystemBackendMixin',
-    'Wrapping',
+    "Audit",
+    "Auth",
+    "Capabilities",
+    "Health",
+    "Init",
+    "Key",
+    "Leader",
+    "Lease",
+    "Mount",
+    "Namespace",
+    "Policy",
+    "Raft",
+    "Seal",
+    "SystemBackend",
+    "SystemBackendMixin",
+    "Wrapping",
 )
 
 
 logger = logging.getLogger(__name__)
 
 
-class SystemBackend(VaultApiCategory, Audit, Auth, Capabilities, Health, Init, Key, Leader, Lease, Mount, Namespace,
-                    Policy, Raft, Seal, Wrapping):
+class SystemBackend(
+    VaultApiCategory,
+    Audit,
+    Auth,
+    Capabilities,
+    Health,
+    Init,
+    Key,
+    Leader,
+    Lease,
+    Mount,
+    Namespace,
+    Policy,
+    Raft,
+    Seal,
+    Wrapping,
+):
     implemented_classes = [
         Audit,
         Auth,

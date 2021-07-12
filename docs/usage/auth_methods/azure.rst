@@ -19,14 +19,14 @@ Enabling the Auth Method
     azure_auth_path = 'company-azure'
     description = 'Auth method for use by team members in our company's Azure organization'
 
-    if '%s/' % azure_auth_path not in vault_client.list_auth_backends():
+    if '%s/' % azure_auth_path not in vault_client.sys.list_auth_methods()['data']:
         print('Enabling the azure auth backend at mount_point: {path}'.format(
             path=azure_auth_path,
         ))
-        client.enable_auth_backend(
-            backend_type='azure',
+        client.sys.enable_auth_method(
+            method_type='azure',
             description=description,
-            mount_point=azure_auth_path,
+            path=azure_auth_path,
         )
 
 

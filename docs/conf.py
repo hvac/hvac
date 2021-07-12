@@ -6,60 +6,61 @@
 # Set up import path to allow the autodoc extension to find the local module code.
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- Project information -----------------------------------------------------
 
-project = u'hvac'
-copyright = u'2018-2020, Ian Unruh, Jeffrey Hogan'
-author = u'Ian Unruh, Jeffrey Hogan'
+project = u"hvac"
+copyright = u"2018-2020, Ian Unruh, Jeffrey Hogan"
+author = u"Ian Unruh, Jeffrey Hogan"
 
 # The short X.Y version
-version = '0.10.14'
+version = "0.11.0"
 # The full version, including alpha/beta/rc tags
-release = '0.10.14'
+release = "0.11.0"
 
 
 # -- General configuration ---------------------------------------------------
 
 extensions = [
-    'docs.ext.hvac_doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'm2r2',
-    'autodocsumm',
+    "docs.ext.hvac_doctest",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "m2r2",
+    "autodocsumm",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md"]
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 language = None
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
-pygments_style = 'sphinx'
+exclude_patterns = [u"_build", "Thumbs.db", ".DS_Store"]
+pygments_style = "sphinx"
 
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
-html_context = {'no_skippy': True}
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
+html_context = {"no_skippy": True}
 html_theme_options = {
     # Toc options
-    'collapse_navigation': False,
+    "collapse_navigation": False,
 }
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'hvacdoc'
+htmlhelp_basename = "hvacdoc"
 
 # -- Options for Epub output -------------------------------------------------
 
@@ -70,13 +71,13 @@ epub_publisher = author
 epub_copyright = copyright
 
 # A list of files that should not be packed into the epub file.
-epub_exclude_files = ['search.html']
+epub_exclude_files = ["search.html"]
 
 # -- doctest configuration -------------------------------------------------
-if os.getenv('READ_THE_DOCS_BUILD') is not None:
+if os.getenv("READ_THE_DOCS_BUILD") is not None:
     doctest_global_enabled = False
 
-doctest_global_setup = '''
+doctest_global_setup = """
 import os
 from pprint import pprint, pformat
 
@@ -93,17 +94,17 @@ server_cert_path = test_utils.get_config_file_path('server-cert.pem')
 
 manager, mocker = doctest_global_setup()
 client = manager.client
-'''
+"""
 
-doctest_global_cleanup = '''
+doctest_global_cleanup = """
 mocker.stop()
 manager.stop()
-'''
+"""
 
 # -- Autodoc configuration -------------------------------------------------
 
 autodoc_default_options = {
-    'autosummary': True,
+    "autosummary": True,
 }
 
 

@@ -18,7 +18,7 @@ pip install -e .
 Integration tests will automatically start a Vault server in the background. Just make sure
 the latest `vault` binary is available in your `PATH`.
 
-1. [Install Vault](https://vaultproject.io/docs/install/index.html) or execute `tests/scripts/install-vault.sh`. Note: by default this script installs the OSS version of Vault. An enterprise trial version of the Vault binary is available for testing (but has an explicitly limited runtime). To run integration test cases requiring enterprise Vault, you can invoke the installation script with: `install-vault.sh <desired version> 'enterprise'`
+1. [Install Vault](https://vaultproject.io/docs/install/index.html)
 2. Install requirements
 
 ```

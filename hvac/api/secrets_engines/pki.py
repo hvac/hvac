@@ -4,7 +4,7 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'pki'
+DEFAULT_MOUNT_POINT = "pki"
 
 
 class Pki(VaultApiBase):
@@ -26,7 +26,7 @@ class Pki(VaultApiBase):
         :return: The certificate as pem.
         :rtype: str
         """
-        api_path = utils.format_url('/v1/{mount_point}/ca/pem', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/ca/pem", mount_point=mount_point)
         response = self._adapter.get(
             url=api_path,
         )
@@ -45,7 +45,9 @@ class Pki(VaultApiBase):
         :return: The certificate chain as pem.
         :rtype: str
         """
-        api_path = utils.format_url('/v1/{mount_point}/ca_chain', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/ca_chain", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
@@ -67,7 +69,7 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/cert/{serial}',
+            "/v1/{mount_point}/cert/{serial}",
             mount_point=mount_point,
             serial=serial,
         )
@@ -88,7 +90,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/certs', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/certs", mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -107,9 +109,11 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'pem_bundle': pem_bundle,
+            "pem_bundle": pem_bundle,
         }
-        api_path = utils.format_url('/v1/{mount_point}/config/ca', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/ca", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -128,12 +132,20 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/crl", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
 
-    def set_crl_configuration(self, expiry=None, disable=None, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def set_crl_configuration(
+        self,
+        expiry=None,
+        disable=None,
+        extra_params=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Set CRL Configuration.
 
         Setting the duration for which the generated CRL should be marked valid.
@@ -150,13 +162,17 @@ class Pki(VaultApiBase):
         """
         if extra_params is None:
             extra_params = {}
-        api_path = utils.format_url('/v1/{mount_point}/config/crl', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/crl", mount_point=mount_point
+        )
         params = extra_params
         params.update(
-            utils.remove_nones({
-                'expiry': expiry,
-                'disable': disable,
-            })
+            utils.remove_nones(
+                {
+                    "expiry": expiry,
+                    "disable": disable,
+                }
+            )
         )
 
         return self._adapter.post(
@@ -177,7 +193,9 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/urls', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/urls", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
@@ -197,7 +215,9 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/config/urls', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/urls", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -217,7 +237,9 @@ class Pki(VaultApiBase):
         :return: The content of the request e.g. CRL string representation.
         :rtype: str
         """
-        api_path = utils.format_url('/v1/{mount_point}/crl/pem', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/crl/pem", mount_point=mount_point
+        )
         response = self._adapter.get(
             url=api_path,
         )
@@ -237,12 +259,21 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/crl/rotate', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/crl/rotate", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
 
-    def generate_intermediate(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
+    def generate_intermediate(
+        self,
+        type,
+        common_name,
+        extra_params=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        wrap_ttl=None,
+    ):
         """Generate Intermediate.
 
         Generates a new private key and a CSR for signing.
@@ -266,13 +297,13 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/intermediate/generate/{type}',
+            "/v1/{mount_point}/intermediate/generate/{type}",
             mount_point=mount_point,
             type=type,
         )
 
         params = extra_params
-        params['common_name'] = common_name
+        params["common_name"] = common_name
 
         return self._adapter.post(
             url=api_path,
@@ -296,19 +327,26 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/intermediate/set-signed',
+            "/v1/{mount_point}/intermediate/set-signed",
             mount_point=mount_point,
         )
 
         params = {}
-        params['certificate'] = certificate
+        params["certificate"] = certificate
 
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def generate_certificate(self, name, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
+    def generate_certificate(
+        self,
+        name,
+        common_name,
+        extra_params=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        wrap_ttl=None,
+    ):
         """Generate Certificate.
 
         Generates a new set of credentials (private key and certificate) based on the role named in the endpoint.
@@ -332,13 +370,13 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/issue/{name}',
+            "/v1/{mount_point}/issue/{name}",
             mount_point=mount_point,
             name=name,
         )
 
         params = extra_params
-        params['common_name'] = common_name
+        params["common_name"] = common_name
 
         return self._adapter.post(
             url=api_path,
@@ -361,17 +399,19 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/revoke', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/revoke", mount_point=mount_point)
 
         params = {}
-        params['serial_number'] = serial_number
+        params["serial_number"] = serial_number
 
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def create_or_update_role(self, name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(
+        self, name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Create/Update Role.
 
         Creates or updates the role definition.
@@ -391,13 +431,13 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
 
         params = extra_params
-        params['name'] = name
+        params["name"] = name
 
         return self._adapter.post(
             url=api_path,
@@ -420,7 +460,7 @@ class Pki(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -441,7 +481,7 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/{mount_point}/roles', mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/roles", mount_point=mount_point)
         return self._adapter.list(
             url=api_path,
         )
@@ -462,7 +502,7 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/roles/{name}',
+            "/v1/{mount_point}/roles/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -471,7 +511,14 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def generate_root(self, type, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT, wrap_ttl=None):
+    def generate_root(
+        self,
+        type,
+        common_name,
+        extra_params=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        wrap_ttl=None,
+    ):
         """Generate Root.
 
         Generates a new self-signed CA certificate and private key.
@@ -495,13 +542,13 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/root/generate/{type}',
+            "/v1/{mount_point}/root/generate/{type}",
             mount_point=mount_point,
             type=type,
         )
 
         params = extra_params
-        params['common_name'] = common_name
+        params["common_name"] = common_name
 
         return self._adapter.post(
             url=api_path,
@@ -523,7 +570,7 @@ class Pki(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url(
-            '/v1/{mount_point}/root',
+            "/v1/{mount_point}/root",
             mount_point=mount_point,
         )
 
@@ -531,7 +578,9 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
-    def sign_intermediate(self, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_intermediate(
+        self, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Sign Intermediate.
 
         Issue a certificate with appropriate values for acting as an intermediate CA.
@@ -552,11 +601,13 @@ class Pki(VaultApiBase):
         """
         if extra_params is None:
             extra_params = {}
-        api_path = utils.format_url('/v1/{mount_point}/root/sign-intermediate', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/root/sign-intermediate", mount_point=mount_point
+        )
 
         params = extra_params
-        params['csr'] = csr
-        params['common_name'] = common_name
+        params["csr"] = csr
+        params["common_name"] = common_name
 
         return self._adapter.post(
             url=api_path,
@@ -578,17 +629,21 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = utils.format_url('/v1/{mount_point}/root/sign-self-issued', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/{mount_point}/root/sign-self-issued", mount_point=mount_point
+        )
 
         params = {}
-        params['certificate'] = certificate
+        params["certificate"] = certificate
 
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def sign_certificate(self, name, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_certificate(
+        self, name, csr, common_name, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Sign Certificate.
 
         Signs a new certificate based upon the provided CSR and the supplied parameters.
@@ -612,21 +667,23 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/sign/{name}',
+            "/v1/{mount_point}/sign/{name}",
             mount_point=mount_point,
             name=name,
         )
 
         params = extra_params
-        params['csr'] = csr
-        params['common_name'] = common_name
+        params["csr"] = csr
+        params["common_name"] = common_name
 
         return self._adapter.post(
             url=api_path,
             json=params,
         )
 
-    def sign_verbatim(self, csr, name=False, extra_params=None, mount_point=DEFAULT_MOUNT_POINT):
+    def sign_verbatim(
+        self, csr, name=False, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Sign Verbatim.
 
         Signs a new certificate based upon the provided CSR.
@@ -647,9 +704,9 @@ class Pki(VaultApiBase):
         """
         if extra_params is None:
             extra_params = {}
-        url_to_transform = '/v1/{mount_point}/sign-verbatim'
+        url_to_transform = "/v1/{mount_point}/sign-verbatim"
         if name:
-            url_to_transform = url_to_transform + '/{name}'
+            url_to_transform = url_to_transform + "/{name}"
 
         api_path = utils.format_url(
             url_to_transform,
@@ -658,7 +715,7 @@ class Pki(VaultApiBase):
         )
 
         params = extra_params
-        params['csr'] = csr
+        params["csr"] = csr
 
         return self._adapter.post(
             url=api_path,
@@ -684,7 +741,7 @@ class Pki(VaultApiBase):
         if extra_params is None:
             extra_params = {}
         api_path = utils.format_url(
-            '/v1/{mount_point}/tidy',
+            "/v1/{mount_point}/tidy",
             mount_point=mount_point,
         )
 

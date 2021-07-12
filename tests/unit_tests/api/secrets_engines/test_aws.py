@@ -13,26 +13,26 @@ from hvac.exceptions import ParamValidationError
 
 
 class TestAws(TestCase):
-    @parameterized.expand([
-        param(
-            'success',
-        ),
-    ])
-    def test_rotate_root_iam_credentials(self, test_label, mount_point=DEFAULT_MOUNT_POINT):
+    @parameterized.expand(
+        [
+            param(
+                "success",
+            ),
+        ]
+    )
+    def test_rotate_root_iam_credentials(
+        self, test_label, mount_point=DEFAULT_MOUNT_POINT
+    ):
         expected_status_code = 200
-        mock_response = {
-          "data": {
-            "access_key": "AKIA..."
-          }
-        }
+        mock_response = {"data": {"access_key": "AKIA..."}}
         aws = Aws(adapter=JSONAdapter())
-        mock_url = 'http://localhost:8200/v1/{mount_point}/config/rotate-root'.format(
+        mock_url = "http://localhost:8200/v1/{mount_point}/config/rotate-root".format(
             mount_point=mount_point,
         )
-        logging.debug('Mocking URL: %s' % mock_url)
+        logging.debug("Mocking URL: %s" % mock_url)
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
-                method='POST',
+                method="POST",
                 url=mock_url,
                 status_code=expected_status_code,
                 json=mock_response,
@@ -40,42 +40,51 @@ class TestAws(TestCase):
             rotate_root_response = aws.rotate_root_iam_credentials(
                 mount_point=mount_point,
             )
-        logging.debug('rotate_root_response: %s' % rotate_root_response)
+        logging.debug("rotate_root_response: %s" % rotate_root_response)
         self.assertEqual(
             first=mock_response,
             second=rotate_root_response,
         )
 
-    @parameterized.expand([
-        param(
-            'success',
-        ),
-        param(
-            'invalid endpoint',
-            endpoint='cats',
-            raises=ParamValidationError,
-            exception_msg='cats'
-        ),
-    ])
-    def test_generate_credentials(self, test_label, role_name='hvac-test-role', mount_point=DEFAULT_MOUNT_POINT,
-                                  endpoint='creds', raises=None, exception_msg=''):
+    @parameterized.expand(
+        [
+            param(
+                "success",
+            ),
+            param(
+                "invalid endpoint",
+                endpoint="cats",
+                raises=ParamValidationError,
+                exception_msg="cats",
+            ),
+        ]
+    )
+    def test_generate_credentials(
+        self,
+        test_label,
+        role_name="hvac-test-role",
+        mount_point=DEFAULT_MOUNT_POINT,
+        endpoint="creds",
+        raises=None,
+        exception_msg="",
+    ):
         expected_status_code = 200
         mock_response = {
-          "data": {
-            "access_key": "AKIA...",
-            "secret_key": "xlCs...",
-            "security_token": None
-          }
+            "data": {
+                "access_key": "AKIA...",
+                "secret_key": "xlCs...",
+                "security_token": None,
+            }
         }
-        mock_url = 'http://localhost:8200/v1/{mount_point}/creds/{role_name}'.format(
+        mock_url = "http://localhost:8200/v1/{mount_point}/creds/{role_name}".format(
             mount_point=mount_point,
             role_name=role_name,
         )
-        logging.debug('Mocking URL: %s' % mock_url)
+        logging.debug("Mocking URL: %s" % mock_url)
         aws = Aws(adapter=JSONAdapter())
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
-                method='GET',
+                method="GET",
                 url=mock_url,
                 status_code=expected_status_code,
                 json=mock_response,
@@ -98,7 +107,7 @@ class TestAws(TestCase):
                     endpoint=endpoint,
                     mount_point=mount_point,
                 )
-                logging.debug('gen_creds_response: %s' % gen_creds_response)
+                logging.debug("gen_creds_response: %s" % gen_creds_response)
                 self.assertEqual(
                     first=mock_response,
                     second=gen_creds_response,

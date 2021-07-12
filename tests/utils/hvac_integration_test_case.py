@@ -22,18 +22,22 @@ class HvacIntegrationTestCase(object):
     @classmethod
     def setUpClass(cls):
         """Use the ServerManager class to launch a vault server process."""
-        config_paths = [get_config_file_path('vault-tls.hcl')]
-        if distutils.spawn.find_executable('consul') is None and cls.enable_vault_ha:
-            logging.warning('Unable to run Vault in HA mode, consul binary not found in path.')
+        config_paths = [get_config_file_path("vault-tls.hcl")]
+        if distutils.spawn.find_executable("consul") is None and cls.enable_vault_ha:
+            logging.warning(
+                "Unable to run Vault in HA mode, consul binary not found in path."
+            )
             cls.enable_vault_ha = False
         if is_enterprise():
             # TODO: figure out why this bit isn't working
-            logging.warning('Unable to run Vault in HA mode, enterprise Vault version not currently supported.')
+            logging.warning(
+                "Unable to run Vault in HA mode, enterprise Vault version not currently supported."
+            )
             cls.enable_vault_ha = False
         if cls.enable_vault_ha:
             config_paths = [
-                get_config_file_path('vault-ha-node1.hcl'),
-                get_config_file_path('vault-ha-node2.hcl'),
+                get_config_file_path("vault-ha-node1.hcl"),
+                get_config_file_path("vault-ha-node2.hcl"),
             ]
         cls.manager = ServerManager(
             config_paths=config_paths,
@@ -60,7 +64,7 @@ class HvacIntegrationTestCase(object):
 
         # Squelch deprecating warnings during tests as we may want to deliberately call deprecated methods and/or verify
         # warnings invocations.
-        warnings_patcher = patch('hvac.utils.warnings', spec=warnings)
+        warnings_patcher = patch("hvac.utils.warnings", spec=warnings)
         self.mock_warnings = warnings_patcher.start()
 
     def tearDown(self):
@@ -85,21 +89,23 @@ class HvacIntegrationTestCase(object):
         :rtype: int
         """
         expected_ttl = 0
-        if not isinstance(ttl_value, int) and ttl_value != '':
-            regexp_matches = re.findall(r'(?P<duration>[0-9]+)(?P<unit>[smh])', ttl_value)
+        if not isinstance(ttl_value, int) and ttl_value != "":
+            regexp_matches = re.findall(
+                r"(?P<duration>[0-9]+)(?P<unit>[smh])", ttl_value
+            )
             if regexp_matches:
                 for regexp_match in regexp_matches:
                     duration, unit = regexp_match
-                    if unit == 'm':
+                    if unit == "m":
                         # convert minutes to seconds
                         expected_ttl += int(duration) * 60
-                    elif unit == 'h':
+                    elif unit == "h":
                         # convert hours to seconds
                         expected_ttl += int(duration) * 60 * 60
                     else:
                         expected_ttl += int(duration)
 
-        elif ttl_value == '':
+        elif ttl_value == "":
             expected_ttl = 0
         return expected_ttl
 
@@ -113,15 +119,8 @@ class HvacIntegrationTestCase(object):
         policy = "write"
         }
         """
-        obj = {
-            'path': {
-                'sys': {
-                    'policy': 'deny'},
-                'secret': {
-                    'policy': 'write'}
-            }
-        }
-        self.client.set_policy(name, text)
+        obj = {"path": {"sys": {"policy": "deny"}, "secret": {"policy": "write"}}}
+        self.client.sys.create_or_update_policy(name, text)
         return text, obj
 
     def get_vault_addr_by_standby_status(self, standby_status=True):
@@ -134,21 +133,32 @@ class HvacIntegrationTestCase(object):
         """
         vault_addresses = self.manager.get_active_vault_addresses()
         for vault_address in vault_addresses:
-            health_status = create_client(url=vault_address).sys.read_health_status(method='GET')
+            health_status = create_client(url=vault_address).sys.read_health_status(
+                method="GET"
+            )
             if not isinstance(health_status, dict):
                 health_status = health_status.json()
-            if health_status['standby'] == standby_status:
+            if health_status["standby"] == standby_status:
                 return vault_address
 
-    def add_admin_approle_role(self, role_id, role_name='test-admin-role', path='approle'):
+    def add_admin_approle_role(
+        self, role_id, role_name="test-admin-role", path="approle"
+    ):
         test_admin_policy = {
-            'path': {
-                '*': {
-                    'capabilities': ["sudo", "create", "read", "update", "delete", "list"],
+            "path": {
+                "*": {
+                    "capabilities": [
+                        "sudo",
+                        "create",
+                        "read",
+                        "update",
+                        "delete",
+                        "list",
+                    ],
                 },
             },
         }
-        test_admin_policy_name = 'test-admin-approle-policy'
+        test_admin_policy_name = "test-admin-approle-policy"
         self.client.sys.create_or_update_policy(
             name=test_admin_policy_name,
             policy=test_admin_policy,
@@ -167,13 +177,13 @@ class HvacIntegrationTestCase(object):
             role_name=role_name,
             mount_point=self.TEST_APPROLE_PATH,
         )
-        return secret_id_resp['data']['secret_id']
+        return secret_id_resp["data"]["secret_id"]
 
-    def login_using_admin_approle_role(self, role_id, role_name='test-admin-role', path='approle'):
+    def login_using_admin_approle_role(
+        self, role_id, role_name="test-admin-role", path="approle"
+    ):
         secret_id = self.add_admin_approle_role(
-            role_id=role_id,
-            role_name=role_name,
-            path=path
+            role_id=role_id, role_name=role_name, path=path
         )
 
         self.client.auth.approle.login(

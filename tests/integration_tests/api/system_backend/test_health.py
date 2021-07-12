@@ -14,46 +14,53 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
         self.manager.unseal()
         super(TestHealth, self).tearDown()
 
-    @parameterized.expand([
-        param(
-            'default params',
-        ),
-        param(
-            'unsealed standby node HEAD method',
-            use_standby_node=True,
-            method='HEAD',
-            expected_status_code=429,
-            ha_required=True,
-        ),
-        param(
-            'unsealed standby node GET method',
-            use_standby_node=True,
-            method='GET',
-            expected_status_code=429,
-            ha_required=True,
-        ),
-        param(
-            'sealed standby node HEAD method',
-            use_standby_node=True,
-            method='HEAD',
-            expected_status_code=503,
-            seal_first=True,
-            ha_required=True,
-        ),
-        param(
-            'sealed standby node GET method',
-            use_standby_node=True,
-            method='GET',
-            expected_status_code=503,
-            seal_first=True,
-            ha_required=True,
-        ),
-        param(
-            'GET method',
-            method='GET'
-        ),
-    ])
-    def test_read_health_status(self, label, method='HEAD', use_standby_node=False, expected_status_code=200, seal_first=False, ha_required=False):
+    @parameterized.expand(
+        [
+            param(
+                "default params",
+            ),
+            param(
+                "unsealed standby node HEAD method",
+                use_standby_node=True,
+                method="HEAD",
+                expected_status_code=429,
+                ha_required=True,
+            ),
+            param(
+                "unsealed standby node GET method",
+                use_standby_node=True,
+                method="GET",
+                expected_status_code=429,
+                ha_required=True,
+            ),
+            param(
+                "sealed standby node HEAD method",
+                use_standby_node=True,
+                method="HEAD",
+                expected_status_code=503,
+                seal_first=True,
+                ha_required=True,
+            ),
+            param(
+                "sealed standby node GET method",
+                use_standby_node=True,
+                method="GET",
+                expected_status_code=503,
+                seal_first=True,
+                ha_required=True,
+            ),
+            param("GET method", method="GET"),
+        ]
+    )
+    def test_read_health_status(
+        self,
+        label,
+        method="HEAD",
+        use_standby_node=False,
+        expected_status_code=200,
+        seal_first=False,
+        ha_required=False,
+    ):
         """Test the Health system backend class's "read_health_status" method.
 
         :param label: Label for a given parameterized test case.
@@ -71,21 +78,23 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
         """
         if ha_required and not self.enable_vault_ha:
             # Conditional to allow folks to run this test class without requiring consul to be installed locally.
-            self.skipTest('Skipping test case, Vault HA required but not available.')
+            self.skipTest("Skipping test case, Vault HA required but not available.")
         if seal_first:
             # Standby nodes can't be sealed directly.
             # I.e.: "vault cannot seal when in standby mode; please restart instead"
             self.manager.restart_vault_cluster()
 
         # Grab a Vault node address for our desired standby status and create a one-off client configured for that address.
-        vault_addr = self.get_vault_addr_by_standby_status(standby_status=use_standby_node)
-        logging.debug('vault_addr being used: %s' % vault_addr)
+        vault_addr = self.get_vault_addr_by_standby_status(
+            standby_status=use_standby_node
+        )
+        logging.debug("vault_addr being used: %s" % vault_addr)
         client = create_client(url=vault_addr)
 
         read_status_response = client.sys.read_health_status(
             method=method,
         )
-        logging.debug('read_status_response: %s' % read_status_response)
+        logging.debug("read_status_response: %s" % read_status_response)
         if expected_status_code == 200:
             self.assertTrue(read_status_response)
         else:
@@ -93,9 +102,7 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
                 first=read_status_response.status_code,
                 second=expected_status_code,
             )
-        if method != 'HEAD':
+        if method != "HEAD":
             if not isinstance(read_status_response, dict):
                 read_status_response = read_status_response.json()
-            self.assertTrue(
-                expr=read_status_response['initialized']
-            )
+            self.assertTrue(expr=read_status_response["initialized"])

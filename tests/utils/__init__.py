@@ -1,5 +1,6 @@
 """Collection of methods used by various hvac test cases."""
 import base64
+import json
 import logging
 import operator
 import os
@@ -7,27 +8,27 @@ import re
 import socket
 import subprocess
 import sys
-from unittest import SkipTest
 from distutils.spawn import find_executable
 from distutils.version import StrictVersion
+from unittest import SkipTest
 
 from hvac import Client
 
 logger = logging.getLogger(__name__)
 
-VERSION_REGEX = re.compile(r'Vault v([0-9.]+)')
-LATEST_VAULT_VERSION = '1.1.3'
+VERSION_REGEX = re.compile(r"Vault v([0-9.]+)")
+LATEST_VAULT_VERSION = "1.1.3"
 
 
 def get_vault_version_string():
-    if 'cache' in get_vault_version_string.__dict__:
+    if "cache" in get_vault_version_string.__dict__:
         return get_vault_version_string.cache
-    if not find_executable('vault'):
-        raise SkipTest('Vault executable not found')
-    command = ['vault', '-version']
+    if not find_executable("vault"):
+        raise SkipTest("Vault executable not found")
+    command = ["vault", "-version"]
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
-    version_string = output.strip().split()[1].lstrip('v')
+    version_string = output.strip().split()[1].lstrip("v")
     get_vault_version_string.cache = version_string
     return version_string
 
@@ -35,14 +36,14 @@ def get_vault_version_string():
 def get_installed_vault_version():
     version_string = get_vault_version_string()
     # replace any '-beta1' type substrings with a StrictVersion parsable version. E.g., 1.0.0-beta1 => 1.0.0b1
-    version = version_string.replace('-', '').replace('beta', 'b')
-    version = version.replace('+ent', '')
+    version = version_string.replace("-", "").replace("beta", "b")
+    version = version.replace("+ent", "")
     return version
 
 
 def is_enterprise():
     version_string = get_vault_version_string()
-    if re.search(r'\+ent$', version_string) is not None:
+    if re.search(r"\+ent$", version_string) is not None:
         return True
     return False
 
@@ -70,14 +71,14 @@ def get_generate_root_otp():
     :return: OTP to use in generate root operations
     :rtype: str
     """
-    if vault_version_ge('1.0.0'):
-        test_otp = 'ygs0vL8GIxu0AjRVEmJ5jLCVq8'
+    if vault_version_ge("1.0.0"):
+        test_otp = "ygs0vL8GIxu0AjRVEmJ5jLCVq8"
     else:
-        test_otp = 'RSMGkAqBH5WnVLrDTbZ+UQ=='
+        test_otp = "RSMGkAqBH5WnVLrDTbZ+UQ=="
     return test_otp
 
 
-def create_client(url='https://localhost:8200', **kwargs):
+def create_client(url="https://localhost:8200", **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
     :param url: Vault address to configure the client with.
@@ -87,9 +88,9 @@ def create_client(url='https://localhost:8200', **kwargs):
     :return: Instantiated :py:class:`hvac.v1.Client` class.
     :rtype: hvac.v1.Client
     """
-    client_cert_path = get_config_file_path('client-cert.pem')
-    client_key_path = get_config_file_path('client-key.pem')
-    server_cert_path = get_config_file_path('server-cert.pem')
+    client_cert_path = get_config_file_path("client-cert.pem")
+    client_key_path = get_config_file_path("client-key.pem")
+    server_cert_path = get_config_file_path("server-cert.pem")
 
     return Client(
         url=url,
@@ -106,7 +107,7 @@ def get_free_port():
     :rtype: int
     """
     s = socket.socket(socket.AF_INET, type=socket.SOCK_STREAM)
-    s.bind(('localhost', 0))
+    s.bind(("localhost", 0))
     address, port = s.getsockname()
     s.close()
     return port
@@ -121,7 +122,7 @@ def load_config_file(filename):
     :rtype: str | unicode
     """
     test_data_path = get_config_file_path(filename)
-    with open(test_data_path, 'r') as f:
+    with open(test_data_path, "r") as f:
         test_data = f.read()
     return test_data
 
@@ -137,7 +138,9 @@ def get_config_file_path(filename):
     :rtype: str | unicode
     """
     # Use __file__ to derive a path relative to this module's location which points to the tests data directory.
-    relative_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'config_files')
+    relative_path = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "config_files"
+    )
     return os.path.join(os.path.abspath(relative_path), filename)
 
 
@@ -151,33 +154,38 @@ def decode_generated_root_token(encoded_token, otp):
     :return: The decoded root token.
     :rtype: str | unicode
     """
-    command = ['vault']
-    if vault_version_ge('0.9.6'):
+    command = ["vault"]
+    if vault_version_ge("0.9.6"):
         # before Vault ~0.9.6, the generate-root command was the first positional argument
         # afterwards, it was moved under the "operator" category
-        command.append('operator')
+        command.append("operator")
 
     command.extend(
         [
-            'generate-root',
-            '-address', 'https://127.0.0.1:8200',
-            '-tls-skip-verify',
-            '-decode', encoded_token,
-            '-otp', otp,
+            "generate-root",
+            "-address",
+            "https://127.0.0.1:8200",
+            "-tls-skip-verify",
+            "-decode",
+            encoded_token,
+            "-otp",
+            otp,
         ]
     )
-    process = subprocess.Popen(**get_popen_kwargs(
-        args=command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    ))
+    process = subprocess.Popen(
+        **get_popen_kwargs(args=command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    )
 
     stdout, stderr = process.communicate()
     logging.debug('decode_generated_root_token stdout: "%s"' % str(stdout))
-    if stderr != '':
-        logging.error('decode_generated_root_token stderr: %s' % stderr)
+    if stderr != "":
+        logging.error("decode_generated_root_token stderr: %s" % stderr)
 
-    new_token = stdout.replace('Root token:', '')
+    try:
+        # On the off chance VAULT_FORMAT=json or such is set in the test environment:
+        new_token = json.loads(stdout)["token"]
+    except ValueError:
+        new_token = stdout.replace("Root token:", "")
     new_token = new_token.strip()
     return new_token
 
@@ -191,7 +199,7 @@ def get_popen_kwargs(**popen_kwargs):
     :rtype: dict
     """
     if sys.version_info[0] >= 3:
-        popen_kwargs['encoding'] = 'utf-8'
+        popen_kwargs["encoding"] = "utf-8"
     return popen_kwargs
 
 
@@ -204,18 +212,20 @@ def base64ify(bytes_or_str):
     :rtype:
     """
     if sys.version_info[0] >= 3 and isinstance(bytes_or_str, str):
-        input_bytes = bytes_or_str.encode('utf8')
+        input_bytes = bytes_or_str.encode("utf8")
     else:
         input_bytes = bytes_or_str
 
     output_bytes = base64.urlsafe_b64encode(input_bytes)
     if sys.version_info[0] >= 3:
-        return output_bytes.decode('ascii')
+        return output_bytes.decode("ascii")
     else:
         return output_bytes
 
 
-def configure_pki(client, common_name='hvac.com', role_name='my-role', mount_point='pki'):
+def configure_pki(
+    client, common_name="hvac.com", role_name="my-role", mount_point="pki"
+):
     """Helper function to configure a pki backend for integration tests that need to work with lease IDs.
 
     :param client: Authenticated hvac Client instance.
@@ -229,31 +239,31 @@ def configure_pki(client, common_name='hvac.com', role_name='my-role', mount_poi
     :return: Nothing.
     :rtype: None.
     """
-    if '{path}/'.format(path=mount_point) in client.sys.list_mounted_secrets_engines():
+    if "{path}/".format(path=mount_point) in client.sys.list_mounted_secrets_engines():
         client.sys.disable_secrets_engine(mount_point)
 
-    client.sys.enable_secrets_engine(backend_type='pki', path=mount_point)
+    client.sys.enable_secrets_engine(backend_type="pki", path=mount_point)
 
     client.write(
-        path='{path}/root/generate/internal'.format(path=mount_point),
+        path="{path}/root/generate/internal".format(path=mount_point),
         common_name=common_name,
-        ttl='8760h',
+        ttl="8760h",
     )
     client.write(
-        path='{path}/config/urls'.format(path=mount_point),
+        path="{path}/config/urls".format(path=mount_point),
         issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
         crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
     )
     client.write(
-        path='{path}/roles/{name}'.format(path=mount_point, name=role_name),
+        path="{path}/roles/{name}".format(path=mount_point, name=role_name),
         allowed_domains=common_name,
         allow_subdomains=True,
         generate_lease=True,
-        max_ttl='72h',
+        max_ttl="72h",
     )
 
 
-def disable_pki(client, mount_point='pki'):
+def disable_pki(client, mount_point="pki"):
     """Disable a previously configured pki backend.
 
     :param client: Authenticated hvac Client instance.

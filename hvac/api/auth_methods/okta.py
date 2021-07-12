@@ -4,7 +4,7 @@
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
 
-DEFAULT_MOUNT_POINT = 'okta'
+DEFAULT_MOUNT_POINT = "okta"
 
 
 class Okta(VaultApiBase):
@@ -13,8 +13,16 @@ class Okta(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/okta/index.html
     """
 
-    def configure(self, org_name, api_token=None, base_url=None, ttl=None, max_ttl=None, bypass_okta_mfa=None,
-                  mount_point=DEFAULT_MOUNT_POINT):
+    def configure(
+        self,
+        org_name,
+        api_token=None,
+        base_url=None,
+        ttl=None,
+        max_ttl=None,
+        bypass_okta_mfa=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """Configure the connection parameters for Okta.
 
         This path honors the distinction between the create and update capabilities inside ACL policies.
@@ -44,18 +52,22 @@ class Okta(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'org_name': org_name,
+            "org_name": org_name,
         }
         params.update(
-            utils.remove_nones({
-                'api_token': api_token,
-                'base_url': base_url,
-                'ttl': ttl,
-                'max_ttl': max_ttl,
-                'bypass_okta_mfa': bypass_okta_mfa,
-            })
+            utils.remove_nones(
+                {
+                    "api_token": api_token,
+                    "base_url": base_url,
+                    "ttl": ttl,
+                    "max_ttl": max_ttl,
+                    "bypass_okta_mfa": bypass_okta_mfa,
+                }
+            )
         )
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -72,7 +84,9 @@ class Okta(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/config', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/config", mount_point=mount_point
+        )
         return self._adapter.get(
             url=api_path,
         )
@@ -88,12 +102,16 @@ class Okta(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/users', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/users", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
 
-    def register_user(self, username, groups=None, policies=None, mount_point=DEFAULT_MOUNT_POINT):
+    def register_user(
+        self, username, groups=None, policies=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Register a new user and maps a set of policies to it.
 
         Supported methods:
@@ -111,16 +129,18 @@ class Okta(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'username': username,
+            "username": username,
         }
         params.update(
-            utils.remove_nones({
-                'groups': groups,
-                'policies': policies,
-            })
+            utils.remove_nones(
+                {
+                    "groups": groups,
+                    "policies": policies,
+                }
+            )
         )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -143,10 +163,10 @@ class Okta(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'username': username,
+            "username": username,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -169,10 +189,10 @@ class Okta(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'username': username,
+            "username": username,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/users/{username}',
+            "/v1/auth/{mount_point}/users/{username}",
             mount_point=mount_point,
             username=username,
         )
@@ -192,7 +212,9 @@ class Okta(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url('/v1/auth/{mount_point}/groups', mount_point=mount_point)
+        api_path = utils.format_url(
+            "/v1/auth/{mount_point}/groups", mount_point=mount_point
+        )
         return self._adapter.list(
             url=api_path,
         )
@@ -212,11 +234,13 @@ class Okta(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        params = utils.remove_nones({
-            'policies': policies,
-        })
+        params = utils.remove_nones(
+            {
+                "policies": policies,
+            }
+        )
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -239,7 +263,7 @@ class Okta(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -261,10 +285,10 @@ class Okta(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'name': name,
+            "name": name,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/groups/{name}',
+            "/v1/auth/{mount_point}/groups/{name}",
             mount_point=mount_point,
             name=name,
         )
@@ -273,7 +297,9 @@ class Okta(VaultApiBase):
             json=params,
         )
 
-    def login(self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT):
+    def login(
+        self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """Login with the username and password.
 
         Supported methods:
@@ -292,11 +318,11 @@ class Okta(VaultApiBase):
         :rtype: dict
         """
         params = {
-            'username': username,
-            'password': password,
+            "username": username,
+            "password": password,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/login/{username}',
+            "/v1/auth/{mount_point}/login/{username}",
             mount_point=mount_point,
             username=username,
         )

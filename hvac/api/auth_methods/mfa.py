@@ -5,14 +5,9 @@ from hvac.api.vault_api_base import VaultApiBase
 from hvac import exceptions, utils
 
 SUPPORTED_MFA_TYPES = [
-    'duo',
+    "duo",
 ]
-SUPPORTED_AUTH_METHODS = [
-    'ldap',
-    'okta',
-    'radius',
-    'userpass'
-]
+SUPPORTED_AUTH_METHODS = ["ldap", "okta", "radius", "userpass"]
 
 
 class Mfa(VaultApiBase):
@@ -25,7 +20,7 @@ class Mfa(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/auth/mfa.html
     """
 
-    def configure(self, mount_point, mfa_type='duo', force=False):
+    def configure(self, mount_point, mfa_type="duo", force=False):
         """Configure MFA for a supported method.
 
         This endpoint allows you to turn on multi-factor authentication with a given backend.
@@ -44,21 +39,22 @@ class Mfa(VaultApiBase):
         :return: The response of the configure MFA request.
         :rtype: requests.Response
         """
-        if mfa_type != 'duo' and not force:
+        if mfa_type != "duo" and not force:
             # The situation described via this exception is not likely to change in the future.
             # However we provided that flexibility here just in case.
             error_msg = 'Unsupported mfa_type argument provided "{arg}", supported types: "{mfa_types}"'
-            raise exceptions.ParamValidationError(error_msg.format(
-                mfa_types=','.join(SUPPORTED_MFA_TYPES),
-                arg=mfa_type,
-            ))
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    mfa_types=",".join(SUPPORTED_MFA_TYPES),
+                    arg=mfa_type,
+                )
+            )
         params = {
-            'type': mfa_type,
+            "type": mfa_type,
         }
 
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/mfa_config',
-            mount_point=mount_point
+            "/v1/auth/{mount_point}/mfa_config", mount_point=mount_point
         )
         return self._adapter.post(
             url=api_path,
@@ -78,7 +74,7 @@ class Mfa(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/mfa_config',
+            "/v1/auth/{mount_point}/mfa_config",
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)
@@ -104,12 +100,12 @@ class Mfa(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'host': host,
-            'ikey': integration_key,
-            'skey': secret_key,
+            "host": host,
+            "ikey": integration_key,
+            "skey": secret_key,
         }
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/duo/access',
+            "/v1/auth/{mount_point}/duo/access",
             mount_point=mount_point,
         )
         return self._adapter.post(
@@ -117,7 +113,9 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    def configure_duo_behavior(self, mount_point, push_info=None, user_agent=None, username_format='%s'):
+    def configure_duo_behavior(
+        self, mount_point, push_info=None, user_agent=None, username_format="%s"
+    ):
         """Configure Duo second factor behavior.
 
         This endpoint allows you to configure how the original auth method username maps to the Duo username by
@@ -141,14 +139,14 @@ class Mfa(VaultApiBase):
         :rtype: requests.Response
         """
         params = {
-            'username_format': username_format,
+            "username_format": username_format,
         }
         if push_info is not None:
-            params['push_info'] = push_info
+            params["push_info"] = push_info
         if user_agent is not None:
-            params['user_agent'] = user_agent
+            params["user_agent"] = user_agent
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/duo/config',
+            "/v1/auth/{mount_point}/duo/config",
             mount_point=mount_point,
         )
         return self._adapter.post(
@@ -169,7 +167,7 @@ class Mfa(VaultApiBase):
         :rtype: dict
         """
         api_path = utils.format_url(
-            '/v1/auth/{mount_point}/duo/config',
+            "/v1/auth/{mount_point}/duo/config",
             mount_point=mount_point,
         )
         return self._adapter.get(url=api_path)

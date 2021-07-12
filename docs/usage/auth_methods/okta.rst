@@ -7,7 +7,7 @@ Okta
 Enabling the Auth Method
 ------------------------
 
-Source reference: :py:meth:`hvac.v1.Client.enable_secret_backend`
+Source reference: :py:meth:`hvac.v1.client.sys.enable_secrets_engine`
 
 .. code:: python
 
@@ -17,14 +17,14 @@ Source reference: :py:meth:`hvac.v1.Client.enable_secret_backend`
     okta_path = 'company-okta'
     description = 'Auth method for use by team members in our company's Okta organization'
 
-    if '%s/' % okta_path not in vault_client.sys.list_auth_methods():
+    if '%s/' % okta_path not in vault_client.sys.list_auth_methods()['data']:
         print('Enabling the okta secret backend at mount_point: {path}'.format(
             path=okta_secret_path,
         ))
-        client.enable_secret_backend(
-            backend_type='okta',
+        client.sys.enable_auth_method(
+            method_type='okta',
             description=description,
-            mount_point=okta_secret_path,
+            path=okta_secret_path,
         )
 
 

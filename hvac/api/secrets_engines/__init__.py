@@ -16,20 +16,20 @@ from hvac.api.secrets_engines.transit import Transit
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
-    'Aws',
-    'Azure',
-    'Gcp',
-    'ActiveDirectory',
-    'Identity',
-    'Kv',
-    'KvV1',
-    'KvV2',
-    'Pki',
-    'Transform',
-    'Transit',
-    'SecretsEngines',
-    'Database',
-    'RabbitMQ'
+    "Aws",
+    "Azure",
+    "Gcp",
+    "ActiveDirectory",
+    "Identity",
+    "Kv",
+    "KvV1",
+    "KvV2",
+    "Pki",
+    "Transform",
+    "Transit",
+    "SecretsEngines",
+    "Database",
+    "RabbitMQ",
 )
 
 
@@ -51,15 +51,15 @@ class SecretsEngines(VaultApiCategory):
         RabbitMQ,
     ]
     unimplemented_classes = [
-        'AliCloud',
-        'Azure',
-        'GcpKms',
-        'Nomad',
-        'Ssh',
-        'TOTP',
-        'Cassandra',
-        'MongoDb',
-        'Mssql',
-        'MySql',
-        'PostgreSql',
+        "AliCloud",
+        "Azure",
+        "GcpKms",
+        "Nomad",
+        "Ssh",
+        "TOTP",
+        "Cassandra",
+        "MongoDb",
+        "Mssql",
+        "MySql",
+        "PostgreSql",
     ]

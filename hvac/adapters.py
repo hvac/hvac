@@ -9,16 +9,28 @@ import requests
 import requests.exceptions
 
 from hvac import utils
-
-DEFAULT_BASE_URI = 'http://localhost:8200'
+from hvac.constants.client import DEFAULT_URL
 
 
 class Adapter(object):
     """Abstract base class used when constructing adapters for use with the Client class."""
+
     __metaclass__ = ABCMeta
 
-    def __init__(self, base_uri=DEFAULT_BASE_URI, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                 allow_redirects=True, session=None, namespace=None, ignore_exceptions=False, strict_http=False):
+    def __init__(
+        self,
+        base_uri=DEFAULT_URL,
+        token=None,
+        cert=None,
+        verify=True,
+        timeout=30,
+        proxies=None,
+        allow_redirects=True,
+        session=None,
+        namespace=None,
+        ignore_exceptions=False,
+        strict_http=False,
+    ):
         """Create a new request adapter instance.
 
         :param base_uri: Base URL for the Vault instance being addressed.
@@ -60,10 +72,10 @@ class Adapter(object):
         self.strict_http = strict_http
 
         self._kwargs = {
-            'cert': cert,
-            'verify': verify,
-            'timeout': timeout,
-            'proxies': proxies,
+            "cert": cert,
+            "verify": verify,
+            "timeout": timeout,
+            "proxies": proxies,
         }
 
     @staticmethod
@@ -76,11 +88,10 @@ class Adapter(object):
         :rtype: str | unicode
         """
 
-        return '/'.join(map(lambda x: str(x).strip('/'), args))
+        return "/".join(map(lambda x: str(x).strip("/"), args))
 
     def close(self):
-        """Close the underlying Requests session.
-        """
+        """Close the underlying Requests session."""
         self.session.close()
 
     def get(self, url, **kwargs):
@@ -94,7 +105,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('get', url, **kwargs)
+        return self.request("get", url, **kwargs)
 
     def post(self, url, **kwargs):
         """Performs a POST request.
@@ -107,7 +118,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('post', url, **kwargs)
+        return self.request("post", url, **kwargs)
 
     def put(self, url, **kwargs):
         """Performs a PUT request.
@@ -120,7 +131,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('put', url, **kwargs)
+        return self.request("put", url, **kwargs)
 
     def delete(self, url, **kwargs):
         """Performs a DELETE request.
@@ -133,7 +144,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('delete', url, **kwargs)
+        return self.request("delete", url, **kwargs)
 
     def list(self, url, **kwargs):
         """Performs a LIST request.
@@ -146,7 +157,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('list', url, **kwargs)
+        return self.request("list", url, **kwargs)
 
     def head(self, url, **kwargs):
         """Performs a HEAD request.
@@ -159,7 +170,7 @@ class Adapter(object):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        return self.request('head', url, **kwargs)
+        return self.request("head", url, **kwargs)
 
     def login(self, url, use_token=True, **kwargs):
         """Perform a login request.
@@ -196,15 +207,11 @@ class Adapter(object):
         return NotImplementedError
 
     @utils.deprecated_method(
-        to_be_removed_in_version='0.9.0',
+        to_be_removed_in_version="0.9.0",
         new_method=login,
     )
     def auth(self, url, use_token=True, **kwargs):
-        return self.login(
-            url=url,
-            use_token=use_token,
-            **kwargs
-        )
+        return self.login(url=url, use_token=use_token, **kwargs)
 
     @abstractmethod
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
@@ -244,7 +251,7 @@ class RawAdapter(Adapter):
         :rtype: str
         """
         response_json = response.json()
-        return response_json['auth']['client_token']
+        return response_json["auth"]["client_token"]
 
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.
@@ -264,10 +271,10 @@ class RawAdapter(Adapter):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        while '//' in url:
+        while "//" in url:
             # Vault CLI treats a double forward slash ('//') as a single forward slash for a given path.
             # To avoid issues with the requests module's redirection logic, we perform the same translation here.
-            url = url.replace('//', '/')
+            url = url.replace("//", "/")
 
         url = self.urljoin(self.base_uri, url)
 
@@ -275,25 +282,25 @@ class RawAdapter(Adapter):
             headers = {}
 
         if self.token:
-            headers['X-Vault-Token'] = self.token
+            headers["X-Vault-Token"] = self.token
 
         if self.namespace:
-            headers['X-Vault-Namespace'] = self.namespace
+            headers["X-Vault-Namespace"] = self.namespace
 
-        wrap_ttl = kwargs.pop('wrap_ttl', None)
+        wrap_ttl = kwargs.pop("wrap_ttl", None)
         if wrap_ttl:
-            headers['X-Vault-Wrap-TTL'] = str(wrap_ttl)
+            headers["X-Vault-Wrap-TTL"] = str(wrap_ttl)
 
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        if self.strict_http and method.lower() in ('list',):
+        if self.strict_http and method.lower() in ("list",):
             # Entry point for standard HTTP substitution
-            params = _kwargs.get('params', {})
-            if method.lower() == 'list':
-                method = 'get'
-                params.update({'list': 'true'})
-            _kwargs['params'] = params
+            params = _kwargs.get("params", {})
+            if method.lower() == "list":
+                method = "get"
+                params.update({"list": "true"})
+            _kwargs["params"] = params
 
         response = self.session.request(
             method=method,
@@ -305,19 +312,15 @@ class RawAdapter(Adapter):
 
         if not response.ok and (raise_exception and not self.ignore_exceptions):
             text = errors = None
-            if response.headers.get('Content-Type') == 'application/json':
+            if response.headers.get("Content-Type") == "application/json":
                 try:
-                    errors = response.json().get('errors')
+                    errors = response.json().get("errors")
                 except Exception:
                     pass
             if errors is None:
                 text = response.text
             utils.raise_for_error(
-                method,
-                url,
-                response.status_code,
-                text,
-                errors=errors
+                method, url, response.status_code, text, errors=errors
             )
 
         return response
@@ -338,7 +341,7 @@ class JSONAdapter(RawAdapter):
         :return: A client token.
         :rtype: str
         """
-        return response['auth']['client_token']
+        return response["auth"]["client_token"]
 
     def request(self, *args, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri.

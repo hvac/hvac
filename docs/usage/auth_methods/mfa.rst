@@ -18,13 +18,13 @@ Configure MFA Auth Method Settings
 
     userpass_auth_path = 'some-userpass'
 
-    if '%s/' % userpass_auth_path not in vault_client.list_auth_backends():
+    if '%s/' % userpass_auth_path not in vault_client.sys.list_auth_methods()['data']:
         print('Enabling the userpass auth backend at mount_point: {path}'.format(
             path=userpass_auth_path,
         ))
-        client.enable_auth_backend(
-            backend_type='userpass',
-            mount_point=userpass_auth_path,
+        client.sys.enable_auth_method(
+            method_type='userpass',
+            path=userpass_auth_path,
         )
 
     client.auth.mfa.configure(

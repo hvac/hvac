@@ -13,7 +13,9 @@ class Consul(VaultApiBase):
     Reference: https://www.vaultproject.io/api/secret/consul/index.html
     """
 
-    def configure_access(self, address, token, scheme=None, mount_point=DEFAULT_MOUNT_POINT):
+    def configure_access(
+        self, address, token, scheme=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
         """This endpoint configures the access information for Consul.
         This access information is used so that Vault can communicate with Consul and generate Consul tokens.
 
@@ -33,9 +35,11 @@ class Consul(VaultApiBase):
             "token": token,
         }
         params.update(
-            utils.remove_nones({
-                "scheme": scheme,
-            })
+            utils.remove_nones(
+                {
+                    "scheme": scheme,
+                }
+            )
         )
 
         api_path = utils.format_url("/v1/{}/config/access", mount_point)
@@ -44,8 +48,17 @@ class Consul(VaultApiBase):
             json=params,
         )
 
-    def create_or_update_role(self, name, policy=None, policies=None, token_type=None, local=None, ttl=None, max_ttl=None,
-                              mount_point=DEFAULT_MOUNT_POINT):
+    def create_or_update_role(
+        self,
+        name,
+        policy=None,
+        policies=None,
+        token_type=None,
+        local=None,
+        ttl=None,
+        max_ttl=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
         """This endpoint creates or updates the Consul role definition.
         If the role does not exist, it will be created.
         If the role already exists, it will receive updated attributes.
@@ -80,14 +93,16 @@ class Consul(VaultApiBase):
         """
         api_path = utils.format_url("/v1/{}/roles/{}", mount_point, name)
 
-        params = utils.remove_nones({
-            "token_type": token_type,
-            "policy": policy,
-            "policies": policies,
-            "local": local,
-            "ttl": ttl,
-            "max_ttl": max_ttl
-        })
+        params = utils.remove_nones(
+            {
+                "token_type": token_type,
+                "policy": policy,
+                "policies": policies,
+                "local": local,
+                "ttl": ttl,
+                "max_ttl": max_ttl,
+            }
+        )
 
         return self._adapter.post(
             url=api_path,

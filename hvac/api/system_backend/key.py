@@ -3,7 +3,6 @@ from hvac.exceptions import ParamValidationError
 
 
 class Key(SystemBackendMixin):
-
     def read_root_generation_progress(self):
         """Read the configuration and process of the current root generation attempt.
 
@@ -13,7 +12,7 @@ class Key(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/generate-root/attempt'
+        api_path = "/v1/sys/generate-root/attempt"
         return self._adapter.get(
             url=api_path,
         )
@@ -38,17 +37,16 @@ class Key(SystemBackendMixin):
         """
         params = {}
         if otp is not None and pgp_key is not None:
-            raise ParamValidationError('one (and only one) of otp or pgp_key arguments are required')
+            raise ParamValidationError(
+                "one (and only one) of otp or pgp_key arguments are required"
+            )
         if otp is not None:
-            params['otp'] = otp
+            params["otp"] = otp
         if pgp_key is not None:
-            params['pgp_key'] = pgp_key
+            params["pgp_key"] = pgp_key
 
-        api_path = '/v1/sys/generate-root/attempt'
-        return self._adapter.put(
-            url=api_path,
-            json=params
-        )
+        api_path = "/v1/sys/generate-root/attempt"
+        return self._adapter.put(url=api_path, json=params)
 
     def generate_root(self, key, nonce):
         """Enter a single master key share to progress the root generation attempt.
@@ -68,10 +66,10 @@ class Key(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'key': key,
-            'nonce': nonce,
+            "key": key,
+            "nonce": nonce,
         }
-        api_path = '/v1/sys/generate-root/update'
+        api_path = "/v1/sys/generate-root/update"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -88,7 +86,7 @@ class Key(SystemBackendMixin):
         :return: The response of the request.
         :rtype: request.Response
         """
-        api_path = '/v1/sys/generate-root/attempt'
+        api_path = "/v1/sys/generate-root/attempt"
         return self._adapter.delete(
             url=api_path,
         )
@@ -102,7 +100,7 @@ class Key(SystemBackendMixin):
         :return: JSON response with information regarding the current encryption key used by Vault.
         :rtype: dict
         """
-        api_path = '/v1/sys/key-status'
+        api_path = "/v1/sys/key-status"
         return self._adapter.get(
             url=api_path,
         )
@@ -122,7 +120,7 @@ class Key(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rotate'
+        api_path = "/v1/sys/rotate"
         return self._adapter.put(
             url=api_path,
         )
@@ -139,14 +137,22 @@ class Key(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rekey/init'
+        api_path = "/v1/sys/rekey/init"
         if recovery_key:
-            api_path = '/v1/sys/rekey-recovery-key/init'
+            api_path = "/v1/sys/rekey-recovery-key/init"
         return self._adapter.get(
             url=api_path,
         )
 
-    def start_rekey(self, secret_shares=5, secret_threshold=3, pgp_keys=None, backup=False, require_verification=False, recovery_key=False):
+    def start_rekey(
+        self,
+        secret_shares=5,
+        secret_threshold=3,
+        pgp_keys=None,
+        backup=False,
+        require_verification=False,
+        recovery_key=False,
+    ):
         """Initializes a new rekey attempt.
 
         Only a single recovery key rekeyattempt can take place at a time, and changing the parameters of a rekey
@@ -183,21 +189,23 @@ class Key(SystemBackendMixin):
         :rtype: dict | request.Response
         """
         params = {
-            'secret_shares': secret_shares,
-            'secret_threshold': secret_threshold,
-            'require_verification': require_verification,
+            "secret_shares": secret_shares,
+            "secret_threshold": secret_threshold,
+            "require_verification": require_verification,
         }
 
         if pgp_keys:
             if len(pgp_keys) != secret_shares:
-                raise ParamValidationError('length of pgp_keys argument must equal secret shares value')
+                raise ParamValidationError(
+                    "length of pgp_keys argument must equal secret shares value"
+                )
 
-            params['pgp_keys'] = pgp_keys
-            params['backup'] = backup
+            params["pgp_keys"] = pgp_keys
+            params["backup"] = backup
 
-        api_path = '/v1/sys/rekey/init'
+        api_path = "/v1/sys/rekey/init"
         if recovery_key:
-            api_path = '/v1/sys/rekey-recovery-key/init'
+            api_path = "/v1/sys/rekey-recovery-key/init"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -221,9 +229,9 @@ class Key(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rekey/init'
+        api_path = "/v1/sys/rekey/init"
         if recovery_key:
-            api_path = '/v1/sys/rekey-recovery-key/init'
+            api_path = "/v1/sys/rekey-recovery-key/init"
         return self._adapter.delete(
             url=api_path,
         )
@@ -249,15 +257,15 @@ class Key(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'key': key,
+            "key": key,
         }
 
         if nonce is not None:
-            params['nonce'] = nonce
+            params["nonce"] = nonce
 
-        api_path = '/v1/sys/rekey/update'
+        api_path = "/v1/sys/rekey/update"
         if recovery_key:
-            api_path = '/v1/sys/rekey-recovery-key/update'
+            api_path = "/v1/sys/rekey-recovery-key/update"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -285,7 +293,7 @@ class Key(SystemBackendMixin):
                 nonce=nonce,
                 recovery_key=recovery_key,
             )
-            if result.get('complete'):
+            if result.get("complete"):
                 break
 
         return result
@@ -305,9 +313,9 @@ class Key(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = '/v1/sys/rekey/backup'
+        api_path = "/v1/sys/rekey/backup"
         if recovery_key:
-            api_path = '/v1/sys/rekey-recovery-key/backup'
+            api_path = "/v1/sys/rekey-recovery-key/backup"
         return self._adapter.get(
             url=api_path,
         )
@@ -324,7 +332,7 @@ class Key(SystemBackendMixin):
         :return: The response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rekey/verify'
+        api_path = "/v1/sys/rekey/verify"
         return self._adapter.delete(
             url=api_path,
         )
@@ -346,11 +354,11 @@ class Key(SystemBackendMixin):
         :rtype: dict
         """
         params = {
-            'key': key,
-            'nonce': nonce,
+            "key": key,
+            "nonce": nonce,
         }
 
-        api_path = '/v1/sys/rekey/verify'
+        api_path = "/v1/sys/rekey/verify"
         return self._adapter.put(
             url=api_path,
             json=params,
@@ -379,7 +387,7 @@ class Key(SystemBackendMixin):
                 key=key,
                 nonce=nonce,
             )
-            if result.get('complete'):
+            if result.get("complete"):
                 break
 
         return result
@@ -393,7 +401,7 @@ class Key(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        api_path = '/v1/sys/rekey/verify'
+        api_path = "/v1/sys/rekey/verify"
         return self._adapter.get(
             url=api_path,
         )
