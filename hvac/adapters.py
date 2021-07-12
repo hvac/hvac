@@ -9,8 +9,7 @@ import requests
 import requests.exceptions
 
 from hvac import utils
-
-DEFAULT_BASE_URI = "http://localhost:8200"
+from hvac.constants.client import DEFAULT_URL
 
 
 class Adapter(object):
@@ -20,7 +19,7 @@ class Adapter(object):
 
     def __init__(
         self,
-        base_uri=DEFAULT_BASE_URI,
+        base_uri=DEFAULT_URL,
         token=None,
         cert=None,
         verify=True,
