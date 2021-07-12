@@ -220,14 +220,12 @@ class Client(object):
         return self.sys.read_seal_status()
 
     def read(self, path, wrap_ttl=None):
-        """GET /<path>
+        """Send a GET request to the specificed path (API Route).
 
-        :param path:
-        :type path:
-        :param wrap_ttl:
-        :type wrap_ttl:
-        :return:
-        :rtype:
+        :param path: API route (excluding `v1/` prefix)
+        :type path: str
+        :return: dict
+        :rtype: requests.Response | dict
         """
         try:
             return self._adapter.get("/v1/{0}".format(path), wrap_ttl=wrap_ttl)
@@ -235,12 +233,12 @@ class Client(object):
             return None
 
     def list(self, path):
-        """GET /<path>?list=true
+        """Send a GET request with `?list=true` to the specificed path (API Route).
 
-        :param path:
-        :type path:
-        :return:
-        :rtype:
+        :param path: API route (excluding `v1/` prefix)
+        :type path: str
+        :return: dict
+        :rtype: requests.Response | dict
         """
         try:
             payload = {"list": True}
@@ -249,30 +247,26 @@ class Client(object):
             return None
 
     def write(self, path, wrap_ttl=None, **kwargs):
-        """POST /<path>
+        """Send a POST request to the specificed path (API Route).
 
-        :param path:
-        :type path:
-        :param wrap_ttl:
-        :type wrap_ttl:
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype:
+        :param path: API route (excluding `v1/` prefix)
+        :type path: str
+        :return: dict
+        :rtype: requests.Response | dict
         """
         return self._adapter.post(
             "/v1/{0}".format(path), json=kwargs, wrap_ttl=wrap_ttl
         )
 
     def delete(self, path):
-        """DELETE /<path>
+        """Send a DELETE request to the specificed path (API Route).
 
-        :param path:
-        :type path:
-        :return:
-        :rtype:
+        :param path: API route (excluding `v1/` prefix)
+        :type path: str
+        :return: dict
+        :rtype: requests.Response
         """
-        self._adapter.delete("/v1/{0}".format(path))
+        return self._adapter.delete("/v1/{0}".format(path))
 
     def get_policy(self, name, parse=False):
         """Retrieve the policy body for the named policy.
@@ -346,10 +340,8 @@ class Client(object):
     def logout(self, revoke_token=False):
         """Clears the token used for authentication, optionally revoking it before doing so.
 
-        :param revoke_token:
-        :type revoke_token:
-        :return:
-        :rtype:
+        :param revoke_token: If True, also revokes the associated token.
+        :type revoke_token: bool
         """
         if revoke_token:
             self.revoke_self_token()
@@ -359,8 +351,8 @@ class Client(object):
     def is_authenticated(self):
         """Helper method which returns the authentication status of the client
 
-        :return:
-        :rtype:
+        :return: True if valid token set on Client instance, Falst otherwise.
+        :rtype: bool
         """
         if not self.token:
             return False
