@@ -14,6 +14,7 @@ from hvac.api.auth_methods.mfa import Mfa
 from hvac.api.auth_methods.oidc import OIDC
 from hvac.api.auth_methods.okta import Okta
 from hvac.api.auth_methods.radius import Radius
+from hvac.api.auth_methods.token import Token
 from hvac.api.auth_methods.aws import Aws
 from hvac.api.auth_methods.cert import Cert
 from hvac.api.vault_api_category import VaultApiCategory
@@ -33,6 +34,7 @@ __all__ = (
     "OIDC",
     "Okta",
     "Radius",
+    "Token",
     "Aws",
     "Cert",
 )
@@ -54,13 +56,13 @@ class AuthMethods(VaultApiCategory):
         OIDC,
         Okta,
         Radius,
+        Token,
         Aws,
         Cert,
     ]
     unimplemented_classes = [
         "AppId",
         "AliCloud",
-        "Token",
     ]
 
     def __call__(self, *args, **kwargs):
