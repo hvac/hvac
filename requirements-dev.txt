@@ -106,7 +106,6 @@ requests-mock==1.9.3
     # via -r requirements-dev.in
 six==1.16.0
     # via
-    #   -r ./requirements.txt
     #   jwcrypto
     #   requests-mock
 sqlalchemy==1.4.20

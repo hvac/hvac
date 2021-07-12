@@ -31,7 +31,6 @@ setup(
     python_requires=">=2.7",
     install_requires=[
         "requests>=2.21.0",
-        "six>=1.5.0",
     ],
     include_package_data=True,
     package_data={"hvac": ["version"]},
