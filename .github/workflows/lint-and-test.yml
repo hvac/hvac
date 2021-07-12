@@ -43,6 +43,44 @@ jobs:
     - name: Lint with `flake8`
       run: flake8 . --count --statistics
 
+  docs-tests:
+    name: Documentation Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install Vault (for doctests)
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+        sudo apt update \
+          -o Dir::Etc::sourceparts="-" \
+          -o APT::Get::List-Cleanup="0" \
+          -o Dir::Etc::sourcelist="sources.list.d/hashicorp.list"
+
+        sudo apt install \
+          vault-enterprise \
+          ;
+
+        # We disble cap_ipc_lock here as its generally incompatabile with GitHub
+        # Actions' runtime environments.
+        sudo setcap cap_ipc_lock= /usr/bin/vault
+
+    - name: Install doctest dependencies
+      run: pip install -r docs/requirements.txt
+
+    - name: Sphinx - doctest Build
+      working-directory: ./docs
+      run: make doctest
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
