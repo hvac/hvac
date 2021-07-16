@@ -25,6 +25,11 @@ Token creation and revocation:
     client.auth.token.revoke('xxx')
     client.auth.token.revoke('yyy', orphan=True)
 
+    # revoke current token
+    client.auth.token.revoke_self()
+    # logout and revoke current token
+    client.logout(revoke_token=True)
+
     client.auth.token.renew('aaa')
 
 
