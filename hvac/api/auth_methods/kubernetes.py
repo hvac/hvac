@@ -114,6 +114,7 @@ class Kubernetes(VaultApiBase):
         max_ttl=None,
         period=None,
         policies=None,
+        token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Create a role in the method.
@@ -143,6 +144,11 @@ class Kubernetes(VaultApiBase):
         :type period: str | unicode
         :param policies: Policies to be set on tokens issued using this role.
         :type policies: list | str | unicode
+        :param token_type: The type of token that should be generated. Can be service, batch, or default to use the
+            mount's tuned default (which unless changed will be service tokens). For token store roles, there are two
+            additional possibilities: default-service and default-batch which specify the type to return unless the
+            client requests a different type at generation time.
+        :type token_type: str
         :param mount_point: The "path" the azure auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -178,6 +184,9 @@ class Kubernetes(VaultApiBase):
         )
         if policies is not None:
             params["policies"] = comma_delimited_to_list(policies)
+
+        if token_type:
+            params['token_type'] = token_type
 
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/role/{name}", mount_point=mount_point, name=name
