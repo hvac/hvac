@@ -276,24 +276,22 @@ class Cert(VaultApiBase):
             else:
                 cacert = self._adapter._kwargs.get("verify")
         else:
-            validate_pem_format(cacert, "verify")
+            validate_pem_format("verify", cacert)
         # if cert_pem is a string its ready to be used and either has the key with it or the key is provided as an arg
         try:
-            if validate_pem_format(cert_pem, "cert_pem"):
+            if validate_pem_format("cert_pem", cert_pem):
                 tls_update = True
-        except exceptions.VaultError as e:
-            if isinstance(e, type(exceptions.ParamValidationError())):
-                tls_update = {}
-                if not (os.path.exists(cert_pem) or self._adapter._kwargs.get("cert")):
-                    raise FileNotFoundError("Can't find the certificate.")
-                try:
-                    for tls_part, value in {"cert_pem": cert_pem, "key_pem": key_pem}:
-                        if value != "":
-                            tls_update[tls_part] = value
-                except ValueError:
-                    tls_update = True
-            else:
-                raise e
+        except exceptions.ParamValidationError:
+            tls_update = {}
+            if not (os.path.exists(cert_pem) or self._adapter._kwargs.get("cert")):
+                raise FileNotFoundError("Can't find the certificate.")
+            try:
+                tls_parts = {"cert_pem": cert_pem, "key_pem": key_pem}
+                for tls_part in tls_parts:
+                    if tls_parts[tls_part] != "":
+                        tls_update[tls_part] = tls_parts[tls_part]
+            except ValueError:
+                tls_update = True
 
         additional_request_kwargs = {}
         if tls_update:
