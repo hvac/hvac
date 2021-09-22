@@ -356,9 +356,7 @@ class Token(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = "/v1/auth/{mount_point}/revoke-self".format(mount_point=mount_point)
-        return self._adapter.post(
-            url=api_path
-        )
+        return self._adapter.post(url=api_path)
 
     def revoke_accessor(self, accessor, mount_point=DEFAULT_MOUNT_POINT):
         """Revoke the token associated with the accessor and all the child tokens.
