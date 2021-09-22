@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.11.1 (September 22nd, 2021)
+
+### 💥 Breaking Changes
+
+- **Note**: This is _actually and truly_ (😝)  intended to by the last hvac release supporting Python 2.7.
+
+  **_Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions._**
+- Requirements - Cleanup & Upgrades (`install_requires` => `requests>=2.25.1` ). GH-741
+
+### 🚀 Features
+
+- Add X-Vault-Request header to all requests by default. GH-762
+- Add token_type to kubernetes auth create_role. GH-760
+- jwt: use login adapter and add `use_token` param. GH-746
+
+### 🐛 Bug Fixes
+
+- Fix Passing of `cert` Parameter From Client into Adapter Class. GH-743
+- Removed vestigial accessor parameter from auth token revoke_self. GH-744
+- Fix Client TLS `verify` Behavior . GH-745
+- Fix incorrect recovery key backup path. GH-749
+
+Thanks to @Tylerlhess, @anhdat, @ayav09, @bobmshannon, @bpatterson971, @briantist, @cmanfre4, @jeffwecan, Chris Manfre and tyhess for their lovely contributions.
+
 ## 0.11.0 (July 12th, 2021)
 
 ### 💥 Breaking Changes
