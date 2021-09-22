@@ -23,7 +23,7 @@ the latest `vault` binary is available in your `PATH`.
 
 ```
 cd hvac
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 3. Run tests: `make test`
 

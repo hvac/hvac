@@ -30,6 +30,7 @@ class Adapter(object):
         namespace=None,
         ignore_exceptions=False,
         strict_http=False,
+        request_header=True,
     ):
         """Create a new request adapter instance.
 
@@ -59,9 +60,12 @@ class Adapter(object):
         :type ignore_exceptions: bool
         :param strict_http: If True, use only standard HTTP verbs in request with additional params, otherwise process as is
         :type strict_http: bool
+        :param request_header: If true, add the X-Vault-Request header to all requests to protect against SSRF vulnerabilities.
+        :type request_header: bool
         """
         if not session:
             session = requests.Session()
+            session.cert, session.verify, session.proxies = cert, verify, proxies
 
         self.base_uri = base_uri
         self.token = token
@@ -70,6 +74,7 @@ class Adapter(object):
         self.allow_redirects = allow_redirects
         self.ignore_exceptions = ignore_exceptions
         self.strict_http = strict_http
+        self.request_header = request_header
 
         self._kwargs = {
             "cert": cert,
@@ -280,6 +285,9 @@ class RawAdapter(Adapter):
 
         if not headers:
             headers = {}
+
+        if self.request_header:
+            headers["X-Vault-Request"] = "true"
 
         if self.token:
             headers["X-Vault-Token"] = self.token

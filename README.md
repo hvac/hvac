@@ -26,8 +26,6 @@ If you would like to be able to return parsed HCL data as a Python dict for meth
 pip install "hvac[parser]"
 ```
 
-
-
 ## Documentation
 
 Additional documentation for this module available at: [hvac.readthedocs.io](https://hvac.readthedocs.io/en/stable/usage/index.html):

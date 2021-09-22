@@ -335,6 +335,19 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.logout()
         assert not self.client.is_authenticated()
 
+    def test_client_logout_and_revoke(self):
+        # create a new token
+        result = self.client.auth.token.create(ttl="1h", renewable=True)
+        # set the token
+        self.client.token = result["auth"]["client_token"]
+
+        # logout and revoke the token
+        self.client.logout(revoke_token=True)
+        # set the original token back
+        self.client.token = result["auth"]["client_token"]
+        # confirm that it no longer is able to authenticate
+        assert not self.client.is_authenticated()
+
     def test_revoke_self_token(self):
         if "userpass/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method("userpass")

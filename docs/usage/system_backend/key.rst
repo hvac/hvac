@@ -404,7 +404,6 @@ Examples
     key = keys[0]
     pgp_key_path = test_utils.get_config_file_path('pgp_key.asc.b64')
     pgp_key = test_utils.load_config_file(pgp_key_path)
-    #pgp_keys = [test_utils.base64ify(pgp_key)]
     pgp_keys = [pgp_key]
 
 .. testcode:: sys_key_backup_keys
@@ -431,4 +430,3 @@ Example output:
 .. testoutput:: sys_key_backup_keys
 
     Backup keys are: {'...': [...]}
-

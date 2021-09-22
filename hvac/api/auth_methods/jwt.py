@@ -412,7 +412,7 @@ class JWT(VaultApiBase):
             json=params,
         )
 
-    def jwt_login(self, role, jwt, path=None):
+    def jwt_login(self, role, jwt, use_token=True, path=None):
         """Fetch a token.
 
         This endpoint takes a signed JSON Web Token (JWT) and a role name for some entity.
@@ -439,7 +439,8 @@ class JWT(VaultApiBase):
             "/v1/auth/{path}/login",
             path=self.resolve_path(path),
         )
-        return self._adapter.post(
+        return self._adapter.login(
             url=api_path,
+            use_token=use_token,
             json=params,
         )
