@@ -644,7 +644,7 @@ class Client(object):
         :rtype:
         """
         if revoke_token:
-            self.revoke_self_token()
+            self.auth.token.revoke_self()
 
         self.token = None
 

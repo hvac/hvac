@@ -342,7 +342,7 @@ class Token(VaultApiBase):
             json=params,
         )
 
-    def revoke_self(self, accessor, mount_point=DEFAULT_MOUNT_POINT):
+    def revoke_self(self, mount_point=DEFAULT_MOUNT_POINT):
         """Revoke the token used to call it and all child tokens.
 
         When the token is revoked, all dynamic secrets generated with it are also revoked.
@@ -350,20 +350,14 @@ class Token(VaultApiBase):
         Supported methods:
             POST: /auth/{mount_point}/revoke-self.
 
-        :param accessor: Accessor of the token.
-        :type accessor: str
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str
         :return: The response of the revoke_a_self request.
         :rtype: requests.Response
         """
-        params = {
-            "accessor": accessor,
-        }
         api_path = "/v1/auth/{mount_point}/revoke-self".format(mount_point=mount_point)
         return self._adapter.post(
-            url=api_path,
-            json=params,
+            url=api_path
         )
 
     def revoke_accessor(self, accessor, mount_point=DEFAULT_MOUNT_POINT):

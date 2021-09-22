@@ -32,13 +32,13 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         assert result["auth"]["client_token"]
         self.client.token = result["auth"]["client_token"]
 
-        lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
+        lookup = self.client.auth.token.lookup_self()
         assert result["auth"]["client_token"] == lookup["data"]["id"]
 
         renew = self.client.auth.token.renew_self()
         assert result["auth"]["client_token"] == renew["auth"]["client_token"]
 
-        self.client.auth.token.revoke(lookup["data"]["id"])
+        self.client.auth.token.revoke_self()
 
         try:
             lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
