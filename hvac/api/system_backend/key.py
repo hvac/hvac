@@ -315,7 +315,7 @@ class Key(SystemBackendMixin):
         """
         api_path = "/v1/sys/rekey/backup"
         if recovery_key:
-            api_path = "/v1/sys/rekey-recovery-key/backup"
+            api_path = "/v1/sys/rekey/recovery-key-backup"
         return self._adapter.get(
             url=api_path,
         )
