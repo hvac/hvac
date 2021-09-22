@@ -146,7 +146,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 "token type",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
-                token_type='service',
+                token_type="service",
             ),
         ]
     )

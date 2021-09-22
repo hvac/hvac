@@ -186,7 +186,7 @@ class Kubernetes(VaultApiBase):
             params["policies"] = comma_delimited_to_list(policies)
 
         if token_type:
-            params['token_type'] = token_type
+            params["token_type"] = token_type
 
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/role/{name}", mount_point=mount_point, name=name
