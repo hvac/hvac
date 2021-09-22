@@ -19,11 +19,16 @@ Token creation and revocation:
 
     token = client.auth.token.create(policies=['root'], lease='1h')
 
-    current_token = client.auth.token.lookup()
+    current_token = client.auth.token.lookup_self()
     some_other_token = client.auth.token.lookup('xxx')
 
     client.auth.token.revoke('xxx')
     client.auth.token.revoke('yyy', orphan=True)
+
+    # revoke current token
+    client.auth.token.revoke_self()
+    # logout and revoke current token
+    client.logout(revoke_token=True)
 
     client.auth.token.renew('aaa')
 

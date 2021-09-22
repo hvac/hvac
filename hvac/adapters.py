@@ -65,6 +65,7 @@ class Adapter(object):
         """
         if not session:
             session = requests.Session()
+            session.cert, session.verify, session.proxies = cert, verify, proxies
 
         self.base_uri = base_uri
         self.token = token
