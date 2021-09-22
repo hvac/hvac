@@ -67,7 +67,7 @@ jobs:
           -o Dir::Etc::sourcelist="sources.list.d/hashicorp.list"
 
         sudo apt install \
-          vault-enterprise \
+          vault-enterprise=1.7.2+ent \
           ;
 
         # We disble cap_ipc_lock here as its generally incompatabile with GitHub
@@ -154,7 +154,7 @@ jobs:
 
         sudo apt install \
           consul \
-          vault-enterprise \
+          vault-enterprise=${{ matrix.vault-version }}+ent \
           ;
 
         # We disble cap_ipc_lock here as its generally incompatabile with GitHub
