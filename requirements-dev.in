@@ -4,11 +4,16 @@ black
 Flask
 Flask-SQLAlchemy
 flake8
+codecov
+coverage
+ipaddress
 mock
+nose
 parameterized
 pytest
 pytest-cov
 python-ldap-test
 python_jwt
 requests_mock
+semantic_version
 Werkzeug
