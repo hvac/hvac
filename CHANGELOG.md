@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.2 (September 23rd, 2021)
+
+Breakfix release to revert some unintended post-1.0 requirements changes.
+
+### 🐛 Bug Fixes
+
+- Revert `six` & `requests` Requirements Changes. GH-768
+
 ## 0.11.1 (September 22nd, 2021)
 
 ### 💥 Breaking Changes
