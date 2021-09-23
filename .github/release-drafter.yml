@@ -25,5 +25,3 @@ change-template: '- $TITLE. GH-$NUMBER'
 template: |
 
   $CHANGES
-
-  Thanks to $CONTRIBUTORS for their lovely contributions.
