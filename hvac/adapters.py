@@ -370,6 +370,10 @@ class JSONAdapter(RawAdapter):
         :rtype: dict | requests.Response
         """
         response = super().request(*args, **kwargs)
+        # Do not attempt to jsonify stream requests, doing so will empty the
+        # socket and the caller has explicitly opted out
+        if kwargs.get('stream', False):
+            return response
         if response.status_code == 200:
             try:
                 return response.json()
