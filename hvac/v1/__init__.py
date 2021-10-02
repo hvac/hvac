@@ -67,6 +67,7 @@ class Client:
 
         token = token if token is not None else utils.get_token_from_env()
         url = url if url else os.getenv("VAULT_ADDR", DEFAULT_URL)
+        namespace = namespace if namespace else os.getenv("VAULT_NAMESPACE")
 
         if cert is None and VAULT_CLIENT_CERT:
             cert = (
