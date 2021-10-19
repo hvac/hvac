@@ -170,3 +170,20 @@ class Consul(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         )
+    
+    def get_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint retrieves the credentials for a certain static role.
+
+        :param name: Specifies the name of an existing static role for which the credentials are to be retrieved.
+        :type name: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: consul).
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url("/v1/{}/static-creds/{}", mount_point, name)
+
+        return self._adapter.get(
+            url=api_path,
+        )
+    
