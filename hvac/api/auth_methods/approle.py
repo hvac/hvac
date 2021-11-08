@@ -238,6 +238,7 @@ class AppRole(VaultApiBase):
         metadata=None,
         cidr_list=None,
         token_bound_cidrs=None,
+        wrap_ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """
@@ -254,6 +255,8 @@ class AppRole(VaultApiBase):
         :type cidr_list: list
         :param token_bound_cidrs: Blocks of IP addresses which can authenticate successfully.
         :type token_bound_cidrs: list
+        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: '15s', '20m', '25h'.
+        :type wrap_ttl: str
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the read_role_id request.
@@ -287,7 +290,11 @@ class AppRole(VaultApiBase):
             mount_point=mount_point,
             role_name=role_name,
         )
-        return self._adapter.post(url=api_path, json=params)
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+            wrap_ttl=wrap_ttl,
+        )
 
     def create_custom_secret_id(
         self,
