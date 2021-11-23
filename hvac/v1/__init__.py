@@ -449,6 +449,12 @@ class Client(object):
             path = "/v1/auth/token/lookup-self"
             return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
+    def list_accessors(self):
+        """LIST /auth/token/accessors
+        """
+        path = "/v1/auth/token/accessors"
+        return self._adapter.list(path)
+
     def revoke_token(self, token, orphan=False, accessor=False):
         """POST /auth/token/revoke
 
