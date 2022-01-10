@@ -42,6 +42,17 @@ Examples
     )
     print('Unwrapped approle role token secret id accessor: "%s"' % unwrap_response['data']['secret_id_accessor'])
 
+.. testcode:: sys_wrapping
+
+    import hvac
+
+    client = hvac.Client(url='https://127.0.0.1:8200')
+    client.token = "s.xxxxxxxxxxxxxxxxxxxxxx"
+
+    # Do not pass the token to unwrap when authenticating with the wrapping token
+    unwrap_response = client.sys.unwrap()
+    print('Unwrapped approle role token secret id accessor: "%s"' % unwrap_response['data']['secret_id_accessor'])
+
 Example output:
 
 .. testoutput:: sys_wrapping
