@@ -778,9 +778,22 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                 None,
                 "cats",
                 "0s",
+                None,
                 True,
                 exceptions.ParamValidationError,
                 "bool expected for cas_required param",
+            ),
+            ("update custom_medata", "hvac", None, None, "0s", dict(color="blue")),
+            (
+                "update with invalid custom_metadata param",
+                "hvac",
+                None,
+                None,
+                "0s",
+                "not-a-dict",
+                True,
+                exceptions.ParamValidationError,
+                "dict expected for custom_metadata param",
             ),
             ("update with delete_version_after set", "hvac", None, True, "30s"),
         ]
@@ -792,6 +805,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         max_versions=None,
         cas_required=None,
         delete_version_after="0s",
+        custom_metadata=None,
         write_secret_before_test=True,
         raises=None,
         exception_message="",
@@ -809,6 +823,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                     path=path,
                     max_versions=max_versions,
                     cas_required=cas_required,
+                    custom_metadata=custom_metadata,
                     delete_version_after=delete_version_after,
                     mount_point=self.DEFAULT_MOUNT_POINT,
                 )
@@ -821,6 +836,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                 path=path,
                 max_versions=max_versions,
                 cas_required=cas_required,
+                custom_metadata=custom_metadata,
                 delete_version_after=delete_version_after,
                 mount_point=self.DEFAULT_MOUNT_POINT,
             )
@@ -837,6 +853,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             for key, argument in dict(
                 max_versions=max_versions,
                 cas_required=cas_required,
+                custom_metadata=custom_metadata,
                 delete_version_after=delete_version_after,
             ).items():
                 if argument is not None:

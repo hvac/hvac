@@ -357,6 +357,7 @@ class KvV2(VaultApiBase):
         path,
         max_versions=None,
         cas_required=None,
+        custom_metadata=None,
         delete_version_after="0s",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
@@ -375,6 +376,8 @@ class KvV2(VaultApiBase):
         :param cas_required: If true the key will require the cas parameter to be set on all write requests. If false,
             the backend's configuration will be used.
         :type cas_required: bool
+        :param custom_metadata: A dictionary of key/value metadata to describe the secret.
+        :type custom_metadata: dict
         :param delete_version_after: Specifies the length of time before a version is deleted. Accepts Go duration format string.
             Defaults to "0s" (i.e., disabled).
         :type delete_version_after: str
@@ -397,6 +400,15 @@ class KvV2(VaultApiBase):
                 )
                 raise exceptions.ParamValidationError(error_msg)
             params["cas_required"] = cas_required
+        if custom_metadata is not None:
+            if not isinstance(custom_metadata, dict):
+                error_msg = (
+                    "dict expected for custom_metadata param, {type} received".format(
+                        type=type(custom_metadata)
+                    )
+                )
+                raise exceptions.ParamValidationError(error_msg)
+            params["custom_metadata"] = custom_metadata
         api_path = utils.format_url(
             "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
         )
