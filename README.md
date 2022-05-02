@@ -1,5 +1,9 @@
 # hvac
 
+**MAINTAINERS WANTED** Interested in helping maintain this module? -> Please see: [hvac#809](https://github.com/hvac/hvac/issues/809)! 🤙🏻
+
+----
+
 ![Header image](https://raw.githubusercontent.com/hvac/hvac/main/docs/_static/hvac_logo_800px.png)
 
 [HashiCorp](https://hashicorp.com/) [Vault](https://www.vaultproject.io) API client for Python 3.x
