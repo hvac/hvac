@@ -1,3 +1,4 @@
 pyhcl
 requests
+urllib3>=1.26.9
 six
