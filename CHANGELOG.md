@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.3 (May 6th, 2022)
+
+Vulnfix of urllib3
+
+### 🐛 Bug Fixes
+
+- Update urllib3 to latest version. GH-798
+
+
 ## 0.11.2 (September 23rd, 2021)
 
 Breakfix release to revert some unintended post-1.0 requirements changes.
