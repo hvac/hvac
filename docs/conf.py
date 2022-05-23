@@ -12,9 +12,9 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = u"hvac"
-copyright = u"2018-2020, Ian Unruh, Jeffrey Hogan"
-author = u"Ian Unruh, Jeffrey Hogan"
+project = "hvac"
+copyright = "2018-2020, Ian Unruh, Jeffrey Hogan"
+author = "Ian Unruh, Jeffrey Hogan"
 
 # The short X.Y version
 version = "0.11.2"
@@ -43,7 +43,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 language = None
-exclude_patterns = [u"_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 pygments_style = "sphinx"
 
 
