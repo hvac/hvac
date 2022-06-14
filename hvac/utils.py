@@ -142,13 +142,11 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
             new_name=deprecated_properties[item].get("new_property", item),
             new_attribute=deprecated_properties[item]["client_property"],
         )
-        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             message=deprecation_message,
             category=DeprecationWarning,
             stacklevel=2,
         )
-        warnings.simplefilter("default", DeprecationWarning)
         client_property = getattr(obj, deprecated_properties[item]["client_property"])
         return getattr(
             client_property, deprecated_properties[item].get("new_property", item)
@@ -191,13 +189,11 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
 
         @functools.wraps(method)
         def new_func(*args, **kwargs):
-            warnings.simplefilter("always", DeprecationWarning)  # turn off filter
             warnings.warn(
                 message=deprecation_message,
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-            warnings.simplefilter("default", DeprecationWarning)  # reset filter
             return method(*args, **kwargs)
 
         if new_method:
