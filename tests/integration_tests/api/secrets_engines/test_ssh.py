@@ -12,7 +12,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     PUBLIC_SSH_KEY = "tests/config_files/ssh-key.pub"
 
     def setUp(self):
-        super(TestPki, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="ssh",
             path=self.TEST_MOUNT_POINT,
@@ -20,7 +20,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
-        super(TestPki, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [
@@ -30,7 +30,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_create_key(self, label, raises=False, exception_message=""):
-        with open(self.PRIVATE_SSH_KEY, "r") as key_file:
+        with open(self.PRIVATE_SSH_KEY) as key_file:
             private_key = key_file.read()
 
         create_key_response = self.client.secrets.ssh.create_or_update_key(
@@ -52,7 +52,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_delete_key(self, label, raises=False, exception_message=""):
-        with open(self.PRIVATE_SSH_KEY, "r") as key_file:
+        with open(self.PRIVATE_SSH_KEY) as key_file:
             private_key = key_file.read()
 
         key_name = "test-key"
@@ -492,7 +492,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
 
-        with open(self.PUBLIC_SSH_KEY, "r") as key_file:
+        with open(self.PUBLIC_SSH_KEY) as key_file:
             public_key = key_file.read()
 
         read_public_key_response = self.client.secrets.ssh.sign_ssh_key(

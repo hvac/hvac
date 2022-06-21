@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import MagicMock
+from unittest.mock import MagicMock
 from parameterized import parameterized
 
 from hvac.api.secrets_engines.kv import Kv

@@ -17,7 +17,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "kubernetes-test"
 
     def setUp(self):
-        super(TestKubernetes, self).setUp()
+        super().setUp()
         if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="kubernetes",
@@ -25,7 +25,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             )
 
     def tearDown(self):
-        super(TestKubernetes, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_MOUNT_POINT,
         )
@@ -264,9 +264,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 kubernetes_ca_cert="-----BEGIN CERTIFICATE-----\n.....\n-----END CERTIFICATE-----",
                 mount_point=self.TEST_MOUNT_POINT,
             )
-        roles_to_create = [
-            "hvac{}".format(str(n)) for n in range(0, num_roles_to_create)
-        ]
+        roles_to_create = [f"hvac{str(n)}" for n in range(0, num_roles_to_create)]
         bound_service_account_names = ["vault-auth"]
         bound_service_account_namespaces = ["default"]
         logging.debug("roles_to_create: %s" % roles_to_create)

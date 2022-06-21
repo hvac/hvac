@@ -16,7 +16,7 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
     @classmethod
     def setUpClass(cls):
         try:
-            super(TestGithub, cls).setUpClass()
+            super().setUpClass()
 
             # Configure mock server.
             cls.mock_server_port = utils.get_free_port()
@@ -31,18 +31,18 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             cls.mock_server_thread.start()
         except Exception:
             # Ensure that Vault server is taken down if setUpClass fails
-            super(TestGithub, cls).tearDownClass()
+            super().tearDownClass()
             raise
 
     def setUp(self):
-        super(TestGithub, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type="github",
             path=self.TEST_GITHUB_PATH,
         )
 
     def tearDown(self):
-        super(TestGithub, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_GITHUB_PATH,
         )
@@ -94,13 +94,13 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             max_ttl=max_ttl,
             mount_point=self.TEST_GITHUB_PATH,
         )
-        logging.debug("config_response: {}".format(config_response))
+        logging.debug(f"config_response: {config_response}")
         self.assertEqual(first=204, second=config_response.status_code)
 
         read_config_response = self.client.auth.github.read_configuration(
             mount_point=self.TEST_GITHUB_PATH,
         )
-        logging.debug("read_config_response: {}".format(read_config_response))
+        logging.debug(f"read_config_response: {read_config_response}")
         self.assertEqual(
             first=organization, second=read_config_response["data"]["organization"]
         )
@@ -314,7 +314,7 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
     def test_login(self, test_label, test_token, exceptions_raised, exception_msg):
         self.client.auth.github.configure(
             organization="hvac",
-            base_url="http://localhost:{port}/".format(port=self.mock_server_port),
+            base_url=f"http://localhost:{self.mock_server_port}/",
             mount_point=self.TEST_GITHUB_PATH,
         )
         if exceptions_raised is None:

@@ -13,7 +13,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
     TEST_PROJECT_ID = "test-hvac"
 
     def setUp(self):
-        super(TestGcp, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="gcp",
             path=self.TEST_MOUNT_POINT,
@@ -21,7 +21,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
-        super(TestGcp, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

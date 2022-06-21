@@ -9,7 +9,7 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
     TEST_AUTH_METHOD_PATH = "test-approle"
 
     def setUp(self):
-        super(TestWrapping, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type=self.TEST_AUTH_METHOD_TYPE,
             path=self.TEST_AUTH_METHOD_PATH,
@@ -17,7 +17,7 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
 
     def test_unwrap(self):
         self.client.write(
-            path="auth/{path}/role/testrole".format(path=self.TEST_AUTH_METHOD_PATH),
+            path=f"auth/{self.TEST_AUTH_METHOD_PATH}/role/testrole",
         )
         result = self.client.write(
             path="auth/{path}/role/testrole/secret-id".format(

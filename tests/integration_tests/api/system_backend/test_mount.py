@@ -7,7 +7,7 @@ class TestMount(HvacIntegrationTestCase, TestCase):
     TEST_KVV1_MOUNT_POINT = "kvv1_mount"
 
     def setUp(self):
-        super(TestMount, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="kv",
             path=self.TEST_KVV1_MOUNT_POINT,
@@ -16,7 +16,7 @@ class TestMount(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.TEST_KVV1_MOUNT_POINT)
-        super(TestMount, self).tearDown()
+        super().tearDown()
 
     def test_secret_backend_manipulation(self):
         self.assertNotIn(

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """USERPASS methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -18,7 +17,7 @@ class Userpass(VaultApiBase):
         password=None,
         policies=None,
         mount_point=DEFAULT_MOUNT_POINT,
-        **kwargs
+        **kwargs,
     ):
         """
         Create/update user in userpass.
@@ -65,7 +64,7 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the list_groups request.
         :rtype: dict
         """
-        api_path = "/v1/auth/{mount_point}/users".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/users"
         return self._adapter.list(
             url=api_path,
         )

@@ -15,7 +15,7 @@ class Mount(SystemBackendMixin):
         return self._adapter.get("/v1/sys/mounts")
 
     def retrieve_mount_option(self, mount_point, option_name, default_value=None):
-        secrets_engine_path = "{mount_point}/".format(mount_point=mount_point)
+        secrets_engine_path = f"{mount_point}/"
         secrets_engines_list = self.list_mounted_secrets_engines()["data"]
         mount_options = secrets_engines_list[secrets_engine_path].get("options")
         if mount_options is None:
@@ -33,7 +33,7 @@ class Mount(SystemBackendMixin):
         options=None,
         local=False,
         seal_wrap=False,
-        **kwargs
+        **kwargs,
     ):
         """Enable a new secrets engine at the given path.
 
@@ -146,7 +146,7 @@ class Mount(SystemBackendMixin):
         passthrough_request_headers=None,
         options=None,
         force_no_cache=None,
-        **kwargs
+        **kwargs,
     ):
         """Tune configuration parameters for a given mount point.
 

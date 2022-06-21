@@ -50,7 +50,7 @@ class TestGcpMethods(TestCase):
             "warnings": [],
             "wrap_info": None,
         }
-        mock_url = "http://localhost:8200/v1/auth/{0}/login".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/login".format(
             "gcp" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(method="POST", url=mock_url, json=mock_response)

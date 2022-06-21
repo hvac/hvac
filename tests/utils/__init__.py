@@ -96,7 +96,7 @@ def create_client(url="https://localhost:8200", **kwargs):
         url=url,
         cert=(client_cert_path, client_key_path),
         verify=server_cert_path,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -122,7 +122,7 @@ def load_config_file(filename):
     :rtype: str | unicode
     """
     test_data_path = get_config_file_path(filename)
-    with open(test_data_path, "r") as f:
+    with open(test_data_path) as f:
         test_data = f.read()
     return test_data
 
@@ -239,23 +239,23 @@ def configure_pki(
     :return: Nothing.
     :rtype: None.
     """
-    if "{path}/".format(path=mount_point) in client.sys.list_mounted_secrets_engines():
+    if f"{mount_point}/" in client.sys.list_mounted_secrets_engines():
         client.sys.disable_secrets_engine(mount_point)
 
     client.sys.enable_secrets_engine(backend_type="pki", path=mount_point)
 
     client.write(
-        path="{path}/root/generate/internal".format(path=mount_point),
+        path=f"{mount_point}/root/generate/internal",
         common_name=common_name,
         ttl="8760h",
     )
     client.write(
-        path="{path}/config/urls".format(path=mount_point),
+        path=f"{mount_point}/config/urls",
         issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
         crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
     )
     client.write(
-        path="{path}/roles/{name}".format(path=mount_point, name=role_name),
+        path=f"{mount_point}/roles/{role_name}",
         allowed_domains=common_name,
         allow_subdomains=True,
         generate_lease=True,

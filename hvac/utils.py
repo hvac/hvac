@@ -270,7 +270,7 @@ def get_token_from_env():
     if not token:
         token_file_path = os.path.expanduser("~/.vault-token")
         if os.path.exists(token_file_path):
-            with open(token_file_path, "r") as f_in:
+            with open(token_file_path) as f_in:
                 token = f_in.read().strip()
 
     if not token:
@@ -355,7 +355,7 @@ def format_url(format_str, *args, **kwargs):
         # Special care must be taken for Python 2 where Unicode characters will break urllib quoting.
         # To work around this, we always cast to a Unicode type, then UTF-8 encode it.
         # Doing this is version agnostic and returns the same result in Python 2 or 3.
-        unicode_str = six.text_type(maybe_str)
+        unicode_str = str(maybe_str)
         utf8_str = unicode_str.encode("utf-8")
         return six.moves.urllib.parse.quote(utf8_str)
 

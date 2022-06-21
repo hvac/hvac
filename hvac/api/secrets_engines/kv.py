@@ -25,7 +25,7 @@ class Kv(VaultApiBase):
             under this class.
         :type default_kv_version: str | unicode
         """
-        super(Kv, self).__init__(adapter=adapter)
+        super().__init__(adapter=adapter)
         self._default_kv_version = default_kv_version
 
         self._kv_v1 = kv_v1.KvV1(adapter=self._adapter)

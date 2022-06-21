@@ -13,7 +13,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "transform-integration-test"
 
     def setUp(self):
-        super(TestTransform, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="transform",
             path=self.TEST_MOUNT_POINT,
@@ -21,7 +21,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
-        super(TestTransform, self).tearDown()
+        super().tearDown()
 
     def test_create_or_update_role(self):
         create_response = self.client.secrets.transform.create_or_update_role(
@@ -32,7 +32,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             ],
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -48,12 +48,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         read_response = self.client.secrets.transform.read_role(
             name="test_role",
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("read_response: {}".format(read_response))
+        logging.debug(f"read_response: {read_response}")
         self.assertEqual(
             first=read_response["data"]["transformations"],
             second=transformations,
@@ -70,11 +70,11 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         list_roles_response = self.client.secrets.transform.list_roles(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_roles_response: {}".format(list_roles_response))
+        logging.debug(f"list_roles_response: {list_roles_response}")
         self.assertEqual(
             first=list_roles_response["data"]["keys"],
             second=[role_name],
@@ -91,17 +91,17 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         create_response = self.client.secrets.transform.create_or_update_role(
             name="other-role",
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         list_roles_response = self.client.secrets.transform.list_roles(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_roles_response: {}".format(list_roles_response))
+        logging.debug(f"list_roles_response: {list_roles_response}")
         self.assertIn(
             member=role_name,
             container=list_roles_response["data"]["keys"],
@@ -110,7 +110,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             name=role_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("delete_role_response: {}".format(delete_role_response))
+        logging.debug(f"delete_role_response: {delete_role_response}")
         self.assertEqual(
             first=delete_role_response.status_code,
             second=204,
@@ -118,7 +118,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
         list_roles_response = self.client.secrets.transform.list_roles(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_roles_response: {}".format(list_roles_response))
+        logging.debug(f"list_roles_response: {list_roles_response}")
         self.assertNotIn(
             member=role_name,
             container=list_roles_response["data"]["keys"],
@@ -133,7 +133,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             allowed_roles=["test-role"],
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -153,7 +153,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -173,7 +173,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -193,7 +193,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -210,12 +210,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             allowed_roles=["test-role"],
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         read_response = self.client.secrets.transform.read_transformation(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("read_response: {}".format(read_response))
+        logging.debug(f"read_response: {read_response}")
         self.assertIn(
             member=template,
             container=read_response["data"]["templates"],
@@ -232,11 +232,11 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             allowed_roles=["test-role"],
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         list_response = self.client.secrets.transform.list_transformations(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_response: {}".format(list_response))
+        logging.debug(f"list_response: {list_response}")
         self.assertIn(
             member=test_name,
             container=list_response["data"]["keys"],
@@ -253,12 +253,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             allowed_roles=["test-role"],
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         delete_response = self.client.secrets.transform.delete_transformation(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("delete_response: {}".format(delete_response))
+        logging.debug(f"delete_response: {delete_response}")
         self.assertEqual(
             first=delete_response.status_code,
             second=204,
@@ -273,7 +273,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet="builtin/numeric",
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -289,12 +289,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet="builtin/numeric",
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         read_response = self.client.secrets.transform.read_template(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("read_response: {}".format(read_response))
+        logging.debug(f"read_response: {read_response}")
         self.assertIn(
             member=test_pattern,
             container=read_response["data"]["pattern"],
@@ -310,11 +310,11 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet="builtin/numeric",
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         list_response = self.client.secrets.transform.list_templates(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_response: {}".format(list_response))
+        logging.debug(f"list_response: {list_response}")
         self.assertIn(
             member=test_name,
             container=list_response["data"]["keys"],
@@ -330,12 +330,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet="builtin/numeric",
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         delete_response = self.client.secrets.transform.delete_template(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("delete_response: {}".format(delete_response))
+        logging.debug(f"delete_response: {delete_response}")
         self.assertEqual(
             first=delete_response.status_code,
             second=204,
@@ -349,7 +349,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet=test_alphabet,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         self.assertEqual(
             first=create_response.status_code,
             second=204,
@@ -363,12 +363,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet=test_alphabet,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         read_response = self.client.secrets.transform.read_alphabet(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("read_response: {}".format(read_response))
+        logging.debug(f"read_response: {read_response}")
         self.assertEqual(
             first=test_alphabet,
             second=read_response["data"]["alphabet"],
@@ -382,11 +382,11 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet=test_alphabet,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         list_response = self.client.secrets.transform.list_alphabets(
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("list_response: {}".format(list_response))
+        logging.debug(f"list_response: {list_response}")
         self.assertIn(
             member=test_name,
             container=list_response["data"]["keys"],
@@ -400,12 +400,12 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             alphabet=test_alphabet,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response: {}".format(create_response))
+        logging.debug(f"create_response: {create_response}")
         delete_response = self.client.secrets.transform.delete_alphabet(
             name=test_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("delete_response: {}".format(delete_response))
+        logging.debug(f"delete_response: {delete_response}")
         self.assertEqual(
             first=delete_response.status_code,
             second=204,
@@ -422,7 +422,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_role_response: {}".format(create_role_response))
+        logging.debug(f"create_role_response: {create_role_response}")
         create_transform_response = (
             self.client.secrets.transform.create_or_update_transformation(
                 name=transformation_name,
@@ -433,14 +433,14 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
         )
-        logging.debug("create_transform_response: {}".format(create_transform_response))
+        logging.debug(f"create_transform_response: {create_transform_response}")
         encode_response = self.client.secrets.transform.encode(
             role_name=role_name,
             value=test_input_value,
             transformation=transformation_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("encode_response: {}".format(encode_response))
+        logging.debug(f"encode_response: {encode_response}")
         self.assertEqual(
             first=encode_response["data"]["encoded_value"],
             second=expected_output,
@@ -456,7 +456,7 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
             transformations=transformations,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_role_response: {}".format(create_role_response))
+        logging.debug(f"create_role_response: {create_role_response}")
         create_transform_response = (
             self.client.secrets.transform.create_or_update_transformation(
                 name=transformation_name,
@@ -467,21 +467,21 @@ class TestTransform(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
             )
         )
-        logging.debug("create_transform_response: {}".format(create_transform_response))
+        logging.debug(f"create_transform_response: {create_transform_response}")
         encode_response = self.client.secrets.transform.encode(
             role_name=role_name,
             value=test_input_value,
             transformation=transformation_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("encode_response: {}".format(encode_response))
+        logging.debug(f"encode_response: {encode_response}")
         decode_response = self.client.secrets.transform.decode(
             role_name=role_name,
             value=encode_response["data"]["encoded_value"],
             transformation=transformation_name,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("decode_response: {}".format(decode_response))
+        logging.debug(f"decode_response: {decode_response}")
         self.assertEqual(
             first=decode_response["data"]["decoded_value"],
             second=test_input_value,

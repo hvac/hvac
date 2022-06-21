@@ -19,7 +19,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = "azure-integration-test"
 
     def setUp(self):
-        super(TestAzure, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="azure",
             path=self.DEFAULT_MOUNT_POINT,
@@ -27,7 +27,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.DEFAULT_MOUNT_POINT)
-        super(TestAzure, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

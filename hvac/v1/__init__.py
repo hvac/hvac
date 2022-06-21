@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import json
 import os
 from base64 import b64encode
@@ -23,7 +21,7 @@ except ImportError:
     has_hcl_parser = False
 
 
-class Client(object):
+class Client:
     """The hvac Client class for HashiCorp's Vault."""
 
     def __init__(
@@ -38,7 +36,7 @@ class Client(object):
         session=None,
         adapter=adapters.JSONAdapter,
         namespace=None,
-        **kwargs
+        **kwargs,
     ):
         """Creates a new hvac client instance.
 
@@ -105,7 +103,7 @@ class Client(object):
             allow_redirects=allow_redirects,
             session=session,
             namespace=namespace,
-            **kwargs
+            **kwargs,
         )
 
         # Instantiate API classes to be exposed as properties on this class starting with auth method classes.
@@ -236,7 +234,7 @@ class Client(object):
         :rtype:
         """
         try:
-            return self._adapter.get("/v1/{0}".format(path), wrap_ttl=wrap_ttl)
+            return self._adapter.get(f"/v1/{path}", wrap_ttl=wrap_ttl)
         except exceptions.InvalidPath:
             return None
 
@@ -250,7 +248,7 @@ class Client(object):
         """
         try:
             payload = {"list": True}
-            return self._adapter.get("/v1/{0}".format(path), params=payload)
+            return self._adapter.get(f"/v1/{path}", params=payload)
         except exceptions.InvalidPath:
             return None
 
@@ -266,9 +264,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.post(
-            "/v1/{0}".format(path), json=kwargs, wrap_ttl=wrap_ttl
-        )
+        return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
     def delete(self, path):
         """DELETE /<path>
@@ -278,7 +274,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._adapter.delete("/v1/{0}".format(path))
+        self._adapter.delete(f"/v1/{path}")
 
     def get_policy(self, name, parse=False):
         """Retrieve the policy body for the named policy.
@@ -409,7 +405,7 @@ class Client(object):
             )
         elif role:
             return self._adapter.post(
-                "/v1/auth/token/create/{0}".format(role), json=params, wrap_ttl=wrap_ttl
+                f"/v1/auth/token/create/{role}", json=params, wrap_ttl=wrap_ttl
             )
         else:
             return self._adapter.post(
@@ -489,7 +485,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        self._adapter.post("/v1/auth/token/revoke-prefix/{0}".format(prefix))
+        self._adapter.post(f"/v1/auth/token/revoke-prefix/{prefix}")
 
     def renew_token(self, token=None, increment=None, wrap_ttl=None):
         """POST /auth/token/renew
@@ -593,7 +589,7 @@ class Client(object):
             "path_suffix": path_suffix,
             "explicit_max_ttl": explicit_max_ttl,
         }
-        return self._adapter.post("/v1/auth/token/roles/{0}".format(role), json=params)
+        return self._adapter.post(f"/v1/auth/token/roles/{role}", json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version="1.0.0",
@@ -607,7 +603,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.read("auth/token/roles/{0}".format(role))
+        return self.read(f"auth/token/roles/{role}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="1.0.0",
@@ -621,7 +617,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self.delete("auth/token/roles/{0}".format(role))
+        return self.delete(f"auth/token/roles/{role}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="1.0.0",
@@ -688,7 +684,7 @@ class Client(object):
         }
 
         return self.login(
-            "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
+            f"/v1/auth/{mount_point}/login", json=params, use_token=use_token
         )
 
     @utils.deprecated_method(
@@ -736,7 +732,7 @@ class Client(object):
         params.update(kwargs)
 
         return self.login(
-            "/v1/auth/{0}/login/{1}".format(mount_point, username),
+            f"/v1/auth/{mount_point}/login/{username}",
             json=params,
             use_token=use_token,
         )
@@ -799,7 +795,7 @@ class Client(object):
         }
 
         return self.login(
-            "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
+            f"/v1/auth/{mount_point}/login", json=params, use_token=use_token
         )
 
     @utils.deprecated_method(
@@ -835,7 +831,7 @@ class Client(object):
             params["role"] = role
 
         return self.login(
-            "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
+            f"/v1/auth/{mount_point}/login", json=params, use_token=use_token
         )
 
     @utils.deprecated_method(
@@ -870,7 +866,7 @@ class Client(object):
         params.update(kwargs)
 
         return self._adapter.post(
-            "/v1/auth/{}/users/{}".format(mount_point, username), json=params
+            f"/v1/auth/{mount_point}/users/{username}", json=params
         )
 
     @utils.deprecated_method(
@@ -887,7 +883,7 @@ class Client(object):
         """
         try:
             return self._adapter.get(
-                "/v1/auth/{}/users".format(mount_point), params={"list": True}
+                f"/v1/auth/{mount_point}/users", params={"list": True}
             )
         except exceptions.InvalidPath:
             return None
@@ -906,7 +902,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get("/v1/auth/{}/users/{}".format(mount_point, username))
+        return self._adapter.get(f"/v1/auth/{mount_point}/users/{username}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="1.0.0",
@@ -932,7 +928,7 @@ class Client(object):
         params = {"policies": policies}
 
         return self._adapter.post(
-            "/v1/auth/{}/users/{}/policies".format(mount_point, username), json=params
+            f"/v1/auth/{mount_point}/users/{username}/policies", json=params
         )
 
     @utils.deprecated_method(
@@ -953,7 +949,7 @@ class Client(object):
         """
         params = {"password": password}
         return self._adapter.post(
-            "/v1/auth/{}/users/{}/password".format(mount_point, username), json=params
+            f"/v1/auth/{mount_point}/users/{username}/password", json=params
         )
 
     @utils.deprecated_method(
@@ -970,9 +966,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.delete(
-            "/v1/auth/{}/users/{}".format(mount_point, username)
-        )
+        return self._adapter.delete(f"/v1/auth/{mount_point}/users/{username}")
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def create_app_id(
@@ -1009,7 +1003,7 @@ class Client(object):
         params.update(kwargs)
 
         return self._adapter.post(
-            "/v1/auth/{}/map/app-id/{}".format(mount_point, app_id), json=params
+            f"/v1/auth/{mount_point}/map/app-id/{app_id}", json=params
         )
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
@@ -1025,7 +1019,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        path = "/v1/auth/{0}/map/app-id/{1}".format(mount_point, app_id)
+        path = f"/v1/auth/{mount_point}/map/app-id/{app_id}"
         return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
@@ -1039,9 +1033,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.delete(
-            "/v1/auth/{0}/map/app-id/{1}".format(mount_point, app_id)
-        )
+        return self._adapter.delete(f"/v1/auth/{mount_point}/map/app-id/{app_id}")
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
     def create_user_id(
@@ -1078,7 +1070,7 @@ class Client(object):
         params.update(kwargs)
 
         return self._adapter.post(
-            "/v1/auth/{}/map/user-id/{}".format(mount_point, user_id), json=params
+            f"/v1/auth/{mount_point}/map/user-id/{user_id}", json=params
         )
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
@@ -1094,7 +1086,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        path = "/v1/auth/{0}/map/user-id/{1}".format(mount_point, user_id)
+        path = f"/v1/auth/{mount_point}/map/user-id/{user_id}"
         return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     @utils.deprecated_method(to_be_removed_in_version="1.0.0")
@@ -1108,9 +1100,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.delete(
-            "/v1/auth/{0}/map/user-id/{1}".format(mount_point, user_id)
-        )
+        return self._adapter.delete(f"/v1/auth/{mount_point}/map/user-id/{user_id}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1151,9 +1141,7 @@ class Client(object):
         if endpoint is not None:
             params["endpoint"] = endpoint
 
-        return self._adapter.post(
-            "/v1/auth/{0}/config/client".format(mount_point), json=params
-        )
+        return self._adapter.post(f"/v1/auth/{mount_point}/config/client", json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1167,7 +1155,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get("/v1/auth/{0}/config/client".format(mount_point))
+        return self._adapter.get(f"/v1/auth/{mount_point}/config/client")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1181,7 +1169,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.delete("/v1/auth/{0}/config/client".format(mount_point))
+        return self._adapter.delete(f"/v1/auth/{mount_point}/config/client")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1203,7 +1191,7 @@ class Client(object):
         """
         params = {"cert_name": cert_name, "aws_public_cert": aws_public_cert}
         return self._adapter.post(
-            "/v1/auth/{0}/config/certificate/{1}".format(mount_point, cert_name),
+            f"/v1/auth/{mount_point}/config/certificate/{cert_name}",
             json=params,
         )
 
@@ -1222,7 +1210,7 @@ class Client(object):
         :rtype:
         """
         return self._adapter.get(
-            "/v1/auth/{0}/config/certificate/{1}".format(mount_point, cert_name)
+            f"/v1/auth/{mount_point}/config/certificate/{cert_name}"
         )
 
     @utils.deprecated_method(
@@ -1239,7 +1227,7 @@ class Client(object):
         """
         params = {"list": True}
         return self._adapter.get(
-            "/v1/auth/{0}/config/certificates".format(mount_point), params=params
+            f"/v1/auth/{mount_point}/config/certificates", params=params
         )
 
     @utils.deprecated_method(
@@ -1350,9 +1338,7 @@ class Client(object):
         if resolve_aws_unique_ids is not None:
             params["resolve_aws_unique_ids"] = resolve_aws_unique_ids
 
-        return self._adapter.post(
-            "/v1/auth/{0}/role/{1}".format(mount_point, role), json=params
-        )
+        return self._adapter.post(f"/v1/auth/{mount_point}/role/{role}", json=params)
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1368,7 +1354,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get("/v1/auth/{0}/role/{1}".format(mount_point, role))
+        return self._adapter.get(f"/v1/auth/{mount_point}/role/{role}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1384,7 +1370,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.delete("/v1/auth/{0}/role/{1}".format(mount_point, role))
+        return self._adapter.delete(f"/v1/auth/{mount_point}/role/{role}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.11.2",
@@ -1400,7 +1386,7 @@ class Client(object):
         """
         try:
             return self._adapter.get(
-                "/v1/auth/{0}/roles".format(mount_point), params={"list": True}
+                f"/v1/auth/{mount_point}/roles", params={"list": True}
             )
         except exceptions.InvalidPath:
             return None
@@ -1458,7 +1444,7 @@ class Client(object):
         if instance_id is not None:
             params["instance_id"] = instance_id
         return self._adapter.post(
-            "/v1/auth/{0}/role/{1}/tag".format(mount_point, role), json=params
+            f"/v1/auth/{mount_point}/role/{role}/tag", json=params
         )
 
     def auth_cubbyhole(self, token):
@@ -1512,7 +1498,7 @@ class Client(object):
         """
 
         return self._adapter.post(
-            "/v1/auth/{0}/role/{1}".format(mount_point, role_name), json=kwargs
+            f"/v1/auth/{mount_point}/role/{role_name}", json=kwargs
         )
 
     @utils.deprecated_method(
@@ -1530,9 +1516,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._adapter.delete(
-            "/v1/auth/{0}/role/{1}".format(mount_point, role_name)
-        )
+        return self._adapter.delete(f"/v1/auth/{mount_point}/role/{role_name}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.12.0",
@@ -1547,7 +1531,7 @@ class Client(object):
         :rtype:
         """
 
-        return self._adapter.get("/v1/auth/{0}/role?list=true".format(mount_point))
+        return self._adapter.get(f"/v1/auth/{mount_point}/role?list=true")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.12.0",
@@ -1564,7 +1548,7 @@ class Client(object):
         :rtype:
         """
 
-        url = "/v1/auth/{0}/role/{1}/role-id".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/role-id"
         return self._adapter.get(url)["data"]["role_id"]
 
     @utils.deprecated_method(
@@ -1584,7 +1568,7 @@ class Client(object):
         :rtype:
         """
 
-        url = "/v1/auth/{0}/role/{1}/role-id".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/role-id"
         params = {"role_id": role_id}
         return self._adapter.post(url, json=params)
 
@@ -1602,7 +1586,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        return self._adapter.get("/v1/auth/{0}/role/{1}".format(mount_point, role_name))
+        return self._adapter.get(f"/v1/auth/{mount_point}/role/{role_name}")
 
     @utils.deprecated_method(
         to_be_removed_in_version="0.12.0",
@@ -1635,7 +1619,7 @@ class Client(object):
         :rtype:
         """
 
-        url = "/v1/auth/{0}/role/{1}/secret-id".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/secret-id"
         params = {}
         if meta is not None:
             params["metadata"] = json.dumps(meta)
@@ -1661,7 +1645,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/auth/{0}/role/{1}/secret-id/lookup".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/secret-id/lookup"
         params = {"secret_id": secret_id}
         return self._adapter.post(url, json=params)
 
@@ -1702,7 +1686,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/auth/{0}/role/{1}/secret-id-accessor/lookup".format(
+        url = "/v1/auth/{}/role/{}/secret-id-accessor/lookup".format(
             mount_point, role_name
         )
         params = {"secret_id_accessor": secret_id_accessor}
@@ -1724,7 +1708,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/auth/{0}/role/{1}/secret-id/destroy".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/secret-id/destroy"
         params = {"secret_id": secret_id}
         return self._adapter.post(url, json=params)
 
@@ -1746,7 +1730,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/auth/{0}/role/{1}/secret-id-accessor/destroy".format(
+        url = "/v1/auth/{}/role/{}/secret-id-accessor/destroy".format(
             mount_point, role_name
         )
         params = {"secret_id_accessor": secret_id_accessor}
@@ -1772,7 +1756,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/auth/{0}/role/{1}/custom-secret-id".format(mount_point, role_name)
+        url = f"/v1/auth/{mount_point}/role/{role_name}/custom-secret-id"
         params = {"secret_id": secret_id}
         if meta is not None:
             params["meta"] = meta
@@ -1803,7 +1787,7 @@ class Client(object):
             params["secret_id"] = secret_id
 
         return self.login(
-            "/v1/auth/{0}/login".format(mount_point), json=params, use_token=use_token
+            f"/v1/auth/{mount_point}/login", json=params, use_token=use_token
         )
 
     @utils.deprecated_method(
@@ -1846,7 +1830,7 @@ class Client(object):
         if pem_keys is not None:
             params["pem_keys"] = pem_keys
 
-        url = "v1/auth/{0}/config".format(mount_point)
+        url = f"v1/auth/{mount_point}/config"
         return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
@@ -1862,7 +1846,7 @@ class Client(object):
         :rtype: dict.
         """
 
-        url = "/v1/auth/{0}/config".format(mount_point)
+        url = f"/v1/auth/{mount_point}/config"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -1925,7 +1909,7 @@ class Client(object):
         if token_type:
             params["token_type"] = token_type
 
-        url = "v1/auth/{0}/role/{1}".format(mount_point, name)
+        url = f"v1/auth/{mount_point}/role/{name}"
         return self._adapter.post(url, json=params)
 
     @utils.deprecated_method(
@@ -1943,7 +1927,7 @@ class Client(object):
         :rtype: dict.
         """
 
-        url = "v1/auth/{0}/role/{1}".format(mount_point, name)
+        url = f"v1/auth/{mount_point}/role/{name}"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -1959,7 +1943,7 @@ class Client(object):
         :rtype: dict.
         """
 
-        url = "v1/auth/{0}/role?list=true".format(mount_point)
+        url = f"v1/auth/{mount_point}/role?list=true"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -1977,7 +1961,7 @@ class Client(object):
         :rtype: requests.Response.
         """
 
-        url = "v1/auth/{0}/role/{1}".format(mount_point, role)
+        url = f"v1/auth/{mount_point}/role/{role}"
         return self._adapter.delete(url)
 
     @utils.deprecated_method(
@@ -2000,7 +1984,7 @@ class Client(object):
         :rtype: dict.
         """
         params = {"role": role, "jwt": jwt}
-        url = "v1/auth/{0}/login".format(mount_point)
+        url = f"v1/auth/{mount_point}/login"
         return self.login(url, json=params, use_token=use_token)
 
     @utils.deprecated_method(
@@ -2033,7 +2017,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/keys/{name}"
         params = {}
         if convergent_encryption is not None:
             params["convergent_encryption"] = convergent_encryption
@@ -2060,7 +2044,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/keys/{name}"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -2075,7 +2059,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys?list=true".format(mount_point)
+        url = f"/v1/{mount_point}/keys?list=true"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -2092,7 +2076,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/keys/{name}"
         return self._adapter.delete(url)
 
     @utils.deprecated_method(
@@ -2122,7 +2106,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys/{1}/config".format(mount_point, name)
+        url = f"/v1/{mount_point}/keys/{name}/config"
         params = {}
         if min_decryption_version is not None:
             params["min_decryption_version"] = min_decryption_version
@@ -2147,7 +2131,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/keys/{1}/rotate".format(mount_point, name)
+        url = f"/v1/{mount_point}/keys/{name}/rotate"
         return self._adapter.post(url)
 
     @utils.deprecated_method(
@@ -2169,11 +2153,9 @@ class Client(object):
         :rtype:
         """
         if version is not None:
-            url = "/v1/{0}/export/{1}/{2}/{3}".format(
-                mount_point, key_type, name, version
-            )
+            url = f"/v1/{mount_point}/export/{key_type}/{name}/{version}"
         else:
-            url = "/v1/{0}/export/{1}/{2}".format(mount_point, key_type, name)
+            url = f"/v1/{mount_point}/export/{key_type}/{name}"
         return self._adapter.get(url)
 
     @utils.deprecated_method(
@@ -2215,7 +2197,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/encrypt/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/encrypt/{name}"
         params = {"plaintext": plaintext}
         if context is not None:
             params["context"] = context
@@ -2262,7 +2244,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/decrypt/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/decrypt/{name}"
         params = {"ciphertext": ciphertext}
         if context is not None:
             params["context"] = context
@@ -2306,7 +2288,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/rewrap/{1}".format(mount_point, name)
+        url = f"/v1/{mount_point}/rewrap/{name}"
         params = {"ciphertext": ciphertext}
         if context is not None:
             params["context"] = context
@@ -2343,7 +2325,7 @@ class Client(object):
         :return:
         :rtype:
         """
-        url = "/v1/{0}/datakey/{1}/{2}".format(mount_point, key_type, name)
+        url = f"/v1/{mount_point}/datakey/{key_type}/{name}"
         params = {}
         if context is not None:
             params["context"] = context
@@ -2373,9 +2355,9 @@ class Client(object):
         :rtype:
         """
         if data_bytes is not None:
-            url = "/v1/{0}/random/{1}".format(mount_point, data_bytes)
+            url = f"/v1/{mount_point}/random/{data_bytes}"
         else:
-            url = "/v1/{0}/random".format(mount_point)
+            url = f"/v1/{mount_point}/random"
 
         params = {}
         if output_format is not None:
@@ -2404,9 +2386,9 @@ class Client(object):
         :rtype:
         """
         if algorithm is not None:
-            url = "/v1/{0}/hash/{1}".format(mount_point, algorithm)
+            url = f"/v1/{mount_point}/hash/{algorithm}"
         else:
-            url = "/v1/{0}/hash".format(mount_point)
+            url = f"/v1/{mount_point}/hash"
 
         params = {"input": hash_input}
         if output_format is not None:
@@ -2437,9 +2419,9 @@ class Client(object):
         :rtype:
         """
         if algorithm is not None:
-            url = "/v1/{0}/hmac/{1}/{2}".format(mount_point, name, algorithm)
+            url = f"/v1/{mount_point}/hmac/{name}/{algorithm}"
         else:
-            url = "/v1/{0}/hmac/{1}".format(mount_point, name)
+            url = f"/v1/{mount_point}/hmac/{name}"
         params = {"input": hmac_input}
         if key_version is not None:
             params["key_version"] = key_version
@@ -2483,9 +2465,9 @@ class Client(object):
         :rtype:
         """
         if algorithm is not None:
-            url = "/v1/{0}/sign/{1}/{2}".format(mount_point, name, algorithm)
+            url = f"/v1/{mount_point}/sign/{name}/{algorithm}"
         else:
-            url = "/v1/{0}/sign/{1}".format(mount_point, name)
+            url = f"/v1/{mount_point}/sign/{name}"
 
         params = {"input": input_data}
         if key_version is not None:
@@ -2538,9 +2520,9 @@ class Client(object):
         :rtype:
         """
         if algorithm is not None:
-            url = "/v1/{0}/verify/{1}/{2}".format(mount_point, name, algorithm)
+            url = f"/v1/{mount_point}/verify/{name}/{algorithm}"
         else:
-            url = "/v1/{0}/verify/{1}".format(mount_point, name)
+            url = f"/v1/{mount_point}/verify/{name}"
 
         params = {"input": input_data}
         if signature is not None:

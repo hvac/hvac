@@ -19,7 +19,7 @@ class TestPolicy(HvacIntegrationTestCase, TestCase):
         self.client.sys.delete_policy(
             name=self.TEST_POLICY_NAME,
         )
-        super(TestPolicy, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

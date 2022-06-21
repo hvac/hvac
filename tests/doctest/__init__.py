@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 import os
 from time import sleep
@@ -25,10 +24,10 @@ def doctest_global_setup():
     mocker.start()
 
     auth_method_paths = [
-        "ldap/login/{}".format(MockLdapServer.ldap_user_name),
+        f"ldap/login/{MockLdapServer.ldap_user_name}",
     ]
     for auth_method_path in auth_method_paths:
-        mock_url = "https://127.0.0.1:8200/v1/auth/{path}".format(path=auth_method_path)
+        mock_url = f"https://127.0.0.1:8200/v1/auth/{auth_method_path}"
         mock_response = {
             "auth": {
                 "client_token": manager.root_token,

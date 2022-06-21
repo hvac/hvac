@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Constants related to the Transit secrets engine."""
 
 ALLOWED_KEY_TYPES = [

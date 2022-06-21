@@ -12,7 +12,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
     TEST_ROLE = "role-test"
 
     def setUp(self):
-        super(TestPki, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="pki",
             path=self.TEST_MOUNT_POINT,
@@ -37,7 +37,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
-        super(TestPki, self).tearDown()
+        super().tearDown()
 
     # Read CA Certificate
     @parameterized.expand(
@@ -435,7 +435,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_create_or_update_role(self, label, raises=False, exception_message=""):
-        name = "{}-2".format(self.TEST_ROLE)
+        name = f"{self.TEST_ROLE}-2"
         create_or_update_role_response = self.client.secrets.pki.create_or_update_role(
             name=name,
             mount_point=self.TEST_MOUNT_POINT,
@@ -494,7 +494,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_delete_role(self, label, raises=False, exception_message=""):
-        name = "{}-2".format(self.TEST_ROLE)
+        name = f"{self.TEST_ROLE}-2"
         self.client.secrets.pki.create_or_update_role(
             name=name,
             mount_point=self.TEST_MOUNT_POINT,
@@ -519,7 +519,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_generate_root(self, label, raises=False, exception_message=""):
-        ca_pki_mount_point = "{}-test-ca".format(self.TEST_MOUNT_POINT)
+        ca_pki_mount_point = f"{self.TEST_MOUNT_POINT}-test-ca"
         self.client.sys.enable_secrets_engine(
             backend_type="pki",
             path=ca_pki_mount_point,
@@ -547,7 +547,7 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_delete_root(self, label, raises=False, exception_message=""):
-        ca_pki_mount_point = "{}-test-ca".format(self.TEST_MOUNT_POINT)
+        ca_pki_mount_point = f"{self.TEST_MOUNT_POINT}-test-ca"
         self.client.sys.enable_secrets_engine(
             backend_type="pki",
             path=ca_pki_mount_point,

@@ -7,10 +7,10 @@ class VaultError(Exception):
         self.method = method
         self.url = url
 
-        super(VaultError, self).__init__(message)
+        super().__init__(message)
 
     def __str__(self):
-        return "{0}, on {1} {2}".format(self.args[0], self.method, self.url)
+        return f"{self.args[0]}, on {self.method} {self.url}"
 
 
 class InvalidRequest(VaultError):

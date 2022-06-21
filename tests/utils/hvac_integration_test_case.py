@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 import re
 import warnings
 
-from mock import patch
+from unittest.mock import patch
 
 from tests.utils import get_config_file_path, create_client, is_enterprise
 from tests.utils.server_manager import ServerManager
 import distutils.spawn
 
 
-class HvacIntegrationTestCase(object):
+class HvacIntegrationTestCase:
     """Base class intended to be used by all hvac integration test cases."""
 
     manager = None

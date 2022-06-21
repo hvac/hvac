@@ -14,14 +14,14 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(TestMfa, cls).setUpClass()
+        super().setUpClass()
 
     @classmethod
     def tearDownClass(cls):
-        super(TestMfa, cls).tearDownClass()
+        super().tearDownClass()
 
     def setUp(self):
-        super(TestMfa, self).setUp()
+        super().setUp()
         if "%s/" % TEST_AUTH_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="userpass", path=TEST_AUTH_PATH
@@ -32,7 +32,7 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
             )
 
     def tearDown(self):
-        super(TestMfa, self).tearDown()
+        super().tearDown()
         for path in [TEST_AUTH_PATH, UNSUPPORTED_AUTH_PATH]:
             self.client.sys.disable_auth_method(
                 path=path,
@@ -258,7 +258,7 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
         if configure_access:
             self.client.auth.mfa.configure_duo_access(
                 mount_point=TEST_AUTH_PATH,
-                host="localhost:{port}".format(port=self.mock_server_port),
+                host=f"localhost:{self.mock_server_port}",
                 integration_key="an-integration-key",
                 secret_key="valid-secret-key",
             )

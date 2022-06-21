@@ -8,14 +8,14 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 class TestLease(HvacIntegrationTestCase, TestCase):
     def setUp(self):
-        super(TestLease, self).setUp()
+        super().setUp()
         # Set up a test pki backend and issue a cert against some role so we.
         utils.configure_pki(client=self.client)
 
     def tearDown(self):
         # Reset integration test state.
         utils.disable_pki(client=self.client)
-        super(TestLease, self).tearDown()
+        super().tearDown()
 
     def test_read_lease(self):
         pki_issue_response = self.client.write(
