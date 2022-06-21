@@ -7,7 +7,6 @@ import os
 import re
 import socket
 import subprocess
-import sys
 from distutils.spawn import find_executable
 from distutils.version import StrictVersion
 from unittest import SkipTest
@@ -191,36 +190,32 @@ def decode_generated_root_token(encoded_token, otp):
 
 
 def get_popen_kwargs(**popen_kwargs):
-    """Helper method to add `encoding='utf-8'` to subprocess.Popen when we're in Python 3.x.
+    """Helper method to add `encoding='utf-8'` to subprocess.Popen.
 
     :param popen_kwargs: List of keyword arguments to conditionally mutate
     :type popen_kwargs: **kwargs
     :return: Conditionally updated list of keyword arguments
     :rtype: dict
     """
-    if sys.version_info[0] >= 3:
-        popen_kwargs["encoding"] = "utf-8"
+    popen_kwargs["encoding"] = "utf-8"
     return popen_kwargs
 
 
 def base64ify(bytes_or_str):
-    """Helper method to perform base64 encoding across Python 2.7 and Python 3.X
+    """Helper method to perform base64 encoding
 
     :param bytes_or_str:
     :type bytes_or_str:
     :return:
     :rtype:
     """
-    if sys.version_info[0] >= 3 and isinstance(bytes_or_str, str):
+    if isinstance(bytes_or_str, str):
         input_bytes = bytes_or_str.encode("utf8")
     else:
         input_bytes = bytes_or_str
 
     output_bytes = base64.urlsafe_b64encode(input_bytes)
-    if sys.version_info[0] >= 3:
-        return output_bytes.decode("ascii")
-    else:
-        return output_bytes
+    return output_bytes.decode("ascii")
 
 
 def configure_pki(

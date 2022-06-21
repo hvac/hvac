@@ -21,16 +21,13 @@ Transit
 
     def base64ify(bytes_or_str):
         """Helper method to perform base64 encoding across Python 2.7 and Python 3.X"""
-        if sys.version_info[0] >= 3 and isinstance(bytes_or_str, str):
+        if isinstance(bytes_or_str, str):
             input_bytes = bytes_or_str.encode('utf8')
         else:
             input_bytes = bytes_or_str
 
         output_bytes = base64.urlsafe_b64encode(input_bytes)
-        if sys.version_info[0] >= 3:
-            return output_bytes.decode('ascii')
-        else:
-            return output_bytes
+        return output_bytes.decode('ascii')
 
 Create Key
 ----------

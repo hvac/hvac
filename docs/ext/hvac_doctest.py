@@ -79,10 +79,6 @@ def is_allowed_version(spec, version):
 
 class Py23DocChecker(doctest.OutputChecker):
     def check_output(self, want, got, optionflags):
-        if sys.version_info[0] < 3:
-            # Ignore str `u` prefix in repr to simplify Python 2.7 doctest coverage
-            got = re.sub("u'(.*?)'", "'\\1'", got)
-            got = re.sub('u"(.*?)"', '"\\1"', got)
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
 
 
