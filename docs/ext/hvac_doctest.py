@@ -14,13 +14,13 @@ import doctest
 import re
 import sys
 import time
+from io import StringIO
 from os import path
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version
-from six import itervalues, StringIO, binary_type, text_type, PY2
 
 import sphinx
 from sphinx.builders import Builder
@@ -278,6 +278,7 @@ class SphinxDocTestRunner(doctest.DocTestRunner):
 
     def summarize(self, out, verbose=None):  # type: ignore
         # type: (Callable, bool) -> Tuple[int, int]
+
         string_io = StringIO()
         old_stdout = sys.stdout
         sys.stdout = string_io
@@ -433,8 +434,6 @@ Doctest summary
             )[0]
         except Exception:
             filename = self.env.doc2path(docname, base=None)
-        if PY2:
-            return filename.encode(fs_encoding)
         return filename
 
     @staticmethod
