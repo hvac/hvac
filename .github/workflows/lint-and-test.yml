@@ -17,15 +17,16 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.7
-          - 3.8
-          - 3.9
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -47,10 +48,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python 3.x
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.x
 
@@ -86,15 +87,16 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.7
-          - 3.8
-          - 3.9
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -129,10 +131,10 @@ jobs:
           - 1.7.2
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -181,10 +183,10 @@ jobs:
       - integration-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
 
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
