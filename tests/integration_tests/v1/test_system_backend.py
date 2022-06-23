@@ -12,7 +12,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
     TEST_KVV1_MOUNT_POINT = "kvv1_mount"
 
     def setUp(self):
-        super(TestSystemBackend, self).setUp()
+        super().setUp()
         if (
             "%s/" % self.TEST_KVV1_MOUNT_POINT
             not in self.client.sys.list_mounted_secrets_engines()["data"]
@@ -26,7 +26,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
     def tearDown(self):
         self.client.token = self.manager.root_token
         self.client.sys.disable_secrets_engine(path=self.TEST_KVV1_MOUNT_POINT)
-        super(TestSystemBackend, self).tearDown()
+        super().tearDown()
 
     def test_unseal_multi(self):
         cls = type(self)
@@ -357,7 +357,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         test_mount_point = "tune-approle"
         test_description = "this is a test auth backend"
         test_max_lease_ttl = 12345678
-        if "{0}/".format(test_mount_point) in self.client.sys.list_auth_methods():
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods():
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method(method_type="approle", path=test_mount_point)
 

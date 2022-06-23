@@ -3,7 +3,7 @@ from base64 import b64decode
 from datetime import datetime
 from unittest import TestCase
 
-import mock
+from unittest import mock
 
 from hvac import Client
 
@@ -39,7 +39,7 @@ class TestAwsIamMethods(TestCase):
         ]
         expected_iam_request_headers = {
             "Authorization": [
-                "{0} {1}".format(
+                "{} {}".format(
                     "AWS4-HMAC-SHA256", ", ".join(expected_auth_header_parts)
                 )
             ],

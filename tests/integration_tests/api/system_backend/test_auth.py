@@ -9,7 +9,7 @@ class TestAuth(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_auth_method(path=self.TEST_AUTH_METHOD_PATH)
-        super(TestAuth, self).tearDown()
+        super().tearDown()
 
     def test_auth_backend_manipulation(self):
         self.assertNotIn(

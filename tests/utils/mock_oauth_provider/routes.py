@@ -86,7 +86,7 @@ def create_client():
 def well_known():
     base_url = request.host_url.rstrip("/")
     response = {
-        "issuer": "{url}/oauth".format(url=base_url),
+        "issuer": f"{base_url}/oauth",
         "authorization_endpoint": "{url}{authorize}".format(
             url=base_url, authorize=url_for(".authorize")
         ),
@@ -107,7 +107,7 @@ def authorize():
         try:
             logger.debug("validate_consent_request for user: %s" % user)
             grant = authorization.validate_consent_request(end_user=user)
-            logger.debug("grant for user %s: %s" % (user, grant))
+            logger.debug(f"grant for user {user}: {grant}")
         except OAuth2Error as error:
             return jsonify(dict(error.get_body()))
         return jsonify(

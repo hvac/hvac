@@ -10,7 +10,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = "kvv1"
 
     def setUp(self):
-        super(TestKvV1, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="kv",
             path=self.DEFAULT_MOUNT_POINT,
@@ -19,7 +19,7 @@ class TestKvV1(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.DEFAULT_MOUNT_POINT)
-        super(TestKvV1, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

@@ -17,7 +17,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
     DEFAULT_MOUNT_POINT = "kvv2"
 
     def setUp(self):
-        super(TestKvV2, self).setUp()
+        super().setUp()
         self.client.sys.enable_secrets_engine(
             backend_type="kv",
             path=self.DEFAULT_MOUNT_POINT,
@@ -26,7 +26,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
 
         # We occasionally see issues with the newly enabled secrets engine not becoming available in time for our test cases.
         # So we wait for it to show up in the mounted secrets engines list here before proceeding.
-        path = "{mount_point}/".format(mount_point=self.DEFAULT_MOUNT_POINT)
+        path = f"{self.DEFAULT_MOUNT_POINT}/"
         attempts = 0
         while (
             attempts < 25
@@ -42,7 +42,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
 
     def tearDown(self):
         self.client.sys.disable_secrets_engine(path=self.DEFAULT_MOUNT_POINT)
-        super(TestKvV2, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Multi-factor authentication methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 from hvac import exceptions, utils

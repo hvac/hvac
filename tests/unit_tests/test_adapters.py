@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 from unittest import TestCase
 
@@ -38,7 +37,7 @@ class TestRequest(TestCase):
     def test_get(self, label, url, path="v1/sys/health", redirect_url=None):
         path = path.replace("//", "/")
         expected_status_code = 200
-        mock_url = "{0}/{1}".format(url, path)
+        mock_url = f"{url}/{path}"
         expected_request_urls = [mock_url]
         adapter = adapters.RawAdapter(base_uri=url)
         response_headers = {}
@@ -95,7 +94,7 @@ class TestRequest(TestCase):
             "wrap_info": None,
         }
         expected_status_code = 200
-        mock_url = "{0}/{1}".format(DEFAULT_URL, test_path)
+        mock_url = f"{DEFAULT_URL}/{test_path}"
         requests_mocker.register_uri(method="LIST", url=mock_url, json=mock_response)
         adapter = adapters.RawAdapter()
         response = adapter.list(

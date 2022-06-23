@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Cert methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.utils import validate_pem_format
@@ -106,7 +105,7 @@ class Cert(VaultApiBase):
         :type mount_point:
         """
         try:
-            with open(certificate, "r") as f_cert:
+            with open(certificate) as f_cert:
                 cert = f_cert.read()
         except FileNotFoundError:
             cert = certificate
@@ -179,7 +178,7 @@ class Cert(VaultApiBase):
         :return: The response of the list_certificate request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/certs".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/certs"
         return self._adapter.list(url=api_path)
 
     def delete_certificate_role(self, name, mount_point="cert"):
@@ -218,7 +217,7 @@ class Cert(VaultApiBase):
         params = {
             "disable_binding": disable_binding,
         }
-        api_path = "/v1/auth/{mount_point}/config".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/config"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -263,7 +262,7 @@ class Cert(VaultApiBase):
         params = {}
         if name != "":
             params["name"] = name
-        api_path = "/v1/auth/{mount_point}/login".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/login"
 
         # Must have cert checking or a CA cert. This is caught lower down but harder to grok
         if not cacert:

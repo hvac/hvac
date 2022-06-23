@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Support for "Audit"-related System Backend Methods."""
 from hvac import utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin

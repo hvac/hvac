@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Token methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -122,7 +121,7 @@ class Token(VaultApiBase):
                 json=params,
             )
 
-        api_path = "/v1/auth/{mount_point}/create".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/create"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -143,7 +142,7 @@ class Token(VaultApiBase):
         :return: The response of the list_accessors request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/accessors".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/accessors"
         return self._adapter.list(
             url=api_path,
         )
@@ -164,7 +163,7 @@ class Token(VaultApiBase):
         params = {
             "token": token,
         }
-        api_path = "/v1/auth/{mount_point}/lookup".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/lookup"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -181,7 +180,7 @@ class Token(VaultApiBase):
         :return: The response of the lookup_a_self request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/lookup-self".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/lookup-self"
         return self._adapter.get(
             url=api_path,
         )
@@ -239,7 +238,7 @@ class Token(VaultApiBase):
                 "increment": increment,
             }
         )
-        api_path = "/v1/auth/{mount_point}/renew".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/renew"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -272,7 +271,7 @@ class Token(VaultApiBase):
                 "increment": increment,
             }
         )
-        api_path = "/v1/auth/{mount_point}/renew-self".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/renew-self"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -336,7 +335,7 @@ class Token(VaultApiBase):
         params = {
             "token": token,
         }
-        api_path = "/v1/auth/{mount_point}/revoke".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/revoke"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -355,7 +354,7 @@ class Token(VaultApiBase):
         :return: The response of the revoke_a_self request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/revoke-self".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/revoke-self"
         return self._adapter.post(url=api_path)
 
     def revoke_accessor(self, accessor, mount_point=DEFAULT_MOUNT_POINT):
@@ -448,7 +447,7 @@ class Token(VaultApiBase):
         :return: The response of the list_roles request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/roles".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/roles"
         return self._adapter.list(
             url=api_path,
         )
@@ -551,7 +550,7 @@ class Token(VaultApiBase):
         :return: The response of the tidy_s request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/tidy".format(mount_point=mount_point)
+        api_path = f"/v1/auth/{mount_point}/tidy"
         return self._adapter.post(
             url=api_path,
         )

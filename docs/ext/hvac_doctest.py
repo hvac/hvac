@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     sphinx.ext.doctest
     ~~~~~~~~~~~~~~~~~~
@@ -9,20 +8,19 @@
     :copyright: Copyright 2007-2018 by the Sphinx team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
-from __future__ import absolute_import
 
 import codecs
 import doctest
 import re
 import sys
 import time
+from io import StringIO
 from os import path
 
 from docutils import nodes
 from docutils.parsers.rst import directives
 from packaging.specifiers import SpecifierSet, InvalidSpecifier
 from packaging.version import Version
-from six import itervalues, StringIO, binary_type, text_type, PY2
 
 import sphinx
 from sphinx.builders import Builder
@@ -54,21 +52,10 @@ logger = logging.getLogger(__name__)
 blankline_re = re.compile(r"^\s*<BLANKLINE>", re.MULTILINE)
 doctestopt_re = re.compile(r"#\s*doctest:.+$", re.MULTILINE)
 
-if PY2:
 
-    def doctest_encode(text, encoding):
-        # type: (str, str) -> str
-        if isinstance(text, text_type):
-            text = text.encode(encoding)
-            if text.startswith(codecs.BOM_UTF8):
-                text = text[len(codecs.BOM_UTF8) :]
-        return text
-
-else:
-
-    def doctest_encode(text, encoding):
-        # type: (str, str) -> str
-        return text
+def doctest_encode(text, encoding):
+    # type: (str, str) -> str
+    return text
 
 
 def is_allowed_version(spec, version):
@@ -92,10 +79,6 @@ def is_allowed_version(spec, version):
 
 class Py23DocChecker(doctest.OutputChecker):
     def check_output(self, want, got, optionflags):
-        if sys.version_info[0] < 3:
-            # Ignore str `u` prefix in repr to simplify Python 2.7 doctest coverage
-            got = re.sub("u'(.*?)'", "'\\1'", got)
-            got = re.sub('u"(.*?)"', '"\\1"', got)
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
 
 
@@ -231,7 +214,7 @@ parser = doctest.DocTestParser()
 # helper classes
 
 
-class TestGroup(object):
+class TestGroup:
     def __init__(self, name):
         # type: (str) -> None
         self.name = name
@@ -260,7 +243,7 @@ class TestGroup(object):
 
     def __repr__(self):  # type: ignore
         # type: () -> str
-        return "TestGroup(name=%r, setup=%r, cleanup=%r, tests=%r)" % (
+        return "TestGroup(name={!r}, setup={!r}, cleanup={!r}, tests={!r})".format(
             self.name,
             self.setup,
             self.cleanup,
@@ -268,7 +251,7 @@ class TestGroup(object):
         )
 
 
-class TestCode(object):
+class TestCode:
     def __init__(self, code, type, filename, lineno, options=None):
         # type: (str, str, Optional[str], int, Optional[Dict]) -> None
         self.code = code
@@ -279,7 +262,7 @@ class TestCode(object):
 
     def __repr__(self):  # type: ignore
         # type: () -> str
-        return "TestCode(%r, %r, filename=%r, lineno=%r, options=%r)" % (
+        return "TestCode({!r}, {!r}, filename={!r}, lineno={!r}, options={!r})".format(
             self.code,
             self.type,
             self.filename,
@@ -295,6 +278,7 @@ class SphinxDocTestRunner(doctest.DocTestRunner):
 
     def summarize(self, out, verbose=None):  # type: ignore
         # type: (Callable, bool) -> Tuple[int, int]
+
         string_io = StringIO()
         old_stdout = sys.stdout
         sys.stdout = string_io
@@ -384,7 +368,7 @@ class DocTestBuilder(Builder):
             logger.warning(text)
         else:
             logger.info(text, nonl=True)
-        if isinstance(text, binary_type):
+        if isinstance(text, bytes):
             text = force_decode(text, None)
         self.outfile.write(text)
 
@@ -450,8 +434,6 @@ Doctest summary
             )[0]
         except Exception:
             filename = self.env.doc2path(docname, base=None)
-        if PY2:
-            return filename.encode(fs_encoding)
         return filename
 
     @staticmethod
@@ -527,13 +509,13 @@ Doctest summary
                     groups[groupname] = TestGroup(groupname)
                 groups[groupname].add_code(code)
         for code in add_to_all_groups:
-            for group in itervalues(groups):
+            for group in groups.values():
                 group.add_code(code)
         if self.config.doctest_global_setup:
             code = TestCode(
                 self.config.doctest_global_setup, "testsetup", filename=None, lineno=0
             )
-            for group in itervalues(groups):
+            for group in groups.values():
                 group.add_code(code, prepend=True)
         if self.config.doctest_global_cleanup:
             code = TestCode(
@@ -542,13 +524,13 @@ Doctest summary
                 filename=None,
                 lineno=0,
             )
-            for group in itervalues(groups):
+            for group in groups.values():
                 group.add_code(code)
         if not groups:
             return
 
-        self._out("\nDocument: %s\n----------%s\n" % (docname, "-" * len(docname)))
-        for group in itervalues(groups):
+        self._out("\nDocument: {}\n----------{}\n".format(docname, "-" * len(docname)))
+        for group in groups.values():
             self.test_group(group)
         # Separately count results from setup code
         res_f, res_t = self.setup_runner.summarize(self._out, verbose=False)
@@ -591,7 +573,7 @@ Doctest summary
             sim_doctest = doctest.DocTest(
                 examples,
                 {},
-                "%s (%s code)" % (group.name, what),
+                f"{group.name} ({what} code)",
                 testcodes[0].filename,
                 0,
                 None,

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """JWT/OIDC methods module."""
 from hvac.api.auth_methods.jwt import JWT
 
@@ -131,7 +130,7 @@ class OIDC(JWT):
         :rtype: dict
         """
 
-        super(OIDC, self).create_role(
+        super().create_role(
             name=name,
             user_claim=user_claim,
             allowed_redirect_uris=allowed_redirect_uris,

@@ -21,7 +21,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
             raise SkipTest("The mock LDAP server requires Java runtime")
 
         try:
-            super(TestLdap, cls).setUpClass()
+            super().setUpClass()
             logging.getLogger("ldap_test").setLevel(logging.ERROR)
 
             cls.mock_server_port = utils.get_free_port()
@@ -29,23 +29,23 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
             cls.ldap_server.start()
         except Exception:
             # Ensure that Vault server is taken down if setUpClass fails
-            super(TestLdap, cls).tearDownClass()
+            super().tearDownClass()
             raise
 
     @classmethod
     def tearDownClass(cls):
-        super(TestLdap, cls).tearDownClass()
+        super().tearDownClass()
         cls.ldap_server.stop()
 
     def setUp(self):
-        super(TestLdap, self).setUp()
+        super().setUp()
         if "ldap/" not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="ldap", path=self.TEST_LDAP_PATH
             )
 
     def tearDown(self):
-        super(TestLdap, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_LDAP_PATH,
         )

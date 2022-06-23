@@ -15,7 +15,7 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
     TEST_GROUP = "hvac-group"
 
     def setUp(self):
-        super(TestOkta, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type="okta",
             path=self.TEST_MOUNT_POINT,
@@ -25,7 +25,7 @@ class TestOkta(HvacIntegrationTestCase, TestCase):
         self.client.sys.disable_auth_method(
             path=self.TEST_MOUNT_POINT,
         )
-        super(TestOkta, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

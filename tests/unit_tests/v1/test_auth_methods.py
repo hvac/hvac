@@ -15,7 +15,7 @@ class TestAuthMethods(TestCase):
         test_description = "this is a test description"
         requests_mocker.register_uri(
             method="POST",
-            url="http://localhost:8200/v1/sys/auth/{0}/tune".format(test_mount_point),
+            url=f"http://localhost:8200/v1/sys/auth/{test_mount_point}/tune",
             status_code=expected_status_code,
         )
         client = Client()
@@ -60,7 +60,7 @@ class TestAuthMethods(TestCase):
         }
         requests_mocker.register_uri(
             method="GET",
-            url="http://localhost:8200/v1/sys/auth/{0}/tune".format(test_mount_point),
+            url=f"http://localhost:8200/v1/sys/auth/{test_mount_point}/tune",
             status_code=expected_status_code,
             json=mock_response,
         )

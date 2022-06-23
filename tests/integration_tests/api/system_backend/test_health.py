@@ -12,7 +12,7 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
     def tearDown(self):
         # If one of our test cases left the Vault cluster sealed, unseal it here.
         self.manager.unseal()
-        super(TestHealth, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

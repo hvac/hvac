@@ -8,7 +8,7 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 class IntegrationTest(HvacIntegrationTestCase, TestCase):
     def setUp(self):
-        super(IntegrationTest, self).setUp()
+        super().setUp()
         if "secret/" not in self.client.sys.list_mounted_secrets_engines()["data"]:
             self.client.sys.enable_secrets_engine(
                 backend_type="kv",
@@ -475,10 +475,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
     def test_auth_gcp_alternate_mount_point_with_no_client_token_exception(self):
         test_mount_point = "gcp-custom-path"
         # Turn on the gcp backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("gcp", path=test_mount_point)
 
@@ -526,10 +523,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
@@ -553,10 +547,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
         with open(utils.get_config_file_path("client-cert.pem")) as fp:
@@ -588,10 +579,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
@@ -624,10 +612,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_bound_service_account_namespaces = ["vault-test"]
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
@@ -667,10 +652,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_bound_service_account_namespaces = ["vault-test"]
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
@@ -706,10 +688,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         expected_status_code = 204
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
 
@@ -746,10 +725,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         test_mount_point = "k8s"
 
         # Turn on the kubernetes backend with a custom mount_point path specified.
-        if (
-            "{0}/".format(test_mount_point)
-            in self.client.sys.list_auth_methods()["data"]
-        ):
+        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.disable_auth_method(test_mount_point)
         self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
         with open(utils.get_config_file_path("client-cert.pem")) as fp:

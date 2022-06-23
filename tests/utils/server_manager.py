@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import logging
 import os
 import subprocess
@@ -14,7 +13,7 @@ from tests.utils import get_config_file_path, load_config_file, create_client
 logger = logging.getLogger(__name__)
 
 
-class ServerManager(object):
+class ServerManager:
     """Runs vault process running with test configuration and associates a hvac Client instance with this process."""
 
     def __init__(self, config_paths, client, use_consul=False):
@@ -54,14 +53,12 @@ class ServerManager(object):
         cluster_ready = False
         for config_path in self.config_paths:
             command = ["vault", "server", "-config=" + config_path]
-            logger.debug(
-                "Starting vault server with command: {cmd}".format(cmd=command)
-            )
+            logger.debug(f"Starting vault server with command: {command}")
             process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
             self._processes.append(process)
-            logger.debug("Spawned vault server with PID {pid}".format(pid=process.pid))
+            logger.debug(f"Spawned vault server with PID {process.pid}")
 
             attempts_left = 20
             last_exception = None
@@ -102,7 +99,7 @@ class ServerManager(object):
             raise Exception("Consul service already running")
 
         command = ["consul", "agent", "-dev"]
-        logger.debug("Starting consul service with command: {cmd}".format(cmd=command))
+        logger.debug(f"Starting consul service with command: {command}")
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
@@ -121,15 +118,15 @@ class ServerManager(object):
                     )
                 )
                 node_name = nodes_list[0]["Node"]
-                logger.debug("Current consul node name: {name}".format(name=node_name))
+                logger.debug(f"Current consul node name: {node_name}")
                 node_health_response = requests.get(
-                    "http://127.0.0.1:8500/v1/health/node/{name}".format(name=node_name)
+                    f"http://127.0.0.1:8500/v1/health/node/{node_name}"
                 )
                 node_health = node_health_response.json()
-                logger.debug("Node health response: {resp}".format(resp=node_health))
+                logger.debug(f"Node health response: {node_health}")
                 assert (
                     node_health[0]["Status"] == "passing"
-                ), 'Node {name} status != "passing"'.format(name=node_name)
+                ), f'Node {node_name} status != "passing"'
                 return True
             except Exception as error:
                 if process.poll() is not None:
@@ -143,25 +140,21 @@ class ServerManager(object):
                 attempts_left -= 1
                 last_exception = error
 
-        raise Exception(
-            "Unable to start consul in background: {0}".format(last_exception)
-        )
+        raise Exception(f"Unable to start consul in background: {last_exception}")
 
     def stop(self):
         """Stop the vault server process being managed by this class."""
         for process_num, process in enumerate(self._processes):
-            logger.debug(
-                "Terminating vault server with PID {pid}".format(pid=process.pid)
-            )
+            logger.debug(f"Terminating vault server with PID {process.pid}")
             if process.poll() is None:
                 process.kill()
             if os.getenv("HVAC_OUTPUT_VAULT_STDERR", False):
                 stdout_lines, stderr_lines = process.communicate()
-                stderr_filename = "vault{num}_stderr.log".format(num=process_num)
+                stderr_filename = f"vault{process_num}_stderr.log"
                 with open(get_config_file_path(stderr_filename), "w") as f:
                     logger.debug(stderr_lines.decode())
                     f.writelines(stderr_lines.decode())
-                stdout_filename = "vault{num}_stdout.log".format(num=process_num)
+                stdout_filename = f"vault{process_num}_stdout.log"
                 with open(get_config_file_path(stdout_filename), "w") as f:
                     logger.debug(stdout_lines.decode())
                     f.writelines(stdout_lines.decode())
@@ -198,7 +191,7 @@ class ServerManager(object):
                     )
                 )
                 vault_address = "https://127.0.0.1:8200"
-                logger.debug("Using default address: {addr}".format(addr=vault_address))
+                logger.debug(f"Using default address: {vault_address}")
             vault_addresses.append(vault_address)
         return vault_addresses
 

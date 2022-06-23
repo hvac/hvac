@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 def load_long_description():
-    with open("README.md", "r") as fh:
+    with open("README.md") as fh:
         long_description = fh.read()
     return long_description
 
@@ -33,7 +33,6 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "requests>=2.21.0",
-        "six>=1.5.0",
     ],
     include_package_data=True,
     package_data={"hvac": ["version"]},
