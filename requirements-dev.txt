@@ -4,66 +4,64 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
-appdirs==1.4.4
-    # via black
-attrs==21.2.0
+attrs==21.4.0
     # via pytest
-authlib==0.15.4
+authlib==1.0.1
     # via -r requirements-dev.in
-black==21.6b0
+black==22.6.0
     # via -r requirements-dev.in
-certifi==2020.6.20
+certifi==2022.6.15
     # via
     #   -r ./requirements.txt
     #   requests
-cffi==1.14.5
+cffi==1.15.1
     # via cryptography
-chardet==3.0.4
+charset-normalizer==2.1.0
     # via
     #   -r ./requirements.txt
     #   requests
-click==8.0.1
+click==8.1.3
     # via
     #   black
     #   flask
-codecov==2.1.11
+codecov==2.1.12
     # via -r requirements-dev.in
-coverage==5.5
+coverage[toml]==6.4.1
     # via
     #   -r requirements-dev.in
     #   codecov
     #   pytest-cov
-cryptography==3.4.7
+cryptography==37.0.4
     # via
     #   authlib
     #   jwcrypto
-deprecated==1.2.12
+deprecated==1.2.13
     # via jwcrypto
-flake8==3.9.2
+flake8==4.0.1
     # via -r requirements-dev.in
-flask==2.0.1
+flask==2.1.2
     # via
     #   -r requirements-dev.in
     #   flask-sqlalchemy
 flask-sqlalchemy==2.5.1
     # via -r requirements-dev.in
-greenlet==1.1.0
-    # via sqlalchemy
-idna==2.10
+idna==3.3
     # via
     #   -r ./requirements.txt
     #   requests
+importlib-metadata==4.12.0
+    # via flask
 iniconfig==1.1.1
     # via pytest
 ipaddress==1.0.23
     # via -r requirements-dev.in
-itsdangerous==2.0.1
+itsdangerous==2.1.2
     # via flask
-jinja2==3.0.1
+jinja2==3.1.2
     # via flask
-jwcrypto==0.9.1
+jwcrypto==1.3.1
     # via python-jwt
-markupsafe==2.0.1
+markupsafe==2.1.1
     # via jinja2
 mccabe==0.6.1
     # via flake8
@@ -73,68 +71,71 @@ mypy-extensions==0.4.3
     # via black
 nose==1.3.7
     # via -r requirements-dev.in
-packaging==21.0
+packaging==21.3
     # via pytest
 parameterized==0.8.1
     # via -r requirements-dev.in
-pathspec==0.8.1
+pathspec==0.9.0
     # via black
-pluggy==0.13.1
+platformdirs==2.5.2
+    # via black
+pluggy==1.0.0
     # via pytest
-py==1.10.0
+py==1.11.0
     # via pytest
-py4j==0.10.9.2
+py4j==0.10.9.5
     # via python-ldap-test
-pycodestyle==2.7.0
+pycodestyle==2.8.0
     # via flake8
-pycparser==2.20
+pycparser==2.21
     # via cffi
-pyflakes==2.3.1
+pyflakes==2.4.0
     # via flake8
 pyhcl==0.4.4
     # via -r ./requirements.txt
-pyparsing==2.4.7
+pyparsing==3.0.9
     # via packaging
-pytest==6.2.4
+pytest==7.1.2
     # via
     #   -r requirements-dev.in
     #   pytest-cov
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements-dev.in
-python-jwt==3.3.0
+python-jwt==3.3.3
     # via -r requirements-dev.in
 python-ldap-test==0.3.1
     # via -r requirements-dev.in
-regex==2021.7.6
-    # via black
-requests==2.24.0
+requests==2.28.1
     # via
     #   -r ./requirements.txt
     #   codecov
     #   requests-mock
 requests-mock==1.9.3
     # via -r requirements-dev.in
-semantic-version==2.8.5
+semantic-version==2.10.0
     # via -r requirements-dev.in
-six==1.15.0
+six==1.16.0
     # via
     #   -r ./requirements.txt
-    #   jwcrypto
     #   requests-mock
-sqlalchemy==1.4.20
+sqlalchemy==1.4.39
     # via flask-sqlalchemy
-toml==0.10.2
+tomli==2.0.1
     # via
     #   black
+    #   coverage
     #   pytest
-    #   pytest-cov
-urllib3==1.25.10
+typing-extensions==4.3.0
+    # via black
+urllib3==1.26.9
     # via
     #   -r ./requirements.txt
     #   requests
-werkzeug==2.0.1
+werkzeug==2.1.2
     # via
     #   -r requirements-dev.in
     #   flask
-wrapt==1.12.1
+wrapt==1.14.1
     # via deprecated
+zipp==3.8.0
+    # via importlib-metadata
