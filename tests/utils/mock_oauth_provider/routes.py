@@ -105,8 +105,8 @@ def authorize():
     user = current_user()
     if request.method == "GET":
         try:
-            logger.debug("validate_consent_request for user: %s" % user)
-            grant = authorization.validate_consent_request(end_user=user)
+            logger.debug("get_consent_grant for user: %s" % user)
+            grant = authorization.get_consent_grant(end_user=user)
             logger.debug(f"grant for user {user}: {grant}")
         except OAuth2Error as error:
             return jsonify(dict(error.get_body()))
