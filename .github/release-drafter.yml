@@ -1,5 +1,6 @@
 name-template: 'v$NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
+commitish: 'refs/heads/main'
 branches:
   - 'main'
 exclude-labels:
