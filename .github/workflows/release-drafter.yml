@@ -25,10 +25,10 @@ jobs:
 
       - name: Adding markdown
         run: |
-          cat <<MKDOWN
+          cat <<MKDOWN >> $GITHUB_STEP_SUMMARY
           ### Release Drafter :rocket:
 
           * **Draft Release URL**:
           [${{ steps.release-drafter.outputs.name }} (${{ steps.release-drafter.outputs.id }})](${{ steps.release-drafter.outputs.html_url }})
           * **Tag Name**: ${{ steps.release-drafter.outputs.tag_name }}
-          MKDOWN >> $GITHUB_STEP_SUMMARY
+          MKDOWN
