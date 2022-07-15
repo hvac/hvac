@@ -15,8 +15,20 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - name: Run release-drafter action
+        id: release-drafter
+        uses: release-drafter/release-drafter@v5
         with:
           disable-autolabeler: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Adding markdown
+        run: |
+          cat <<MKDOWN
+          ### Release Drafter :rocket:
+
+          * **Draft Release URL**:
+          [${{ steps.release-drafter.outputs.name }} (${{ steps.release-drafter.outputs.id }})](${{ steps.release-drafter.outputs.html_url }})
+          * **Tag Name**: ${{ steps.release-drafter.outputs.tag_name }}
+          MKDOWN >> $GITHUB_STEP_SUMMARY
