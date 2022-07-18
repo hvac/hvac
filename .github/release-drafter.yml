@@ -21,6 +21,17 @@ categories:
     labels:
       - 'misc'
 change-template: '- $TITLE. GH-$NUMBER'
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
 template: |
 
   $CHANGES
