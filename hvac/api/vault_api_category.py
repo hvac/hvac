@@ -37,6 +37,13 @@ class VaultApiCategory(VaultApiBase):
         :rtype: hvac.api.VaultApiBase
         """
         private_attr_name = self.get_private_attr_name(item)
+        logger.info('NCA: self="%s" type="%s" item="%s" privateitem="%s" privateitemexists="%s"',
+                    str(self),
+                    type(self),
+                    item,
+                    private_attr_name,
+                    hasattr(self, private_attr_name),
+                    )
         if item in self.implemented_class_names and hasattr(self, private_attr_name):
             return getattr(self, private_attr_name)
         if item in [u.lower() for u in self.unimplemented_classes]:
