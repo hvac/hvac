@@ -36,8 +36,8 @@ class VaultApiCategory(VaultApiBase):
         :return: The requested class instance where available.
         :rtype: hvac.api.VaultApiBase
         """
-        if item in self.implemented_class_names:
-            private_attr_name = self.get_private_attr_name(item)
+        private_attr_name = self.get_private_attr_name(item)
+        if item in self.implemented_class_names and hasattr(self, private_attr_name):
             return getattr(self, private_attr_name)
         if item in [u.lower() for u in self.unimplemented_classes]:
             raise NotImplementedError(
