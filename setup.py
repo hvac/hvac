@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 def load_long_description():
-    with open("README.md") as fh:
+    with open("README.md", encoding="utf-8") as fh:
         long_description = fh.read()
     return long_description
 
