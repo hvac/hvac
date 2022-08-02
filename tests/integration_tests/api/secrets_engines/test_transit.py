@@ -590,6 +590,38 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                 raises=exceptions.ParamValidationError,
                 exception_message="invalid signature_algorithm argument provided",
             ),
+            param(
+                "auto salt length",
+                salt_length="auto",
+            ),
+            param(
+                "hash salt length",
+                salt_length="hash",
+            ),
+            param(
+                "invalid string for salt length",
+                salt_length="foobar",
+                raises=exceptions.ParamValidationError,
+                exception_message="invalid salt_length argument provided",
+            ),
+            param(
+                "invalid negative salt length",
+                salt_length="-2",
+                raises=exceptions.ParamValidationError,
+                exception_message="invalid salt_length argument provided",
+            ),
+            param(
+                "valid negative salt length",
+                salt_length="-1",
+            ),
+            param(
+                "zero salt length",
+                salt_length="0",
+            ),
+            param(
+                "positive salt length",
+                salt_length="1",
+            ),
         ]
     )
     def test_sign_data(
@@ -598,6 +630,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         hash_input="hash this ish",
         hash_algorithm="sha2-256",
         signature_algorithm="pss",
+        salt_length=None,
         raises=False,
         exception_message="",
     ):
@@ -617,6 +650,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                     hash_input=hash_input,
                     hash_algorithm=hash_algorithm,
                     signature_algorithm=signature_algorithm,
+                    salt_length=salt_length,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -629,6 +663,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                 hash_input=hash_input,
                 hash_algorithm=hash_algorithm,
                 signature_algorithm=signature_algorithm,
+                salt_length=salt_length,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("sign_data_response: %s" % sign_data_response)
@@ -654,6 +689,38 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                 raises=exceptions.ParamValidationError,
                 exception_message="invalid signature_algorithm argument provided",
             ),
+            param(
+                "auto salt length",
+                verify_salt_length="auto",
+            ),
+            param(
+                "hash salt length",
+                verify_salt_length="hash",
+            ),
+            param(
+                "invalid string for salt length",
+                verify_salt_length="foobar",
+                raises=exceptions.ParamValidationError,
+                exception_message="invalid salt_length argument provided",
+            ),
+            param(
+                "invalid negative salt length",
+                verify_salt_length="-2",
+                raises=exceptions.ParamValidationError,
+                exception_message="invalid salt_length argument provided",
+            ),
+            param(
+                "valid negative salt length",
+                verify_salt_length="-1",
+            ),
+            param(
+                "zero salt length",
+                verify_salt_length="0",
+            ),
+            param(
+                "positive salt length",
+                verify_salt_length="1",
+            ),
         ]
     )
     def test_verify_signed_data(
@@ -662,6 +729,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         hash_input="hash this ish",
         hash_algorithm="sha2-256",
         signature_algorithm="pss",
+        verify_salt_length=None,
         raises=False,
         exception_message="",
     ):
@@ -674,11 +742,18 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("create_key_response: %s" % create_key_response)
+        if raises:
+            # We want the error, possibly related to verify_salt_length,
+            # happen while verifying, not signing.
+            sign_salt_length = "auto"
+        else:
+            sign_salt_length = verify_salt_length
         sign_data_response = self.client.secrets.transit.sign_data(
             name=key_name,
             hash_input=hash_input,
             hash_algorithm="sha2-256",
             signature_algorithm="pss",
+            salt_length=sign_salt_length,
             mount_point=self.TEST_MOUNT_POINT,
         )
         logging.debug("sign_data_response: %s" % sign_data_response)
@@ -691,6 +766,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                     signature=signature,
                     hash_algorithm=hash_algorithm,
                     signature_algorithm=signature_algorithm,
+                    salt_length=verify_salt_length,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -705,6 +781,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                     signature=signature,
                     hash_algorithm=hash_algorithm,
                     signature_algorithm=signature_algorithm,
+                    salt_length=verify_salt_length,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             )
