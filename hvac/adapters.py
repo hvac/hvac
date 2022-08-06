@@ -366,6 +366,8 @@ class JSONAdapter(RawAdapter):
                 return response.json()
             except ValueError:
                 pass
+        elif response.status_code == 204:
+            return {}
 
         return response
 
