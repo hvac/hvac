@@ -3,6 +3,7 @@ import logging
 from unittest import TestCase
 
 import requests_mock
+from requests import Response
 from parameterized import parameterized, param
 from hvac.constants.client import DEFAULT_URL
 from hvac import adapters
@@ -105,3 +106,100 @@ class TestRequest(TestCase):
             second=response.status_code,
         )
         self.assertEqual(first=mock_response, second=response.json())
+
+    @parameterized.expand(
+        [
+            param(
+                "standard Vault address",
+                url="https://localhost:8200",
+            ),
+            param(
+                "Vault address with route",
+                url="https://example.com/vault",
+            ),
+            param(
+                "regression test for hvac issue #51",
+                url="https://localhost:8200",
+                path="keyring/http://some.url/sub/entry",
+            ),
+            param(
+                "redirect with location header for issue #343",
+                url="https://localhost:8200",
+                path="secret/some-secret",
+                redirect_url="https://some-other-place.com/secret/some-secret",
+            ),
+            param(
+                "204 empty response",
+                url="https://localhost:8200",
+                response_status_code=204,
+                mock_json=None,
+            ),
+            param(
+                "non-json response",
+                url="https://localhost:8200",
+                mock_text="<html></html>",
+                parseable=False,
+            )
+        ]
+    )
+    def test_json_get(
+        self, label, url, path="v1/sys/health", redirect_url=None, parseable=True, mock_text=None,
+        response_status_code=200, mock_json={"auth": None, "warnings": None, "data": {"key1": "val1"}}
+    ):
+        path = path.replace("//", "/")
+        expected_status_code = response_status_code
+        mock_url = f"{url}/{path}"
+        expected_request_urls = [mock_url]
+        adapter = adapters.JSONAdapter(base_uri=url)
+        response_headers = {}
+
+        mock_content = {}
+        if mock_text is not None:
+            mock_content['text'] = mock_text
+        elif mock_json is not None:
+            mock_content['json'] = mock_json
+
+        if redirect_url is not None:
+            response_headers["Location"] = redirect_url
+            response_status_code = 301
+        with requests_mock.mock() as requests_mocker:
+            logging.debug('Registering "mock_url": %s' % mock_url)
+            requests_mocker.register_uri(
+                method="GET",
+                url=mock_url,
+                headers=response_headers,
+                status_code=response_status_code,
+                **mock_content,
+            )
+            if redirect_url is not None:
+                expected_request_urls.append(redirect_url)
+                logging.debug('Registering "redirect_url": %s' % redirect_url)
+                requests_mocker.register_uri(
+                    method="GET",
+                    url=redirect_url,
+                    **mock_content,
+                )
+
+            response = adapter.get(
+                url=path,
+            )
+
+        # Assert all our expected uri(s) were requested
+        for request_num, expected_request_url in enumerate(expected_request_urls):
+            self.assertEqual(
+                first=expected_request_url,
+                second=requests_mocker.request_history[request_num].url,
+            )
+
+
+        if parseable:
+            expected_response = mock_json
+            if expected_status_code == 204:
+                expected_response = {}
+
+            self.assertEqual(
+                first=response,
+                second=expected_response,
+            )
+        else:
+            self.assertIsInstance(response, Response)
