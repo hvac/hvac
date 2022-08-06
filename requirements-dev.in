@@ -1,11 +1,14 @@
 -r ./requirements.txt
 Authlib
 black
-Flask
+click<=8.0.4
+cryptography<=36.0.2
+dataclasses<=0.6
+Flask<=2.0.3
 Flask-SQLAlchemy
 flake8
 codecov
-coverage
+coverage<=6.2
 ipaddress
 mock
 nose

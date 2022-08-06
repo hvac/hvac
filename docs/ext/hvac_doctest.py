@@ -64,7 +64,6 @@ if PY2:
                 text = text[len(codecs.BOM_UTF8) :]
         return text
 
-
 else:
 
     def doctest_encode(text, encoding):

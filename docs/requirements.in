@@ -3,3 +3,4 @@ autodocsumm
 m2r2
 sphinx
 sphinx_rtd_theme
+jinja2<3.1
