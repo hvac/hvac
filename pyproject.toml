@@ -8,9 +8,9 @@ authors = [
     "Jeffrey Hogan <jeff.hogan1@gmail.com>",
 ]
 maintainers = [
-    "Brian Scholer <1260690+briantist@users.noreply.github.com>",
+    "Brian Scholer",
     "Colin McAllister <colinmca242+hvac@gmail.com>",
-    "Mike Adams <Mike.Adams@kyndryl.com>",
+    "Mike Adams",
 ]
 repository = "https://github.com/hvac/hvac"
 documentation = "https://hvac.readthedocs.io/en/stable/overview.html"
