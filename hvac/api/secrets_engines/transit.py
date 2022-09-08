@@ -753,6 +753,7 @@ class Transit(VaultApiBase):
         prehashed=None,
         signature_algorithm=None,
         marshaling_algorithm=None,
+        salt_length=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Return the cryptographic signature of the given data using the named key and the specified hash algorithm.
@@ -788,6 +789,12 @@ class Transit(VaultApiBase):
         :param marshaling_algorithm: Specifies the way in which the signature should be marshaled. This currently only applies to ECDSA keys.
             Supported types are: asn1, jws
         :type marshaling_algorithm: str | unicode
+        :param salt_length: The salt length used to sign. Currently only applies to the RSA PSS signature scheme.
+            Options are 'auto' (the default used by Golang, causing the salt to be as large as possible when signing),
+            'hash' (causes the salt length to equal the length of the hash used in the signature),
+            or an integer between the minimum and the maximum permissible salt lengths for the given RSA key size.
+            Defaults to 'auto'.
+        :type salt_length: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -834,6 +841,17 @@ class Transit(VaultApiBase):
                     ),
                 )
             )
+        if (
+            salt_length is not None
+            and not transit_constants.ALLOWED_SALT_LENGTHS.fullmatch(salt_length)
+        ):
+            error_msg = 'invalid salt_length argument provided "{arg}", supported types: "{allowed_types}"'
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=salt_length,
+                    allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
+                )
+            )
         params = {
             "input": hash_input,
         }
@@ -846,6 +864,7 @@ class Transit(VaultApiBase):
                     "prehashed": prehashed,
                     "signature_algorithm": signature_algorithm,
                     "marshaling_algorithm": marshaling_algorithm,
+                    "salt_length": salt_length,
                 }
             )
         )
@@ -869,6 +888,7 @@ class Transit(VaultApiBase):
         context=None,
         prehashed=None,
         signature_algorithm=None,
+        salt_length=None,
         marshaling_algorithm=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
@@ -902,6 +922,12 @@ class Transit(VaultApiBase):
         :param marshaling_algorithm: Specifies the way in which the signature should be marshaled. This currently only applies to ECDSA keys.
             Supported types are: asn1, jws
         :type marshaling_algorithm: str | unicode
+        :param salt_length: The salt length used to sign. Currently only applies to the RSA PSS signature scheme.
+            Options are 'auto' (the default used by Golang, causing the salt to be as large as possible when signing),
+            'hash' (causes the salt length to equal the length of the hash used in the signature),
+            or an integer between the minimum and the maximum permissible salt lengths for the given RSA key size.
+            Defaults to 'auto'.
+        :type salt_length: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -953,6 +979,17 @@ class Transit(VaultApiBase):
                     ),
                 )
             )
+        if (
+            salt_length is not None
+            and not transit_constants.ALLOWED_SALT_LENGTHS.fullmatch(salt_length)
+        ):
+            error_msg = 'invalid salt_length argument provided "{arg}", supported types: "{allowed_types}"'
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=salt_length,
+                    allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
+                )
+            )
         params = {
             "name": name,
             "input": hash_input,
@@ -967,6 +1004,7 @@ class Transit(VaultApiBase):
                     "prehashed": prehashed,
                     "signature_algorithm": signature_algorithm,
                     "marshaling_algorithm": marshaling_algorithm,
+                    "salt_length": salt_length,
                 }
             )
         )
