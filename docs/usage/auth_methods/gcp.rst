@@ -9,7 +9,7 @@ GCP
 Enabling the Auth Method
 ------------------------
 
-Source reference: :py:meth:`hvac.v1.Client.enable_auth_backend`
+Source reference: :py:meth:`hvac.api.SystemBackend.enable_auth_method`
 
 .. code:: python
 

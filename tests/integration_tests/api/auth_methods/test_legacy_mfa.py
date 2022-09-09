@@ -269,7 +269,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
                 secret_key="valid-secret-key",
             )
 
-        self.client.create_userpass(
+        self.client.auth.userpass.create_or_update_user(
             username=username,
             password=password,
             policies=["defaut"],
@@ -277,7 +277,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
         )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.auth_userpass(
+                self.client.auth.userpass.login(
                     username=username,
                     password=password,
                     mount_point=TEST_AUTH_PATH,

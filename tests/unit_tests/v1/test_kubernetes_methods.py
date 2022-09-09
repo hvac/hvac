@@ -37,7 +37,7 @@ class TestKubernetesMethods(TestCase):
         if mount_point:
             test_arguments["mount_point"] = mount_point
 
-        actual_response = client.create_kubernetes_configuration(**test_arguments)
+        actual_response = client.auth.kubernetes.configure(**test_arguments)
 
         self.assertEqual(
             first=expected_status_code,
@@ -85,7 +85,7 @@ class TestKubernetesMethods(TestCase):
         if mount_point:
             test_arguments["mount_point"] = mount_point
 
-        actual_response = client.get_kubernetes_configuration(**test_arguments)
+        actual_response = client.auth.kubernetes.read_config(**test_arguments)
 
         self.assertEqual(
             first=mock_response,
@@ -127,7 +127,7 @@ class TestKubernetesMethods(TestCase):
         )
         if mount_point:
             test_arguments["mount_point"] = mount_point
-        actual_response = client.create_kubernetes_role(**test_arguments)
+        actual_response = client.auth.kubernetes.create_role(**test_arguments)
 
         self.assertEqual(
             first=expected_status_code,
@@ -181,7 +181,7 @@ class TestKubernetesMethods(TestCase):
         if mount_point:
             test_arguments["mount_point"] = mount_point
 
-        actual_response = client.get_kubernetes_role(**test_arguments)
+        actual_response = client.auth.kubernetes.read_role(**test_arguments)
 
         self.assertEqual(
             first=mock_response,
@@ -225,7 +225,7 @@ class TestKubernetesMethods(TestCase):
         test_arguments = dict()
         if mount_point:
             test_arguments["mount_point"] = mount_point
-        actual_response = client.list_kubernetes_roles(**test_arguments)
+        actual_response = client.auth.kubernetes.list_roles(**test_arguments)
 
         # ensure we received our mock response data back successfully
         self.assertEqual(mock_response, actual_response)
@@ -258,7 +258,7 @@ class TestKubernetesMethods(TestCase):
         if mount_point:
             test_arguments["mount_point"] = mount_point
 
-        actual_response = client.delete_kubernetes_role(**test_arguments)
+        actual_response = client.auth.kubernetes.delete_role(**test_arguments)
 
         self.assertEqual(
             first=expected_status_code,
@@ -319,7 +319,7 @@ class TestKubernetesMethods(TestCase):
         )
         if mount_point:
             test_arguments["mount_point"] = mount_point
-        actual_response = client.auth_kubernetes(**test_arguments)
+        actual_response = client.auth.kubernetes.login(**test_arguments)
 
         # ensure we received our mock response data back successfully
         self.assertEqual(mock_response, actual_response)
