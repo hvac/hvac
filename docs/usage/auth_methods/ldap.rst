@@ -7,7 +7,7 @@ LDAP
 Enabling the LDAP Auth Method
 -----------------------------
 
-:py:meth:`hvac.v1.Client.enable_auth_backend`
+:py:meth:`hvac.api.SystemBackend.enable_auth_method`
 
 .. code:: python
 

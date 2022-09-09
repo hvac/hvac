@@ -210,13 +210,6 @@ class Adapter:
         """
         return NotImplementedError
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="0.9.0",
-        new_method=login,
-    )
-    def auth(self, url, use_token=True, **kwargs):
-        return self.login(url=url, use_token=use_token, **kwargs)
-
     @abstractmethod
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri. Intended to be implement by subclasses.

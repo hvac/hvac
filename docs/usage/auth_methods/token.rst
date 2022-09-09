@@ -49,7 +49,7 @@ Wrapping/unwrapping a token:
 .. code:: python
 
     wrap = client.auth.token.create(policies=['root'], ttl='1h', wrap_ttl='1m')
-    result = self.client.unwrap(wrap['wrap_info']['token'])
+    result = client.sys.unwrap(wrap['wrap_info']['token'])
 
 
 Login with a wrapped token:
