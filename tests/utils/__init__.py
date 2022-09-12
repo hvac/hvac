@@ -70,7 +70,9 @@ def get_generate_root_otp():
     :return: OTP to use in generate root operations
     :rtype: str
     """
-    if vault_version_ge("1.0.0"):
+    if vault_version_ge("1.10.0"):
+        test_otp = "BMjzW3wAsEzINXCM05Wbas3u9zSl"
+    elif vault_version_ge("1.0.0"):
         test_otp = "ygs0vL8GIxu0AjRVEmJ5jLCVq8"
     else:
         test_otp = "RSMGkAqBH5WnVLrDTbZ+UQ=="
