@@ -1,6 +1,5 @@
 import logging
 from unittest import TestCase
-from hvac.api.system_backend import mount
 
 from parameterized import parameterized, param
 

@@ -69,48 +69,25 @@ class Totp(VaultApiBase):
 
         if generate:
             if issuer == "" or account_name == "":
-                error_msg = 'required issuer and account_name when generate is true, got "{issuer}", "{account_name}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        issuer=issuer,
-                        account_name=account_name,
-                    )
-                )
+                error_msg = f'required issuer and account_name when generate is true, got "{issuer}", "{account_name}"'
+                raise exceptions.ParamValidationError(error_msg)
             if skew not in ALLOWED_SKEW:
-                error_msg = 'value can be either 0 or 1, got "{skew}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        skew=skew,
-                    )
-                )
+                error_msg = f'value can be either 0 or 1, got "{skew}"'
+                raise exceptions.ParamValidationError(error_msg)
         else:  
-            if url == "":
+            if not url:
                 if not key:
                     error_msg = 'key is required if generate is false and url is empty'
-                    raise exceptions.ParamValidationError(
-                        error_msg
-                    )
+                    raise exceptions.ParamValidationError(error_msg)
         if algorithm not in ALLOWED_ALGORITHMS:
-            error_msg = 'Options include "SHA1", "SHA256" and "SHA512", got "{algorithm}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    algorithm=algorithm,
-                )
-            )
+            error_msg = f'Options include "SHA1", "SHA256" and "SHA512", got "{algorithm}"'
+            raise exceptions.ParamValidationError(error_msg)
         if digits not in ALLOWED_DIGITS:
-            error_msg = 'This value can be either 0 or 1. Only used if generate is true, got "{digits}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    digits=digits,
-                )
-            )
+            error_msg = f'This value can be either 0 or 1. Only used if generate is true, got "{digits}"'
+            raise exceptions.ParamValidationError(error_msg)
         if not qr_size >= 0:
-            error_msg = 'qr_size should greater or equal to 0, got "{qr_size}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    qr_size=qr_size,
-                )
-            )
+            error_msg = f'qr_size should greater or equal to 0, got "{qr_size}"'
+            raise exceptions.ParamValidationError(error_msg)
 
         params = {
             "generate": generate,
@@ -159,7 +136,6 @@ class Totp(VaultApiBase):
         )
 
         return self._adapter.get(url=api_path)
-        pass
 
     def list_keys(
         self,

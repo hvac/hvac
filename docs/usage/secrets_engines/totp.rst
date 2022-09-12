@@ -15,7 +15,7 @@ Create Key
            'mykey',
            url="otpauth://totp/Google:test@gmail.com?secret=Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G&issuer=Google"
         )
-        print('New TOTP key response: {}'.format(create_key_response))
+        print(f"New TOTP key response: {create_key_response}")
 
 
 Read Key
@@ -29,7 +29,7 @@ Read Key
 	client = hvac.Client()
 
         read_key_response = client.secrets.totp.read_key('mykey')
-        print('Current TOTP key: {}'.format(read_key_response['data']))
+        print(f"Current TOTP key: {read_key_response['data']}")
 
 
 List Keys
@@ -43,7 +43,7 @@ List Keys
 	client = hvac.Client()
 
         list_keys_response = client.secrets.totp.list_keys()
-        print('Current keys : {}'.format(list_keys_response['data']['keys']))
+        print(f"Current keys : {list_keys_response['data']['keys']}")
 
 
 Delete Key
@@ -57,7 +57,7 @@ Delete Key
 	client = hvac.Client()
 
         delete_key_response = client.secrets.totp.delete_key('mykey')
-        print('Delete TOTP key response: {}'.format(delete_key_response))
+        print(f"Delete TOTP key response: {delete_key_response}")
 
 
 Generate Code
@@ -72,7 +72,7 @@ Generate Code
 	client = hvac.Client()
 
         generate_code_response = client.secrets.totp.generate_code('mykey')
-        print('Current OTP: {}'.format(generate_code_response['data']['code']))
+        print(f"Current OTP: {generate_code_response['data']['code']}")
 
 
 Validate Code
@@ -87,5 +87,5 @@ Validate Code
 
         otp = client.secrets.totp.generate_code('mykey')['data']['code']
         validate_code_response = client.secrets.totp.validate_code('mykey', otp)
-        print('Validate OTP: {}'.format(validate_code_response['data']['valid']))
+        print(f"Validate OTP: {validate_code_response['data']['valid']}")
 
