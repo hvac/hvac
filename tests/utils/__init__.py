@@ -8,7 +8,7 @@ import re
 import socket
 import subprocess
 from distutils.spawn import find_executable
-from distutils.version import StrictVersion
+from packaging.version import Version
 from unittest import SkipTest
 
 from hvac import Client
@@ -49,7 +49,7 @@ def is_enterprise():
 
 def if_vault_version(supported_version, comparison=operator.lt):
     current_version = get_installed_vault_version()
-    return comparison(StrictVersion(current_version), StrictVersion(supported_version))
+    return comparison(Version(current_version), Version(supported_version))
 
 
 def vault_version_lt(supported_version):
