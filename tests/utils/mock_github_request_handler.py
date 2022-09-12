@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import re
 
 from http.server import BaseHTTPRequestHandler
 
@@ -13,7 +14,10 @@ class MockGithubRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.end_headers()
 
-        if self.path == "/user":
+        if "/orgs/" in self.path:
+            org = re.match(r"\/orgs\/(?P<org>\S+)", self.path)["org"]
+            self.do_organization(org)
+        elif self.path == "/user":
             self.do_user()
         elif self.path == "/user/orgs?per_page=100":
             self.do_organizations_list()
@@ -49,6 +53,13 @@ class MockGithubRequestHandler(BaseHTTPRequestHandler):
             )
 
             self.wfile.write(json.dumps(response).encode())
+
+    def do_organization(self, org):
+        response = {
+            "login": org,
+            "id": 1,
+        }
+        self.wfile.write(json.dumps(response).encode())
 
     def do_team_list(self):
         """Return the bare minimum GitHub team data needed for Vault's github auth method.

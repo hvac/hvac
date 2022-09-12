@@ -49,7 +49,14 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("just organization", True, "some-test-org", "", 0, 0, TEST_GITHUB_PATH),
+            (
+                "just organization",
+                True,
+                "some-test-org",
+                0,
+                0,
+                TEST_GITHUB_PATH,
+            ),
         ]
     )
     def test_configure(
@@ -57,14 +64,13 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         test_label,
         expected_value,
         organization,
-        base_url,
         ttl,
         max_ttl,
         mount_point,
     ):
         response = self.client.auth.github.configure(
             organization=organization,
-            base_url=base_url,
+            base_url=f"http://localhost:{self.mock_server_port}/",
             ttl=ttl,
             max_ttl=max_ttl,
             mount_point=mount_point,
@@ -76,20 +82,19 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("just organization", "some-test-org", "/", "", ""),
-            ("different base url", "some-test-org", "https://cathub.example/", "", ""),
-            ("custom ttl seconds", "some-test-org", "/", "500s", ""),
-            ("custom ttl minutes", "some-test-org", "/", "500m", ""),
-            ("custom ttl hours", "some-test-org", "/", "500h", ""),
-            ("custom max ttl", "some-test-org", "/", "", "500s"),
+            ("just organization", "some-test-org", "", ""),
+            ("custom ttl seconds", "some-test-org", "500s", ""),
+            ("custom ttl minutes", "some-test-org", "500m", ""),
+            ("custom ttl hours", "some-test-org", "500h", ""),
+            ("custom max ttl", "some-test-org", "", "500s"),
         ]
     )
     def test_configure_and_read_configuration(
-        self, test_label, organization, base_url, ttl, max_ttl
+        self, test_label, organization, ttl, max_ttl
     ):
         config_response = self.client.auth.github.configure(
             organization=organization,
-            base_url=base_url,
+            base_url=f"http://localhost:{self.mock_server_port}/",
             ttl=ttl,
             max_ttl=max_ttl,
             mount_point=self.TEST_GITHUB_PATH,
@@ -103,9 +108,6 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
         logging.debug(f"read_config_response: {read_config_response}")
         self.assertEqual(
             first=organization, second=read_config_response["data"]["organization"]
-        )
-        self.assertEqual(
-            first=base_url, second=read_config_response["data"]["base_url"]
         )
         ttl_data_key = "token_ttl" if utils.vault_version_ge("1.2.0") else "ttl"
         max_ttl_data_key = (
@@ -306,7 +308,9 @@ class TestGithub(HvacIntegrationTestCase, TestCase):
             (
                 "invalid token not in org",
                 "invalid-token",
-                exceptions.InvalidRequest,
+                exceptions.InvalidRequest
+                if utils.vault_version_lt("1.10.0")
+                else exceptions.InternalServerError,
                 "user is not part of required org",
             ),
         ]
