@@ -48,13 +48,8 @@ class Identity(VaultApiBase):
         :rtype: dict | requests.Response
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "id": entity_id,
@@ -98,13 +93,8 @@ class Identity(VaultApiBase):
         :rtype: requests.Response | dict
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = 'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "metadata": metadata,
@@ -195,13 +185,8 @@ class Identity(VaultApiBase):
         :rtype: dict | requests.Response
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "name": name,
@@ -614,21 +599,11 @@ class Identity(VaultApiBase):
         :rtype: dict | requests.Response
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         if group_type not in ALLOWED_GROUP_TYPES:
-            error_msg = 'unsupported group_type argument provided "{arg}", allowed values: ({allowed_values})'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=group_type,
-                    allowed_values=ALLOWED_GROUP_TYPES,
-                )
-            )
+            error_msg = f'unsupported group_type argument provided "{group_type}", allowed values: ({ALLOWED_GROUP_TYPES})'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "id": group_id,
@@ -710,21 +685,11 @@ class Identity(VaultApiBase):
         :rtype: dict | requests.Response
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         if group_type not in ALLOWED_GROUP_TYPES:
-            error_msg = 'unsupported group_type argument provided "{arg}", allowed values: ({allowed_values})'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=group_type,
-                    allowed_values=ALLOWED_GROUP_TYPES,
-                )
-            )
+            error_msg = f'unsupported group_type argument provided "{group_type}", allowed values: ({ALLOWED_GROUP_TYPES})'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "name": name,
@@ -879,21 +844,11 @@ class Identity(VaultApiBase):
         """
 
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = 'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
         if group_type not in ALLOWED_GROUP_TYPES:
-            error_msg = 'unsupported group_type argument provided "{arg}", allowed values: ({allowed_values})'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=group_type,
-                    allowed_values=ALLOWED_GROUP_TYPES,
-                )
-            )
+            error_msg = f'unsupported group_type argument provided "{group_type}", allowed values: ({ALLOWED_GROUP_TYPES})'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "type": group_type,

@@ -49,13 +49,8 @@ class Azure(VaultApiBase):
         :rtype: requests.Response
         """
         if environment is not None and environment not in VALID_ENVIRONMENTS:
-            error_msg = 'invalid environment argument provided "{arg}", supported environments: "{environments}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=environment,
-                    environments=",".join(VALID_ENVIRONMENTS),
-                )
-            )
+            error_msg = f'invalid environment argument provided "{environment}", supported environments: "{",".join(VALID_ENVIRONMENTS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "subscription_id": subscription_id,
             "tenant_id": tenant_id,

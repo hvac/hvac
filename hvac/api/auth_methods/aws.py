@@ -157,19 +157,11 @@ class Aws(VaultApiBase):
         :rtype: request.Response
         """
         if iam_alias is not None and iam_alias not in ALLOWED_IAM_ALIAS_TYPES:
-            error_msg = 'invalid iam alias type provided: "{arg}"; supported iam alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=iam_alias, environments=",".join(ALLOWED_IAM_ALIAS_TYPES)
-                )
-            )
+            error_msg = f'invalid iam alias type provided: "{iam_alias}"; supported iam alias types: "{",".join(ALLOWED_IAM_ALIAS_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if ec2_alias is not None and ec2_alias not in ALLOWED_EC2_ALIAS_TYPES:
-            error_msg = 'invalid ec2 alias type provided: "{arg}"; supported ec2 alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=ec2_alias, environments=",".join(ALLOWED_EC2_ALIAS_TYPES)
-                )
-            )
+            error_msg = f'invalid ec2 alias type provided: "{ec2_alias}"; supported ec2 alias types: "{",".join(ALLOWED_EC2_ALIAS_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "iam_alias": iam_alias,

@@ -107,13 +107,8 @@ class Gcp(VaultApiBase):
         :rtype: requests.Response
         """
         if secret_type is not None and secret_type not in ALLOWED_SECRETS_TYPES:
-            error_msg = 'unsupported secret_type argument provided "{arg}", supported types: "{secret_type}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=secret_type,
-                    secret_type=",".join(ALLOWED_SECRETS_TYPES),
-                )
-            )
+            error_msg = f'unsupported secret_type argument provided "{secret_type}", supported types: "{",".join(ALLOWED_SECRETS_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
 
         if isinstance(bindings, dict):
             bindings = json.dumps(bindings).replace(" ", "")
@@ -315,21 +310,11 @@ class Gcp(VaultApiBase):
 
         if method == "POST":
             if key_algorithm not in SERVICE_ACCOUNT_KEY_ALGORITHMS:
-                error_msg = 'unsupported key_algorithm argument provided "{arg}", supported algorithms: "{algorithms}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        arg=key_algorithm,
-                        algorithms=",".join(SERVICE_ACCOUNT_KEY_ALGORITHMS),
-                    )
-                )
+                error_msg = f'unsupported key_algorithm argument provided "{key_algorithm}", supported algorithms: "{",".join(SERVICE_ACCOUNT_KEY_ALGORITHMS)}"'
+                raise exceptions.ParamValidationError(error_msg)
             if key_type not in SERVICE_ACCOUNT_KEY_TYPES:
-                error_msg = 'unsupported key_type argument provided "{arg}", supported types: "{key_types}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        arg=key_type,
-                        key_types=",".join(SERVICE_ACCOUNT_KEY_TYPES),
-                    )
-                )
+                error_msg = f'unsupported key_type argument provided "{key_type}", supported types: "{",".join(SERVICE_ACCOUNT_KEY_TYPES)}"'
+                raise exceptions.ParamValidationError(error_msg)
             params = {
                 "key_algorithm": key_algorithm,
                 "key_type": key_type,

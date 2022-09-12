@@ -206,13 +206,8 @@ class Gcp(VaultApiBase):
             )
 
         if role_type not in ALLOWED_ROLE_TYPES:
-            error_msg = 'unsupported role_type argument provided "{arg}", supported types: "{role_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=type,
-                    role_types=",".join(ALLOWED_ROLE_TYPES),
-                )
-            )
+            error_msg = f'unsupported role_type argument provided "{role_type}", supported types: "{",".join(ALLOWED_ROLE_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
 
         params = {
             "type": role_type,
