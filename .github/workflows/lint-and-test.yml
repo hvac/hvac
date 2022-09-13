@@ -119,18 +119,16 @@ jobs:
         path: coverage.xml
         if-no-files-found: error
 
-  integration-tests:
-    name: Integration Tests
+  enterprise-integration-tests:
+    name: Enterprise Integration Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
           - 3.7
         vault-version:
-          - 1.4.7
-          - 1.5.9
-          - 1.6.5
-          - 1.7.2
+          - "1.6.7"
+          - "1.7.10"
 
     steps:
     - uses: actions/checkout@v3
@@ -157,6 +155,66 @@ jobs:
         sudo apt install \
           consul \
           vault-enterprise=${{ matrix.vault-version }}+ent \
+          ;
+
+        # We disble cap_ipc_lock here as its generally incompatabile with GitHub
+        # Actions' runtime environments.
+        sudo setcap cap_ipc_lock= /usr/bin/vault
+
+    - name: pytest tests/integration_tests
+      run: |
+        pytest \
+          --cov=hvac \
+          --cov-report=xml \
+          tests/integration_tests
+
+    - name: Upload integration tests coverage artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: integration_tests-coverage.xml
+        path: coverage.xml
+        if-no-files-found: error
+
+  os-integration-tests:
+    name: Open Source Integration Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.7
+        vault-version:
+          - "1.6.7"
+          - "1.7.10"
+          - "1.8.12-1"
+          - "1.9.9-1"
+          - "1.10.6-1"
+          - "1.11.2-1"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Python dependencies
+      run: pip install -r requirements-dev.txt
+
+    - name: Install Vault and Consul (for integration tests)
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+        sudo apt update \
+          -o Dir::Etc::sourceparts="-" \
+          -o APT::Get::List-Cleanup="0" \
+          -o Dir::Etc::sourcelist="sources.list.d/hashicorp.list"
+
+        sudo apt install \
+          consul \
+          vault=${{ matrix.vault-version }} \
           ;
 
         # We disble cap_ipc_lock here as its generally incompatabile with GitHub
