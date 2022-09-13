@@ -55,7 +55,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 token_reviewer_jwt="reviewer_jwt",
                 issuer="bob",
                 raises=exceptions.InternalServerError,
-                exception_message="* not a compact JWS",
+                exception_message="* not a compact JWS"
+                if utils.vault_version_lt("1.11.0")
+                else "compact JWS format must have three parts",
             ),
         ]
     )
