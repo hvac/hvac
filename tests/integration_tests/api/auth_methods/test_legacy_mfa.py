@@ -1,15 +1,21 @@
 from unittest import TestCase
+from unittest import skipIf
 
 from parameterized import parameterized
 
 from hvac import exceptions
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
+from tests import utils
 
-TEST_AUTH_PATH = "userpass-with-mfa"
+TEST_AUTH_PATH = "userpasswithmfa"
 UNSUPPORTED_AUTH_PATH = "approle-that-can-not-have-mfa"
 
 
-class TestMfa(HvacIntegrationTestCase, TestCase):
+@skipIf(
+    utils.vault_version_ge("1.11.0"),
+    "Legacy MFA support dropped in Vault <1.11.0",
+)
+class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     mock_server_port = None
 
     @classmethod
