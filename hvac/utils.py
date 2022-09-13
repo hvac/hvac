@@ -313,7 +313,7 @@ def validate_pem_format(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(
         _check_pem(p) for p in param_argument
     ):
-        error_msg = (f"unsupported {param_name} public key / certificate format, required type: PEM")
+        error_msg = f"unsupported {param_name} public key / certificate format, required type: PEM"
         raise exceptions.ParamValidationError(error_msg)
 
 
