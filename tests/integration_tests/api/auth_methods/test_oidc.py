@@ -197,6 +197,9 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             )
         id_token_role_name = "hvac-oidc-test"
         key_name = "oidc-test-key"
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
         create_or_update_role_response = (
             self.client.secrets.identity.create_or_update_role(
                 name=id_token_role_name,
