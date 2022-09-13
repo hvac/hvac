@@ -103,8 +103,16 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
             mount_point=self.DEFAULT_MOUNT_POINT,
         )
         logging.debug("read_configuration_response: %s" % read_configuration_response)
-        for key in read_configuration_response.keys():
-            self.assertEqual(
-                first="",
-                second=read_configuration_response[key],
-            )
+        read_expected_response = {
+            "client_id": "",
+            "environment": "",
+            "subscription_id": "",
+            "tenant_id": "",
+        }
+        if utils.vault_version_ge("1.9.0"):
+            read_expected_response["root_password_ttl"] = 0
+            read_expected_response["use_microsoft_graph_api"] = False
+        self.assertEqual(
+            first=read_expected_response,
+            second=read_configuration_response,
+        )
