@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Multi-factor authentication methods module."""
-from hvac.api.auth_methods.legacy_mfa import LegacyMfa
+"""Legacy multi-factor authentication methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 from hvac import exceptions, utils
 
@@ -10,7 +9,7 @@ SUPPORTED_MFA_TYPES = [
 SUPPORTED_AUTH_METHODS = ["ldap", "okta", "radius", "userpass"]
 
 
-class Mfa(VaultApiBase):
+class LegacyMfa(VaultApiBase):
     """Multi-factor authentication Auth Method (API).
 
     .. warning::
@@ -20,10 +19,6 @@ class Mfa(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/auth/mfa.html
     """
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure,
-    )
     def configure(self, mount_point, mfa_type="duo", force=False):
         """Configure MFA for a supported method.
 
@@ -65,10 +60,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.read_configuration,
-    )
     def read_configuration(self, mount_point):
         """Read the MFA configuration.
 
@@ -87,10 +78,6 @@ class Mfa(VaultApiBase):
         )
         return self._adapter.get(url=api_path)
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure_duo_access,
-    )
     def configure_duo_access(self, mount_point, host, integration_key, secret_key):
         """Configure the access keys and host for Duo API connections.
 
@@ -125,10 +112,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure_duo_behavior,
-    )
     def configure_duo_behavior(
         self, mount_point, push_info=None, user_agent=None, username_format="%s"
     ):
@@ -170,10 +153,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.read_duo_behavior_configuration,
-    )
     def read_duo_behavior_configuration(self, mount_point):
         """Read the Duo second factor behavior configuration.
 
