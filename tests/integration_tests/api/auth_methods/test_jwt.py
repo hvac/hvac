@@ -108,10 +108,16 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             path=self.TEST_JWT_PATH,
         )
         logging.debug("create_role response: %s" % response)
-        self.assertIn(
-            member="data",
-            container=response,
-        )
+        if utils.vault_version_lt("1.11"):
+            self.assertIn(
+                member="data",
+                container=response,
+            )
+        else:
+            self.assertEqual(
+                204,
+                response.status_code,
+            )
 
     @parameterized.expand(
         [
