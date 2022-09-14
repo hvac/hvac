@@ -149,7 +149,7 @@ class Token(VaultApiBase):
 
         Creates a token via the /auth/token/create-orphan endpoint. A root token
         is not required to create an orphan token with this endpoint (otherwise
-        an orphaned token can be set with the `create` no_parent option).
+        an orphaned token can be set with the `create` method's `no_parent` option).
 
 
         :param id: The ID of the client token. Can only be specified by a root token.
@@ -168,10 +168,10 @@ class Token(VaultApiBase):
         :param renewable:  Set to false to disable the ability of the token to be renewed past its initial TTL.
             Setting the value to true will allow the token to be renewable up to the system/mount maximum TTL.
         :type renewable: bool
-        :param ttl: The TTL period of the token, provided as "1h", where hour is the largest suffix. If not provided,
+        :param ttl: The TTL period of the token, provided as `1h`, where hour is the largest suffix. If not provided,
             the token is valid for the default lease TTL, or indefinitely if the root policy is used.
         :type ttl: str
-        :param type: The token type. Can be "batch" or "service". Defaults to the type
+        :param type: The token type. Can be `batch` or `service`. Defaults to the type
             specified by the role configuration named by role_name.
         :type type: str
         :param explicit_max_ttl: If set, the token will have an explicit max TTL set upon it.
@@ -182,18 +182,18 @@ class Token(VaultApiBase):
         :param display_name: The display name of the token.
         :type display_name: str
         :param num_uses: The maximum uses for the given token. This can be
-            used to create a one-time-token or limited use token. The value of 0 has no
+            used to create a one-time-token or limited use token. The value of `0` has no
             limit to the number of uses.
         :type num_uses: int
         :param period: If specified, the token will be periodic; it will have
-            no maximum TTL (unless an "explicit-max-ttl" is also set) but every renewal
+            no maximum TTL (unless an `explicit-max-ttl` is also set) but every renewal
             will use the given period. Requires a root token or one with the sudo capability.
         :type period: str
         :param entity_alias: Name of the entity alias to associate with during token creation.
             Only works in combination with role_name argument and used entity alias must be listed in
             `allowed_entity_aliases`. If this has been specified, the entity will not be inherited from the parent.
         :type entity_alias: str
-        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: '15s', '20m', '25h'.
+        :param wrap_ttl: Specifies response wrapping token creation with duration. IE: `15s`, `20m`, `25h`.
         :type wrap_ttl: str
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str
