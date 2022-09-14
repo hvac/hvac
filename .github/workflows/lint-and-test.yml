@@ -31,18 +31,32 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install `black` and `flake8`
-      run: |
-        pip install \
-          black \
-          flake8 \
-          ;
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.1.14
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install library
+      run: poetry install --no-interaction
 
     - name: Check formatting with `black`
-      run: black --check .
+      run: poetry run black --check .
 
     - name: Lint with `flake8`
-      run: flake8 . --count --statistics
+      run: poetry run flake8 . --count --statistics
 
   docs-tests:
     name: Documentation Tests
@@ -51,10 +65,31 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.x
+    - name: Set up Python 3.6
       uses: actions/setup-python@v4
       with:
-        python-version: 3.x
+        python-version: 3.6
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.1.14
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install library
+      run: poetry install --no-interaction
 
     - name: Install Vault (for doctests)
       run: |
@@ -75,12 +110,10 @@ jobs:
         # Actions' runtime environments.
         sudo setcap cap_ipc_lock= /usr/bin/vault
 
-    - name: Install doctest dependencies
-      run: pip install -r docs/requirements.txt
-
     - name: Sphinx - doctest Build
       working-directory: ./docs
-      run: make doctest
+      run: |
+        poetry run make doctest
 
   unit-tests:
     name: Unit Tests
@@ -102,12 +135,30 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Python dependencies
-      run: pip install -r requirements-dev.txt
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.1.14
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install library
+      run: poetry install --no-interaction
 
     - name: pytest tests/unit_tests
       run: |
-        pytest \
+        poetry run pytest \
           --cov=hvac \
           --cov-report=xml \
           tests/unit_tests
@@ -140,8 +191,26 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Python dependencies
-      run: pip install -r requirements-dev.txt
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.3.1
+      with:
+        version: 1.1.14
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+
+    - name: Install library
+      run: poetry install --no-interaction
 
     - name: Install Vault and Consul (for integration tests)
       run: |
@@ -165,7 +234,7 @@ jobs:
 
     - name: pytest tests/integration_tests
       run: |
-        pytest \
+        poetry run pytest \
           --cov=hvac \
           --cov-report=xml \
           tests/integration_tests

@@ -1,5 +1,0 @@
--r ../requirements-dev.txt
-autodocsumm
-m2r2
-sphinx
-sphinx_rtd_theme
