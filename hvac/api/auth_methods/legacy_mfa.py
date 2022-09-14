@@ -92,8 +92,8 @@ class LegacyMfa(VaultApiBase):
         :param host: Duo API host
         :type host: str | unicode
         :param integration_key: Duo integration key
-        :type integration_key: Duo secret key
-        :param secret_key: The "path" the method/backend was mounted on.
+        :type integration_key: str | unicode
+        :param secret_key: Duo secret key
         :type secret_key: str | unicode
         :return: The response of the `configure_duo_access` request.
         :rtype: requests.Response
