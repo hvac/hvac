@@ -32,8 +32,8 @@ class LegacyMfa(VaultApiBase):
         :type mount_point: str | unicode
         :param mfa_type: Enables MFA with given backend (available: duo)
         :type mfa_type: str | unicode
-        :param force: If True, make the "mfa_config" request regardless of circumstance. If False (the default), verify
-            the provided mount_point is available and one of the types of methods supported by this feature.
+        :param force: If `True`, make the `mfa_config` request regardless of circumstance. If `False` (the default), verify
+            the provided `mount_point` is available and one of the types of methods supported by this feature.
         :type force: bool
         :return: The response of the configure MFA request.
         :rtype: requests.Response
@@ -95,7 +95,7 @@ class LegacyMfa(VaultApiBase):
         :type integration_key: Duo secret key
         :param secret_key: The "path" the method/backend was mounted on.
         :type secret_key: str | unicode
-        :return: The response of the configure_duo_access request.
+        :return: The response of the `configure_duo_access` request.
         :rtype: requests.Response
         """
         params = {
@@ -129,12 +129,12 @@ class LegacyMfa(VaultApiBase):
         :param push_info: A string of URL-encoded key/value pairs that provides additional context about the
             authentication attempt in the Duo Mobile app
         :type push_info: str | unicode
-        :param user_agent: User agent to connect to Duo (default "")
+        :param user_agent: User agent to connect to Duo (default is empty string `""`)
         :type user_agent: str | unicode
         :param username_format: Format string given auth method username as argument to create Duo username
-            (default '%s')
+            (default `%s`)
         :type username_format: str | unicode
-        :return: The response of the configure_duo_behavior request.
+        :return: The response of the `configure_duo_behavior` request.
         :rtype: requests.Response
         """
         params = {
@@ -162,7 +162,7 @@ class LegacyMfa(VaultApiBase):
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_duo_behavior_configuration request.
+        :return: The JSON response of the `read_duo_behavior_configuration` request.
         :rtype: dict
         """
         api_path = utils.format_url(
