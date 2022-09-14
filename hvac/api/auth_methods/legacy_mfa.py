@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Multi-factor authentication methods module."""
-from hvac.api.auth_methods.legacy_mfa import LegacyMfa
+"""Legacy multi-factor authentication methods module."""
 from hvac.api.vault_api_base import VaultApiBase
 from hvac import exceptions, utils
 
@@ -10,7 +9,7 @@ SUPPORTED_MFA_TYPES = [
 SUPPORTED_AUTH_METHODS = ["ldap", "okta", "radius", "userpass"]
 
 
-class Mfa(VaultApiBase):
+class LegacyMfa(VaultApiBase):
     """Multi-factor authentication Auth Method (API).
 
     .. warning::
@@ -20,10 +19,6 @@ class Mfa(VaultApiBase):
     Reference: https://www.vaultproject.io/docs/auth/mfa.html
     """
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure,
-    )
     def configure(self, mount_point, mfa_type="duo", force=False):
         """Configure MFA for a supported method.
 
@@ -37,8 +32,8 @@ class Mfa(VaultApiBase):
         :type mount_point: str | unicode
         :param mfa_type: Enables MFA with given backend (available: duo)
         :type mfa_type: str | unicode
-        :param force: If True, make the "mfa_config" request regardless of circumstance. If False (the default), verify
-            the provided mount_point is available and one of the types of methods supported by this feature.
+        :param force: If `True`, make the `mfa_config` request regardless of circumstance. If `False` (the default), verify
+            the provided `mount_point` is available and one of the types of methods supported by this feature.
         :type force: bool
         :return: The response of the configure MFA request.
         :rtype: requests.Response
@@ -65,10 +60,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.read_configuration,
-    )
     def read_configuration(self, mount_point):
         """Read the MFA configuration.
 
@@ -87,10 +78,6 @@ class Mfa(VaultApiBase):
         )
         return self._adapter.get(url=api_path)
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure_duo_access,
-    )
     def configure_duo_access(self, mount_point, host, integration_key, secret_key):
         """Configure the access keys and host for Duo API connections.
 
@@ -105,10 +92,10 @@ class Mfa(VaultApiBase):
         :param host: Duo API host
         :type host: str | unicode
         :param integration_key: Duo integration key
-        :type integration_key: Duo secret key
-        :param secret_key: The "path" the method/backend was mounted on.
+        :type integration_key: str | unicode
+        :param secret_key: Duo secret key
         :type secret_key: str | unicode
-        :return: The response of the configure_duo_access request.
+        :return: The response of the `configure_duo_access` request.
         :rtype: requests.Response
         """
         params = {
@@ -125,10 +112,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.configure_duo_behavior,
-    )
     def configure_duo_behavior(
         self, mount_point, push_info=None, user_agent=None, username_format="%s"
     ):
@@ -146,12 +129,12 @@ class Mfa(VaultApiBase):
         :param push_info: A string of URL-encoded key/value pairs that provides additional context about the
             authentication attempt in the Duo Mobile app
         :type push_info: str | unicode
-        :param user_agent: User agent to connect to Duo (default "")
+        :param user_agent: User agent to connect to Duo (default is empty string `""`)
         :type user_agent: str | unicode
         :param username_format: Format string given auth method username as argument to create Duo username
-            (default '%s')
+            (default `%s`)
         :type username_format: str | unicode
-        :return: The response of the configure_duo_behavior request.
+        :return: The response of the `configure_duo_behavior` request.
         :rtype: requests.Response
         """
         params = {
@@ -170,10 +153,6 @@ class Mfa(VaultApiBase):
             json=params,
         )
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="2.0.0",
-        new_method=LegacyMfa.read_duo_behavior_configuration,
-    )
     def read_duo_behavior_configuration(self, mount_point):
         """Read the Duo second factor behavior configuration.
 
@@ -183,7 +162,7 @@ class Mfa(VaultApiBase):
 
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_duo_behavior_configuration request.
+        :return: The JSON response of the `read_duo_behavior_configuration` request.
         :rtype: dict
         """
         api_path = utils.format_url(
