@@ -1061,7 +1061,11 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     second=member_group_ids,
                 )
                 expected_member_entity_ids = (
-                    member_entity_ids if member_entity_ids is not None else []
+                    member_entity_ids
+                    if member_entity_ids is not None
+                    else []
+                    if group_type == "external" and utils.vault_version_lt("1.11")
+                    else None
                 )
                 self.assertEqual(
                     first=read_group_response["data"]["member_entity_ids"],
