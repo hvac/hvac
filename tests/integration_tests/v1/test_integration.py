@@ -53,7 +53,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert not self.client.read("secret/I/dont/exist")
 
     def test_auth_token_manipulation(self):
-        result = self.client.create_token(lease="1h", renewable=True)
+        result = self.client.auth.token.create(ttl="1h", renewable=True)
         assert result["auth"]["client_token"]
 
         lookup = self.client.lookup_token(result["auth"]["client_token"])
@@ -75,14 +75,14 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             assert True
 
     def test_self_auth_token_manipulation(self):
-        result = self.client.create_token(lease="1h", renewable=True)
+        result = self.client.auth.token.create(ttl="1h", renewable=True)
         assert result["auth"]["client_token"]
         self.client.token = result["auth"]["client_token"]
 
         lookup = self.client.lookup_token(result["auth"]["client_token"])
         assert result["auth"]["client_token"] == lookup["data"]["id"]
 
-        renew = self.client.renew_self_token()
+        renew = self.client.auth.token.renew_self()
         assert result["auth"]["client_token"] == renew["auth"]["client_token"]
 
         self.client.revoke_token(lookup["data"]["id"])
@@ -107,7 +107,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             "auth/userpass/users/testuser", password="testpass", policies="not_root"
         )
 
-        result = self.client.auth_userpass("testuser", "testpass")
+        result = self.client.auth.userpass.login("testuser", "testpass")
 
         assert self.client.token == result["auth"]["client_token"]
         assert self.client.is_authenticated()
@@ -119,192 +119,28 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
             self.client.sys.enable_auth_method("userpass")
 
-        self.client.create_userpass(
+        self.client.auth.userpass.create_or_update_user(
             "testcreateuser", "testcreateuserpass", policies="not_root"
         )
 
-        result = self.client.auth_userpass("testcreateuser", "testcreateuserpass")
+        result = self.client.auth.userpass.login("testcreateuser", "testcreateuserpass")
 
         assert self.client.token == result["auth"]["client_token"]
         assert self.client.is_authenticated()
 
         # Test ttl:
         self.client.token = self.manager.root_token
-        self.client.create_userpass(
+        self.client.auth.userpass.create_or_update_user(
             "testcreateuser", "testcreateuserpass", policies="not_root", ttl="10s"
         )
         self.client.token = result["auth"]["client_token"]
 
-        result = self.client.auth_userpass("testcreateuser", "testcreateuserpass")
+        result = self.client.auth.userpass.login("testcreateuser", "testcreateuserpass")
 
         assert result["auth"]["lease_duration"] == 10
 
         self.client.token = self.manager.root_token
         self.client.sys.disable_auth_method("userpass")
-
-    def test_list_userpass(self):
-        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("userpass")
-
-        # add some users and confirm that they show up in the list
-        self.client.create_userpass(
-            "testuserone", "testuseronepass", policies="not_root"
-        )
-        self.client.create_userpass(
-            "testusertwo", "testusertwopass", policies="not_root"
-        )
-
-        user_list = self.client.list_userpass()
-        assert "testuserone" in user_list["data"]["keys"]
-        assert "testusertwo" in user_list["data"]["keys"]
-
-        # delete all the users and confirm that list_userpass() doesn't fail
-        for user in user_list["data"]["keys"]:
-            self.client.delete_userpass(user)
-
-        no_users_list = self.client.list_userpass()
-        assert no_users_list is None
-
-    def test_read_userpass(self):
-        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("userpass")
-
-        # create user to read
-        self.client.create_userpass("readme", "mypassword", policies="not_root")
-
-        # test that user can be read
-        read_user = self.client.read_userpass("readme")
-        assert "not_root" in read_user["data"]["policies"]
-
-        # teardown
-        self.client.sys.disable_auth_method("userpass")
-
-    def test_update_userpass_policies(self):
-        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("userpass")
-
-        # create user and then update its policies
-        self.client.create_userpass(
-            "updatemypolicies", "mypassword", policies="not_root"
-        )
-        self.client.update_userpass_policies(
-            "updatemypolicies", policies="somethingelse"
-        )
-
-        # test that policies have changed
-        updated_user = self.client.read_userpass("updatemypolicies")
-        assert "somethingelse" in updated_user["data"]["policies"]
-
-        # teardown
-        self.client.sys.disable_auth_method("userpass")
-
-    def test_update_userpass_password(self):
-        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("userpass")
-
-        # create user and then change its password
-        self.client.create_userpass("changeme", "mypassword", policies="not_root")
-        self.client.update_userpass_password("changeme", "mynewpassword")
-
-        # test that new password authenticates user
-        result = self.client.auth_userpass("changeme", "mynewpassword")
-        assert self.client.token == result["auth"]["client_token"]
-        assert self.client.is_authenticated()
-
-        # teardown
-        self.client.token = self.manager.root_token
-        self.client.sys.disable_auth_method("userpass")
-
-    def test_delete_userpass(self):
-        if "userpass/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("userpass")
-
-        self.client.create_userpass(
-            "testcreateuser", "testcreateuserpass", policies="not_root"
-        )
-
-        result = self.client.auth_userpass("testcreateuser", "testcreateuserpass")
-
-        assert self.client.token == result["auth"]["client_token"]
-        assert self.client.is_authenticated()
-
-        self.client.token = self.manager.root_token
-        self.client.delete_userpass("testcreateuser")
-        self.assertRaises(
-            exceptions.InvalidRequest,
-            self.client.auth_userpass,
-            "testcreateuser",
-            "testcreateuserpass",
-        )
-
-    def test_app_id_auth(self):
-        if "app-id/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method("app-id")
-
-        self.client.sys.enable_auth_method("app-id")
-
-        self.client.write("auth/app-id/map/app-id/foo", value="not_root")
-        self.client.write("auth/app-id/map/user-id/bar", value="foo")
-
-        result = self.client.auth_app_id("foo", "bar")
-
-        assert self.client.token == result["auth"]["client_token"]
-        assert self.client.is_authenticated()
-
-        self.client.token = self.manager.root_token
-        self.client.sys.disable_auth_method("app-id")
-
-    def test_create_app_id(self):
-        if "app-id/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("app-id")
-
-        self.client.create_app_id(
-            "testappid", policies="not_root", display_name="displayname"
-        )
-
-        result = self.client.read("auth/app-id/map/app-id/testappid")
-        lib_result = self.client.get_app_id("testappid")
-        del result["request_id"]
-        del lib_result["request_id"]
-        assert result == lib_result
-
-        assert result["data"]["key"] == "testappid"
-        assert result["data"]["display_name"] == "displayname"
-        assert result["data"]["value"] == "not_root"
-        self.client.delete_app_id("testappid")
-        assert self.client.get_app_id("testappid")["data"] is None
-
-        self.client.token = self.manager.root_token
-        self.client.sys.disable_auth_method("app-id")
-
-    def test_create_user_id(self):
-        if "app-id/" not in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.enable_auth_method("app-id")
-
-        self.client.create_app_id(
-            "testappid", policies="not_root", display_name="displayname"
-        )
-        self.client.create_user_id("testuserid", app_id="testappid")
-
-        result = self.client.read("auth/app-id/map/user-id/testuserid")
-        lib_result = self.client.get_user_id("testuserid")
-        del result["request_id"]
-        del lib_result["request_id"]
-        assert result == lib_result
-
-        assert result["data"]["key"] == "testuserid"
-        assert result["data"]["value"] == "testappid"
-
-        result = self.client.auth_app_id("testappid", "testuserid")
-
-        assert self.client.token == result["auth"]["client_token"]
-        assert self.client.is_authenticated()
-        self.client.token = self.manager.root_token
-        self.client.delete_user_id("testuserid")
-        assert self.client.get_user_id("testuserid")["data"] is None
-
-        self.client.token = self.manager.root_token
-        self.client.sys.disable_auth_method("app-id")
 
     def test_missing_token(self):
         client = utils.create_client()
@@ -348,21 +184,6 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         # confirm that it no longer is able to authenticate
         assert not self.client.is_authenticated()
 
-    def test_revoke_self_token(self):
-        if "userpass/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method("userpass")
-
-        self.client.sys.enable_auth_method("userpass")
-
-        self.client.write(
-            "auth/userpass/users/testuser", password="testpass", policies="not_root"
-        )
-
-        self.client.auth_userpass("testuser", "testpass")
-
-        self.client.revoke_self_token()
-        assert not self.client.is_authenticated()
-
     def test_gh51(self):
         key = "secret/http://test.com"
 
@@ -374,7 +195,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
     def test_token_accessor(self):
         # Create token, check accessor is provided
-        result = self.client.create_token(lease="1h")
+        result = self.client.auth.token.create(ttl="1h")
         token_accessor = result["auth"].get("accessor", None)
         assert token_accessor
 
@@ -395,8 +216,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
             lookup = self.client.lookup_token(result["auth"]["client_token"])
 
     def test_create_token_explicit_max_ttl(self):
-
-        token = self.client.create_token(ttl="30m", explicit_max_ttl="5m")
+        token = self.client.auth.token.create(ttl="30m", explicit_max_ttl="5m")
 
         assert token["auth"]["client_token"]
 
@@ -407,8 +227,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert token["auth"]["client_token"] == lookup["data"]["id"]
 
     def test_create_token_max_ttl(self):
-
-        token = self.client.create_token(ttl="5m")
+        token = self.client.auth.token.create(ttl="5m")
 
         assert token["auth"]["client_token"]
 
@@ -419,8 +238,7 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert token["auth"]["client_token"] == lookup["data"]["id"]
 
     def test_create_token_periodic(self):
-
-        token = self.client.create_token(period="30m")
+        token = self.client.auth.token.create(period="30m")
 
         assert token["auth"]["client_token"]
 
@@ -432,24 +250,18 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         assert lookup["data"]["period"] == 1800
 
     def test_token_roles(self):
-        # No roles, list_token_roles == None
-        before = self.client.list_token_roles()
-        assert not before
-
         # Create token role
-        assert self.client.create_token_role("testrole").status_code == 204
+        assert (
+            self.client.auth.token.create_or_update_role("testrole").status_code == 204
+        )
 
         # List token roles
-        during = self.client.list_token_roles()["data"]["keys"]
+        during = self.client.auth.token.list_roles()["data"]["keys"]
         assert len(during) == 1
         assert during[0] == "testrole"
 
         # Delete token role
-        self.client.delete_token_role("testrole")
-
-        # No roles, list_token_roles == None
-        after = self.client.list_token_roles()
-        assert not after
+        self.client.auth.token.delete_role("testrole")
 
     def test_create_token_w_role(self):
         # Create policy
@@ -457,19 +269,19 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
 
         # Create token role w/ policy
         assert (
-            self.client.create_token_role(
+            self.client.auth.token.create_or_update_role(
                 "testrole", allowed_policies="testpolicy"
             ).status_code
             == 204
         )
 
         # Create token against role
-        token = self.client.create_token(lease="1h", role="testrole")
+        token = self.client.auth.token.create(ttl="1h", role_name="testrole")
         assert token["auth"]["client_token"]
         assert token["auth"]["policies"] == ["default", "testpolicy"]
 
         # Cleanup
-        self.client.delete_token_role("testrole")
+        self.client.auth.token.delete_role("testrole")
         self.client.sys.delete_policy("testpolicy")
 
     def test_auth_gcp_alternate_mount_point_with_no_client_token_exception(self):
@@ -526,251 +338,6 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.assertDictEqual(secret_backends["test/"]["options"], {"version": "2"})
 
         self.client.sys.disable_secrets_engine("test")
-
-    def test_create_kubernetes_configuration(self):
-        expected_status_code = 204
-        test_mount_point = "k8s"
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            response = self.client.create_kubernetes_configuration(
-                kubernetes_host="127.0.0.1:80",
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-        self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code,
-        )
-
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_get_kubernetes_configuration(self):
-        test_host = "127.0.0.1:80"
-        test_mount_point = "k8s"
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host=test_host,
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        # Test that we can retrieve the configuration
-        response = self.client.get_kubernetes_configuration(
-            mount_point=test_mount_point
-        )
-        self.assertIn(
-            member="data",
-            container=response,
-        )
-        self.assertEqual(
-            first=test_host, second=response["data"].get("kubernetes_host")
-        )
-
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_create_kubernetes_role(self):
-        test_role_name = "test_role"
-        test_mount_point = "k8s"
-        expected_status_code = 204
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host="127.0.0.1:80",
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        # Test that we can createa role
-        response = self.client.create_kubernetes_role(
-            name=test_role_name,
-            bound_service_account_names="*",
-            bound_service_account_namespaces="vault_test",
-            mount_point=test_mount_point,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code,
-        )
-
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_get_kubernetes_role(self):
-        test_role_name = "test_role"
-        test_mount_point = "k8s"
-        test_bound_service_account_namespaces = ["vault-test"]
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host="127.0.0.1:80",
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        # Test that we can createa role
-        self.client.create_kubernetes_role(
-            name=test_role_name,
-            bound_service_account_names="*",
-            bound_service_account_namespaces=test_bound_service_account_namespaces,
-            mount_point=test_mount_point,
-        )
-        response = self.client.get_kubernetes_role(
-            name=test_role_name,
-            mount_point=test_mount_point,
-        )
-        self.assertIn(
-            member="data",
-            container=response,
-        )
-        self.assertEqual(
-            first=test_bound_service_account_namespaces,
-            second=response["data"].get("bound_service_account_namespaces"),
-        )
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_list_kubernetes_roles(self):
-        test_role_name = "test_role"
-        test_mount_point = "k8s"
-        test_bound_service_account_namespaces = ["vault-test"]
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host="127.0.0.1:80",
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        # Test that we can createa role
-        self.client.create_kubernetes_role(
-            name=test_role_name,
-            bound_service_account_names="*",
-            bound_service_account_namespaces=test_bound_service_account_namespaces,
-            mount_point=test_mount_point,
-        )
-        response = self.client.list_kubernetes_roles(
-            mount_point=test_mount_point,
-        )
-        self.assertIn(
-            member="data",
-            container=response,
-        )
-        self.assertEqual(first=[test_role_name], second=response["data"].get("keys"))
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_delete_kubernetes_role(self):
-        test_role_name = "test_role"
-        test_mount_point = "k8s"
-        expected_status_code = 204
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host="127.0.0.1:80",
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        self.client.create_kubernetes_role(
-            name=test_role_name,
-            bound_service_account_names="*",
-            bound_service_account_namespaces="vault_test",
-            mount_point=test_mount_point,
-        )
-        # Test that we can delete a role
-        response = self.client.delete_kubernetes_role(
-            role=test_role_name,
-            mount_point=test_mount_point,
-        )
-        self.assertEqual(
-            first=expected_status_code,
-            second=response.status_code,
-        )
-
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
-
-    def test_auth_kubernetes(self):
-        test_role_name = "test_role"
-        test_host = "127.0.0.1:80"
-        test_mount_point = "k8s"
-
-        # Turn on the kubernetes backend with a custom mount_point path specified.
-        if f"{test_mount_point}/" in self.client.sys.list_auth_methods()["data"]:
-            self.client.sys.disable_auth_method(test_mount_point)
-        self.client.sys.enable_auth_method("kubernetes", path=test_mount_point)
-        with open(utils.get_config_file_path("client-cert.pem")) as fp:
-            certificate = fp.read()
-            self.client.create_kubernetes_configuration(
-                kubernetes_host=test_host,
-                pem_keys=[certificate],
-                mount_point=test_mount_point,
-            )
-
-        self.client.create_kubernetes_role(
-            name=test_role_name,
-            bound_service_account_names="*",
-            bound_service_account_namespaces="vault_test",
-            mount_point=test_mount_point,
-        )
-
-        # Test that we can authenticate
-        with open(utils.get_config_file_path("example.jwt")) as fp:
-            test_jwt = fp.read()
-            with self.assertRaises(
-                exceptions.InternalServerError
-            ) as assertRaisesContext:
-                # we don't actually have a valid JWT to provide, so this method will throw an exception
-                self.client.auth_kubernetes(
-                    role=test_role_name,
-                    jwt=test_jwt,
-                    mount_point=test_mount_point,
-                )
-
-        expected_exception_message = 'claim "iss" is invalid'
-        actual_exception_message = str(assertRaisesContext.exception)
-        self.assertIn(expected_exception_message, actual_exception_message)
-
-        # Reset integration test state
-        self.client.sys.disable_auth_method(path=test_mount_point)
 
     def test_seal_status(self):
         seal_status_property = self.client.seal_status

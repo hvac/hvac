@@ -26,17 +26,17 @@ Authenticate to different auth backends
     client.auth_app_id('MY_APP_ID', 'MY_USER_ID')
 
     # GitHub
-    client.auth_github('MY_GITHUB_TOKEN')
+    client.auth.github.login('MY_GITHUB_TOKEN')
 
     # TLS
     client = Client(cert=('path/to/cert.pem', 'path/to/key.pem'))
-    client.auth_tls()
+    client.auth.cert.login()
 
     # Non-default mount point (available on all auth types)
-    client.auth_userpass('MY_USERNAME', 'MY_PASSWORD', mount_point='CUSTOM_MOUNT_POINT')
+    client.auth.userpass.login('MY_USERNAME', 'MY_PASSWORD', mount_point='CUSTOM_MOUNT_POINT')
 
     # Authenticating without changing to new token (available on all auth types)
-    result = client.auth_github('MY_GITHUB_TOKEN', use_token=False)
+    result = client.auth.github.login('MY_GITHUB_TOKEN', use_token=False)
     print(result['auth']['client_token']) # => u'NEW_TOKEN'
 
     # Custom or unsupported auth type
