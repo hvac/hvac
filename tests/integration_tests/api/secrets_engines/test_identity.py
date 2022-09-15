@@ -1064,7 +1064,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     member_entity_ids
                     if member_entity_ids is not None
                     else []
-                    if group_type == "external" and utils.vault_version_lt("1.11")
+                    if group_type == "external" and utils.vault_version_lt("1.11.1")
                     else None
                 )
                 self.assertEqual(

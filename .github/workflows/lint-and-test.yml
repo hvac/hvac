@@ -178,10 +178,14 @@ jobs:
         python-version:
           - 3.7
         vault-version:
-          - 1.4.7
-          - 1.5.9
-          - 1.6.5
-          - 1.7.2
+          - "vault-enterprise=1.6.5+ent"
+          - "vault-enterprise=1.7.2+ent"
+          - "vault=1.6.5"
+          - "vault=1.7.2"
+          - "vault=1.8.0"
+          - "vault=1.9.0"
+          - "vault=1.10.0"
+          - "vault=1.11.0-1"
 
     steps:
     - uses: actions/checkout@v3
@@ -225,7 +229,7 @@ jobs:
 
         sudo apt install \
           consul \
-          vault-enterprise=${{ matrix.vault-version }}+ent \
+          ${{ matrix.vault-version }} \
           ;
 
         # We disble cap_ipc_lock here as its generally incompatabile with GitHub
