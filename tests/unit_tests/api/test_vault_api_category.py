@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import create_autospec
+from unittest.mock import create_autospec
 
 from hvac.adapters import Adapter
 from hvac.api.vault_api_base import VaultApiBase

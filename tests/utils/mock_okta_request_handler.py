@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import json
 import logging
 from http.server import BaseHTTPRequestHandler

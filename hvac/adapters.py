@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 HTTP Client Library Adapters
 
@@ -12,7 +11,7 @@ from hvac import utils
 from hvac.constants.client import DEFAULT_URL
 
 
-class Adapter(object):
+class Adapter:
     """Abstract base class used when constructing adapters for use with the Client class."""
 
     __metaclass__ = ABCMeta
@@ -211,13 +210,6 @@ class Adapter(object):
         """
         return NotImplementedError
 
-    @utils.deprecated_method(
-        to_be_removed_in_version="0.9.0",
-        new_method=login,
-    )
-    def auth(self, url, use_token=True, **kwargs):
-        return self.login(url=url, use_token=use_token, **kwargs)
-
     @abstractmethod
     def request(self, method, url, headers=None, raise_exception=True, **kwargs):
         """Main method for routing HTTP requests to the configured Vault base_uri. Intended to be implement by subclasses.
@@ -361,7 +353,7 @@ class JSONAdapter(RawAdapter):
         :return: Dict on HTTP 200 with JSON body, otherwise the response object.
         :rtype: dict | requests.Response
         """
-        response = super(JSONAdapter, self).request(*args, **kwargs)
+        response = super().request(*args, **kwargs)
         if response.status_code == 200:
             try:
                 return response.json()

@@ -62,7 +62,7 @@ def create_user_session_and_client(
 
     # Create our auth user
     create_user_response = oauth_session.post(
-        url="{server_url}/api/user".format(server_url=server_url),
+        url=f"{server_url}/api/user",
         data=dict(
             username=oauth_username,
         ),
@@ -72,7 +72,7 @@ def create_user_session_and_client(
 
     # Set up the auth client details
     create_client_response = oauth_session.post(
-        url="{server_url}/api/create_client".format(server_url=server_url),
+        url=f"{server_url}/api/create_client",
         data=dict(
             client_name=oauth_client_name,
             client_uri=oauth_client_uri,
@@ -89,7 +89,7 @@ def create_user_session_and_client(
         "session": oauth_session,
         "client_id": client["client_id"],
         "client_secret": client["client_secret"],
-        "discovery_url": "{server_url}/oauth".format(server_url=server_url),
+        "discovery_url": f"{server_url}/oauth",
     }
 
 
@@ -108,16 +108,14 @@ if __name__ == "__main__":
     oauth_redirect_uri = "https://localhost:8200/jwt-test/oidc/callback"
 
     # Unauthorized GET to the user API route
-    unauth_get_response = oauth_session.get(
-        "{server_url}/api/user".format(server_url=server.url)
-    )
+    unauth_get_response = oauth_session.get(f"{server.url}/api/user")
     logger.debug(
         "Unauthorized GET to the user API route:\n%s\n" % unauth_get_response.json()
     )
 
     # Create our user
     create_user_response = oauth_session.post(
-        url="{server_url}/api/user".format(server_url=server.url),
+        url=f"{server.url}/api/user",
         data=dict(
             username=oauth_username,
         ),
@@ -127,7 +125,7 @@ if __name__ == "__main__":
 
     # Create a client
     create_client_response = oauth_session.post(
-        url="{server_url}/api/create_client".format(server_url=server.url),
+        url=f"{server.url}/api/create_client",
         data=dict(
             client_name=oauth_client_name,
             client_uri=oauth_client_uri,
@@ -142,16 +140,14 @@ if __name__ == "__main__":
     logger.debug("create_client_data:\n%s\n" % client)
 
     # Authorized GET to the user API route after creating a client
-    auth_get_response = oauth_session.get(
-        "{server_url}/api/user".format(server_url=server.url)
-    )
+    auth_get_response = oauth_session.get(f"{server.url}/api/user")
     logger.debug(
         "Authorized GET to the user API route after creating a client:\n%s\n"
         % auth_get_response.json()
     )
 
     authorize_response = oauth_session.get(
-        url="{server_url}/oauth/authorize".format(server_url=server.url),
+        url=f"{server.url}/oauth/authorize",
         data=dict(
             client_id=client["client_id"],
             scope="openid profile",

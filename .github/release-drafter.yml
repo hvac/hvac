@@ -1,7 +1,6 @@
-name-template: 'v$NEXT_PATCH_VERSION'
-tag-template: 'v$NEXT_PATCH_VERSION'
-branches:
-  - 'develop'
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+commitish: 'refs/heads/develop'
 exclude-labels:
   - 'release'
   - 'skip-changelog'
@@ -22,6 +21,17 @@ categories:
     labels:
       - 'misc'
 change-template: '- $TITLE. GH-$NUMBER'
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
 template: |
 
   $CHANGES

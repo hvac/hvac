@@ -13,7 +13,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "gcp-test"
 
     def setUp(self):
-        super(TestGcp, self).setUp()
+        super().setUp()
         if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="gcp",
@@ -21,7 +21,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             )
 
     def tearDown(self):
-        super(TestGcp, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_MOUNT_POINT,
         )

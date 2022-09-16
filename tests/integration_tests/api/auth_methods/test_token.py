@@ -50,6 +50,28 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         except exceptions.InvalidRequest:
             assert True
 
+    def test_auth_orphaned_token_manipulation(self):
+        result = self.client.auth.token.create_orphan(ttl="1h", renewable=True)
+        assert result["auth"]["client_token"]
+
+        lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
+        assert result["auth"]["client_token"] == lookup["data"]["id"]
+
+        renew = self.client.auth.token.renew(lookup["data"]["id"])
+        assert result["auth"]["client_token"] == renew["auth"]["client_token"]
+
+        self.client.auth.token.revoke(lookup["data"]["id"])
+
+        try:
+            lookup = self.client.auth.token.lookup(result["auth"]["client_token"])
+            assert False
+        except exceptions.Forbidden:
+            assert True
+        except exceptions.InvalidPath:
+            assert True
+        except exceptions.InvalidRequest:
+            assert True
+
     def test_token_accessor(self):
         # Create token, check accessor is provided
         result = self.client.auth.token.create(ttl="1h")

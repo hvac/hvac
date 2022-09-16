@@ -77,12 +77,10 @@ class AuthMethods(VaultApiCategory):
             method_name="login",
             module_name="adapters.Request",
         )
-        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             message=deprecation_message,
             category=DeprecationWarning,
             stacklevel=2,
         )
-        warnings.simplefilter("default", DeprecationWarning)
 
         return self._adapter.login(*args, **kwargs)

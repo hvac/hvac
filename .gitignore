@@ -17,3 +17,4 @@ docs/_build/
 *.iml
 venv/
 .envrc
+.vscode/

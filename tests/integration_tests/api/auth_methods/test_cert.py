@@ -14,7 +14,7 @@ class TestCert(HvacIntegrationTestCase, TestCase):
         TEST_CERTIFICATE = fp.read()
 
     def setUp(self):
-        super(TestCert, self).setUp()
+        super().setUp()
         if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="cert",
@@ -27,7 +27,7 @@ class TestCert(HvacIntegrationTestCase, TestCase):
         )
 
     def tearDown(self):
-        super(TestCert, self).tearDown()
+        super().tearDown()
 
     def test_create_ca_certificate_role(self):
         response = self.client.auth.cert.create_ca_certificate_role(

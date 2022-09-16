@@ -4,13 +4,18 @@ Feel free to open issues and/or pull requests with additional features or improv
 
 ## Typical Development Environment Setup
 
-```
-virtualenv hvac-env
-source hvac-env/bin/activate
+HVAC uses poetry to manage dependencies, the virtual environment, and versioning. Instruction on how to install poetry can be found at: [python-poetry.org](https://python-poetry.org/docs/#installation).
 
+```
 git clone https://github.com/hvac/hvac.git
 cd hvac
-pip install -e .
+
+poetry install
+
+# Run the following command on Linux
+source $(poetry env info --path)/bin/activate
+# Otherwise run this command on Windows
+poetry shell
 ```
 
 ## Testing
@@ -23,16 +28,38 @@ the latest `vault` binary is available in your `PATH`.
 
 ```
 cd hvac
-pip install -r requirements-dev.txt
+poetry install
 ```
-3. Run tests: `make test`
+
+3. Enter the virtual environment
+```
+# Run the following command on Linux
+source $(poetry env info --path)/bin/activate
+# Otherwise run this command on Windows
+poetry shell
+```
+
+4. Run tests: `make test`
 
 ## Updating Requirements
 
-This project uses [pip-tool's](https://pypi.org/project/pip-tools/) `pip-compile` utility to manage its various requirements.
-Any given requirements file can be manually updated by following the pip-compile comments at the top of the file. Alternatively, the `update-all-requirements` Makefile target can be used to update requirements across the board (this has a dependency on docker being available).
+In order to update the versions for all dependencies, `poetry update` can be run before committing the updated poetry.lock file.
 
 ## Documentation
+
+### Adding new dependencies
+
+Should new dependencies need to be added, they can be simply added with Poetry. To add a dependency needed by HVAC run the following command.
+
+```
+poetry add {package_name}
+```
+
+If the dependency is only needed for development the `-D` flag can be used to mark the dependency as a development dependency.
+
+```
+poetry add -D {dev_package_name}
+```
 
 ### Adding New Documentation Files
 
@@ -45,8 +72,12 @@ When adding documentation for an entirely new feature / class, it often makes se
 ### Testing Docs
 
 ```
+# Run the following command on Linux
+source $(poetry env info --path)/bin/activate
+# Otherwise run this command on Windows
+poetry shell
+
 cd docs/
-pip install -r requirements.txt
 make doctest
 ```
 
@@ -69,10 +100,10 @@ Due to the close connection between this module and HashiCorp Vault versions, br
   git checkout develop
   git pull
   ```
-- [ ] Update the version number using [bumpversion](https://github.com/peritus/bumpversion). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed. This will also add an appropriate git commit for the new version.
+- [ ] Update the version number using [Poetry](https://python-poetry.org/docs/). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed. This will also add an appropriate git commit for the new version.
 
   ```
-  bumpversion --no-tag {patch|minor|major}
+  poetry version {patch|minor|major}
   ```
 - [ ] Pull up the current draft [hvac release](https://github.com/hvac/hvac/releases/) and use the [release-drafter](https://github.com/toolmantim/release-drafter) generated release body to update [CHANGELOG.md](CHANGELOG.md). Then commit the changes:
 

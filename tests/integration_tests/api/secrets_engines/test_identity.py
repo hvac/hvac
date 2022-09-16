@@ -26,7 +26,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
     test_approle_accessor = None
 
     def setUp(self):
-        super(TestIdentity, self).setUp()
+        super().setUp()
         if "%s/" % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="approle",
@@ -38,7 +38,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
         ]["accessor"]
 
     def tearDown(self):
-        super(TestIdentity, self).tearDown()
+        super().tearDown()
         self.tear_down_entities()
         self.tear_down_entity_aliases()
         self.tear_down_groups()
@@ -1061,7 +1061,11 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     second=member_group_ids,
                 )
                 expected_member_entity_ids = (
-                    member_entity_ids if member_entity_ids is not None else []
+                    member_entity_ids
+                    if member_entity_ids is not None
+                    else []
+                    if group_type == "external" and utils.vault_version_lt("1.11.1")
+                    else None
                 )
                 self.assertEqual(
                     first=read_group_response["data"]["member_entity_ids"],

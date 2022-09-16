@@ -11,7 +11,7 @@ class TestApprole(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "approle"
 
     def setUp(self):
-        super(TestApprole, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type="approle",
             path=self.TEST_MOUNT_POINT,
@@ -20,7 +20,7 @@ class TestApprole(HvacIntegrationTestCase, TestCase):
     def tearDown(self):
         self.client.token = self.manager.root_token
         self.client.sys.disable_auth_method(path=self.TEST_MOUNT_POINT)
-        super(TestApprole, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [

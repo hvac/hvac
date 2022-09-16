@@ -42,7 +42,7 @@ class TestAwsEc2Methods(TestCase):
             "warnings": [],
             "wrap_info": None,
         }
-        mock_url = "http://localhost:8200/v1/auth/{0}/login".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/login".format(
             "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(method="POST", url=mock_url, json=mock_response)
@@ -71,7 +71,7 @@ class TestAwsEc2Methods(TestCase):
         test_access_key = "AKIAABCDEFGUE1234567"
         test_secret_key = "thisisasecretyall"
         expected_status_code = 204
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/client".format(
             "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
@@ -116,7 +116,7 @@ class TestAwsEc2Methods(TestCase):
             }
         }
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/client".format(
             "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
@@ -148,7 +148,7 @@ class TestAwsEc2Methods(TestCase):
         self, test_label, mount_point, requests_mocker
     ):
         expected_status_code = 204
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/client".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/client".format(
             "aws" if mount_point is None else mount_point
         )
         requests_mocker.register_uri(
@@ -180,7 +180,7 @@ class TestAwsEc2Methods(TestCase):
     ):
         test_cert_info = "this is some test cert info"
         expected_status_code = 204
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/certificate/{1}".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/certificate/{}".format(
             "aws" if mount_point is None else mount_point,
             cert_name,
         )
@@ -225,7 +225,7 @@ class TestAwsEc2Methods(TestCase):
             }
         }
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/certificate/{1}".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/certificate/{}".format(
             "aws" if mount_point is None else mount_point,
             cert_name,
         )
@@ -264,7 +264,7 @@ class TestAwsEc2Methods(TestCase):
         mock_response = {"data": {"keys": ["cert1"]}}
 
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/config/certificates".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/config/certificates".format(
             "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
@@ -296,7 +296,7 @@ class TestAwsEc2Methods(TestCase):
     @requests_mock.Mocker()
     def test_create_ec2_role(self, test_label, mount_point, role_name, requests_mocker):
         expected_status_code = 204
-        mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/role/{}".format(
             "aws" if mount_point is None else mount_point,
             role_name,
         )
@@ -338,7 +338,7 @@ class TestAwsEc2Methods(TestCase):
             }
         }
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/role/{}".format(
             "aws" if mount_point is None else mount_point,
             role_name,
         )
@@ -371,7 +371,7 @@ class TestAwsEc2Methods(TestCase):
     @requests_mock.Mocker()
     def test_delete_ec2_role(self, test_label, mount_point, role_name, requests_mocker):
         expected_status_code = 204
-        mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/role/{}".format(
             "aws" if mount_point is None else mount_point,
             role_name,
         )
@@ -404,7 +404,7 @@ class TestAwsEc2Methods(TestCase):
     def test_list_ec2_roles(self, test_label, mount_point, requests_mocker):
         mock_response = {"data": {"keys": ["dev-role", "prod-role"]}}
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/roles".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/roles".format(
             "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
@@ -442,7 +442,7 @@ class TestAwsEc2Methods(TestCase):
             }
         }
         expected_status_code = 200
-        mock_url = "http://localhost:8200/v1/auth/{0}/role/{1}/tag".format(
+        mock_url = "http://localhost:8200/v1/auth/{}/role/{}/tag".format(
             "aws" if mount_point is None else mount_point, role_name
         )
         requests_mocker.register_uri(

@@ -1,27 +1,33 @@
 from unittest import TestCase
+from unittest import skipIf
 
 from parameterized import parameterized
 
 from hvac import exceptions
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
+from tests import utils
 
-TEST_AUTH_PATH = "userpass-with-mfa"
+TEST_AUTH_PATH = "userpasswithmfa"
 UNSUPPORTED_AUTH_PATH = "approle-that-can-not-have-mfa"
 
 
-class TestMfa(HvacIntegrationTestCase, TestCase):
+@skipIf(
+    utils.vault_version_ge("1.11.0"),
+    "Legacy MFA support dropped in Vault <1.11.0",
+)
+class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     mock_server_port = None
 
     @classmethod
     def setUpClass(cls):
-        super(TestMfa, cls).setUpClass()
+        super().setUpClass()
 
     @classmethod
     def tearDownClass(cls):
-        super(TestMfa, cls).tearDownClass()
+        super().tearDownClass()
 
     def setUp(self):
-        super(TestMfa, self).setUp()
+        super().setUp()
         if "%s/" % TEST_AUTH_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="userpass", path=TEST_AUTH_PATH
@@ -32,7 +38,7 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
             )
 
     def tearDown(self):
-        super(TestMfa, self).tearDown()
+        super().tearDown()
         for path in [TEST_AUTH_PATH, UNSUPPORTED_AUTH_PATH]:
             self.client.sys.disable_auth_method(
                 path=path,
@@ -258,12 +264,12 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
         if configure_access:
             self.client.auth.mfa.configure_duo_access(
                 mount_point=TEST_AUTH_PATH,
-                host="localhost:{port}".format(port=self.mock_server_port),
+                host=f"localhost:{self.mock_server_port}",
                 integration_key="an-integration-key",
                 secret_key="valid-secret-key",
             )
 
-        self.client.create_userpass(
+        self.client.auth.userpass.create_or_update_user(
             username=username,
             password=password,
             policies=["defaut"],
@@ -271,7 +277,7 @@ class TestMfa(HvacIntegrationTestCase, TestCase):
         )
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.auth_userpass(
+                self.client.auth.userpass.login(
                     username=username,
                     password=password,
                     mount_point=TEST_AUTH_PATH,

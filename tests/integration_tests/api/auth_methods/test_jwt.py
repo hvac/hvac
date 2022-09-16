@@ -15,14 +15,14 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
     oidc_server = None
 
     def setUp(self):
-        super(TestJWT, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type="jwt",
             path=self.TEST_JWT_PATH,
         )
 
     def tearDown(self):
-        super(TestJWT, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_JWT_PATH,
         )
@@ -42,7 +42,7 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_configure(self, label, issuer):
-        oidc_discovery_url = "{issuer}/v1/identity/oidc".format(issuer=issuer)
+        oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
         )
@@ -68,7 +68,7 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_read_config(self, label, issuer):
-        oidc_discovery_url = "{issuer}/v1/identity/oidc".format(issuer=issuer)
+        oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
         )
@@ -108,10 +108,16 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             path=self.TEST_JWT_PATH,
         )
         logging.debug("create_role response: %s" % response)
-        self.assertIn(
-            member="data",
-            container=response,
-        )
+        if utils.vault_version_lt("1.11"):
+            self.assertIn(
+                member="data",
+                container=response,
+            )
+        else:
+            self.assertEqual(
+                204,
+                response.status_code,
+            )
 
     @parameterized.expand(
         [

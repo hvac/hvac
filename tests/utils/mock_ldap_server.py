@@ -1,21 +1,20 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from ldap_test import LdapServer
 from tests.utils import get_free_port
 
 
-class MockLdapServer(object):
+class MockLdapServer:
     ldap_url = "ldap://ldap.python-hvac.org"
     ldap_group_name = "vault-users"
     ldap_user_name = "somedude"
     ldap_user_password = "hvacrox"
     ldap_base_dc = "hvac"
-    ldap_base_dn = "dc={dc},dc=network".format(dc=ldap_base_dc)
-    ldap_bind_dn = "cn=admin,{base_dn}".format(base_dn=ldap_base_dn)
+    ldap_base_dn = f"dc={ldap_base_dc},dc=network"
+    ldap_bind_dn = f"cn=admin,{ldap_base_dn}"
     ldap_bind_password = "notaverygoodpassword"
-    ldap_users_dn = "dc=users,{base_dn}".format(base_dn=ldap_base_dn)
+    ldap_users_dn = f"dc=users,{ldap_base_dn}"
     ldap_groups_ou = "groups"
-    ldap_groups_dn = "ou={ou},{base_dn}".format(ou=ldap_groups_ou, base_dn=ldap_base_dn)
+    ldap_groups_dn = f"ou={ldap_groups_ou},{ldap_base_dn}"
     ldap_login_user_dn = "uid={username},{users_dn}".format(
         username=ldap_user_name, users_dn=ldap_users_dn
     )
@@ -63,7 +62,7 @@ class MockLdapServer(object):
 
     @property
     def url(self):
-        return "ldap://localhost:{port}".format(port=self.server_port)
+        return f"ldap://localhost:{self.server_port}"
 
     def start(self):
         self.ldap_server.start()

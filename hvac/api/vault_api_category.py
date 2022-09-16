@@ -26,7 +26,7 @@ class VaultApiCategory(VaultApiBase):
             auth_method_instance = implemented_class(adapter=adapter)
             setattr(self, self.get_private_attr_name(class_name), auth_method_instance)
 
-        super(VaultApiCategory, self).__init__(adapter=adapter)
+        super().__init__(adapter=adapter)
 
     def __getattr__(self, item):
         """Get an instance of an class instance in this category where available.
@@ -95,5 +95,5 @@ class VaultApiCategory(VaultApiBase):
         :return: The private attribute label for the provided class.
         :rtype: str
         """
-        private_attr_name = "_{class_name}".format(class_name=class_name)
+        private_attr_name = f"_{class_name}"
         return private_attr_name

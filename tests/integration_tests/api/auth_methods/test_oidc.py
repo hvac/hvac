@@ -19,14 +19,14 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
     oidc_server = None
 
     def setUp(self):
-        super(TestOIDC, self).setUp()
+        super().setUp()
         self.client.sys.enable_auth_method(
             method_type="oidc",
             path=self.TEST_OIDC_PATH,
         )
 
     def tearDown(self):
-        super(TestOIDC, self).tearDown()
+        super().tearDown()
         self.client.sys.disable_auth_method(
             path=self.TEST_OIDC_PATH,
         )
@@ -46,7 +46,7 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_configure(self, label, issuer):
-        oidc_discovery_url = "{issuer}/v1/identity/oidc".format(issuer=issuer)
+        oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
         )
@@ -72,7 +72,7 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_read_config(self, label, issuer):
-        oidc_discovery_url = "{issuer}/v1/identity/oidc".format(issuer=issuer)
+        oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
         )
@@ -197,6 +197,9 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             )
         id_token_role_name = "hvac-oidc-test"
         key_name = "oidc-test-key"
+        create_named_key_response = self.client.secrets.identity.create_named_key(
+            name=key_name,
+        )
         create_or_update_role_response = (
             self.client.secrets.identity.create_or_update_role(
                 name=id_token_role_name,
@@ -228,7 +231,7 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         )
         logging.debug("generate_token_response: %s" % generate_token_response)
 
-        oidc_discovery_url = "{issuer}/v1/identity/oidc".format(issuer=issuer)
+        oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
         )
@@ -256,7 +259,7 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         )
         logging.debug("oidc_authorization_url_request response: %s" % response)
         self.assertIn(
-            member="?client_id={client_id}".format(client_id=self.oidc_client_id),
+            member=f"?client_id={self.oidc_client_id}",
             container=response["data"]["auth_url"],
         )
 

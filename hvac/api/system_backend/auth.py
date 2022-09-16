@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Support for "Auth"-related System Backend Methods."""
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited

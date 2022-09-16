@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Constants related to the Transit secrets engine."""
+
+import re
 
 ALLOWED_KEY_TYPES = [
     "aes256-gcm96",
@@ -45,3 +46,7 @@ ALLOWED_MARSHALING_ALGORITHMS = [
     "asn1",
     "jws",
 ]
+
+# https://github.com/hashicorp/vault/pull/16549
+# Either 'auto', 'hash', '-1', or any nonnegative integer.
+ALLOWED_SALT_LENGTHS = re.compile(r"auto|hash|-1|\d+")

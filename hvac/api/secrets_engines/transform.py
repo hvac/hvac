@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Transform secrets engine methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -78,7 +77,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_roles request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/role".format(mount_point=mount_point)
+        api_path = f"/v1/{mount_point}/role"
         return self._adapter.list(
             url=api_path,
         )
@@ -359,7 +358,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_ation request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/transformation".format(mount_point=mount_point)
+        api_path = f"/v1/{mount_point}/transformation"
         return self._adapter.list(
             url=api_path,
         )
@@ -461,7 +460,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_template request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/template".format(mount_point=mount_point)
+        api_path = f"/v1/{mount_point}/template"
         return self._adapter.list(
             url=api_path,
         )
@@ -558,7 +557,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_alphabets request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/alphabet".format(mount_point=mount_point)
+        api_path = f"/v1/{mount_point}/alphabet"
         return self._adapter.list(
             url=api_path,
         )

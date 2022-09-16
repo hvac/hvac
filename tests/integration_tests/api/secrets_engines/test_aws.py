@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import json
 import logging
 from unittest import TestCase
@@ -22,7 +21,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
     }
 
     def setUp(self):
-        super(TestAws, self).setUp()
+        super().setUp()
         if "%s/" % self.TEST_MOUNT_POINT not in self.client.sys.list_auth_methods():
             self.client.sys.enable_secrets_engine(
                 backend_type="aws",
@@ -33,7 +32,7 @@ class TestAws(HvacIntegrationTestCase, TestCase):
         self.client.sys.disable_secrets_engine(
             path=self.TEST_MOUNT_POINT,
         )
-        super(TestAws, self).tearDown()
+        super().tearDown()
 
     @parameterized.expand(
         [
