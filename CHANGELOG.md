@@ -1,10 +1,5 @@
 # Changelog
 
-## 1.0.1
-
-### 🐛 Bug Fixes
-- Add `role_name` to `auth.token.create_orphan`. [GH-891](https://github.com/hvac/hvac/pull/891)
-
 ## 1.0.0
 
 - CI: Update Vault versions for integration tests. GH-884
