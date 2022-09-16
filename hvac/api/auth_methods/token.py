@@ -157,7 +157,7 @@ class Token(VaultApiBase):
             The ID provided may not contain a `.` character. Otherwise, the
             token ID is a randomly generated value.
         :type id: str
-        :param role_name: he name of the token role.
+        :param role_name: The name of the token role.
         :type role_name: str
         :param policies: A list of policies for the token. This must be a
             subset of the policies belonging to the token making the request, unless root.
