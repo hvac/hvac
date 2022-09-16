@@ -16,32 +16,32 @@
 - build-test: Add test. GH-844
 - Bump version: 0.11.2 → 1.0.0. GH-829
 
-## 💥 Breaking Changes
+### 💥 Breaking Changes
 
 - Legacy MFA: Move mfa authentication method to legacy MFA method. GH-883
 - Remove deprecated methods. GH-868
 - Remove redundant code for Python <= 3.5. GH-822
 - Drop Python 2 and EOL Python 3 versions. GH-819
 
-## 🚀 Features
+### 🚀 Features
 
 - Token: Add create orphaned token method. GH-869
 - Allow configuring the possible salt lengths for RSA PSS signatures. GH-846
 - ssh: Add secret engine. GH-811
 
-## 🐛 Bug Fixes
+### 🐛 Bug Fixes
 
 - setup.py: Add encoding for long_description. GH-843
 - Don't override user warning filters. GH-818
 
-## 📚 Documentation
+### 📚 Documentation
 
 - Migrate to Poetry. GH-854
 - docs(auth-methods): update kubernetes. GH-837
 - README: Remove help wanted note. GH-848
 - Update kubernetes authentication example. GH-827
 
-## 🧰 Miscellaneous
+### 🧰 Miscellaneous
 
 - .gitignore: Add vscode config directory. GH-867
 - Add stock version-resolver cfg for release-drafter. GH-836
