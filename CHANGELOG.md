@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1
+
+### 🐛 Bug Fixes
+
+- Add `role_name` parameter to `auth.token.create_orphan`. GH-891
+- docs: Add RTD config. GH-894
+
+### 📚 Documentation
+
+- docs: Add RTD config. GH-894
+
 ## 1.0.0
 
 - CI: Update Vault versions for integration tests. GH-884
