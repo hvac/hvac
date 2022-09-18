@@ -441,6 +441,7 @@ class HvacAdapterResponse(RequestsAdapterResponse):
 
     @property
     def value(self) -> dict | str:
+        # TODO (this PR): calculate this on `__init__` instead so that very access of `.value` is not re-deserializing this
         try:
             value = self.raw.json()
         except ValueError:
