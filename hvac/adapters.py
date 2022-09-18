@@ -393,49 +393,65 @@ class AdapterResponse(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def status(self) -> int:
+    def raw(self) -> None | Any:
+        """The raw response object.
+        The specific Adapter determines the type or whether to return anything.
+
+        :return: The raw response object from the request, if applicable.
+        :rtype: None | Any
+        """
         raise NotImplementedError
 
     @property
     @abstractmethod
-    def value(self) -> object:
+    def status(self) -> int:
+        """The HTTP status code of the response.
+
+        :return: An HTTP response code.
+        :rtype: int
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value(self) -> Any:
+        """The value of the response.
+        The specific Adapter determines the type of the response.
+
+        :return: The value returned by the request.
+        :rtype: Any
+        """
         raise NotImplementedError
 
 
-class BasicAdapterResponse(AdapterResponse):
-    """A basic Adapter response that takes a status and value, and returns it."""
+class RequestsAdapterResponse(AdapterResponse):
+    """An abstract AdapterResponse class for responses based on a requests.Response."""
 
-    def __init__(self, status, value) -> None:
-        self._status = status
-        self._value = value
+    def __init__(self, response: requests.Response) -> None:
+        self.raw = response
 
     @property
     def status(self) -> int:
-        return self._status
-
-    @property
-    def value(self) -> Any:
-        return self.value
+        return self.raw.status_code
 
 
-class HvacAdapterResponse(BasicAdapterResponse):
+class HvacAdapterResponse(RequestsAdapterResponse):
     """The specialized AdapterResponse used for the HvacAdapter."""
 
-    @classmethod
-    def from_requests_response(cls, response: requests.Response):
-        status = response.status_code
+    @property
+    def value(self) -> dict | str:
         try:
-            value = response.json()
+            value = self.raw.json()
         except ValueError:
-            if status == 204:
+            if self.status == 204:
                 value = {}
             else:
                 # fall back to returning the text if it couldn't be parsed as JSON?
                 # keeping in mind that we can only get here if the response was "ok" (<400),
                 # is there a different action we should take, or value to be returned?
-                value = response.text
+                value = self.raw.text
 
-        return cls(status, value)
+        return value
 
     def __getattr__(self, __name: str) -> Any:
         valueattr = getattr(self._value, __name)
@@ -480,4 +496,4 @@ class HvacAdapter(RawAdapter):
         :rtype: hvac.adapters.HvacAdapterResponse
         """
         response = super().request(*args, **kwargs)
-        return HvacAdapterResponse.from_requests_response(response)
+        return HvacAdapterResponse(response)
