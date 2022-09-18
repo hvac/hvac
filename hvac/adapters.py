@@ -429,6 +429,7 @@ class RequestsAdapterResponse(AdapterResponse):
 
     def __init__(self, response: requests.Response) -> None:
         self.raw = response
+        super().__init__()
 
     @property
     def status(self) -> int:
