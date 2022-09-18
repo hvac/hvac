@@ -31,7 +31,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6.2"
 pyhcl = "^0.4.4"
-requests = "2.27.1"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 Werkzeug = "2.0.3"
