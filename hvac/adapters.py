@@ -455,7 +455,7 @@ class HvacAdapterResponse(RequestsAdapterResponse):
         return value
 
     def __getattr__(self, __name: str) -> Any:
-        valueattr = getattr(self._value, __name)
+        valueattr = getattr(self.value, __name)
 
         deprecated_version = "3.0.0"
         deprecated_message = (
