@@ -3,6 +3,8 @@ HTTP Client Library Adapters
 
 """
 from abc import ABCMeta, abstractmethod
+from typing import Any
+import warnings
 
 import requests
 import requests.exceptions
@@ -381,3 +383,101 @@ class JSONAdapter(RawAdapter):
 
 # Retaining the legacy name
 Request = RawAdapter
+
+
+class AdapterResponse(metaclass=ABCMeta):
+    """Abstract base class for Adapter responses."""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def status(self) -> int:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value(self) -> object:
+        raise NotImplementedError
+
+
+class BasicAdapterResponse(AdapterResponse):
+    """A basic Adapter response that takes a status and value, and returns it."""
+
+    def __init__(self, status, value) -> None:
+        self._status = status
+        self._value = value
+
+    @property
+    def status(self) -> int:
+        return self._status
+
+    @property
+    def value(self) -> Any:
+        return self.value
+
+
+class HvacAdapterResponse(BasicAdapterResponse):
+    """The specialized AdapterResponse used for the HvacAdapter."""
+
+    @classmethod
+    def from_requests_response(cls, response: requests.Response):
+        status = response.status_code
+        try:
+            value = response.json()
+        except ValueError:
+            if status == 204:
+                value = {}
+            else:
+                # fall back to returning the text if it couldn't be parsed as JSON?
+                # keeping in mind that we can only get here if the response was "ok" (<400),
+                # is there a different action we should take, or value to be returned?
+                value = response.text
+
+        return cls(status, value)
+
+    def __getattr__(self, __name: str) -> Any:
+        valueattr = getattr(self._value, __name)
+
+        deprecated_version = "3.0.0"
+        deprecated_message = (
+            f"Directly accessing the '{__name}' member of the response is deprecated and will be removed in version {deprecated_version}.\n"
+            f"Please use 'response.value.{__name}' moving forward."
+        )
+        warnings.warn(
+            message=deprecated_message,
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        return valueattr
+
+
+class HvacAdapter(RawAdapter):
+    """
+    The HvacAdapter adapter class.
+    This adapter interprets JSON responses similarly to the JSONAdapter, but it returns an HvacAdapterResponse object.
+    """
+
+    def get_login_token(self, response):
+        """Extracts the client token from a login response.
+
+        :param response: The response object returned by the login method.
+        :type response: hvac.adapters.HvacAdapterResponse
+        :return: A client token.
+        :rtype: str
+        """
+        return response.value["auth"]["client_token"]
+
+    def request(self, *args, **kwargs):
+        """Main method for routing HTTP requests to the configured Vault base_uri.
+
+        :param args: Positional arguments to pass to RawAdapter.request.
+        :type args: list
+        :param kwargs: Keyword arguments to pass to RawAdapter.request.
+        :type kwargs: dict
+        :return: An HvacAdapterResponse object.
+        :rtype: hvac.adapters.HvacAdapterResponse
+        """
+        response = super().request(*args, **kwargs)
+        return HvacAdapterResponse.from_requests_response(response)
