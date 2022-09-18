@@ -131,6 +131,7 @@ class Token(VaultApiBase):
     def create_orphan(
         self,
         id=None,
+        role_name=None,
         policies=None,
         meta=None,
         no_default_policy=False,
@@ -156,6 +157,8 @@ class Token(VaultApiBase):
             The ID provided may not contain a `.` character. Otherwise, the
             token ID is a randomly generated value.
         :type id: str
+        :param role_name: The name of the token role.
+        :type role_name: str
         :param policies: A list of policies for the token. This must be a
             subset of the policies belonging to the token making the request, unless root.
             If not specified, defaults to all the policies of the calling token.
@@ -203,6 +206,7 @@ class Token(VaultApiBase):
         params = utils.remove_nones(
             {
                 "id": id,
+                "role_name": role_name,
                 "policies": policies,
                 "meta": meta,
                 "no_default_policy": no_default_policy,
