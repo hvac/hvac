@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+- Update dependencies. GH-897
+
 ## 1.0.1
 
 ### 🐛 Bug Fixes
