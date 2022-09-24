@@ -71,7 +71,7 @@ class TestHvacAdapterResponse:
 
         mock_response.json.assert_not_called()
 
-        assert rar.value == None
-        assert rar._value == None
+        assert rar.value is None
+        assert rar._value is None
 
         mock_response.json.assert_called_once()
