@@ -466,7 +466,7 @@ class HvacAdapterResponse(RequestsAdapterResponse):
             return self._value
 
     # TODO(3.0.0): remove this and all the magic methods.
-    def _deprecate(self, action: str, replacement: str, deprecated_version: str='3.0.0') -> None:
+    def _deprecate(self, action: str, replacement: str, deprecated_version: str = '3.0.0') -> None:
         deprecated_message = (
             f"{action.rstrip(' .')} is deprecated and will be removed in version {deprecated_version}.\n"
             f"Please use `{replacement.strip(''''`''')}` moving forward."
