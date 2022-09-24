@@ -11,7 +11,7 @@ from requests.models import Response
 
 @pytest.fixture(autouse=True)
 def concretify():
-    with mock.patch.object(RequestsAdapterResponse, '__abstractmethods__', set()) as o:
+    with mock.patch.object(RequestsAdapterResponse, "__abstractmethods__", set()) as o:
         yield o
 
 
