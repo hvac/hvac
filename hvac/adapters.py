@@ -3,7 +3,7 @@ HTTP Client Library Adapters
 
 """
 from abc import ABCMeta, abstractmethod
-from typing import Any
+from typing import Any, Optional
 import warnings
 
 import requests
@@ -393,12 +393,12 @@ class AdapterResponse(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def raw(self) -> None | Any:
+    def raw(self) -> Optional[object]:
         """The raw response object.
         The specific Adapter determines the type or whether to return anything.
 
         :return: The raw response object from the request, if applicable.
-        :rtype: None | Any
+        :rtype: None | object
         """
         raise NotImplementedError
 
@@ -427,6 +427,8 @@ class AdapterResponse(metaclass=ABCMeta):
 class RequestsAdapterResponse(AdapterResponse):
     """An abstract AdapterResponse class for responses based on a requests.Response."""
 
+    raw = None
+
     def __init__(self, response: requests.Response) -> None:
         self.raw = response
         super().__init__()
@@ -439,36 +441,60 @@ class RequestsAdapterResponse(AdapterResponse):
 class HvacAdapterResponse(RequestsAdapterResponse):
     """The specialized AdapterResponse used for the HvacAdapter."""
 
-    @property
-    def value(self) -> dict | str:
-        # TODO (this PR): calculate this on `__init__` instead so that very access of `.value` is not re-deserializing this
+    def _process_value(self) -> None:
         try:
             value = self.raw.json()
         except ValueError:
             if self.status == 204:
                 value = {}
             else:
-                # fall back to returning the text if it couldn't be parsed as JSON?
-                # keeping in mind that we can only get here if the response was "ok" (<400),
-                # is there a different action we should take, or value to be returned?
-                value = self.raw.text
+                value = None
 
-        return value
+        self._value = value
 
-    def __getattr__(self, __name: str) -> Any:
-        valueattr = getattr(self.value, __name)
+    @property
+    def value(self) -> Optional[dict]:
+        """Return the processed response from the Vault request.
 
-        deprecated_version = "3.0.0"
+        :return: Dict on HTTP 200 with JSON body, empty dict on HTTP 204, or None.
+        :rtype: dict | None
+        """
+        try:
+            return self._value
+        except AttributeError:
+            self._process_value()
+            return self._value
+
+    # TODO(3.0.0): remove this and all the magic methods.
+    def _deprecate(self, action: str, replacement: str, deprecated_version: str='3.0.0') -> None:
         deprecated_message = (
-            f"Directly accessing the '{__name}' member of the response is deprecated and will be removed in version {deprecated_version}.\n"
-            f"Please use 'response.value.{__name}' moving forward."
+            f"{action.rstrip(' .')} is deprecated and will be removed in version {deprecated_version}.\n"
+            f"Please use `{replacement.strip(''''`''')}` moving forward."
         )
         warnings.warn(
             message=deprecated_message,
             category=DeprecationWarning,
             stacklevel=2,
         )
-        return valueattr
+
+    def __getattr__(self, __name: str) -> Any:
+        if __name == '_value':
+            raise AttributeError
+
+        self._deprecate(f"Directly accessing `response.{__name}`", replacement=f"response.value.{__name}")
+        return getattr(self.value, __name)
+
+    def __getitem__(self, __key: object) -> Any:
+        self._deprecate(f"Directly accessing `response[{repr(__key)}]`", replacement=f"response.value[{repr(__key)}]")
+        return self.value.__getitem__(__key)
+
+    def __setitem__(self, __key: object, __value: object) -> None:
+        self._deprecate(f"Directly setting `response[{repr(__key)}] = {repr(__value)}`", replacement=f"response.value[{repr(__key)}] = {repr(__value)}")
+        self.value.__setitem__(__key, __value)
+
+    def __delitem__(self, __key: object) -> None:
+        self._deprecate(f"Directly deleting `response[{repr(__key)}]`", replacement=f"del response.value[{repr(__key)}]")
+        self.value.__delitem__(__key)
 
 
 class HvacAdapter(RawAdapter):
@@ -477,7 +503,7 @@ class HvacAdapter(RawAdapter):
     This adapter interprets JSON responses similarly to the JSONAdapter, but it returns an HvacAdapterResponse object.
     """
 
-    def get_login_token(self, response):
+    def get_login_token(self, response) -> str:
         """Extracts the client token from a login response.
 
         :param response: The response object returned by the login method.
@@ -487,7 +513,7 @@ class HvacAdapter(RawAdapter):
         """
         return response.value["auth"]["client_token"]
 
-    def request(self, *args, **kwargs):
+    def request(self, *args, **kwargs) -> HvacAdapterResponse:
         """Main method for routing HTTP requests to the configured Vault base_uri.
 
         :param args: Positional arguments to pass to RawAdapter.request.
