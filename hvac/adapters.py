@@ -335,7 +335,7 @@ class RawAdapter(Adapter):
             url=url,
             headers=headers,
             allow_redirects=self.allow_redirects,
-            **_kwargs
+            **_kwargs,
         )
 
         if not response.ok and (raise_exception and not self.ignore_exceptions):
@@ -466,7 +466,9 @@ class HvacAdapterResponse(RequestsAdapterResponse):
             return self._value
 
     # TODO(3.0.0): remove this and all the magic methods.
-    def _deprecate(self, action: str, replacement: str, deprecated_version: str = '3.0.0') -> None:
+    def _deprecate(
+        self, action: str, replacement: str, deprecated_version: str = "3.0.0"
+    ) -> None:
         deprecated_message = (
             f"{action.rstrip(' .')} is deprecated and will be removed in version {deprecated_version}.\n"
             f"Please use `{replacement.strip(''''`''')}` moving forward."
@@ -478,22 +480,34 @@ class HvacAdapterResponse(RequestsAdapterResponse):
         )
 
     def __getattr__(self, __name: str) -> Any:
-        if __name == '_value':
+        if __name == "_value":
             raise AttributeError
 
-        self._deprecate(f"Directly accessing `response.{__name}`", replacement=f"response.value.{__name}")
+        self._deprecate(
+            f"Directly accessing `response.{__name}`",
+            replacement=f"response.value.{__name}",
+        )
         return getattr(self.value, __name)
 
     def __getitem__(self, __key: object) -> Any:
-        self._deprecate(f"Directly accessing `response[{repr(__key)}]`", replacement=f"response.value[{repr(__key)}]")
+        self._deprecate(
+            f"Directly accessing `response[{repr(__key)}]`",
+            replacement=f"response.value[{repr(__key)}]",
+        )
         return self.value.__getitem__(__key)
 
     def __setitem__(self, __key: object, __value: object) -> None:
-        self._deprecate(f"Directly setting `response[{repr(__key)}] = {repr(__value)}`", replacement=f"response.value[{repr(__key)}] = {repr(__value)}")
+        self._deprecate(
+            f"Directly setting `response[{repr(__key)}] = {repr(__value)}`",
+            replacement=f"response.value[{repr(__key)}] = {repr(__value)}",
+        )
         self.value.__setitem__(__key, __value)
 
     def __delitem__(self, __key: object) -> None:
-        self._deprecate(f"Directly deleting `response[{repr(__key)}]`", replacement=f"del response.value[{repr(__key)}]")
+        self._deprecate(
+            f"Directly deleting `response[{repr(__key)}]`",
+            replacement=f"del response.value[{repr(__key)}]",
+        )
         self.value.__delitem__(__key)
 
 
