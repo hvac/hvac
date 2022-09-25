@@ -512,8 +512,8 @@ class HvacAdapterResponse(RequestsAdapterResponse):
 
     def __len__(self) -> int:
         self._deprecate(
-            f"Directly calling `len(response)`",
-            replacement=f"len(response.value)",
+            "Directly calling `len(response)`",
+            replacement="len(response.value)",
         )
         return self.value.__len__()
 
