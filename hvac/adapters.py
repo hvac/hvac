@@ -510,6 +510,20 @@ class HvacAdapterResponse(RequestsAdapterResponse):
         )
         self.value.__delitem__(__key)
 
+    def __len__(self) -> int:
+        self._deprecate(
+            f"Directly calling `len(response)`",
+            replacement=f"len(response.value)",
+        )
+        return self.value.__len__()
+
+    def __contains__(self, __o: object) -> bool:
+        self._deprecate(
+            f"Directly using `{repr(__o)} in response`",
+            replacement=f"{repr(__o)} in response.value",
+        )
+        return self.value.__contains__(__o)
+
 
 class HvacAdapter(RawAdapter):
     """
