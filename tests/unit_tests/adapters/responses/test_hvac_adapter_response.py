@@ -18,15 +18,16 @@ class TestHvacAdapterResponse:
     def test_is_adapter_response(self):
         assert issubclass(HvacAdapterResponse, RequestsAdapterResponse)
 
-    def test_http_200(self, mock_response):
+    @pytest.mark.parametrize('status', [200, 204, 301])
+    def test_parseable(self, mock_response, status):
         data = dict(data=dict(hello="hi"))
-        mock_response.status_code = 200
+        mock_response.status_code = status
         mock_response.json.return_value = data
 
         rar = HvacAdapterResponse(mock_response)
 
         assert rar.raw is mock_response
-        assert rar.status == mock_response.status_code == 200
+        assert rar.status == mock_response.status_code == status
 
         with pytest.raises(AttributeError):
             rar._value
@@ -38,7 +39,7 @@ class TestHvacAdapterResponse:
 
         mock_response.json.assert_called_once()
 
-    def test_http_204(self, mock_response):
+    def test_http_204_empty(self, mock_response):
         mock_response.status_code = 204
         mock_response.json.side_effect = ValueError
 
@@ -57,7 +58,7 @@ class TestHvacAdapterResponse:
 
         mock_response.json.assert_called_once()
 
-    def test_unparseable(self, mock_response):
+    def test_non_204_unparseable(self, mock_response):
         mock_response.status_code = 200
         mock_response.json.side_effect = ValueError
 
