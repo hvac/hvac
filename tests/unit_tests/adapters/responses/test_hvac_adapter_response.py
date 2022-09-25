@@ -28,7 +28,7 @@ def filled_response(mock_response):
 
 @pytest.fixture
 def mock_warn():
-    with mock.patch('warnings.warn') as w:
+    with mock.patch("warnings.warn") as w:
         yield w
 
 
@@ -36,7 +36,7 @@ class TestHvacAdapterResponse:
     def test_is_adapter_response(self):
         assert issubclass(HvacAdapterResponse, RequestsAdapterResponse)
 
-    @pytest.mark.parametrize('status', [200, 204, 301])
+    @pytest.mark.parametrize("status", [200, 204, 301])
     def test_parseable(self, mock_response, status):
         data = dict(data=dict(hello="hi"))
         mock_response.status_code = status
