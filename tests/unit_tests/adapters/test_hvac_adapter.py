@@ -26,7 +26,7 @@ def filled_response(mock_response):
         "data2": "value2",
         "auth": {
             "client_token": "opaque",
-        }
+        },
     }
     mock_response.status_code = 200
     mock_response.json.return_value = data
@@ -48,7 +48,7 @@ class TestHvacAdapter:
             ["arg1"],
             ["arg1", "arg2"],
             [],
-        ]
+        ],
     )
     @pytest.mark.parametrize(
         "z_kwargs",
@@ -56,10 +56,12 @@ class TestHvacAdapter:
             {},
             {"kw1": "val1"},
             {"kw1": "val1", "kw2": 2},
-        ]
+        ],
     )
     def test_request(self, z_args, z_kwargs, filled_response):
-        with mock.patch.object(RawAdapter, 'request', mock.Mock(return_value=filled_response)) as req:
+        with mock.patch.object(
+            RawAdapter, "request", mock.Mock(return_value=filled_response)
+        ) as req:
             adapter = HvacAdapter()
             result = adapter.request(*z_args, **z_kwargs)
 
