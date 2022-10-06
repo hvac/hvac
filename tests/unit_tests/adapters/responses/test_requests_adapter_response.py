@@ -24,7 +24,7 @@ class TestRequestsAdapterResponse:
     def test_is_adapter_response(self):
         assert issubclass(RequestsAdapterResponse, AdapterResponse)
 
-    def test_thing(self, mock_response):
+    def test_requests_adapter_response(self, mock_response):
         mock_response.status_code = 200
         mock_response.json.return_value = dict(data=dict(hello="hi"))
 

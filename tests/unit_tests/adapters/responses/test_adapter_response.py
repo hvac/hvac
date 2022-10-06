@@ -17,7 +17,7 @@ ABSTRACT_METHODS = set(
 )
 
 
-class TestRequestsAdapterResponse:
+class TestAbstractAdapterResponse:
     @pytest.mark.parametrize("method", ABSTRACT_METHODS)
     def test_has_abstract_methods(self, method):
         assert method in AdapterResponse.__abstractmethods__, repr(
