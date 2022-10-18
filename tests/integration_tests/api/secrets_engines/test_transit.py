@@ -28,9 +28,13 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
             ),
+            param(
+                "auto rotate period field",
+                auto_rotate_period="1h"
+            )
         ]
     )
-    def test_create_key(self, label, raises=False, exception_message=""):
+    def test_create_key(self, label, raises=False, auto_rotate_period=None, exception_message=""):
         key_name = "testkey"
         if raises:
             with self.assertRaises(raises) as cm:
