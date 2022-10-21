@@ -148,7 +148,7 @@ class Kubernetes(VaultApiBase):
             additional possibilities: default-service and default-batch which specify the type to return unless the
             client requests a different type at generation time.
         :type token_type: str
-        :param mount_point: The "path" the azure auth method was mounted on.
+        :param mount_point: The "path" the kubernetes auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
@@ -271,12 +271,12 @@ class Kubernetes(VaultApiBase):
 
         :param role: Name of the role against which the login is being attempted.
         :type role: str | unicode
-        :param jwt: Signed JSON Web Token (JWT) from Azure MSI.
+        :param jwt: Signed JSON Web Token (JWT) from Kubernetes service account.
         :type jwt: str | unicode
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
             attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
         :type use_token: bool
-        :param mount_point: The "path" the azure auth method was mounted on.
+        :param mount_point: The "path" the kubernetes auth method was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
         :rtype: dict
