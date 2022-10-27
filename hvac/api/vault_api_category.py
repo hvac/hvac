@@ -7,10 +7,8 @@ from hvac.api.vault_api_base import VaultApiBase
 logger = logging.getLogger(__name__)
 
 
-class VaultApiCategory(VaultApiBase):
+class VaultApiCategory(VaultApiBase, metaclass=ABCMeta):
     """Base class for API categories."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, adapter):
         """API Category class constructor.
