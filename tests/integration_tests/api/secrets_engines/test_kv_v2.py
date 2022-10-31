@@ -345,15 +345,11 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                     ],
                     second="",
                 )
-            read_secret_version_result = (
-                self.client.secrets.kv.v2.read_secret_version(
-                    path=path,
-                    mount_point=self.DEFAULT_MOUNT_POINT,
-                )
+            read_secret_version_result = self.client.secrets.kv.v2.read_secret_version(
+                path=path,
+                mount_point=self.DEFAULT_MOUNT_POINT,
             )
-            logging.debug(
-                "read_secret_version_result: %s" % read_secret_version_result
-            )
+            logging.debug("read_secret_version_result: %s" % read_secret_version_result)
             self.assertEqual(
                 first=read_secret_version_result["data"]["data"],
                 second=None,
