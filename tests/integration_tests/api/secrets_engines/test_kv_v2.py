@@ -276,7 +276,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("successful delete one version written", "hvac"),
+            ("successful delete one version written", "hvac", 1),
             ("successful delete two versions written", "hvac", 2),
             ("successful delete three versions written", "hvac", 3),
             ("nonexistent path", "no-secret-here", 0, exceptions.InvalidPath),
@@ -286,7 +286,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         self,
         test_label,
         path,
-        write_secret_before_test=1,
+        write_secret_before_test,
         raises=None,
         exception_message="",
     ):
@@ -360,7 +360,8 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             )
             self.assertEqual(
                 first=read_secret_version_result["data"]["metadata"]["version"],
-                second=str(num),
+                second=write_secret_before_test,
+                msg=repr(read_secret_version_result),
             )
 
     @parameterized.expand(
