@@ -43,7 +43,7 @@ Retrieving credentials from a boto3 Session object:
 EC2 Metadata Service
 ````````````````````
 
-Retrieving static instance role credentials within an EC2 instnace using the EC2 metadata service (the EC2 auth method is probably a better fit for this case, which is outlined below under `EC2 Authentication`_):
+Retrieving static instance role credentials within an EC2 instance using the EC2 metadata service (the EC2 auth method is probably a better fit for this case, which is outlined below under `EC2 Authentication`_):
 
 .. code:: python
 
