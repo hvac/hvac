@@ -26,19 +26,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      id: python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: poetry
-
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
         version: 1.1.14
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      id: python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
@@ -60,19 +60,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.6
-      id: python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.6
-        cache: poetry
-
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
         version: 1.1.14
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Set up Python 3.6
+      id: python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.6
+        cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
@@ -120,19 +120,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      id: python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: poetry
-
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
         version: 1.1.14
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      id: python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
@@ -175,19 +175,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      id: python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: poetry
-
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.1
       with:
         version: 1.1.14
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      id: python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
