@@ -49,7 +49,7 @@ class Cert(VaultApiBase):
         :type name: str
         :param certificate: The PEM-format CA certificate. Either certificate or certificate_file is required.
             NOTE: Passing a certificate file path with the certificate argument is deprecated and will be dropped in
-            version 2.0.0
+            version 3.0.0
         :type certificate: str
         :param certificate_file: File path to the PEM-format CA certificate.  Either certificate_file or certificate is
             required.
