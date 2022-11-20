@@ -9,8 +9,9 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 class TestCert(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "cert-test"
     TEST_ROLE_NAME = "testrole"
+    TEST_CLIENT_CERTIFICATE_FILE = utils.get_config_file_path("client-cert.pem")
     cert = utils.create_client()._adapter._kwargs.get("cert")
-    with open(utils.get_config_file_path("client-cert.pem")) as fp:
+    with open(TEST_CLIENT_CERTIFICATE_FILE, "r") as fp:
         TEST_CERTIFICATE = fp.read()
 
     def setUp(self):
@@ -33,6 +34,25 @@ class TestCert(HvacIntegrationTestCase, TestCase):
         response = self.client.auth.cert.create_ca_certificate_role(
             name="testrole2",
             certificate=self.TEST_CERTIFICATE,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        self.assertEqual(first=204, second=response.status_code)
+
+    def test_create_ca_certificate_with_filename(self):
+        response = self.client.auth.cert.create_ca_certificate_role(
+            name="testrole2",
+            certificate_file=self.TEST_CLIENT_CERTIFICATE_FILE,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        self.assertEqual(first=204, second=response.status_code)
+
+    def test_create_ca_certificate_with_filename_deprecated(self):
+        """This tests the deprecated feature of passing a certificate file via the certificate argument"""
+        response = self.client.auth.cert.create_ca_certificate_role(
+            name="testrole2",
+            certificate=self.TEST_CLIENT_CERTIFICATE_FILE,
             mount_point=self.TEST_MOUNT_POINT,
         )
 
@@ -96,14 +116,6 @@ class TestCert(HvacIntegrationTestCase, TestCase):
                     cert_pem=cert_pem,
                     mount_point=mount_point,
                 )
-        # elif cacert:
-        #     with self.assertRaises(OSError):
-        #         self.client.auth.cert.login(
-        #             name=name,
-        #             cacert=cacert,
-        #             cert_pem=cert_pem,
-        #             mount_point=mount_point,
-        #         )
         elif (
             name != ""
             and name

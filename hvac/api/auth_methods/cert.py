@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 """Cert methods module."""
+import os
+import warnings
+
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.utils import validate_pem_format
 from hvac import exceptions, utils
-import os
 
 
 class Cert(VaultApiBase):
@@ -15,7 +17,8 @@ class Cert(VaultApiBase):
     def create_ca_certificate_role(
         self,
         name,
-        certificate,
+        certificate="",
+        certificate_file="",
         allowed_common_names="",
         allowed_dns_sans="",
         allowed_email_sans="",
@@ -44,8 +47,13 @@ class Cert(VaultApiBase):
         »Parameters
         :param name: The name of the certificate role.
         :type name: str
-        :param certificate: The PEM-format CA certificate.
+        :param certificate: The PEM-format CA certificate. Either certificate or certificate_file is required.
+            NOTE: Passing a certificate file path with the certificate argument is deprecated and will be dropped in
+            version 3.0.0
         :type certificate: str
+        :param certificate_file: File path to the PEM-format CA certificate.  Either certificate_file or certificate is
+            required.
+        :type certificate_file: str
         :param allowed_common_names: Constrain the Common Names in the client certificate with a globbed pattern. Value
             is a comma-separated list of patterns. Authentication requires at least one Name matching at least one
             pattern. If not set, defaults to allowing all names.
@@ -104,11 +112,24 @@ class Cert(VaultApiBase):
         :param mount_point:
         :type mount_point:
         """
-        try:
-            with open(certificate) as f_cert:
+        if certificate:
+            try:
+                utils.validate_pem_format("", certificate)
+                cert = certificate
+            except exceptions.ParamValidationError:
+                with open(certificate) as f_cert:
+                    warnings.warn(
+                        "Passing a certificate file path to `certificate` is deprecated and will be removed in v3.0.0;"
+                        "use `certificate_file` instead. (See https://github.com/hvac/hvac/issues/914)"
+                    )
+                    cert = f_cert.read()
+        elif certificate_file:
+            with open(certificate_file) as f_cert:
                 cert = f_cert.read()
-        except FileNotFoundError:
-            cert = certificate
+        else:
+            raise exceptions.ParamValidationError(
+                "`certificate` or `certificate_file` must be provided"
+            )
 
         params = utils.remove_nones(
             {
