@@ -5,10 +5,8 @@ from abc import ABCMeta
 logger = logging.getLogger(__name__)
 
 
-class VaultApiBase:
+class VaultApiBase(metaclass=ABCMeta):
     """Base class for API endpoints."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, adapter):
         """Default api class constructor.
