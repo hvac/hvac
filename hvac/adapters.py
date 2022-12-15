@@ -11,10 +11,8 @@ from hvac import utils
 from hvac.constants.client import DEFAULT_URL
 
 
-class Adapter:
+class Adapter(metaclass=ABCMeta):
     """Abstract base class used when constructing adapters for use with the Client class."""
-
-    __metaclass__ = ABCMeta
 
     def __init__(
         self,
