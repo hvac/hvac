@@ -285,6 +285,11 @@ class RawAdapter(Adapter):
         if self.namespace:
             headers["X-Vault-Namespace"] = self.namespace
 
+        data = {}
+        if 'ttl' in kwargs.get("params"):
+            ttl = kwargs.pop("params")["ttl"]
+            data["ttl"] = str(ttl)
+
         wrap_ttl = kwargs.pop("wrap_ttl", None)
         if wrap_ttl:
             headers["X-Vault-Wrap-TTL"] = str(wrap_ttl)
@@ -305,7 +310,8 @@ class RawAdapter(Adapter):
             url=url,
             headers=headers,
             allow_redirects=self.allow_redirects,
-            **_kwargs
+            **_kwargs,
+            data=data
         )
 
         if not response.ok and (raise_exception and not self.ignore_exceptions):
