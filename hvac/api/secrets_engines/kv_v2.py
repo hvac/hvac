@@ -100,11 +100,11 @@ class KvV2(VaultApiBase):
                 params=params,
             )
         except exceptions.InvalidPath as e:
-            if e.json is None:
-                raise
-
             try:
-                if e.json["data"]["metadata"]["deletion_time"] != "":
+                if (
+                    e.json is not None
+                    and e.json["data"]["metadata"]["deletion_time"] != ""
+                ):
                     return e.json
             except KeyError:
                 pass
