@@ -2,7 +2,6 @@
 """KvV2 methods module."""
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from requests import Response
 
 DEFAULT_MOUNT_POINT = "secret"
 
@@ -95,37 +94,10 @@ class KvV2(VaultApiBase):
         api_path = utils.format_url(
             "/v1/{mount_point}/data/{path}", mount_point=mount_point, path=path
         )
-        response = self._adapter.get(
+        return self._adapter.get(
             url=api_path,
             params=params,
-            raise_exception=False,
         )
-
-        if isinstance(response, Response):
-            errors = None
-            if response.status_code == 404:
-                try:
-                    data = response.json()
-                except Exception:
-                    pass
-                else:
-                    try:
-                        if data["data"]["metadata"]["deletion_time"] != "":
-                            return data
-                    except KeyError:
-                        pass
-
-                    errors = data.get("errors")
-
-            utils.raise_for_error(
-                response.request.method,
-                response.request.url,
-                response.status_code,
-                response.text,
-                errors=errors,
-            )
-
-        return response
 
     def create_or_update_secret(
         self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT
