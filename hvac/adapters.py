@@ -309,16 +309,31 @@ class RawAdapter(Adapter):
         )
 
         if not response.ok and (raise_exception and not self.ignore_exceptions):
-            text = errors = None
+            msg = json = text = errors = None
+            try:
+                text = response.text
+            except Exception:
+                pass
+
             if response.headers.get("Content-Type") == "application/json":
                 try:
-                    errors = response.json().get("errors")
+                    json = response.json()
                 except Exception:
                     pass
+                else:
+                    errors = json.get("errors")
+
             if errors is None:
-                text = response.text
+                msg = response.text
+
             utils.raise_for_error(
-                method, url, response.status_code, text, errors=errors
+                method,
+                url,
+                response.status_code,
+                msg,
+                errors=errors,
+                text=text,
+                json=json,
             )
 
         return response
