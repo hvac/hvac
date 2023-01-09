@@ -1,11 +1,15 @@
 class VaultError(Exception):
-    def __init__(self, message=None, errors=None, method=None, url=None):
+    def __init__(
+        self, message=None, errors=None, method=None, url=None, text=None, json=None
+    ):
         if errors:
             message = ", ".join(errors)
 
         self.errors = errors
         self.method = method
         self.url = url
+        self.text = text
+        self.json = json
 
         super().__init__(message)
 
