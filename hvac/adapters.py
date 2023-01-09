@@ -324,7 +324,7 @@ class RawAdapter(Adapter):
                     errors = json.get("errors")
 
             if errors is None:
-                msg = response.text
+                msg = text
 
             utils.raise_for_error(
                 method,
