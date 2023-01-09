@@ -107,7 +107,9 @@ class KvV2(VaultApiBase):
                 if e.json["data"]["metadata"]["deletion_time"] != "":
                     return e.json
             except KeyError:
-                raise e
+                pass
+
+            raise
 
     def create_or_update_secret(
         self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT
