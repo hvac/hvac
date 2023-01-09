@@ -94,10 +94,20 @@ class KvV2(VaultApiBase):
         api_path = utils.format_url(
             "/v1/{mount_point}/data/{path}", mount_point=mount_point, path=path
         )
-        return self._adapter.get(
-            url=api_path,
-            params=params,
-        )
+        try:
+            return self._adapter.get(
+                url=api_path,
+                params=params,
+            )
+        except exceptions.InvalidPath as e:
+            if e.json is None:
+                raise
+
+            try:
+                if e.json["data"]["metadata"]["deletion_time"] != "":
+                    return e.json
+            except KeyError:
+                raise e
 
     def create_or_update_secret(
         self, path, secret, cas=None, mount_point=DEFAULT_MOUNT_POINT
