@@ -12,6 +12,22 @@ class VaultError(Exception):
     def __str__(self):
         return f"{self.args[0]}, on {self.method} {self.url}"
 
+    @classmethod
+    def from_status(cls, status_code: int, *args, **kwargs):
+        _STATUS_EXCEPTION_MAP = {
+            400: InvalidRequest,
+            401: Unauthorized,
+            403: Forbidden,
+            404: InvalidPath,
+            429: RateLimitExceeded,
+            500: InternalServerError,
+            501: VaultNotInitialized,
+            502: BadGateway,
+            503: VaultDown,
+        }
+
+        return _STATUS_EXCEPTION_MAP.get(status_code, UnexpectedError)(*args, **kwargs)
+
 
 class InvalidRequest(VaultError):
     pass
