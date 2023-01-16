@@ -57,7 +57,7 @@ class Client:
         :param session: Optional session object to use when performing request.
         :type session: request.Session
         :param adapter: Optional class to be used for performing requests. If none is provided, defaults to
-            hvac.adapters.JSONRequest
+            hvac.adapters.JSONRequest.
         :type adapter: hvac.adapters.Adapter
         :param kwargs: Additional parameters to pass to the adapter constructor.
         :type kwargs: dict
@@ -115,11 +115,15 @@ class Client:
 
     @property
     def adapter(self):
+        """Adapter for all client's connections."""
         return self._adapter
 
     @adapter.setter
     def adapter(self, adapter):
         self._adapter = adapter
+        self._auth.adapter = adapter
+        self._secrets.adapter = adapter
+        self._sys.adapter = adapter
 
     @property
     def url(self):
