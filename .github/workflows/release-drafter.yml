@@ -13,7 +13,7 @@ jobs:
   update_release_draft:
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Run release-drafter action
         id: release-drafter

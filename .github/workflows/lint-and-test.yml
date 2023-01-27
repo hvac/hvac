@@ -13,7 +13,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version:
@@ -55,7 +55,7 @@ jobs:
 
   docs-tests:
     name: Documentation Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
@@ -107,7 +107,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version:
@@ -157,7 +157,7 @@ jobs:
 
   integration-tests:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version:
@@ -232,7 +232,7 @@ jobs:
 
   upload-to-codecov:
     name: Upload to Codecov
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs:
       - unit-tests
       - integration-tests
