@@ -9,7 +9,7 @@ Wrapping
 Unwrap
 ------
 
-.. automethod:: hvac.api.system_backend.Wrapping.is_sealed
+.. automethod:: hvac.api.system_backend.Wrapping.unwrap
    :noindex:
 
 Examples
