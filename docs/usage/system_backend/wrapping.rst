@@ -8,10 +8,8 @@ Wrapping
 
 Unwrap
 ------
-Is Sealed
----------
 
-.. automethod:: hvac.api.system_backend.Seal.is_sealed
+.. automethod:: hvac.api.system_backend.Wrapping.is_sealed
    :noindex:
 
 Examples
@@ -47,10 +45,18 @@ Examples
     import hvac
 
     client = hvac.Client(url='https://127.0.0.1:8200')
-    client.token = "s.xxxxxxxxxxxxxxxxxxxxxx"
+    client.write(
+        path="auth/approle-test/role/testrole",
+    )
+    result = client.write(
+        path='auth/approle-test/role/testrole/secret-id',
+        wrap_ttl="10s",
+    )
+
+    unwrapping_client = hvac.Client(url='https://127.0.0.1:8200', token=result)
 
     # Do not pass the token to unwrap when authenticating with the wrapping token
-    unwrap_response = client.sys.unwrap()
+    unwrap_response = unwrapping_client.sys.unwrap()
     print('Unwrapped approle role token secret id accessor: "%s"' % unwrap_response['data']['secret_id_accessor'])
 
 Example output:
