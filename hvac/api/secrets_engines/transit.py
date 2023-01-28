@@ -67,13 +67,8 @@ class Transit(VaultApiBase):
                 "derived must be set to True when convergent_encryption is True"
             )
         if key_type is not None and key_type not in transit_constants.ALLOWED_KEY_TYPES:
-            error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=key_type,
-                    allowed_types=", ".join(transit_constants.ALLOWED_KEY_TYPES),
-                )
-            )
+            error_msg = f'invalid key_type argument provided "{key_type}", supported types: "{", ".join(transit_constants.ALLOWED_KEY_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "convergent_encryption": convergent_encryption,
@@ -284,13 +279,8 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         if key_type not in transit_constants.ALLOWED_EXPORT_KEY_TYPES:
-            error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=key_type,
-                    allowed_types=", ".join(transit_constants.ALLOWED_EXPORT_KEY_TYPES),
-                )
-            )
+            error_msg = f'invalid key_type argument provided "{key_type}", supported types: "{", ".join(transit_constants.ALLOWED_EXPORT_KEY_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         api_path = utils.format_url(
             "/v1/{mount_point}/export/{key_type}/{name}",
             mount_point=mount_point,
@@ -545,23 +535,11 @@ class Transit(VaultApiBase):
         :rtype: dict
         """
         if key_type not in transit_constants.ALLOWED_DATA_KEY_TYPES:
-            error_msg = 'invalid key_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=key_type,
-                    allowed_types=", ".join(transit_constants.ALLOWED_DATA_KEY_TYPES),
-                )
-            )
+            error_msg = f'invalid key_type argument provided "{key_type}", supported types: "{", ".join(transit_constants.ALLOWED_DATA_KEY_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if bits is not None and bits not in transit_constants.ALLOWED_DATA_KEY_BITS:
-            error_msg = 'invalid bits argument provided "{arg}", supported values: "{allowed_values}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=bits,
-                    allowed_values=", ".join(
-                        [str(b) for b in transit_constants.ALLOWED_DATA_KEY_BITS]
-                    ),
-                )
-            )
+            error_msg = f'invalid bits argument provided "{bits}", supported values: "{", ".join([str(b) for b in transit_constants.ALLOWED_DATA_KEY_BITS])}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "context": context,
@@ -638,28 +616,14 @@ class Transit(VaultApiBase):
             algorithm is not None
             and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
         ):
-            error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid algorithm argument provided "{algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             output_format is not None
             and output_format not in transit_constants.ALLOWED_HASH_DATA_FORMATS
         ):
-            error_msg = 'invalid output_format argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=output_format,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_HASH_DATA_FORMATS
-                    ),
-                )
-            )
+            error_msg = f'invalid output_format argument provided "{output_format}", supported types: "{", ".join(transit_constants.ALLOWED_HASH_DATA_FORMATS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "input": hash_input,
         }
@@ -713,15 +677,8 @@ class Transit(VaultApiBase):
             algorithm is not None
             and algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
         ):
-            error_msg = 'invalid algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid algorithm argument provided "{algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "input": hash_input,
         }
@@ -804,54 +761,28 @@ class Transit(VaultApiBase):
             hash_algorithm is not None
             and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
         ):
-            error_msg = 'invalid hash_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=hash_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid hash_algorithm argument provided "{hash_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             signature_algorithm is not None
             and signature_algorithm
             not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
         ):
-            error_msg = 'invalid signature_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=signature_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid signature_algorithm argument provided "{signature_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_SIGNATURE_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             marshaling_algorithm is not None
             and marshaling_algorithm
             not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS
         ):
-            error_msg = 'invalid marshaling_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=marshaling_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_MARSHALING_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid marshaling_algorithm argument provided "{marshaling_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_MARSHALING_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             salt_length is not None
             and not transit_constants.ALLOWED_SALT_LENGTHS.fullmatch(salt_length)
         ):
-            error_msg = 'invalid salt_length argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=salt_length,
-                    allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
-                )
-            )
+            error_msg = f'invalid salt_length argument provided "{salt_length}", supported types: "{transit_constants.ALLOWED_SALT_LENGTHS.pattern}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "input": hash_input,
         }
@@ -942,54 +873,28 @@ class Transit(VaultApiBase):
             hash_algorithm is not None
             and hash_algorithm not in transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
         ):
-            error_msg = 'invalid hash_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=hash_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_HASH_DATA_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid hash_algorithm argument provided "{hash_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_HASH_DATA_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             signature_algorithm is not None
             and signature_algorithm
             not in transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
         ):
-            error_msg = 'invalid signature_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=signature_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_SIGNATURE_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid signature_algorithm argument provided "{signature_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_SIGNATURE_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             marshaling_algorithm is not None
             and marshaling_algorithm
             not in transit_constants.ALLOWED_MARSHALING_ALGORITHMS
         ):
-            error_msg = 'invalid marshaling_algorithm argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=marshaling_algorithm,
-                    allowed_types=", ".join(
-                        transit_constants.ALLOWED_MARSHALING_ALGORITHMS
-                    ),
-                )
-            )
+            error_msg = f'invalid marshaling_algorithm argument provided "{marshaling_algorithm}", supported types: "{", ".join(transit_constants.ALLOWED_MARSHALING_ALGORITHMS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if (
             salt_length is not None
             and not transit_constants.ALLOWED_SALT_LENGTHS.fullmatch(salt_length)
         ):
-            error_msg = 'invalid salt_length argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=salt_length,
-                    allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
-                )
-            )
+            error_msg = f'invalid salt_length argument provided "{salt_length}", supported types: "{transit_constants.ALLOWED_SALT_LENGTHS.pattern}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "name": name,
             "input": hash_input,

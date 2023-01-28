@@ -104,13 +104,8 @@ class Github(VaultApiBase):
         if not isinstance(policies, list) or not all(
             isinstance(p, str) for p in policies
         ):
-            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=policies,
-                    arg_type=type(policies),
-                )
-            )
+            error_msg = f'unsupported policies argument provided "{policies}" ({type(policies)}), required type: List[str]"'
+            raise exceptions.ParamValidationError(error_msg)
         # Then, perform request.
         params = {
             "value": ",".join(policies),
@@ -168,13 +163,8 @@ class Github(VaultApiBase):
         if not isinstance(policies, list) or not all(
             isinstance(p, str) for p in policies
         ):
-            error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: List[str]"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=policies,
-                    arg_type=type(policies),
-                )
-            )
+            error_msg = f'unsupported policies argument provided "{policies}" ({type(policies)}), required type: List[str]"'
+            raise exceptions.ParamValidationError(error_msg)
 
         # Then, perform request.
         params = {

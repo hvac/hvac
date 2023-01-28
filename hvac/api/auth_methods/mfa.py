@@ -46,13 +46,8 @@ class Mfa(VaultApiBase):
         if mfa_type != "duo" and not force:
             # The situation described via this exception is not likely to change in the future.
             # However we provided that flexibility here just in case.
-            error_msg = 'Unsupported mfa_type argument provided "{arg}", supported types: "{mfa_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    mfa_types=",".join(SUPPORTED_MFA_TYPES),
-                    arg=mfa_type,
-                )
-            )
+            error_msg = f'Unsupported mfa_type argument provided "{mfa_type}", supported types: "{",".join(SUPPORTED_MFA_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "type": mfa_type,
         }

@@ -85,13 +85,8 @@ class AppRole(VaultApiBase):
         }
 
         if token_type is not None and token_type not in ALLOWED_TOKEN_TYPES:
-            error_msg = 'unsupported token_type argument provided "{arg}", supported types: "{token_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=token_type,
-                    token_types=",".join(ALLOWED_TOKEN_TYPES),
-                )
-            )
+            error_msg = f'unsupported token_type argument provided "{token_type}", supported types: "{",".join(ALLOWED_TOKEN_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
 
         params = dict()
 
@@ -259,13 +254,8 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
 
         params = {"metadata": json.dumps(metadata) if metadata else metadata}
 
@@ -319,13 +309,8 @@ class AppRole(VaultApiBase):
         :rtype: dict
         """
         if metadata is not None and not isinstance(metadata, dict):
-            error_msg = 'unsupported metadata argument provided "{arg}" ({arg_type}), required type: dict"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=metadata,
-                    arg_type=type(metadata),
-                )
-            )
+            error_msg = f'unsupported metadata argument provided "{metadata}" ({type(metadata)}), required type: dict"'
+            raise exceptions.ParamValidationError(error_msg)
 
         params = {"secret_id": secret_id, "metadata": metadata}
 

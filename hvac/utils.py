@@ -236,14 +236,8 @@ def validate_list_of_strings_param(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(
         isinstance(p, str) for p in param_argument
     ):
-        error_msg = 'unsupported {param} argument provided "{arg}" ({arg_type}), required type: List[str]'
-        raise exceptions.ParamValidationError(
-            error_msg.format(
-                param=param_name,
-                arg=param_argument,
-                arg_type=type(param_argument),
-            )
-        )
+        error_msg = f'unsupported {param_name} argument provided "{param_argument}" ({type(param_argument)}), required type: List[str]'
+        raise exceptions.ParamValidationError(error_msg)
 
 
 def list_to_comma_delimited(list_param):
@@ -319,10 +313,8 @@ def validate_pem_format(param_name, param_argument):
     if not isinstance(param_argument, list) or not all(
         _check_pem(p) for p in param_argument
     ):
-        error_msg = (
-            "unsupported {param} public key / certificate format, required type: PEM"
-        )
-        raise exceptions.ParamValidationError(error_msg.format(param=param_name))
+        error_msg = f"unsupported {param_name} public key / certificate format, required type: PEM"
+        raise exceptions.ParamValidationError(error_msg)
 
 
 def remove_nones(params):

@@ -217,13 +217,8 @@ class Aws(VaultApiBase):
         :rtype: requests.Response
         """
         if credential_type not in ALLOWED_CREDS_TYPES:
-            error_msg = 'invalid credential_type argument provided "{arg}", supported types: "{allowed_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=credential_type,
-                    allowed_types=", ".join(ALLOWED_CREDS_TYPES),
-                )
-            )
+            error_msg = f'invalid credential_type argument provided "{credential_type}", supported types: "{", ".join(ALLOWED_CREDS_TYPES)}"'
+            raise exceptions.ParamValidationError(error_msg)
         if isinstance(policy_document, dict):
             policy_document = json.dumps(policy_document, indent=4, sort_keys=True)
 
@@ -364,13 +359,8 @@ class Aws(VaultApiBase):
         :rtype: dict
         """
         if endpoint not in ALLOWED_CREDS_ENDPOINTS:
-            error_msg = 'invalid endpoint argument provided "{arg}", supported types: "{allowed_endpoints}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=endpoint,
-                    allowed_endpoints=", ".join(ALLOWED_CREDS_ENDPOINTS),
-                )
-            )
+            error_msg = f'invalid endpoint argument provided "{endpoint}", supported types: "{", ".join(ALLOWED_CREDS_ENDPOINTS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "name": name,
         }

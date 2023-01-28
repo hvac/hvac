@@ -50,13 +50,8 @@ class Azure(VaultApiBase):
         :rtype: requests.Response
         """
         if environment is not None and environment not in VALID_ENVIRONMENTS:
-            error_msg = 'invalid environment argument provided: "{arg}"; supported environments: "{environments}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=environment,
-                    environments=",".join(VALID_ENVIRONMENTS),
-                )
-            )
+            error_msg = f'invalid environment argument provided: "{environment}"; supported environments: "{",".join(VALID_ENVIRONMENTS)}"'
+            raise exceptions.ParamValidationError(error_msg)
         params = {
             "tenant_id": tenant_id,
             "resource": resource,
@@ -179,13 +174,8 @@ class Azure(VaultApiBase):
                     and all(isinstance(p, str) for p in policies)
                 )
             ):
-                error_msg = 'unsupported policies argument provided "{arg}" ({arg_type}), required type: str or List[str]"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        arg=policies,
-                        arg_type=type(policies),
-                    )
-                )
+                error_msg = f'unsupported policies argument provided "{policies}" ({type(policies)}), required type: str or List[str]"'
+                raise exceptions.ParamValidationError(error_msg)
         params = utils.remove_nones(
             {
                 "policies": policies,
