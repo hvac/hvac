@@ -93,8 +93,10 @@ class TestKv2:
 
                 if raise_on_del is None:
                     assert w.call_count == 1
-                    assert "category" in w.mock_calls[0].kwargs
-                    assert w.mock_calls[0].kwargs["category"] == DeprecationWarning
+                    assert "category" in w.call_args[1]
+                    assert w.call_args[1]["category"] == DeprecationWarning
+                    # TODO: in py3.8+: assert "category" in w.call_args.kwargs
+                    # TODO: in py3.8+: assert w.call_args.kwargs["category"] == DeprecationWarning
                 else:
                     assert w.assert_not_called
 
