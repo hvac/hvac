@@ -134,11 +134,10 @@ class TestRawAdapter:
             mock.Mock(url=url), status_code=code, content=bytes, headers=headers
         )
 
-        # if json_get is not None and issubclass(json_get, Exception):
         resp.json = mock.Mock(wraps=resp.json, side_effect=json_get)
 
-        # mock_text =
-        # mock.patch.object(resp, 'text.getter', mock.Mock(wraps=resp.text.fget, side_effect=text_get))
+        mock_text = mock.PropertyMock(wraps=resp.text, side_effect=text_get)
+        mock.patch.object(resp, 'text', new=mock_text)
 
         text = errors = json = None
 
