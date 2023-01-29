@@ -137,7 +137,7 @@ class TestRawAdapter:
         resp.json = mock.Mock(wraps=resp.json, side_effect=json_get)
 
         mock_text = mock.PropertyMock(wraps=resp.text, side_effect=text_get)
-        mock.patch.object(resp, 'text', new=mock_text)
+        mock.patch.object(resp, "text", new=mock_text)
 
         text = errors = json = None
 
