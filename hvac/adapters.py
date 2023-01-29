@@ -237,6 +237,34 @@ class RawAdapter(Adapter):
     but always returns Response objects for requests.
     """
 
+    def _raise_for_error(self, method: str, url: str, response: requests.Response):
+        msg = json = text = errors = None
+        try:
+            text = response.text
+        except Exception:
+            pass
+
+        if response.headers.get("Content-Type") == "application/json":
+            try:
+                json = response.json()
+            except Exception:
+                pass
+            else:
+                errors = json.get("errors")
+
+        if errors is None:
+            msg = text
+
+        utils.raise_for_error(
+            method,
+            url,
+            response.status_code,
+            msg,
+            errors=errors,
+            text=text,
+            json=json,
+        )
+
     def get_login_token(self, response):
         """Extracts the client token from a login response.
 
@@ -309,32 +337,7 @@ class RawAdapter(Adapter):
         )
 
         if not response.ok and (raise_exception and not self.ignore_exceptions):
-            msg = json = text = errors = None
-            try:
-                text = response.text
-            except Exception:
-                pass
-
-            if response.headers.get("Content-Type") == "application/json":
-                try:
-                    json = response.json()
-                except Exception:
-                    pass
-                else:
-                    errors = json.get("errors")
-
-            if errors is None:
-                msg = text
-
-            utils.raise_for_error(
-                method,
-                url,
-                response.status_code,
-                msg,
-                errors=errors,
-                text=text,
-                json=json,
-            )
+            self._raise_for_error(method, url, response)
 
         return response
 
