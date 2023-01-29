@@ -275,12 +275,22 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                 self.assertEqual(first=v, second=read_secret_result["data"]["data"][k])
 
     @parameterized.expand(
-        [
+        (
+            combo[0],
+            combo[1],
+            combo[2],
+            dict(enumerate(combo)).get(3, None),
+            raise_on_del,
+            recoverable,
+        )
+        for combo in [
             ("successful delete one version written", "hvac", 1),
             ("successful delete two versions written", "hvac", 2),
             ("successful delete three versions written", "hvac", 3),
             ("nonexistent path", "no-secret-here", 0, exceptions.InvalidPath),
         ]
+        for raise_on_del in [True, False]
+        for recoverable in [True, False]
     )
     def test_delete_latest_version_of_secret(
         self,
@@ -288,6 +298,8 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         path,
         write_secret_before_test,
         raises=None,
+        raise_on_del=False,
+        recoverable=None,
         exception_message="",
     ):
         if write_secret_before_test:
@@ -345,24 +357,39 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
                     ],
                     second="",
                 )
-            read_secret_version_result = self.client.secrets.kv.v2.read_secret_version(
-                path=path,
-                mount_point=self.DEFAULT_MOUNT_POINT,
-            )
-            logging.debug("read_secret_version_result: %s" % read_secret_version_result)
-            self.assertEqual(
-                first=read_secret_version_result["data"]["data"],
-                second=None,
-            )
-            self.assertNotEqual(
-                first=read_secret_version_result["data"]["metadata"]["deletion_time"],
-                second="",
-            )
-            self.assertEqual(
-                first=read_secret_version_result["data"]["metadata"]["version"],
-                second=write_secret_before_test,
-                msg=repr(read_secret_version_result),
-            )
+
+            should_raise = raise_on_del or not recoverable
+
+            try:
+                read_secret_version_result = (
+                    self.client.secrets.kv.v2.read_secret_version(
+                        path=path,
+                        mount_point=self.DEFAULT_MOUNT_POINT,
+                        raise_on_deleted_version=raise_on_del,
+                    )
+                )
+            except exceptions.InvalidPath:
+                if not should_raise:
+                    raise
+            else:
+                logging.debug(
+                    "read_secret_version_result: %s" % read_secret_version_result
+                )
+                self.assertEqual(
+                    first=read_secret_version_result["data"]["data"],
+                    second=None,
+                )
+                self.assertNotEqual(
+                    first=read_secret_version_result["data"]["metadata"][
+                        "deletion_time"
+                    ],
+                    second="",
+                )
+                self.assertEqual(
+                    first=read_secret_version_result["data"]["metadata"]["version"],
+                    second=write_secret_before_test,
+                    msg=repr(read_secret_version_result),
+                )
 
     @parameterized.expand(
         [
