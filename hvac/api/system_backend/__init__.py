@@ -75,9 +75,3 @@ class SystemBackend(
         Wrapping,
     ]
     unimplemented_classes = []
-
-    def __init__(self, adapter):
-        self._adapter = adapter
-
-    def __getattr__(self, item):
-        raise AttributeError
