@@ -57,6 +57,19 @@ You then use hvac's Client.session and requests.Session() to pass the new CA bun
 
 .. _documented in the advanced usage section for requests: https://requests.readthedocs.io/en/master/user/advanced/#ssl-cert-verification
 
+If only using the certificate authority for trust, not authentication, SSL verification can be set using the `verify` parameter.
+
+This configures the client to trust the connection only if the certificate recieved is signed by a CA in that bundle:
+
+.. code:: python
+
+	vault_client = hvac.Client(
+		url=vault_url,
+		verify='/etc/ssl/my-ca-bundle'
+	)
+
+.. _documented in the advanced usage section for requests: https://requests.readthedocs.io/en/master/user/advanced/#ssl-cert-verification
+
 Custom Requests / HTTP Adapter
 ------------------------------
 
