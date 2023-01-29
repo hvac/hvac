@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 """KvV2 methods module."""
+
+import warnings
+
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
 
@@ -69,10 +72,22 @@ class KvV2(VaultApiBase):
         )
         return self._adapter.get(url=api_path)
 
-    def read_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
-        return self.read_secret_version(path, mount_point=mount_point)
+    def read_secret(
+        self, path, mount_point=DEFAULT_MOUNT_POINT, raise_on_deleted_version=None
+    ):
+        return self.read_secret_version(
+            path,
+            mount_point=mount_point,
+            raise_on_deleted_version=raise_on_deleted_version,
+        )
 
-    def read_secret_version(self, path, version=None, mount_point=DEFAULT_MOUNT_POINT):
+    def read_secret_version(
+        self,
+        path,
+        version=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+        raise_on_deleted_version=None,
+    ):
         """Retrieve the secret at the specified location.
 
         Supported methods:
@@ -88,6 +103,21 @@ class KvV2(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
+
+        if raise_on_deleted_version is None:
+            msg = (
+                "The raise_on_deleted parameter will change its default value to False in hvac v3.0.0. "
+                "The current default of True will presere previous behavior. "
+                "To use the old behavior with no warning, explicitly set this value to True. "
+                "See https://github.com/hvac/hvac/pull/907"
+            )
+            warnings.warn(
+                message=msg,
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            raise_on_deleted_version = True
+
         params = {}
         if version is not None:
             params["version"] = version
@@ -100,14 +130,15 @@ class KvV2(VaultApiBase):
                 params=params,
             )
         except exceptions.InvalidPath as e:
-            try:
-                if (
-                    e.json is not None
-                    and e.json["data"]["metadata"]["deletion_time"] != ""
-                ):
-                    return e.json
-            except KeyError:
-                pass
+            if not raise_on_deleted_version:
+                try:
+                    if (
+                        e.json is not None
+                        and e.json["data"]["metadata"]["deletion_time"] != ""
+                    ):
+                        return e.json
+                except KeyError:
+                    pass
 
             raise
 
