@@ -375,7 +375,7 @@ class Client:
         :return:
         :rtype:
 
-        For calls expecting to hit the renew-self endpoint please use the "renew_self_token" method instead
+        For calls expecting to hit the renew-self endpoint please use the "renew_self" method on "hvac_client.auth.token" instead
         """
         params = {
             "increment": increment,
