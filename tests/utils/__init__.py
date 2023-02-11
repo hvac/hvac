@@ -8,10 +8,10 @@ import re
 import socket
 import subprocess
 from distutils.spawn import find_executable
-from packaging.version import Version
-from unittest import SkipTest
+from unittest import SkipTest, mock
 
 from hvac import Client
+from packaging.version import Version
 
 logger = logging.getLogger(__name__)
 
@@ -79,26 +79,40 @@ def get_generate_root_otp():
     return test_otp
 
 
-def create_client(url="https://localhost:8200", **kwargs):
+def create_client(url="https://localhost:8200", use_env=False, **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
     :param url: Vault address to configure the client with.
     :type url: str
+    :param use_env: configure vault using environment variable
+    :type use_env: bool
     :param kwargs: Dictionary of additional keyword arguments to pass through to the Client instance being created.
     :type kwargs: dict
     :return: Instantiated :py:class:`hvac.v1.Client` class.
     :rtype: hvac.v1.Client
     """
+
     client_cert_path = get_config_file_path("client-cert.pem")
     client_key_path = get_config_file_path("client-key.pem")
     server_cert_path = get_config_file_path("server-cert.pem")
-
-    return Client(
-        url=url,
-        cert=(client_cert_path, client_key_path),
-        verify=server_cert_path,
-        **kwargs,
-    )
+    if use_env:
+        with (
+            mock.patch("hvac.v1.VAULT_CAPATH", server_cert_path),
+            mock.patch("hvac.v1.VAULT_CLIENT_CERT", client_cert_path),
+            mock.patch("hvac.v1.VAULT_CLIENT_KEY", client_key_path),
+        ):
+            client = Client(
+                url=url,
+                **kwargs,
+            )
+    else:
+        client = Client(
+            url=url,
+            cert=(client_cert_path, client_key_path),
+            verify=server_cert_path,
+            **kwargs,
+        )
+    return client
 
 
 def get_free_port():

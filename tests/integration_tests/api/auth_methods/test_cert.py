@@ -153,3 +153,6 @@ class TestCert(HvacIntegrationTestCase, TestCase):
                 self.cert[1],
             ):
                 self.assertIsInstance(response, dict)
+
+class TestCertEnv(TestCert):
+    use_env=True
