@@ -49,6 +49,7 @@ def is_enterprise():
 
 def if_vault_version(supported_version, comparison=operator.lt):
     current_version = get_installed_vault_version()
+    print(current_version)
     return comparison(Version(current_version), Version(supported_version))
 
 
@@ -96,15 +97,13 @@ def create_client(url="https://localhost:8200", use_env=False, **kwargs):
     client_key_path = get_config_file_path("client-key.pem")
     server_cert_path = get_config_file_path("server-cert.pem")
     if use_env:
-        with (
-            mock.patch("hvac.v1.VAULT_CAPATH", server_cert_path),
-            mock.patch("hvac.v1.VAULT_CLIENT_CERT", client_cert_path),
-            mock.patch("hvac.v1.VAULT_CLIENT_KEY", client_key_path),
-        ):
-            client = Client(
-                url=url,
-                **kwargs,
-            )
+        with mock.patch("hvac.v1.VAULT_CAPATH", server_cert_path):
+            with mock.patch("hvac.v1.VAULT_CLIENT_CERT", client_cert_path):
+                with mock.patch("hvac.v1.VAULT_CLIENT_KEY", client_key_path):
+                    client = Client(
+                        url=url,
+                        **kwargs,
+                    )
     else:
         client = Client(
             url=url,
