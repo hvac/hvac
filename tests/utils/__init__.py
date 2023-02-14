@@ -49,7 +49,6 @@ def is_enterprise():
 
 def if_vault_version(supported_version, comparison=operator.lt):
     current_version = get_installed_vault_version()
-    print(current_version)
     return comparison(Version(current_version), Version(supported_version))
 
 

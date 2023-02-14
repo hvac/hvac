@@ -17,7 +17,7 @@ class HvacIntegrationTestCase:
     client = None
     mock_warnings = None
     enable_vault_ha = False
-    use_env = True
+    use_env = False
 
     @classmethod
     def setUpClass(cls):
