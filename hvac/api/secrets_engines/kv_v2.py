@@ -357,9 +357,9 @@ class KvV2(VaultApiBase):
         path,
         max_versions=None,
         cas_required=None,
-        custom_metadata=None,
         delete_version_after="0s",
         mount_point=DEFAULT_MOUNT_POINT,
+        custom_metadata=None,
     ):
         """Updates the max_versions of cas_required setting on an existing path.
 
@@ -376,13 +376,13 @@ class KvV2(VaultApiBase):
         :param cas_required: If true the key will require the cas parameter to be set on all write requests. If false,
             the backend's configuration will be used.
         :type cas_required: bool
-        :param custom_metadata: A dictionary of key/value metadata to describe the secret.
-        :type custom_metadata: dict
         :param delete_version_after: Specifies the length of time before a version is deleted. Accepts Go duration format string.
             Defaults to "0s" (i.e., disabled).
         :type delete_version_after: str
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
+        :param custom_metadata: A dictionary of key/value metadata to describe the secret. Requires Vault 1.9.0 or greater.
+        :type custom_metadata: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
