@@ -251,12 +251,19 @@ class TestAppRole(TestCase):
         [
             ("default mount point", DEFAULT_MOUNT_POINT, None, None),
             ("metadata as dict", DEFAULT_MOUNT_POINT, None, {"a": "val1", "b": "two"}),
-            ("invalid metadata", DEFAULT_MOUNT_POINT, exceptions.ParamValidationError, "bad metadata"),
+            (
+                "invalid metadata",
+                DEFAULT_MOUNT_POINT,
+                exceptions.ParamValidationError,
+                "bad metadata",
+            ),
             ("custom mount point", "approle-test", None, None),
         ]
     )
     @requests_mock.Mocker()
-    def test_generate_secret_id(self, test_label, mount_point, raises, metadata, requests_mocker):
+    def test_generate_secret_id(
+        self, test_label, mount_point, raises, metadata, requests_mocker
+    ):
         expected_status_code = 200
         role_name = "testrole"
 
@@ -300,7 +307,10 @@ class TestAppRole(TestCase):
 
         else:
             response = app_role.generate_secret_id(
-                role_name=role_name, cidr_list=["127.0.0.1/32"], mount_point=mount_point, metadata=metadata
+                role_name=role_name,
+                cidr_list=["127.0.0.1/32"],
+                mount_point=mount_point,
+                metadata=metadata,
             )
 
             self.assertEqual(first=mock_response, second=response)
@@ -312,7 +322,12 @@ class TestAppRole(TestCase):
         [
             ("default mount point", DEFAULT_MOUNT_POINT, None, None),
             ("metadata as dict", DEFAULT_MOUNT_POINT, None, {"a": "val1", "b": "two"}),
-            ("invalid metadata", DEFAULT_MOUNT_POINT, exceptions.ParamValidationError, "bad metadata"),
+            (
+                "invalid metadata",
+                DEFAULT_MOUNT_POINT,
+                exceptions.ParamValidationError,
+                "bad metadata",
+            ),
             ("custom mount point", "approle-test", None, None),
         ]
     )
