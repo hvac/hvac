@@ -102,16 +102,17 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("good request", None),
-            ("bad metadata option", exceptions.ParamValidationError),
+            ("good request, no metadata", None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}),
+            ("bad metadata option", exceptions.ParamValidationError, "bad"),
         ]
     )
-    def test_generate_secret_id(self, test_label, raises):
+    def test_generate_secret_id(self, test_label, raises, metadata):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.generate_secret_id(
                     role_name=self.TEST_ROLE_NAME,
-                    metadata="metadata string",
+                    metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -122,23 +123,25 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 role_name=self.TEST_ROLE_NAME,
                 cidr_list=["127.0.0.1/32"],
                 mount_point=self.TEST_MOUNT_POINT,
+                metadata=metadata,
             )
             self.assertIn(member="secret_id", container=response["data"])
 
     @parameterized.expand(
         [
-            ("good request", None),
-            ("bad metadata option", exceptions.ParamValidationError),
+            ("good request, no metadata", None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}),
+            ("bad metadata option", exceptions.ParamValidationError, "bad"),
         ]
     )
-    def test_create_custom_secret_id(self, test_label, raises):
+    def test_create_custom_secret_id(self, test_label, raises, metadata):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.create_custom_secret_id(
                     role_name=self.TEST_ROLE_NAME,
                     secret_id=self.TEST_SECRET_ID,
                     cidr_list=["127.0.0.1/32"],
-                    metadata="metadata string",
+                    metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -150,6 +153,7 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 secret_id=self.TEST_SECRET_ID,
                 cidr_list=["127.0.0.1/32"],
                 mount_point=self.TEST_MOUNT_POINT,
+                metadata=metadata,
             )
 
             self.assertEqual(
