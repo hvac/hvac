@@ -359,6 +359,7 @@ class KvV2(VaultApiBase):
         cas_required=None,
         delete_version_after="0s",
         mount_point=DEFAULT_MOUNT_POINT,
+        custom_metadata=None,
     ):
         """Updates the max_versions of cas_required setting on an existing path.
 
@@ -380,6 +381,8 @@ class KvV2(VaultApiBase):
         :type delete_version_after: str
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
+        :param custom_metadata: A dictionary of key/value metadata to describe the secret. Requires Vault 1.9.0 or greater.
+        :type custom_metadata: dict
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -397,6 +400,15 @@ class KvV2(VaultApiBase):
                 )
                 raise exceptions.ParamValidationError(error_msg)
             params["cas_required"] = cas_required
+        if custom_metadata is not None:
+            if not isinstance(custom_metadata, dict):
+                error_msg = (
+                    "dict expected for custom_metadata param, {type} received".format(
+                        type=type(custom_metadata)
+                    )
+                )
+                raise exceptions.ParamValidationError(error_msg)
+            params["custom_metadata"] = custom_metadata
         api_path = utils.format_url(
             "/v1/{mount_point}/metadata/{path}", mount_point=mount_point, path=path
         )
