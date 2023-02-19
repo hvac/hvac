@@ -810,6 +810,9 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         raises=None,
         exception_message="",
     ):
+        if test_label == "update custom_medata" and utils.vault_version_lt("1.9.0"):
+            self.skipTest("custom_metadata support added in Vault 1.9.0")
+
         if write_secret_before_test:
             test_secret = {
                 "pssst": "hi itsame hvac",
