@@ -44,7 +44,6 @@ class Cert(VaultApiBase):
         Supported methods:
             POST:	/auth/<mount point>/certs/:name. Produces: 204 (empty body)
 
-        »Parameters
         :param name: The name of the certificate role.
         :type name: str
         :param certificate: The PEM-format CA certificate. Either certificate or certificate_file is required.
