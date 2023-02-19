@@ -331,20 +331,20 @@ Set "delete_version_after" value to 30 minutes for all new versions written to t
         delete_version_after="30m",
     )
 
-Describe the secret with custom metadata values in "custom_metadata":
+Describe the secret with custom metadata values in ``custom_metadata`` (Vault >= 1.9.0):
 
 .. code:: python
 
-   import hvac
-   client = hvac.Client()
+    import hvac
+    client = hvac.Client()
 
-   clients.secrets.kv.v2.update_metadata(
+    clients.secrets.kv.v2.update_metadata(
         path='hvac',
         custom_metadata={
             "type": "api-token",
             "color": "blue",
         },
-   )
+    )
 
 
 Delete Metadata and All Versions
