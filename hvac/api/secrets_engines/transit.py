@@ -22,6 +22,7 @@ class Transit(VaultApiBase):
         allow_plaintext_backup=None,
         key_type=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        auto_rotate_period=None,
     ):
         """Create a new named encryption key of the specified type.
 
@@ -59,6 +60,8 @@ class Transit(VaultApiBase):
         :type key_type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param auto_rotate_period: The period at which this key should be rotated automatically. Requires Vault 1.10.x or higher.
+        :type auto_rotate_period: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -81,6 +84,7 @@ class Transit(VaultApiBase):
                 "exportable": exportable,
                 "allow_plaintext_backup": allow_plaintext_backup,
                 "type": key_type,
+                "auto_rotate_period": auto_rotate_period,
             }
         )
         api_path = utils.format_url(
@@ -171,6 +175,7 @@ class Transit(VaultApiBase):
         exportable=None,
         allow_plaintext_backup=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        auto_rotate_period=None,
     ):
         """Tune configuration values for a given key.
 
@@ -201,6 +206,8 @@ class Transit(VaultApiBase):
         :type allow_plaintext_backup: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param auto_rotate_period: The period at which this key should be rotated automatically. Requires Vault 1.10.x or higher.
+        :type auto_rotate_period: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -219,6 +226,7 @@ class Transit(VaultApiBase):
                 "deletion_allowed": deletion_allowed,
                 "exportable": exportable,
                 "allow_plaintext_backup": allow_plaintext_backup,
+                "auto_rotate_period": auto_rotate_period,
             }
         )
         api_path = utils.format_url(
