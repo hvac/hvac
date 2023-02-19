@@ -73,11 +73,66 @@ This configures the client to trust the connection only if the certificate recie
 Custom Requests / HTTP Adapter
 ------------------------------
 
+Custom Adapters
+***************
+
 .. versionadded:: 0.6.2
 
 Calls to the `requests module`_. (which provides the methods hvac utilizes to send HTTP/HTTPS request to Vault instances) were extracted from the :class:`Client <hvac.v1.Client>` class and moved to a newly added :meth:`hvac.adapters` module. The :class:`Client <hvac.v1.Client>` class itself defaults to an instance of the :class:`JSONAdapter <hvac.adapters.JSONAdapter>` class for its :attr:`_adapter <hvac.v1.Client._adapter>` private attribute attribute if no adapter argument is provided to its :meth:`constructor <hvac.v1.Client.__init__>`. This attribute provides an avenue for modifying the manner in which hvac completes request. To enable this type of customization, implement a class of type :meth:`hvac.adapters.Adapter`, override its abstract methods, and pass this custom class to the adapter argument of the :meth:`Client constructor <hvac.v1.Client.__init__>`
 
 .. _requests module: http://requests.readthedocs.io/en/master/
+
+Retrying Failed Requests
+************************
+
+Requests to Vault, like any other HTTP request, should be thoughtfully retried for the best experience. For Vault, this is also important for eventual consistency, where Vault will return status ``412`` `when it cannot complete a request due to data that is not yet available on the node where the request was made <https://developer.hashicorp.com/vault/api-docs#412>`_.
+
+We usually also want to retry ``5xx`` status codes.
+
+The ``hvac`` :class:`Client <hvac.v1.Client>` class supports providing a custom ``Session`` object to its constructor, and through the use of the ``urllib3.util.Retry`` `class <https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry>`_ we can fully configure how retries are performed.
+
+.. code:: python
+
+	from hvac import Client
+	from urllib3.util import Retry
+	from requests import Session
+	from requests.adapters import HTTPAdapter
+
+	adapter = HTTPAdapter(max_retries=Retry(
+		total=3,
+		backoff_factor=0.1,
+		status_forcelist=[412, 500, 502, 503],
+		raise_on_status=False,
+	))
+	session = requests.Session()
+	session.mount("http://", adapter)
+	session.mount("https://", adapter)
+
+	client = Client(url='https://vault.example.com', session=session)
+
+
+Here we will cover the options shown. See the `full Retry class documentation <https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry>`_ for all of the things that can be customized.
+
+In the example, ``total`` refers to the total number of retries that will be performed.
+
+``backoff_factor`` allows for a non-linear delay between retries, with the formula for how long to sleep being: ``{backoff factor} * (2 ** ({number of total retries} - 1))`` (in seconds). This helps prevent retrying too quickly, which mitigates worsening a server overload problem, and prevents an eventual failure if time-based errors are not given enough time to resolve themselves (like eventual consistency failures). Adjust this as needed in your environment.
+
+``status_forcelist`` is a list of HTTP status codes that should be retried. See `Vault HTTP Status Codes <https://developer.hashicorp.com/vault/api-docs#http-status-codes>`_ for a list of which codes Vault returns and in what circumstances.
+
+``raise_on_status`` tells the ``Retry`` class whether or not to raise its own exceptions when retries are exhausted. In the case of ``hvac`` **it is important to set this to** ``False`` because ``hvac``'s own exceptions are raised based on the exceptions returned by the `requests module`_. If this is set to ``True``, your application will receive different exceptions, and behavior of ``hvac`` methods may not be consistent.
+
+Allowed methods
+^^^^^^^^^^^^^^^
+
+Not shown above is the ``allowed_methods`` option for the ``Retry`` class. This controls which HTTP methods should be retried.
+
+The `default value <https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry.DEFAULT_ALLOWED_METHODS>`_ is ``frozenset({'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PUT', 'TRACE'})``. As described in the documentation:
+
+	By default, we only retry on methods which are considered to be idempotent (multiple requests with the same parameters end with the same state).
+
+This means that ``POST`` and ``PATCH`` requests will not be retried by default; you may want to retry those in some cases if you know the operation is idempotent, or you otherwise do not need to be concerned with changing state more than once, but this should be done with caution.
+
+Multiple ``Client`` instances with different retry settings could be used to control that, or you may wish to handle retries on specific methods by catching exceptions and retrying the ``hvac`` calls within your own code.
 
 Vault Agent Unix Socket Listener
 --------------------------------
