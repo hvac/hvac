@@ -15,6 +15,7 @@ Auth Methods
    mfa
    okta
    token
+   userpass
 
 Authenticate to different auth backends
 ---------------------------------------
