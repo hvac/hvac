@@ -60,7 +60,7 @@ class Transit(VaultApiBase):
         :type key_type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :param auto_rotate_period: The period at which this key should be rotated automatically.
+        :param auto_rotate_period: The period at which this key should be rotated automatically. Requires Vault 1.10.x or higher.
         :type auto_rotate_period: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
@@ -206,7 +206,7 @@ class Transit(VaultApiBase):
         :type allow_plaintext_backup: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :param auto_rotate_period: The period at which this key should be rotated automatically.
+        :param auto_rotate_period: The period at which this key should be rotated automatically. Requires Vault 1.10.x or higher.
         :type auto_rotate_period: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
