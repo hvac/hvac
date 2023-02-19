@@ -249,12 +249,14 @@ class TestAppRole(TestCase):
 
     @parameterized.expand(
         [
-            ("default mount point", DEFAULT_MOUNT_POINT, None),
-            ("custom mount point", "approle-test", exceptions.ParamValidationError),
+            ("default mount point", DEFAULT_MOUNT_POINT, None, None),
+            ("metadata as dict", DEFAULT_MOUNT_POINT, None, {"a": "val1", "b": "two"}),
+            ("invalid metadata", DEFAULT_MOUNT_POINT, exceptions.ParamValidationError, "bad metadata"),
+            ("custom mount point", "approle-test", None, None),
         ]
     )
     @requests_mock.Mocker()
-    def test_generate_secret_id(self, test_label, mount_point, raises, requests_mocker):
+    def test_generate_secret_id(self, test_label, mount_point, raises, metadata, requests_mocker):
         expected_status_code = 200
         role_name = "testrole"
 
@@ -271,10 +273,11 @@ class TestAppRole(TestCase):
             "warnings": None,
             "wrap_info": None,
         }
+
         mock_url = "http://localhost:8200/v1/auth/{mount_point}/role/{role_name}/secret-id".format(
             mount_point=mount_point, role_name=role_name
         )
-        requests_mocker.register_uri(
+        adapter = requests_mocker.register_uri(
             method="POST",
             url=mock_url,
             status_code=expected_status_code,
@@ -287,28 +290,35 @@ class TestAppRole(TestCase):
             with self.assertRaises(raises) as cm:
                 app_role.generate_secret_id(
                     role_name=role_name,
-                    metadata="metadata string",
+                    metadata=metadata,
                     mount_point=mount_point,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
             )
+            assert adapter.call_count == 0
+
         else:
             response = app_role.generate_secret_id(
-                role_name=role_name, cidr_list=["127.0.0.1/32"], mount_point=mount_point
+                role_name=role_name, cidr_list=["127.0.0.1/32"], mount_point=mount_point, metadata=metadata
             )
 
             self.assertEqual(first=mock_response, second=response)
+            assert adapter.call_count == 1
+            last_request = adapter.last_request.json()
+            assert ("metadata" in last_request) == (metadata is not None)
 
     @parameterized.expand(
         [
-            ("default mount point", DEFAULT_MOUNT_POINT, None),
-            ("custom mount point", "approle-test", exceptions.ParamValidationError),
+            ("default mount point", DEFAULT_MOUNT_POINT, None, None),
+            ("metadata as dict", DEFAULT_MOUNT_POINT, None, {"a": "val1", "b": "two"}),
+            ("invalid metadata", DEFAULT_MOUNT_POINT, exceptions.ParamValidationError, "bad metadata"),
+            ("custom mount point", "approle-test", None, None),
         ]
     )
     @requests_mock.Mocker()
     def test_create_custom_secret_id(
-        self, test_label, mount_point, raises, requests_mocker
+        self, test_label, mount_point, raises, metadata, requests_mocker
     ):
         expected_status_code = 200
         role_name = "testrole"
@@ -330,7 +340,7 @@ class TestAppRole(TestCase):
         mock_url = "http://localhost:8200/v1/auth/{mount_point}/role/{role_name}/custom-secret-id".format(
             mount_point=mount_point, role_name=role_name
         )
-        requests_mocker.register_uri(
+        adapter = requests_mocker.register_uri(
             method="POST",
             url=mock_url,
             status_code=expected_status_code,
@@ -345,21 +355,26 @@ class TestAppRole(TestCase):
                     role_name=role_name,
                     secret_id=secret_id,
                     cidr_list=["127.0.0.1/32"],
-                    metadata="metadata string",
+                    metadata=metadata,
                     mount_point=mount_point,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
             )
+            assert adapter.call_count == 0
         else:
             response = app_role.create_custom_secret_id(
                 role_name=role_name,
                 secret_id=secret_id,
                 cidr_list=["127.0.0.1/32"],
                 mount_point=mount_point,
+                metadata=metadata,
             )
 
             self.assertEqual(first=mock_response, second=response)
+            assert adapter.call_count == 1
+            last_request = adapter.last_request.json()
+            assert ("metadata" in last_request) == (metadata is not None)
 
     @parameterized.expand(
         [
