@@ -75,6 +75,26 @@ class KvV2(VaultApiBase):
     def read_secret(
         self, path, mount_point=DEFAULT_MOUNT_POINT, raise_on_deleted_version=None
     ):
+        """Retrieve the secret at the specified location.
+
+        Equivalent to calling read_secret_version with version=None.
+
+        Supported methods:
+            GET: /{mount_point}/data/{path}. Produces: 200 application/json
+
+
+        :param path: Specifies the path of the secret to read. This is specified as part of the URL.
+        :type path: str | unicode
+        :param mount_point: The "path" the secret engine was mounted on.
+        :type mount_point: str | unicode
+        :param raise_on_deleted_version: Changes the behavior when the requested version is deleted.
+            If True an exception will be raised.
+            If False, some metadata about the deleted secret is returned.
+            If None (pre-v3), a default of True will be used and a warning will be issued.
+        :type raise_on_deleted_version: bool
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
         return self.read_secret_version(
             path,
             mount_point=mount_point,
@@ -88,7 +108,7 @@ class KvV2(VaultApiBase):
         mount_point=DEFAULT_MOUNT_POINT,
         raise_on_deleted_version=None,
     ):
-        """Retrieve the secret at the specified location.
+        """Retrieve the secret at the specified location, with the specified version.
 
         Supported methods:
             GET: /{mount_point}/data/{path}. Produces: 200 application/json
@@ -100,6 +120,11 @@ class KvV2(VaultApiBase):
         :type version: int
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
+        :param raise_on_deleted_version: Changes the behavior when the requested version is deleted.
+            If True an exception will be raised.
+            If False, some metadata about the deleted secret is returned.
+            If None (pre-v3), a default of True will be used and a warning will be issued.
+        :type raise_on_deleted_version: bool
         :return: The JSON response of the request.
         :rtype: dict
         """
