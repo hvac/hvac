@@ -102,18 +102,20 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("good request, no metadata", None, None),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}),
-            ("bad metadata option", exceptions.ParamValidationError, "bad"),
+            ("good request, no metadata", None, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m"),
+            ("bad metadata option", exceptions.ParamValidationError, "bad", None),
         ]
     )
-    def test_generate_secret_id(self, test_label, raises, metadata):
+    def test_generate_secret_id(self, test_label, raises, metadata, wrap_ttl):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.generate_secret_id(
                     role_name=self.TEST_ROLE_NAME,
                     metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
+                    wrap_ttl=wrap_ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -124,17 +126,28 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 cidr_list=["127.0.0.1/32"],
                 mount_point=self.TEST_MOUNT_POINT,
                 metadata=metadata,
+                wrap_ttl=wrap_ttl,
             )
-            self.assertIn(member="secret_id", container=response["data"])
+            if wrap_ttl is not None:
+                assert "wrap_info" in response
+                assert isinstance(response["wrap_info"]["ttl"], int)
+                assert (
+                    response["wrap_info"]["ttl"] == 300
+                )  # NOTE: hardcoded for now because of string formats
+            else:
+                self.assertIn(
+                    member="secret_id", container=response["data"], msg=response
+                )
 
     @parameterized.expand(
         [
-            ("good request, no metadata", None, None),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}),
-            ("bad metadata option", exceptions.ParamValidationError, "bad"),
+            ("good request, no metadata", None, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m"),
+            ("bad metadata option", exceptions.ParamValidationError, "bad", None),
         ]
     )
-    def test_create_custom_secret_id(self, test_label, raises, metadata):
+    def test_create_custom_secret_id(self, test_label, raises, metadata, wrap_ttl):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.create_custom_secret_id(
@@ -143,6 +156,7 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                     cidr_list=["127.0.0.1/32"],
                     metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
+                    wrap_ttl=wrap_ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -154,11 +168,18 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 cidr_list=["127.0.0.1/32"],
                 mount_point=self.TEST_MOUNT_POINT,
                 metadata=metadata,
+                wrap_ttl=wrap_ttl,
             )
-
-            self.assertEqual(
-                first=self.TEST_SECRET_ID, second=response["data"]["secret_id"]
-            )
+            if wrap_ttl is not None:
+                assert "wrap_info" in response
+                assert isinstance(response["wrap_info"]["ttl"], int)
+                assert (
+                    response["wrap_info"]["ttl"] == 300
+                )  # NOTE: hardcoded for now because of string formats
+            else:
+                self.assertEqual(
+                    first=self.TEST_SECRET_ID, second=response["data"]["secret_id"]
+                )
 
     def test_read_secret_id(self):
         secret_id_response = self._secret_id()

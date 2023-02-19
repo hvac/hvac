@@ -238,6 +238,7 @@ class AppRole(VaultApiBase):
         cidr_list=None,
         token_bound_cidrs=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        wrap_ttl=None,
     ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
@@ -255,6 +256,9 @@ class AppRole(VaultApiBase):
         :type token_bound_cidrs: list
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param wrap_ttl: Returns the request as a response-wrapping token.
+            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
+        :type wrap_ttl: int | str
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
@@ -288,7 +292,7 @@ class AppRole(VaultApiBase):
             mount_point=mount_point,
             role_name=role_name,
         )
-        return self._adapter.post(url=api_path, json=params)
+        return self._adapter.post(url=api_path, json=params, wrap_ttl=wrap_ttl)
 
     def create_custom_secret_id(
         self,
@@ -298,6 +302,7 @@ class AppRole(VaultApiBase):
         cidr_list=None,
         token_bound_cidrs=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        wrap_ttl=None,
     ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
@@ -317,6 +322,9 @@ class AppRole(VaultApiBase):
         :type token_bound_cidrs: list
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param wrap_ttl: Returns the request as a response-wrapping token.
+            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
+        :type wrap_ttl: int | str
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
@@ -351,7 +359,7 @@ class AppRole(VaultApiBase):
             mount_point=mount_point,
             role_name=role_name,
         )
-        return self._adapter.post(url=api_path, json=params)
+        return self._adapter.post(url=api_path, json=params, wrap_ttl=wrap_ttl)
 
     def read_secret_id(self, role_name, secret_id, mount_point=DEFAULT_MOUNT_POINT):
         """
