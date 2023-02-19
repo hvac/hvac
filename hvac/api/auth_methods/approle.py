@@ -329,7 +329,10 @@ class AppRole(VaultApiBase):
                 )
             )
 
-        params = {"secret_id": secret_id, "metadata": metadata}
+        params = {"secret_id": secret_id}
+
+        if metadata:
+            params["metadata"] = json.dumps(metadata)
 
         list_of_strings_params = {
             "cidr_list": cidr_list,
