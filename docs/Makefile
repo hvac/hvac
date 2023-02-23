@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -E -a
+SPHINXOPTS    = -E -a -W --keep-going
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = hvac
 SOURCEDIR     = .
