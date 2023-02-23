@@ -81,7 +81,7 @@ Breakfix release to revert some unintended post-1.0 requirements changes.
 
 - **Note**: This is _actually and truly_ (😝)  intended to by the last hvac release supporting Python 2.7.
 
-  **_Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions._**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
 - Requirements - Cleanup & Upgrades (`install_requires` => `requests>=2.25.1` ). GH-741
 
 ### 🚀 Features
@@ -105,7 +105,7 @@ Thanks to @Tylerlhess, @anhdat, @ayav09, @bobmshannon, @bpatterson971, @briantis
 
 - **Note**: This is intended to by the last hvac release supporting Python 2.7.
 
-  **_Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions._**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
 - Userpass: Add `use_token` param on `login()`, Accept passthrough `**kwargs` on create user . GH-733
 
 ### 🚀 Features
@@ -157,7 +157,7 @@ Thanks to @Tylerlhess, @jeffwecan, @matusf, @mblau-leaffilter and tyhess for the
 ### 🚀 Features
 
 - Expand Transform class to include new(ish) tokenization methods. GH-696
-- Add `delete_version_after` KvV2 Param - `configure()` / `update_metadata(). GH-694
+- Add `delete_version_after` KvV2 Param - `configure()` / `update_metadata()`. GH-694
 
 ### 🧰 Miscellaneous
 
