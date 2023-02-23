@@ -331,35 +331,42 @@ class Aws(VaultApiBase):
         ttl=None,
         endpoint="creds",
         mount_point=DEFAULT_MOUNT_POINT,
+        role_session_name=None,
     ):
         """Generates credential based on the named role.
 
         This role must be created before queried.
 
-        The /aws/creds and /aws/sts endpoints are almost identical. The exception is when retrieving credentials for a
+        The ``/aws/creds`` and ``/aws/sts`` endpoints are almost identical. The exception is when retrieving credentials for a
         role that was specified with the legacy arn or policy parameter. In this case, credentials retrieved through
-        /aws/sts must be of either the assumed_role or federation_token types, and credentials retrieved through
-        /aws/creds must be of the iam_user type.
+        ``/aws/sts`` must be of either the ``assumed_role`` or ``federation_token`` types, and credentials retrieved through
+        ``/aws/creds`` must be of the ``iam_user`` type.
 
         :param name: Specifies the name of the role to generate credentials against. This is part of the request URL.
         :type name: str | unicode
-        :param role_arn: The ARN of the role to assume if credential_type on the Vault role is assumed_role. Must match
+        :param role_arn: The ARN of the role to assume if ``credential_type`` on the Vault role is assumed_role. Must match
             one of the allowed role ARNs in the Vault role. Optional if the Vault role only allows a single AWS role
             ARN; required otherwise.
         :type role_arn: str | unicode
         :param ttl: Specifies the TTL for the use of the STS token. This is specified as a string with a duration
-            suffix. Valid only when credential_type is assumed_role or federation_token. When not specified, the default
-            sts_ttl set for the role will be used. If that is also not set, then the default value of 3600s will be
-            used. AWS places limits on the maximum TTL allowed. See the AWS documentation on the DurationSeconds
-            parameter for AssumeRole (for assumed_role credential types) and GetFederationToken (for federation_token
+            suffix. Valid only when ``credential_type`` is ``assumed_role`` or ``federation_token``. When not specified, the default
+            sts_ttl set for the role will be used. If that is also not set, then the default value of ``3600s`` will be
+            used. AWS places limits on the maximum TTL allowed. See the AWS documentation on the ``DurationSeconds``
+            parameter for AssumeRole (for ``assumed_role`` credential types) and GetFederationToken (for ``federation_token``
             credential types) for more details.
         :type ttl: str | unicode
-        :param endpoint: Supported endpoints:
-            GET: /{mount_point}/creds/{name}. Produces: 200 application/json
-            PUT: /{mount_point}/sts/{name}. Produces: 200 application/json
+        :param endpoint: Supported endpoints are ``creds`` and ``sts``:
+            GET: ``/{mount_point}/creds/{name}``. Produces: 200 application/json
+            POST: ``/{mount_point}/sts/{name}``. Produces: 200 application/json
         :type endpoint: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param role_session_name: The role session name to attach to the assumed role ARN.
+            ``role_session_name`` is limited to 64 characters; if exceeded, the ``role_session_name`` in the assumed role
+            ARN will be truncated to 64 characters. If ``role_session_name`` is not provided, then it will be generated
+            dynamically by default.
+        :type role_session_name: str | unicode
+
         :return: The JSON response of the request.
         :rtype: dict
         """
@@ -371,13 +378,12 @@ class Aws(VaultApiBase):
                     allowed_endpoints=", ".join(ALLOWED_CREDS_ENDPOINTS),
                 )
             )
-        params = {
-            "name": name,
-        }
+        params = {}
         params.update(
             utils.remove_nones(
                 {
                     "role_arn": role_arn,
+                    "role_session_name": role_session_name,
                     "ttl": ttl,
                 }
             )
@@ -390,9 +396,9 @@ class Aws(VaultApiBase):
         )
 
         if endpoint == "sts":
-            return self._adapter.put(
+            return self._adapter.post(
                 url=api_path,
-                params=params,
+                json=params,
             )
         else:
             return self._adapter.get(
