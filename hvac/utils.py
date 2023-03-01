@@ -12,7 +12,9 @@ import urllib
 from hvac import exceptions
 
 
-def raise_for_error(method, url, status_code, message=None, errors=None):
+def raise_for_error(
+    method, url, status_code, message=None, errors=None, text=None, json=None
+):
     """Helper method to raise exceptions based on the status code of a response received back from Vault.
 
     :param method: HTTP method of a request to Vault.
@@ -25,6 +27,10 @@ def raise_for_error(method, url, status_code, message=None, errors=None):
     :type message: str
     :param errors: Optional errors to include in a resulting exception.
     :type errors: list | str
+    :param text: Optional text of the response.
+    :type text: str
+    :param json: Optional deserialized version of a JSON response (object)
+    :type json: object
 
     :raises: hvac.exceptions.InvalidRequest | hvac.exceptions.Unauthorized | hvac.exceptions.Forbidden |
         hvac.exceptions.InvalidPath | hvac.exceptions.RateLimitExceeded | hvac.exceptions.InternalServerError |
@@ -32,32 +38,15 @@ def raise_for_error(method, url, status_code, message=None, errors=None):
         hvac.exceptions.UnexpectedError
 
     """
-    if status_code == 400:
-        raise exceptions.InvalidRequest(message, errors=errors, method=method, url=url)
-    elif status_code == 401:
-        raise exceptions.Unauthorized(message, errors=errors, method=method, url=url)
-    elif status_code == 403:
-        raise exceptions.Forbidden(message, errors=errors, method=method, url=url)
-    elif status_code == 404:
-        raise exceptions.InvalidPath(message, errors=errors, method=method, url=url)
-    elif status_code == 429:
-        raise exceptions.RateLimitExceeded(
-            message, errors=errors, method=method, url=url
-        )
-    elif status_code == 500:
-        raise exceptions.InternalServerError(
-            message, errors=errors, method=method, url=url
-        )
-    elif status_code == 501:
-        raise exceptions.VaultNotInitialized(
-            message, errors=errors, method=method, url=url
-        )
-    elif status_code == 502:
-        raise exceptions.BadGateway(message, errors=errors, method=method, url=url)
-    elif status_code == 503:
-        raise exceptions.VaultDown(message, errors=errors, method=method, url=url)
-    else:
-        raise exceptions.UnexpectedError(message or errors, method=method, url=url)
+    raise exceptions.VaultError.from_status(
+        status_code,
+        message,
+        errors=errors,
+        method=method,
+        url=url,
+        text=text,
+        json=json,
+    )
 
 
 def generate_method_deprecation_message(
