@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+import pytest
 import logging
 from unittest import TestCase
+from unittest import mock
 
 import requests_mock
+from requests_mock.response import create_response
 from parameterized import parameterized, param
 from hvac.constants.client import DEFAULT_URL
+from hvac import exceptions
 from hvac import adapters
 
 
@@ -105,3 +109,69 @@ class TestRequest(TestCase):
             second=response.status_code,
         )
         self.assertEqual(first=mock_response, second=response.json())
+
+
+@pytest.fixture
+def raw_adapter():
+    return mock.Mock(wraps=adapters.RawAdapter())
+
+
+class TestRawAdapter:
+    @pytest.mark.parametrize("headers", [{}, {"Content-Type": "application/json"}])
+    @pytest.mark.parametrize("json_get", [None, Exception])
+    @pytest.mark.parametrize("text_get", [None, Exception])
+    @pytest.mark.parametrize(
+        "bytes", [None, b"", b"a", b"{}", b'{"errors": ["err"]}', b"\x80\x81", b"\0"]
+    )
+    @pytest.mark.parametrize("code", [404, 500])
+    def test_raise_for_error(
+        self, raw_adapter, headers, bytes, code, json_get, text_get
+    ):
+        url = "throwaway"
+        method = "GET"
+
+        resp = create_response(
+            mock.Mock(url=url), status_code=code, content=bytes, headers=headers
+        )
+
+        resp.json = mock.Mock(wraps=resp.json, side_effect=json_get)
+
+        mock_text = mock.PropertyMock(wraps=resp.text, side_effect=text_get)
+        with mock.patch("requests.Response.text", new=mock_text):
+            if text_get is not None:
+                with pytest.raises(Exception):
+                    resp.text
+
+            text = errors = json = None
+
+            if headers:
+                try:
+                    json = resp.json()
+                except Exception:
+                    pass
+                else:
+                    errors = json.get("errors")
+
+            try:
+                text = resp.text
+            except Exception:
+                pass
+
+            from hvac.utils import raise_for_error
+
+            with mock.patch(
+                "hvac.utils.raise_for_error", mock.Mock(wraps=raise_for_error)
+            ) as r:
+                with pytest.raises(exceptions.VaultError) as e:
+                    raw_adapter._raise_for_error(method, url, resp)
+
+                e_msg = None if errors else text
+                expected = mock.call(
+                    method, url, code, e_msg, errors=errors, text=text, json=json
+                )
+
+                assert r.call_count == 1
+                r.assert_has_calls([expected])
+                assert e.value.text == text
+                assert e.value.json == json
+                assert e.value.errors == errors
