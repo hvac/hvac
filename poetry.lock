@@ -23,10 +23,10 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,<0.940 || >0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
-docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,<0.940 || >0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,<0.940 || >0.940)", "pytest-mypy-plugins", "cloudpickle"]
+dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
+tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
+tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "authlib"
@@ -173,12 +173,12 @@ python-versions = ">=3.6"
 cffi = ">=1.12"
 
 [package.extras]
-docs = ["sphinx (>=1.6.5,<1.8.0 || >1.8.0,<3.1.0 || >3.1.0,<3.1.1 || >3.1.1)", "sphinx-rtd-theme"]
-docstest = ["pyenchant (>=1.6.11)", "twine (>=1.12.0)", "sphinxcontrib-spelling (>=4.0.1)"]
+docs = ["sphinx (>=1.6.5,!=1.8.0,!=3.1.0,!=3.1.1)", "sphinx-rtd-theme"]
+docstest = ["pyenchant (>=1.6.11)", "sphinxcontrib-spelling (>=4.0.1)", "twine (>=1.12.0)"]
 pep8test = ["black", "flake8", "flake8-import-order", "pep8-naming"]
 sdist = ["setuptools-rust (>=0.11.4)"]
 ssh = ["bcrypt (>=3.1.5)"]
-test = ["pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-subtests", "pytest-xdist", "pretend", "iso8601", "pytz", "hypothesis (>=1.11.4,<3.79.2 || >3.79.2)"]
+test = ["hypothesis (>=1.11.4,!=3.79.2)", "iso8601", "pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-subtests", "pytest-xdist", "pytz"]
 
 [[package]]
 name = "dataclasses"
@@ -200,7 +200,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 wrapt = ">=1.10,<2"
 
 [package.extras]
-dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "importlib-resources (<4)", "configparser (<5)", "sphinxcontrib-websupport (<2)", "zipp (<2)", "PyTest (<5)", "PyTest-Cov (<2.6)", "pytest", "pytest-cov"]
+dev = ["PyTest (<5)", "PyTest-Cov (<2.6)", "bump2version (<1)", "configparser (<5)", "importlib-metadata (<3)", "importlib-resources (<4)", "pytest", "pytest-cov", "sphinx (<2)", "sphinxcontrib-websupport (<2)", "tox", "zipp (<2)"]
 
 [[package]]
 name = "docutils"
@@ -294,8 +294,8 @@ typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pep517", "pyfakefs", "pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "iniconfig"
@@ -392,7 +392,7 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-build = ["twine", "wheel", "blurb"]
+build = ["blurb", "twine", "wheel"]
 docs = ["sphinx"]
 test = ["pytest (<5.4)", "pytest-cov"]
 
@@ -574,7 +574,7 @@ coverage = {version = ">=5.2.1", extras = ["toml"]}
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
+testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
 name = "python-jwt"
@@ -638,7 +638,7 @@ six = "*"
 
 [package.extras]
 fixture = ["fixtures"]
-test = ["fixtures", "mock", "purl", "pytest", "sphinx", "testrepository (>=0.0.18)", "testtools", "requests-futures"]
+test = ["fixtures", "mock", "purl", "pytest", "requests-futures", "sphinx", "testrepository (>=0.0.18)", "testtools"]
 
 [[package]]
 name = "semantic-version"
@@ -649,7 +649,7 @@ optional = false
 python-versions = ">=2.7"
 
 [package.extras]
-dev = ["Django (>=1.11)", "nose2", "tox", "check-manifest", "coverage", "flake8", "wheel", "zest.releaser", "readme-renderer (<25.0)", "colorama (<=0.4.1)"]
+dev = ["Django (>=1.11)", "check-manifest", "colorama (<=0.4.1)", "coverage", "flake8", "nose2", "readme-renderer (<25.0)", "tox", "wheel", "zest.releaser"]
 doc = ["sphinx", "sphinx-rtd-theme"]
 
 [[package]]
@@ -696,8 +696,8 @@ sphinxcontrib-serializinghtml = "*"
 
 [package.extras]
 docs = ["sphinxcontrib-websupport"]
-lint = ["flake8 (>=3.5.0)", "flake8-import-order", "mypy (>=0.780)", "docutils-stubs"]
-test = ["pytest", "pytest-cov", "html5lib", "typed-ast", "cython"]
+lint = ["docutils-stubs", "flake8 (>=3.5.0)", "flake8-import-order", "mypy (>=0.780)"]
+test = ["cython", "html5lib", "pytest", "pytest-cov", "typed-ast"]
 
 [[package]]
 name = "sphinx-rtd-theme"
@@ -722,7 +722,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -734,7 +734,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -746,8 +746,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
-test = ["pytest", "html5lib"]
+lint = ["docutils-stubs", "flake8", "mypy"]
+test = ["html5lib", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -758,7 +758,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-test = ["pytest", "flake8", "mypy"]
+test = ["flake8", "mypy", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -769,7 +769,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -781,7 +781,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -797,24 +797,24 @@ greenlet = {version = "!=0.4.17", markers = "python_version >= \"3\" and (platfo
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.extras]
-aiomysql = ["greenlet (!=0.4.17)", "aiomysql"]
-aiosqlite = ["typing_extensions (!=3.10.0.1)", "greenlet (!=0.4.17)", "aiosqlite"]
+aiomysql = ["aiomysql", "greenlet (!=0.4.17)"]
+aiosqlite = ["aiosqlite", "greenlet (!=0.4.17)", "typing_extensions (!=3.10.0.1)"]
 asyncio = ["greenlet (!=0.4.17)"]
-asyncmy = ["greenlet (!=0.4.17)", "asyncmy (>=0.2.3,<0.2.4 || >0.2.4)"]
-mariadb_connector = ["mariadb (>=1.0.1,<1.1.2 || >1.1.2)"]
+asyncmy = ["asyncmy (>=0.2.3,!=0.2.4)", "greenlet (!=0.4.17)"]
+mariadb_connector = ["mariadb (>=1.0.1,!=1.1.2)"]
 mssql = ["pyodbc"]
 mssql_pymssql = ["pymssql"]
 mssql_pyodbc = ["pyodbc"]
-mypy = ["sqlalchemy2-stubs", "mypy (>=0.910)"]
-mysql = ["mysqlclient (>=1.4.0,<2)", "mysqlclient (>=1.4.0)"]
+mypy = ["mypy (>=0.910)", "sqlalchemy2-stubs"]
+mysql = ["mysqlclient (>=1.4.0)", "mysqlclient (>=1.4.0,<2)"]
 mysql_connector = ["mysql-connector-python"]
-oracle = ["cx_oracle (>=7,<8)", "cx_oracle (>=7)"]
+oracle = ["cx_oracle (>=7)", "cx_oracle (>=7,<8)"]
 postgresql = ["psycopg2 (>=2.7)"]
-postgresql_asyncpg = ["greenlet (!=0.4.17)", "asyncpg"]
-postgresql_pg8000 = ["pg8000 (>=1.16.6,<1.29.0 || >1.29.0)"]
+postgresql_asyncpg = ["asyncpg", "greenlet (!=0.4.17)"]
+postgresql_pg8000 = ["pg8000 (>=1.16.6,!=1.29.0)"]
 postgresql_psycopg2binary = ["psycopg2-binary"]
 postgresql_psycopg2cffi = ["psycopg2cffi"]
-pymysql = ["pymysql (<1)", "pymysql"]
+pymysql = ["pymysql", "pymysql (<1)"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
@@ -850,9 +850,9 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, <4"
 
 [package.extras]
-brotli = ["brotlicffi (>=0.8.0)", "brotli (>=1.0.9)", "brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "urllib3-secure-extra", "ipaddress"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
+brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)", "brotlipy (>=0.6.0)"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)", "urllib3-secure-extra"]
+socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "werkzeug"
@@ -885,13 +885,13 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "198f57d14467569c55862c8c3314cf347aaf7fa8cb1658391bde7ec89375d092"
+content-hash = "a63e3986b4238ea5d21cf16891abda84c9d02d3aab06e4d41fdff4054eef555a"
 
 [metadata.files]
 alabaster = []
