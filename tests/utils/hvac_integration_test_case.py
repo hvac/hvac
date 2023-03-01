@@ -17,6 +17,7 @@ class HvacIntegrationTestCase:
     client = None
     mock_warnings = None
     enable_vault_ha = False
+    use_env = False
 
     @classmethod
     def setUpClass(cls):
@@ -59,7 +60,7 @@ class HvacIntegrationTestCase:
 
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
-        self.client = create_client(token=self.manager.root_token)
+        self.client = create_client(token=self.manager.root_token, use_env=self.use_env)
 
         # Squelch deprecating warnings during tests as we may want to deliberately call deprecated methods and/or verify
         # warnings invocations.

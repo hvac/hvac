@@ -68,12 +68,10 @@ class Client:
         token = token if token is not None else utils.get_token_from_env()
         url = url if url else os.getenv("VAULT_ADDR", DEFAULT_URL)
 
-        if cert is not None and VAULT_CLIENT_CERT:
-            cert = "\n".join(
-                [
-                    VAULT_CLIENT_CERT,
-                    VAULT_CLIENT_KEY,
-                ]
+        if cert is None and VAULT_CLIENT_CERT:
+            cert = (
+                VAULT_CLIENT_CERT,
+                VAULT_CLIENT_KEY,
             )
 
         # Consider related CA env vars _only if_ no argument is passed in under the
