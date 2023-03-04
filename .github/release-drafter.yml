@@ -8,6 +8,10 @@ categories:
   - title: '💥 Breaking Changes'
     labels:
       - 'breaking-change'
+  - title: '📢 Deprecations / Announcements'
+    labels:
+      - 'deprecation'
+      - 'announcement'
   - title: '🚀 Features'
     labels:
       - 'enhancement'
