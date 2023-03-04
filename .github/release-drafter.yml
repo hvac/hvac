@@ -20,7 +20,7 @@ categories:
   - title: '🧰 Miscellaneous'
     labels:
       - 'misc'
-change-template: '- $TITLE. GH-$NUMBER'
+change-template: '- $TITLE (GH-$NUMBER)'
 version-resolver:
   major:
     labels:
