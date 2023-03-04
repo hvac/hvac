@@ -1,5 +1,46 @@
 # Changelog
 
+## 1.1.0
+
+### 📢 Deprecations / Announcements
+
+- [`v3.0.0`](https://github.com/hvac/hvac/milestone/36) - The `certificate` parameter for `create_ca_certificate_role` will stop accepting file paths ([GH-914](https://github.com/hvac/hvac/pull/914))
+- Please note that `hvac` intends to drop support for EoL Python versions ([GH-877](https://github.com/hvac/hvac/pull/877))
+- Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
+
+### 🚀 Features
+
+- Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
+- AWS secret engine - fix `generate_credentials` for STS endpoint ([GH-934](https://github.com/hvac/hvac/pull/934))
+- Add support for custom metadata in kv2 engine ([GH-805](https://github.com/hvac/hvac/pull/805))
+- Add new field `auto_rotate_period` on transit key management ([GH-903](https://github.com/hvac/hvac/pull/903))
+
+### 🐛 Bug Fixes
+
+- Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
+- fix vault client certificates loaded from envirnoment variables ([GH-943](https://github.com/hvac/hvac/pull/943))
+- approle - fix metadata for generated secret IDs, re-add `wrap_ttl` ([GH-782](https://github.com/hvac/hvac/pull/782))
+- AWS secret engine - fix `generate_credentials` for STS endpoint ([GH-934](https://github.com/hvac/hvac/pull/934))
+- Propagate client's adapter to API categories ([GH-939](https://github.com/hvac/hvac/pull/939))
+- don't cache on py3.6 windows combo ([GH-916](https://github.com/hvac/hvac/pull/916))
+- Cert: Fix role certificate parameter ([GH-886](https://github.com/hvac/hvac/pull/886))
+
+### 📚 Documentation
+
+- add documentation for retries ([GH-948](https://github.com/hvac/hvac/pull/948))
+- docs - sphinx - fail on warnings ([GH-949](https://github.com/hvac/hvac/pull/949))
+- Create userpass.rst ([GH-775](https://github.com/hvac/hvac/pull/775))
+- doc: update reference to removed method ([GH-942](https://github.com/hvac/hvac/pull/942))
+- Documentation updates for use with a private CA ([GH-774](https://github.com/hvac/hvac/pull/774))
+- Update Azure guideline with proper client variable ([GH-935](https://github.com/hvac/hvac/pull/935))
+- Update wrapping.rst - example for unauthenticated unwrap ([GH-789](https://github.com/hvac/hvac/pull/789))
+- Fix typo in the AWS auth method docs ([GH-911](https://github.com/hvac/hvac/pull/911))
+- Replace Azure docs occurence to Kubernetes ([GH-904](https://github.com/hvac/hvac/pull/904))
+
+### 🧰 Miscellaneous
+
+- Remove deprecated python syntax ([GH-909](https://github.com/hvac/hvac/pull/909))
+
 ## 1.0.2
 
 - Update dependencies. GH-897
