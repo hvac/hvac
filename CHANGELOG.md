@@ -6,6 +6,7 @@
 
 - [`v3.0.0`](https://github.com/hvac/hvac/milestone/36) - The `certificate` parameter for `create_ca_certificate_role` will stop accepting file paths ([GH-914](https://github.com/hvac/hvac/pull/914))
 - Please note that `hvac` intends to drop support for EoL Python versions ([GH-877](https://github.com/hvac/hvac/pull/877))
+- [`v3.0.0`](https://github.com/hvac/hvac/milestone/36) - The default value of `raise_on_deleted_version` will change from `True` to `False` ([GH-955](https://github.com/hvac/hvac/issues/955))
 - Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
 
 ### 🚀 Features
