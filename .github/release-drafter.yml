@@ -8,6 +8,10 @@ categories:
   - title: '💥 Breaking Changes'
     labels:
       - 'breaking-change'
+  - title: '📢 Deprecations / Announcements'
+    labels:
+      - 'deprecation'
+      - 'announcement'
   - title: '🚀 Features'
     labels:
       - 'enhancement'
@@ -20,11 +24,12 @@ categories:
   - title: '🧰 Miscellaneous'
     labels:
       - 'misc'
-change-template: '- $TITLE. GH-$NUMBER'
+change-template: '- $TITLE (GH-$NUMBER)'
 version-resolver:
   major:
     labels:
       - 'major'
+      - 'breaking-change'
   minor:
     labels:
       - 'minor'
@@ -35,3 +40,5 @@ version-resolver:
 template: |
 
   $CHANGES
+
+  Thanks to $CONTRIBUTORS for their lovely contributions.
