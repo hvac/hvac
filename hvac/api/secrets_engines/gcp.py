@@ -55,6 +55,29 @@ class Gcp(VaultApiBase):
             json=params,
         )
 
+    def rotate_root_credentials(self, mount_point=DEFAULT_MOUNT_POINT):
+        """Rotate the GCP service account credentials used by Vault for this mount.
+
+        A new key will be generated for the service account, replacing the internal value, and then a deletion of the
+        old service account key is scheduled. Note that this does not create a new service account, only a new version
+        of the service account key.
+
+        Supported methods:
+            POST: /{mount_point}/config/rotate-root. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/rotate-root",
+            mount_point=mount_point,
+        )
+        return self._adapter.post(
+            url=api_path,
+        )
+
     def read_config(self, mount_point=DEFAULT_MOUNT_POINT):
         """Read the configured shared information for the Gcp secrets engine.
 
@@ -351,3 +374,158 @@ class Gcp(VaultApiBase):
             raise exceptions.ParamValidationError(error_message)
 
         return response
+
+    def create_or_update_static_account(
+            self,
+            name,
+            service_account_email,
+            bindings=None,
+            secret_type=None,
+            token_scopes=None,
+            mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Create a static account or update an existing static account.
+
+        See static account docs for the GCP secrets backend to learn more about what happens when you create or update a
+            static account.
+
+        Supported methods:
+            POST: /{mount_point}/static-account/{name}. Produces: 204 (empty body)
+
+        :param name: Name of the static account. Cannot be updated.
+        :type name: str | unicode
+        :param service_account_email: Email of the GCP service account to manage. Cannot be updated.
+        :type service_account_email: str | unicode
+        :param bindings: Bindings configuration string (expects HCL or JSON format in raw or base64-encoded string)
+        :type bindings: str | unicode
+        :param secret_type: Type of secret generated for this static account. Accepted values: access_token,
+            service_account_key. Cannot be updated.
+        :type secret_type: str | unicode
+        :param token_scopes: List of OAuth scopes to assign to access_token secrets generated under this static account
+            (access_token static accounts only)
+        :type token_scopes: list[str]
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        if secret_type is not None and secret_type not in ALLOWED_SECRETS_TYPES:
+            error_msg = 'unsupported secret_type argument provided "{arg}", supported types: "{secret_type}"'
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=secret_type,
+                    secret_type=",".join(ALLOWED_SECRETS_TYPES),
+                )
+            )
+
+        if isinstance(bindings, dict):
+            bindings = json.dumps(bindings).replace(" ", "")
+            logging.debug("bindings: %s" % bindings)
+
+        params = {
+            "service_account_email": service_account_email,
+        }
+        params.update(
+            utils.remove_nones(
+                {
+                    "bindings": bindings,
+                    "secret_type": secret_type,
+                    "token_scopes": token_scopes,
+                }
+            )
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def rotate_static_account_key(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Rotate the service account key this static account uses to generate access tokens.
+
+        This does not recreate the service account.
+
+        Supported methods:
+            POST: /{mount_point}/static-account/{name}/rotate-key. Produces: 204 (empty body)
+
+        :param name: Name of the static account.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}/rotate-key",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+        )
+
+    def read_static_account(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Read a static account.
+
+        Supported methods:
+            GET: /{mount_point}/static-account/{name}. Produces: 200 application/json
+
+        :param name: Name of the static account.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_static_accounts(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List configured static accounts.
+
+        Supported methods:
+            LIST: /{mount_point}/static-accounts. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-accounts", mount_point=mount_point
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def delete_static_account(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete an existing static account by the given name.
+
+        Supported methods:
+            DELETE: /{mount_point}/static-account/{name} Produces: 204 (empty body)
+
+        :param name: Name of the static account.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}",
+            name=name,
+            mount_point=mount_point,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
