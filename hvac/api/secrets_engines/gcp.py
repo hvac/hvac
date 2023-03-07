@@ -336,44 +336,9 @@ class Gcp(VaultApiBase):
             roleset=roleset,
         )
 
-        if method == "POST":
-            if key_algorithm not in SERVICE_ACCOUNT_KEY_ALGORITHMS:
-                error_msg = 'unsupported key_algorithm argument provided "{arg}", supported algorithms: "{algorithms}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        arg=key_algorithm,
-                        algorithms=",".join(SERVICE_ACCOUNT_KEY_ALGORITHMS),
-                    )
-                )
-            if key_type not in SERVICE_ACCOUNT_KEY_TYPES:
-                error_msg = 'unsupported key_type argument provided "{arg}", supported types: "{key_types}"'
-                raise exceptions.ParamValidationError(
-                    error_msg.format(
-                        arg=key_type,
-                        key_types=",".join(SERVICE_ACCOUNT_KEY_TYPES),
-                    )
-                )
-            params = {
-                "key_algorithm": key_algorithm,
-                "key_type": key_type,
-            }
-            response = self._adapter.post(
-                url=api_path,
-                json=params,
-            )
-
-        elif method == "GET":
-            response = self._adapter.get(
-                url=api_path,
-            )
-
-        else:
-            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
-            raise exceptions.ParamValidationError(error_message)
-
-        return response
+        return self._generate_service_account_key(
+            api_path, key_algorithm, key_type, method
+        )
 
     def create_or_update_static_account(
         self,
@@ -529,3 +494,114 @@ class Gcp(VaultApiBase):
         return self._adapter.delete(
             url=api_path,
         )
+
+    def generate_static_account_oauth2_access_token(
+        self, name, mount_point=DEFAULT_MOUNT_POINT
+    ):
+        """Generate an OAuth2 token with the scopes defined on the static account.
+
+        This OAuth access token can be used in GCP API calls, e.g. curl -H "Authorization: Bearer $TOKEN" ...
+
+        Supported methods:
+            GET: /{mount_point}/static-account/{name}/token. Produces: 200 application/json
+
+        :param name: Name of a static account with secret type access_token to generate access_token under.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}/token",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def generate_static_account_service_account_key(
+        self,
+        name,
+        key_algorithm="KEY_ALG_RSA_2048",
+        key_type="TYPE_GOOGLE_CREDENTIALS_FILE",
+        method="POST",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Generate Secret (IAM Service Account Creds): Service Account Key
+
+        If using GET ('read'), the  optional parameters will be set to their defaults. Use POST if you want to specify
+            different values for these params.
+
+        :param name: Name of a static account with secret type service_account_key to generate key under.
+        :type name: str | unicode
+        :param key_algorithm: Key algorithm used to generate key. Defaults to 2k RSA key You probably should not choose
+            other values (i.e. 1k),
+        :type key_algorithm: str | unicode
+        :param key_type: Private key type to generate. Defaults to JSON credentials file.
+        :type key_type: str | unicode
+        :param method: Supported methods:
+            POST: /v1/{mount_point}/static-account/{name}/key. Produces: 200 application/json
+            GET: /v1/{mount_point}/static-account/{name}/key. Produces: 200 application/json
+        :type method: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-account/{name}/key",
+            mount_point=mount_point,
+            name=name,
+        )
+
+        return self._generate_service_account_key(
+            api_path, key_algorithm, key_type, method
+        )
+
+    def _generate_service_account_key(
+        self,
+        api_path,
+        key_algorithm="KEY_ALG_RSA_2048",
+        key_type="TYPE_GOOGLE_CREDENTIALS_FILE",
+        method="POST",
+    ):
+        if method == "POST":
+            if key_algorithm not in SERVICE_ACCOUNT_KEY_ALGORITHMS:
+                error_msg = 'unsupported key_algorithm argument provided "{arg}", supported algorithms: "{algorithms}"'
+                raise exceptions.ParamValidationError(
+                    error_msg.format(
+                        arg=key_algorithm,
+                        algorithms=",".join(SERVICE_ACCOUNT_KEY_ALGORITHMS),
+                    )
+                )
+            if key_type not in SERVICE_ACCOUNT_KEY_TYPES:
+                error_msg = 'unsupported key_type argument provided "{arg}", supported types: "{key_types}"'
+                raise exceptions.ParamValidationError(
+                    error_msg.format(
+                        arg=key_type,
+                        key_types=",".join(SERVICE_ACCOUNT_KEY_TYPES),
+                    )
+                )
+
+            params = {
+                "key_algorithm": key_algorithm,
+                "key_type": key_type,
+            }
+
+            response = self._adapter.post(
+                url=api_path,
+                json=params,
+            )
+        elif method == "GET":
+            response = self._adapter.get(
+                url=api_path,
+            )
+        else:
+            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(
+                method=method
+            )
+            raise exceptions.ParamValidationError(error_message)
+
+        return response
