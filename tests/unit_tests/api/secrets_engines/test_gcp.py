@@ -15,7 +15,9 @@ class TestGcp(TestCase):
     TEST_ROLESET_NAME = "hvac-roleset"
     TEST_PROJECT_ID = "test-hvac"
     TEST_STATIC_ACCOUNT_NAME = "hvac-static-account"
-    TEST_SERVICE_ACCOUNT_EMAIL = f"{TEST_STATIC_ACCOUNT_NAME}@{TEST_PROJECT_ID}.iam.gserviceaccount.com"
+    TEST_SERVICE_ACCOUNT_EMAIL = (
+        f"{TEST_STATIC_ACCOUNT_NAME}@{TEST_PROJECT_ID}.iam.gserviceaccount.com"
+    )
 
     @parameterized.expand(
         [
@@ -96,19 +98,13 @@ class TestGcp(TestCase):
 
     @parameterized.expand(
         [
-            param(
-                "access_token"
-            ),
-            param(
-                "service_account_key"
-            ),
-            param(
-                "service_account", ParamValidationError
-            ),
+            param("access_token"),
+            param("service_account_key"),
+            param("service_account", ParamValidationError),
         ]
     )
     def test_create_or_update_static_account(
-            self, secret_type="access_token", raises=False, exception_message=""
+        self, secret_type="access_token", raises=False, exception_message=""
     ):
         bindings = """
             resource "//cloudresourcemanager.googleapis.com/project/{project}" {
@@ -120,14 +116,14 @@ class TestGcp(TestCase):
         bindings = dedent(bindings)
         token_scopes = None
         if secret_type == "access_token":
-            token_scopes = [
-                "https://www.googleapis.com/auth/cloud-platform"
-            ]
+            token_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
 
         gcp = Gcp(adapter=JSONAdapter())
-        mock_url = "http://localhost:8200/v1/{mount_point}/static-account/{name}".format(
-            mount_point=self.TEST_MOUNT_POINT,
-            name=self.TEST_STATIC_ACCOUNT_NAME,
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/static-account/{name}".format(
+                mount_point=self.TEST_MOUNT_POINT,
+                name=self.TEST_STATIC_ACCOUNT_NAME,
+            )
         )
         expected_status_code = 204
         print(self.TEST_SERVICE_ACCOUNT_EMAIL)

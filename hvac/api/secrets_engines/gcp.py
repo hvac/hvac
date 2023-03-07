@@ -376,13 +376,13 @@ class Gcp(VaultApiBase):
         return response
 
     def create_or_update_static_account(
-            self,
-            name,
-            service_account_email,
-            bindings=None,
-            secret_type=None,
-            token_scopes=None,
-            mount_point=DEFAULT_MOUNT_POINT,
+        self,
+        name,
+        service_account_email,
+        bindings=None,
+        secret_type=None,
+        token_scopes=None,
+        mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Create a static account or update an existing static account.
 
