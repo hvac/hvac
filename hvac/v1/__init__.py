@@ -76,7 +76,10 @@ class Client:
 
         # Consider related CA env vars _only if_ no argument is passed in under the
         # `verify` parameter.
-        if verify is None:
+        if (
+            verify is None and
+            str(os.getenv("VAULT_SKIP_VERIFY")).lower == 'true'
+        )
             # Reference: https://www.vaultproject.io/docs/commands#vault_cacert
             # Note: "[VAULT_CACERT] takes precedence over VAULT_CAPATH." and thus we
             # check for VAULT_CAPATH _first_.
