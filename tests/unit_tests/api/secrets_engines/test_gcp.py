@@ -31,7 +31,7 @@ DEFAULT_CREDENTIALS = dedent(
 )
 DEFAULT_BINDINGS = dedent(
     """
-    "resource "//cloudresourcemanager.googleapis.com/projects/mygcpproject" {
+    resource "//cloudresourcemanager.googleapis.com/projects/mygcpproject" {
       roles = [
         "roles/viewer"
       ],
@@ -477,7 +477,7 @@ class TestGcp(TestCase):
     ):
         mock_url = "http://localhost:8200/v1/{mount_point}/roleset/{name}".format(
             mount_point=TEST_MOUNT_POINT,
-            name=TEST_STATIC_ACCOUNT_NAME,
+            name=TEST_ROLESET_NAME,
         )
 
         with requests_mock.mock() as requests_mocker:
@@ -490,14 +490,14 @@ class TestGcp(TestCase):
             if raises:
                 with self.assertRaises(raises) as cm:
                     self._json_adapter.delete_roleset(
-                        name=TEST_STATIC_ACCOUNT_NAME,
+                        name=TEST_ROLESET_NAME,
                         mount_point=TEST_MOUNT_POINT,
                     )
 
                 self.assertIn(member=mock_url, container=str(cm.exception))
             else:
                 resp = self._json_adapter.delete_roleset(
-                    name=TEST_STATIC_ACCOUNT_NAME,
+                    name=TEST_ROLESET_NAME,
                     mount_point=TEST_MOUNT_POINT,
                 )
 
@@ -908,7 +908,7 @@ class TestGcp(TestCase):
                         mount_point=TEST_MOUNT_POINT,
                     )
 
-                self.assertIn(member=mock_url, container=str(cm.exception))
+                self.assertEqual(cm.exception.json, expected_response)
             else:
                 resp = self._json_adapter.delete_static_account(
                     name=TEST_STATIC_ACCOUNT_NAME,
@@ -936,7 +936,7 @@ class TestGcp(TestCase):
                 expected_status_code=400,
                 raises=InvalidRequest,
                 expected_response={
-                    "errors": ["role set 'missing-roleset' does not exists"]
+                    "errors": ['static account "missing-account" does not exists'],
                 },
             ),
         ]
@@ -967,7 +967,7 @@ class TestGcp(TestCase):
                         mount_point=TEST_MOUNT_POINT,
                     )
 
-                self.assertIn(member=mock_url, container=str(cm.exception))
+                self.assertEqual(cm.exception.json, expected_response)
             else:
                 resp = self._json_adapter.generate_static_account_oauth2_access_token(
                     name=TEST_STATIC_ACCOUNT_NAME,
@@ -1005,7 +1005,7 @@ class TestGcp(TestCase):
                 expected_status_code=400,
                 raises=InvalidRequest,
                 expected_response={
-                    "errors": ["role set 'missing-roleset' does not exists"]
+                    "errors": ['static account "missing-account" does not exists'],
                 },
             ),
         ]
@@ -1037,7 +1037,7 @@ class TestGcp(TestCase):
                         method=method,
                     )
 
-                self.assertIn(member=mock_url, container=str(cm.exception))
+                self.assertEqual(cm.exception.json, expected_response)
             else:
                 resp = self._json_adapter.generate_static_account_service_account_key(
                     name=TEST_STATIC_ACCOUNT_NAME,
