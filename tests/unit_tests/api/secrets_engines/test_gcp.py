@@ -11,6 +11,7 @@ from hvac.exceptions import (
     InvalidRequest,
     InvalidPath,
     UnexpectedError,
+    InternalServerError,
 )
 
 TEST_MOUNT_POINT = "gcp-test"
@@ -20,22 +21,29 @@ TEST_STATIC_ACCOUNT_NAME = "hvac-static-account"
 TEST_SERVICE_ACCOUNT_EMAIL = (
     f"{TEST_STATIC_ACCOUNT_NAME}@{TEST_PROJECT_ID}.iam.gserviceaccount.com"
 )
+DEFAULT_CREDENTIALS = dedent(
+    """
+    {
+        "project_id": "test-hvac-project-not-a-real-project",
+        "private_key_id": "3900c1e6f6720d770a6af25710cad56696272f8d",
+    }
+    """
+)
+DEFAULT_BINDINGS = dedent(
+    """
+    "resource "//cloudresourcemanager.googleapis.com/projects/mygcpproject" {
+      roles = [
+        "roles/viewer"
+      ],
+    }
+    """
+)
+DEFAULT_TOKEN_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 
 class TestGcp(TestCase):
     def setUp(self):
         self._json_adapter = Gcp(adapter=JSONAdapter())
-        self._default_credentials = {}
-        self._default_bindings = dedent(
-            """
-            resource "//cloudresourcemanager.googleapis.com/project/{project}" {
-              roles = [
-                "roles/viewer"
-              ],
-            }
-        """
-        )
-        self._default_token_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
 
     @parameterized.expand(
         [
@@ -79,7 +87,7 @@ class TestGcp(TestCase):
                 self.assertEqual(cm.exception.json, expected_response)
             else:
                 resp = self._json_adapter.configure(
-                    credentials=self._default_credentials,
+                    credentials=DEFAULT_CREDENTIALS,
                     ttl=3600,
                     max_ttl=14400,
                     mount_point=TEST_MOUNT_POINT,
@@ -89,12 +97,28 @@ class TestGcp(TestCase):
 
     @parameterized.expand(
         [
-            param(method="POST", expected_status_code=204),
+            param(
+                method="POST",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "private_key_id": "bb9b47e33693847c8281a959c4286eb848be909c"
+                    }
+                },
+            ),
             param(
                 method="POST",
                 expected_status_code=404,
                 raises=InvalidPath,
                 expected_response={"errors": ["no handler for route"]},
+            ),
+            param(
+                method="POST",
+                expected_status_code=500,
+                raises=InternalServerError,
+                expected_response={
+                    "errors": ["1 error occurred: failed to create new key"]
+                },
             ),
         ]
     )
@@ -126,7 +150,7 @@ class TestGcp(TestCase):
                     mount_point=TEST_MOUNT_POINT,
                 )
 
-                self.assertEqual(resp.status_code, expected_status_code)
+                self.assertEqual(resp, expected_response)
 
     @parameterized.expand(
         [
@@ -202,9 +226,7 @@ class TestGcp(TestCase):
             name=TEST_ROLESET_NAME,
         )
 
-        token_scopes = (
-            self._default_token_scopes if secret_type == "access_token" else None
-        )
+        token_scopes = DEFAULT_TOKEN_SCOPES if secret_type == "access_token" else None
 
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
@@ -218,7 +240,7 @@ class TestGcp(TestCase):
                     self._json_adapter.create_or_update_roleset(
                         name=TEST_ROLESET_NAME,
                         project=TEST_PROJECT_ID,
-                        bindings=self._default_bindings,
+                        bindings=DEFAULT_BINDINGS,
                         secret_type=secret_type,
                         token_scopes=token_scopes,
                         mount_point=TEST_MOUNT_POINT,
@@ -232,7 +254,7 @@ class TestGcp(TestCase):
                 resp = self._json_adapter.create_or_update_roleset(
                     name=TEST_ROLESET_NAME,
                     project=TEST_PROJECT_ID,
-                    bindings=self._default_bindings,
+                    bindings=DEFAULT_BINDINGS,
                     secret_type=secret_type,
                     token_scopes=token_scopes,
                     mount_point=TEST_MOUNT_POINT,
@@ -376,7 +398,7 @@ class TestGcp(TestCase):
         )
 
         if expected_response is not None and secret_type == "access_token":
-            expected_response["data"]["token_scopes"] = self._default_token_scopes
+            expected_response["data"]["token_scopes"] = DEFAULT_TOKEN_SCOPES
 
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
@@ -482,11 +504,134 @@ class TestGcp(TestCase):
                 self.assertEqual(resp.status_code, expected_status_code)
                 self.assertTrue(len(resp.content) == 0)
 
-    def test_generate_oauth2_access_token(self):
-        ...
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "expires_at_seconds": 1679109162,
+                        "token": "ya29.c.b0Aaekm1Le-n2NCqrzZjdMtjpbgRji2yhiJkO...",
+                        "token_ttl": 3598,
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=400,
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": ["role set 'missing-roleset' does not exists"]
+                },
+            ),
+        ]
+    )
+    def test_generate_oauth2_access_token(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = "http://localhost:8200/v1/{mount_point}/token/{roleset}".format(
+            mount_point=TEST_MOUNT_POINT,
+            roleset=TEST_ROLESET_NAME,
+        )
 
-    def test_generate_service_account_key(self):
-        ...
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.generate_oauth2_access_token(
+                        roleset=TEST_ROLESET_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertIn(member=mock_url, container=str(cm.exception))
+            else:
+                resp = self._json_adapter.generate_oauth2_access_token(
+                    roleset=TEST_ROLESET_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp, expected_response)
+
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "key_algorithm": "KEY_ALG_RSA_2048",
+                        "key_type": "TYPE_GOOGLE_CREDENTIALS_FILE",
+                        "private_key_data": "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgIn...",
+                    }
+                },
+            ),
+            param(
+                method="POST",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "key_algorithm": "KEY_ALG_RSA_1024",
+                        "key_type": "TYPE_GOOGLE_CREDENTIALS_FILE",
+                        "private_key_data": "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgIn...",
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=400,
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": ["role set 'missing-roleset' does not exists"]
+                },
+            ),
+        ]
+    )
+    def test_generate_service_account_key(
+        self,
+        method,
+        expected_status_code,
+        raises=None,
+        expected_response=None,
+    ):
+        mock_url = "http://localhost:8200/v1/{mount_point}/key/{roleset}".format(
+            mount_point=TEST_MOUNT_POINT,
+            roleset=TEST_ROLESET_NAME,
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.generate_service_account_key(
+                        roleset=TEST_ROLESET_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                        method=method,
+                    )
+
+                self.assertIn(member=mock_url, container=str(cm.exception))
+            else:
+                resp = self._json_adapter.generate_service_account_key(
+                    roleset=TEST_ROLESET_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                    method=method,
+                )
+
+                self.assertEqual(resp, expected_response)
 
     @parameterized.expand(
         [
@@ -519,15 +664,15 @@ class TestGcp(TestCase):
             )
         )
 
-        token_scopes = (
-            self._default_token_scopes if secret_type == "access_token" else None
-        )
+        token_scopes = DEFAULT_TOKEN_SCOPES if secret_type == "access_token" else None
 
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
                 method=method,
                 url=mock_url,
                 status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
             )
 
             if raises:
@@ -535,7 +680,7 @@ class TestGcp(TestCase):
                     self._json_adapter.create_or_update_static_account(
                         name=TEST_STATIC_ACCOUNT_NAME,
                         service_account_email=TEST_SERVICE_ACCOUNT_EMAIL,
-                        bindings=self._default_bindings,
+                        bindings=DEFAULT_BINDINGS,
                         secret_type=secret_type,
                         token_scopes=token_scopes,
                         mount_point=TEST_MOUNT_POINT,
@@ -549,13 +694,14 @@ class TestGcp(TestCase):
                 resp = self._json_adapter.create_or_update_static_account(
                     name=TEST_STATIC_ACCOUNT_NAME,
                     service_account_email=TEST_SERVICE_ACCOUNT_EMAIL,
-                    bindings=self._default_bindings,
+                    bindings=DEFAULT_BINDINGS,
                     secret_type=secret_type,
                     token_scopes=token_scopes,
                     mount_point=TEST_MOUNT_POINT,
                 )
 
                 self.assertEqual(resp.status_code, expected_status_code)
+                self.assertTrue(len(resp.content) == 0)
 
     @parameterized.expand(
         [
@@ -661,7 +807,7 @@ class TestGcp(TestCase):
         )
 
         if expected_response is not None and secret_type == "access_token":
-            expected_response["data"]["token_scopes"] = self._default_token_scopes
+            expected_response["data"]["token_scopes"] = DEFAULT_TOKEN_SCOPES
 
         with requests_mock.mock() as requests_mocker:
             requests_mocker.register_uri(
@@ -772,8 +918,131 @@ class TestGcp(TestCase):
                 self.assertEqual(resp.status_code, expected_status_code)
                 self.assertTrue(len(resp.content) == 0)
 
-    def test_generate_static_account_oauth2_access_token(self):
-        ...
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "expires_at_seconds": 1679109162,
+                        "token": "ya29.c.b0Aaekm1Le-n2NCqrzZjdMtjpbgRji2yhiJkO...",
+                        "token_ttl": 3598,
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=400,
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": ["role set 'missing-roleset' does not exists"]
+                },
+            ),
+        ]
+    )
+    def test_generate_static_account_oauth2_access_token(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/static-account/{name}/token".format(
+                mount_point=TEST_MOUNT_POINT,
+                name=TEST_STATIC_ACCOUNT_NAME,
+            )
+        )
 
-    def test_generate_static_account_service_account_key(self):
-        ...
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.generate_static_account_oauth2_access_token(
+                        name=TEST_STATIC_ACCOUNT_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertIn(member=mock_url, container=str(cm.exception))
+            else:
+                resp = self._json_adapter.generate_static_account_oauth2_access_token(
+                    name=TEST_STATIC_ACCOUNT_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp, expected_response)
+
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "key_algorithm": "KEY_ALG_RSA_2048",
+                        "key_type": "TYPE_GOOGLE_CREDENTIALS_FILE",
+                        "private_key_data": "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgIn...",
+                    }
+                },
+            ),
+            param(
+                method="POST",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "key_algorithm": "KEY_ALG_RSA_1024",
+                        "key_type": "TYPE_GOOGLE_CREDENTIALS_FILE",
+                        "private_key_data": "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgIn...",
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=400,
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": ["role set 'missing-roleset' does not exists"]
+                },
+            ),
+        ]
+    )
+    def test_generate_static_account_service_account_key(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/static-account/{name}/key".format(
+                mount_point=TEST_MOUNT_POINT,
+                name=TEST_STATIC_ACCOUNT_NAME,
+            )
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.generate_static_account_service_account_key(
+                        name=TEST_STATIC_ACCOUNT_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                        method=method,
+                    )
+
+                self.assertIn(member=mock_url, container=str(cm.exception))
+            else:
+                resp = self._json_adapter.generate_static_account_service_account_key(
+                    name=TEST_STATIC_ACCOUNT_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                    method=method,
+                )
+
+                self.assertEqual(resp, expected_response)
