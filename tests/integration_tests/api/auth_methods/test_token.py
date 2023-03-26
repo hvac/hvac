@@ -209,22 +209,11 @@ class TestToken(HvacIntegrationTestCase, TestCase):
             self.client.auth.token.list_roles()
 
     def test_create_token_w_role(self):
-        # Create policy
-        self.prep_policy("testpolicy")
+        with self.test_role() as test_role:
+            role_name, _, policies = test_role
+            expected_policies = ["default"] + policies
 
-        # Create token role w/ policy
-        assert (
-            self.client.auth.token.create_or_update_role(
-                "testrole", allowed_policies="testpolicy"
-            ).status_code
-            == 204
-        )
-
-        # Create token against role
-        token = self.client.auth.token.create(ttl="1h", role_name="testrole")
-        assert token["auth"]["client_token"]
-        assert token["auth"]["policies"] == ["default", "testpolicy"]
-
-        # Cleanup
-        self.client.auth.token.delete_role("testrole")
-        self.client.sys.delete_policy("testpolicy")
+            # Create token against role
+            token = self.client.auth.token.create(ttl="1h", role_name=role_name)
+            assert token["auth"]["client_token"]
+            assert token["auth"]["policies"] == expected_policies
