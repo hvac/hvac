@@ -168,7 +168,8 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         response = self.client.auth.token.create(period="30m", wrap_ttl="15m")
 
         assert "wrap_info" in response, repr(response)
-        assert response["auth"] is None
+        assert response["wrap_info"] is not None, repr(response)
+        assert response["auth"] is None, repr(response)
         assert response["wrap_info"]["ttl"] == 900
         assert "token" in response["wrap_info"]
 
@@ -229,7 +230,8 @@ class TestToken(HvacIntegrationTestCase, TestCase):
             )
 
             assert "wrap_info" in response, repr(response)
-            assert response["auth"] is None
+            assert response["wrap_info"] is not None, repr(response)
+            assert response["auth"] is None, repr(response)
             assert response["wrap_info"]["ttl"] == 900
             assert "token" in response["wrap_info"]
 
