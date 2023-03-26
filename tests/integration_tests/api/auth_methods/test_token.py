@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from unittest import TestCase
 from hvac import exceptions
 
@@ -5,6 +6,37 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestToken(HvacIntegrationTestCase, TestCase):
+    # would rather these be pytest fixtures
+    @contextmanager
+    def prep_policy(self, name):
+        try:
+            yield (name, self.prep_policy(name))
+        finally:
+            self.client.sys.delete_policy(name)
+
+    @contextmanager
+    def prep_role(self, name, policies=None):
+        role = self.client.auth.token.create_or_update_role(
+            name, allowed_policies=policies
+        )
+        assert role.status_code == 204
+        try:
+            yield (name, role, policies)
+        finally:
+            self.client.auth.token.delete_role(name)
+
+    @contextmanager
+    def test_policy(self):
+        with self.prep_policy(["testpolicy"]) as p:
+            yield p
+
+    @contextmanager
+    def test_role(self):
+        with self.test_policy() as p, self.prep_role(
+            name="testrole", policies=p[0]
+        ) as r:
+            yield r
+
     def test_auth_token_manipulation(self):
         result = self.client.auth.token.create(ttl="1h", renewable=True)
         assert result["auth"]["client_token"]
