@@ -163,6 +163,26 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         assert token["auth"]["client_token"] == lookup["data"]["id"]
         assert lookup["data"]["period"] == 1800
 
+    def test_create_wrapped_token_periodic(self):
+
+        response = self.client.auth.token.create(period="30m", wrap_ttl="15m")
+
+        assert "wrap_info" in response, repr(response)
+        assert response["auth"] is None
+        assert response["wrap_info"]["ttl"] == 900
+        assert "token" in response["wrap_info"]
+
+        # unwrap
+        token = self.client.sys.unwrap(token=response["wrap_info"]["token"])
+
+        assert token["auth"]["client_token"]
+        assert token["auth"]["lease_duration"] == 1800
+
+        # Validate token
+        lookup = self.client.auth.token.lookup(token["auth"]["client_token"])
+        assert token["auth"]["client_token"] == lookup["data"]["id"]
+        assert lookup["data"]["period"] == 1800
+
     def test_token_roles(self):
         # No roles, list_token_roles == None
         with self.assertRaises(exceptions.InvalidPath):
