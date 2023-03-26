@@ -217,3 +217,23 @@ class TestToken(HvacIntegrationTestCase, TestCase):
             token = self.client.auth.token.create(ttl="1h", role_name=role_name)
             assert token["auth"]["client_token"]
             assert token["auth"]["policies"] == expected_policies
+
+    def test_create_wrapped_token_w_role(self):
+        with self.test_role() as test_role:
+            role_name, _, policies = test_role
+            expected_policies = ["default"] + policies
+
+            # Create token against role
+            response = self.client.auth.token.create(
+                ttl="1h", role_name=role_name, wrap_ttl="15m"
+            )
+
+            assert "wrap_info" in response, repr(response)
+            assert response["auth"] is None
+            assert response["wrap_info"]["ttl"] == 900
+            assert "token" in response["wrap_info"]
+
+            # unwrap
+            token = self.client.sys.unwrap(token=response["wrap_info"]["token"])
+            assert token["auth"]["client_token"]
+            assert token["auth"]["policies"] == expected_policies
