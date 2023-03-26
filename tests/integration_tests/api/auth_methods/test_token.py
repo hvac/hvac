@@ -168,18 +168,21 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         with self.assertRaises(exceptions.InvalidPath):
             self.client.auth.token.list_roles()
 
-        # Create token role
-        assert (
-            self.client.auth.token.create_or_update_role("testrole").status_code == 204
-        )
+        try:
+            # Create token role
+            assert (
+                self.client.auth.token.create_or_update_role("testrole").status_code
+                == 204
+            )
 
-        # List token roles
-        during = self.client.auth.token.list_roles()["data"]["keys"]
-        assert len(during) == 1
-        assert during[0] == "testrole"
+            # List token roles
+            during = self.client.auth.token.list_roles()["data"]["keys"]
+            assert len(during) == 1
+            assert during[0] == "testrole"
 
-        # Delete token role
-        self.client.auth.token.delete_role("testrole")
+        finally:
+            # Delete token role
+            self.client.auth.token.delete_role("testrole")
 
         # No roles, list_token_roles == None
         with self.assertRaises(exceptions.InvalidPath):
