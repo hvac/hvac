@@ -335,7 +335,12 @@ class Identity(VaultApiBase):
         return response
 
     def merge_entities(
-        self, from_entity_ids, to_entity_id, force=None, mount_point=DEFAULT_MOUNT_POINT
+        self, 
+        from_entity_ids, 
+        to_entity_id, 
+        force=None, 
+        conflicting_alias_ids_to_keep=None,
+        mount_point=DEFAULT_MOUNT_POINT
     ):
         """Merge many entities into one entity.
 
@@ -351,6 +356,11 @@ class Identity(VaultApiBase):
             secrets in the destination will be unaltered. If not set, this API will throw an error containing all the
             conflicts.
         :type force: bool
+        :param conflicting_alias_ids_to_keep: A list of entity aliases to keep in the case where the to-Entity and
+            from-Entity have aliases with the same mount accessor. In the case where alias share mount accessors, the
+            alias ID given in this list will be kept or merged, and the other alias will be deleted. Note that merges
+            requiring this parameter must have only one from-Entity.
+        :type conflicting_alias_ids_to_keep: array
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -361,6 +371,7 @@ class Identity(VaultApiBase):
                 "from_entity_ids": from_entity_ids,
                 "to_entity_id": to_entity_id,
                 "force": force,
+                "conflicting_alias_ids_to_keep": conflicting_alias_ids_to_keep
             }
         )
         api_path = utils.format_url(
