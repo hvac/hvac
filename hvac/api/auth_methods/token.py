@@ -111,17 +111,11 @@ class Token(VaultApiBase):
             }
         )
 
-        if role_name is not None:
-            api_path = "/v1/auth/{mount_point}/create/{role_name}".format(
-                mount_point=mount_point,
-                role_name=role_name,
-            )
-            return self._adapter.post(
-                url=api_path,
-                json=params,
-            )
-
         api_path = f"/v1/auth/{mount_point}/create"
+
+        if role_name is not None:
+            api_path = f"{api_path}/{role_name}"
+
         return self._adapter.post(
             url=api_path,
             json=params,

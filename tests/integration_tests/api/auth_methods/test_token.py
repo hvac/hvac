@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from unittest import TestCase
 from hvac import exceptions
 
@@ -5,6 +6,37 @@ from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
 class TestToken(HvacIntegrationTestCase, TestCase):
+    # would rather these be pytest fixtures
+    @contextmanager
+    def prep_policy(self, name):
+        try:
+            yield (name, self.prep_policy(name))
+        finally:
+            self.client.sys.delete_policy(name)
+
+    @contextmanager
+    def prep_role(self, name, policies=None):
+        role = self.client.auth.token.create_or_update_role(
+            name, allowed_policies=policies
+        )
+        assert role.status_code == 204
+        try:
+            yield (name, role, policies)
+        finally:
+            self.client.auth.token.delete_role(name)
+
+    @contextmanager
+    def test_policy(self):
+        with self.prep_policy(["testpolicy"]) as p:
+            yield p
+
+    @contextmanager
+    def test_role(self):
+        with self.test_policy() as p, self.prep_role(
+            name="testrole", policies=p[0]
+        ) as r:
+            yield r
+
     def test_auth_token_manipulation(self):
         result = self.client.auth.token.create(ttl="1h", renewable=True)
         assert result["auth"]["client_token"]
@@ -131,45 +163,79 @@ class TestToken(HvacIntegrationTestCase, TestCase):
         assert token["auth"]["client_token"] == lookup["data"]["id"]
         assert lookup["data"]["period"] == 1800
 
+    def test_create_wrapped_token_periodic(self):
+
+        response = self.client.auth.token.create(period="30m", wrap_ttl="15m")
+
+        assert "wrap_info" in response, repr(response)
+        assert response["wrap_info"] is not None, repr(response)
+        assert response["auth"] is None, repr(response)
+        assert response["wrap_info"]["ttl"] == 900
+        assert "token" in response["wrap_info"]
+
+        # unwrap
+        token = self.client.sys.unwrap(token=response["wrap_info"]["token"])
+
+        assert token["auth"]["client_token"]
+        assert token["auth"]["lease_duration"] == 1800
+
+        # Validate token
+        lookup = self.client.auth.token.lookup(token["auth"]["client_token"])
+        assert token["auth"]["client_token"] == lookup["data"]["id"]
+        assert lookup["data"]["period"] == 1800
+
     def test_token_roles(self):
         # No roles, list_token_roles == None
         with self.assertRaises(exceptions.InvalidPath):
             self.client.auth.token.list_roles()
 
-        # Create token role
-        assert (
-            self.client.auth.token.create_or_update_role("testrole").status_code == 204
-        )
+        try:
+            # Create token role
+            assert (
+                self.client.auth.token.create_or_update_role("testrole").status_code
+                == 204
+            )
 
-        # List token roles
-        during = self.client.auth.token.list_roles()["data"]["keys"]
-        assert len(during) == 1
-        assert during[0] == "testrole"
+            # List token roles
+            during = self.client.auth.token.list_roles()["data"]["keys"]
+            assert len(during) == 1
+            assert during[0] == "testrole"
 
-        # Delete token role
-        self.client.auth.token.delete_role("testrole")
+        finally:
+            # Delete token role
+            self.client.auth.token.delete_role("testrole")
 
         # No roles, list_token_roles == None
         with self.assertRaises(exceptions.InvalidPath):
             self.client.auth.token.list_roles()
 
     def test_create_token_w_role(self):
-        # Create policy
-        self.prep_policy("testpolicy")
+        with self.test_role() as test_role:
+            role_name, _, policies = test_role
+            expected_policies = ["default"] + policies
 
-        # Create token role w/ policy
-        assert (
-            self.client.auth.token.create_or_update_role(
-                "testrole", allowed_policies="testpolicy"
-            ).status_code
-            == 204
-        )
+            # Create token against role
+            token = self.client.auth.token.create(ttl="1h", role_name=role_name)
+            assert token["auth"]["client_token"]
+            assert token["auth"]["policies"] == expected_policies
 
-        # Create token against role
-        token = self.client.auth.token.create(ttl="1h", role_name="testrole")
-        assert token["auth"]["client_token"]
-        assert token["auth"]["policies"] == ["default", "testpolicy"]
+    def test_create_wrapped_token_w_role(self):
+        with self.test_role() as test_role:
+            role_name, _, policies = test_role
+            expected_policies = ["default"] + policies
 
-        # Cleanup
-        self.client.auth.token.delete_role("testrole")
-        self.client.sys.delete_policy("testpolicy")
+            # Create token against role
+            response = self.client.auth.token.create(
+                ttl="1h", role_name=role_name, wrap_ttl="15m"
+            )
+
+            assert "wrap_info" in response, repr(response)
+            assert response["wrap_info"] is not None, repr(response)
+            assert response["auth"] is None, repr(response)
+            assert response["wrap_info"]["ttl"] == 900
+            assert "token" in response["wrap_info"]
+
+            # unwrap
+            token = self.client.sys.unwrap(token=response["wrap_info"]["token"])
+            assert token["auth"]["client_token"]
+            assert token["auth"]["policies"] == expected_policies
