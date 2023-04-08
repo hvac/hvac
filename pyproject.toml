@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hvac"
-version = "1.1.0"
+version = "1.1.1"
 description = "HashiCorp Vault API client"
 readme = "README.md"
 authors = [
