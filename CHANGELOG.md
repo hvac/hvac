@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+### 🐛 Bug Fixes
+
+- fix wrapped response for `auth.token.create` ([GH-966](https://github.com/hvac/hvac/pull/966))
+
 ## 1.1.0
 
 ### 📢 Deprecations / Announcements
