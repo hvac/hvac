@@ -24,6 +24,7 @@ class Kubernetes(VaultApiBase):
         token_reviewer_jwt=None,
         pem_keys=None,
         issuer=None,
+        disable_local_ca_jwt=False,
         mount_point=DEFAULT_MOUNT_POINT,
         disable_local_ca_jwt=False,
     ):
