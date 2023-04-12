@@ -64,7 +64,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 disable_local_ca_jwt=True,
                 raises=exceptions.InvalidRequest,
                 exception_message="one of pem_keys or kubernetes_ca_cert must be set"
-                if utils.vault_version_lt("1.9.0")
+                if utils.vault_version_lt("1.10.0")
                 else "kubernetes_ca_cert must be given",
             ),
         ]
