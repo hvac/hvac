@@ -59,6 +59,12 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 if utils.vault_version_lt("1.11.0")
                 else "compact JWS format must have three parts",
             ),
+            param(
+                "missing kubernetes_ca_cert",
+                disable_local_ca_jwt=True,
+                raises=exceptions.ParamValidationError,
+                exception_message="kubernetes_ca_cert must be given",
+            ),
         ]
     )
     def test_configure(
