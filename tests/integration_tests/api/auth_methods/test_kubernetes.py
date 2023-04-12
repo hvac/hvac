@@ -62,7 +62,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             param(
                 "missing kubernetes_ca_cert",
                 disable_local_ca_jwt=True,
-                raises=exceptions.ParamValidationError,
+                raises=exceptions.InvalidRequest,
                 exception_message="kubernetes_ca_cert must be given",
             ),
         ]
