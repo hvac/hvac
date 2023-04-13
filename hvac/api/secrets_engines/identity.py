@@ -364,7 +364,7 @@ class Identity(VaultApiBase):
             requiring this parameter must have only one from-Entity.
             Requires Vault 1.12 or higher
         :type conflicting_alias_ids_to_keep: list
-       :return: The response of the request.
+        :return: The response of the request.
         :rtype: requests.Response
         """
         params = utils.remove_nones(
