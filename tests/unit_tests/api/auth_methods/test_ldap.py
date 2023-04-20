@@ -32,6 +32,18 @@ class TestLdap(TestCase):
             group_dn="ou=groups,cn=hvac,cn=network",
             url="ldaps://ldap.python-hvac.org",
             mount_point=mount_point,
+            anonymous_group_search=False,
+            request_timeout=90,
+            token_bound_cidrs=[],
+            token_explicit_max_ttl=0,
+            token_no_default_policy=False,
+            token_num_uses=0,
+            token_period=0,
+            token_policies=[],
+            token_type="",
+            upndomain=None,
+            userfilter="",
+            username_as_alias=False,
         )
         self.assertEqual(
             first=expected_status_code,

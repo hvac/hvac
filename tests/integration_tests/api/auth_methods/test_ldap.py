@@ -72,6 +72,24 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
                 ),
             ),
             (
+                "update config with non-defaults",
+                dict(
+                    url=MockLdapServer.ldap_url,
+                    anonymous_group_search=True,
+                    request_timeout=60,
+                    token_bound_cidrs=["10.0.0.0"],
+                    token_explicit_max_ttl=60,
+                    token_no_default_policy=True,
+                    token_num_uses=10,
+                    token_period=10,
+                    token_policies=["foo"],
+                    token_type="service",
+                    upndomain="bar",
+                    userfilter='({{.UserAttr}}={{.Username}})',
+                    username_as_alias=True
+                ),
+            ),
+            (
                 "incorrect tls version",
                 dict(url=MockLdapServer.ldap_url, tls_min_version="cats"),
                 exceptions.InvalidRequest,
