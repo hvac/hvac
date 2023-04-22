@@ -647,7 +647,8 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
         ]
     )
     @skipIf(
-        utils.vault_version_lt("1.12.0"), '"conflicting_alias_ids_to_keep" added in Vault v1.12.0'
+        utils.vault_version_lt("1.12.0"),
+        '"conflicting_alias_ids_to_keep" added in Vault v1.12.0',
     )
     def test_merge_entities_conflicting(self, label, raises=None, exception_message=""):
         create_response = self.client.secrets.identity.create_or_update_entity(
@@ -682,25 +683,29 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
                     from_entity_ids=merge_id2,
                     to_entity_id=parent_id,
                     mount_point=self.TEST_MOUNT_POINT,
-                    conflicting_alias_ids_to_keep=[merge_id1]
+                    conflicting_alias_ids_to_keep=[merge_id1],
                 )
             self.assertIn(
                 member=exception_message,
                 container=str(cm.exception),
             )
         else:
-            merge_conflicting_entities_response = self.client.secrets.identity.merge_entities(
-                from_entity_ids=merge_id2,
-                to_entity_id=parent_id,
-                mount_point=self.TEST_MOUNT_POINT,
-                conflicting_alias_ids_to_keep=[merge_id1]
+            merge_conflicting_entities_response = (
+                self.client.secrets.identity.merge_entities(
+                    from_entity_ids=merge_id2,
+                    to_entity_id=parent_id,
+                    mount_point=self.TEST_MOUNT_POINT,
+                    conflicting_alias_ids_to_keep=[merge_id1],
+                )
             )
-            logging.debug("merge_conflicting_entities_response: %s" % merge_conflicting_entities_response)
+            logging.debug(
+                "merge_conflicting_entities_response: %s"
+                % merge_conflicting_entities_response
+            )
             self.assertEqual(
                 first=bool(merge_conflicting_entities_response),
                 second=True,
             )
-
 
     @parameterized.expand(
         [

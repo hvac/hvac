@@ -335,10 +335,10 @@ class Identity(VaultApiBase):
         return response
 
     def merge_entities(
-        self, 
-        from_entity_ids, 
-        to_entity_id, 
-        force=None, 
+        self,
+        from_entity_ids,
+        to_entity_id,
+        force=None,
         mount_point=DEFAULT_MOUNT_POINT,
         conflicting_alias_ids_to_keep=None,
     ):
