@@ -59,6 +59,14 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 if utils.vault_version_lt("1.11.0")
                 else "compact JWS format must have three parts",
             ),
+            param(
+                "missing kubernetes_ca_cert",
+                disable_local_ca_jwt=True,
+                raises=exceptions.InvalidRequest,
+                exception_message="one of pem_keys or kubernetes_ca_cert must be set"
+                if utils.vault_version_lt("1.10.0")
+                else "kubernetes_ca_cert must be given",
+            ),
         ]
     )
     def test_configure(
@@ -68,6 +76,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         token_reviewer_jwt=None,
         pem_keys=None,
         issuer=None,
+        disable_local_ca_jwt=False,
         raises=None,
         exception_message="",
     ):
@@ -80,6 +89,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                     token_reviewer_jwt=token_reviewer_jwt,
                     pem_keys=pem_keys,
                     mount_point=self.TEST_MOUNT_POINT,
+                    disable_local_ca_jwt=disable_local_ca_jwt,
                 )
             self.assertIn(member=exception_message, container=str(cm.exception))
         else:
@@ -88,6 +98,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 kubernetes_ca_cert="-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----",
                 mount_point=self.TEST_MOUNT_POINT,
                 issuer="bob",
+                disable_local_ca_jwt=disable_local_ca_jwt,
             )
             logging.debug("configure_response: %s" % configure_response)
             self.assertEqual(
