@@ -874,7 +874,7 @@ class Transit(VaultApiBase):
                     "signature_algorithm": signature_algorithm,
                     "marshaling_algorithm": marshaling_algorithm,
                     "salt_length": salt_length,
-                    "batch_input": batch_input
+                    "batch_input": batch_input,
                 }
             )
         )
