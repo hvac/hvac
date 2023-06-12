@@ -757,13 +757,13 @@ class Transit(VaultApiBase):
         hash_input,
         key_version=None,
         hash_algorithm=None,
-        batch_input=None,
         context=None,
         prehashed=None,
         signature_algorithm=None,
         marshaling_algorithm=None,
         salt_length=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        batch_input=None,
     ):
         """Return the cryptographic signature of the given data using the named key and the specified hash algorithm.
 
