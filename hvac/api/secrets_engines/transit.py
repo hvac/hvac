@@ -878,9 +878,9 @@ class Transit(VaultApiBase):
                 }
             )
         )
-        
-        hash_algorithm = '' if not hash_algorithm else hash_algorithm
-        
+
+        hash_algorithm = "" if not hash_algorithm else hash_algorithm
+
         api_path = utils.format_url(
             "/v1/{mount_point}/sign/{name}/{hash_algorithm}",
             mount_point=mount_point,
