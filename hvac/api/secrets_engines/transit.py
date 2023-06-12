@@ -885,7 +885,7 @@ class Transit(VaultApiBase):
             "/v1/{mount_point}/sign/{name}/{hash_algorithm}",
             mount_point=mount_point,
             name=name,
-            hash_algorithm=hash_algorithm
+            hash_algorithm=hash_algorithm,
         )
         return self._adapter.post(
             url=api_path,
