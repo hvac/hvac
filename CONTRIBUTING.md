@@ -94,12 +94,15 @@ Due to the close connection between this module and HashiCorp Vault versions, br
 
 ## Creating / Publishing Releases
 
-- [ ] Checkout the `develop` branch:
+- [ ] Ensure your local `main` branch is up to date, and then checkout a new branch to create a release PR:
 
   ```
-  git checkout develop
+  git checkout main
   git pull
+  # git pull upstream main
+  git checkout -b release/vX.Y.Z
   ```
+
 - [ ] Update the version number using [Poetry](https://python-poetry.org/docs/). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed. This will also add an appropriate git commit for the new version.
 
   ```
@@ -110,7 +113,7 @@ Due to the close connection between this module and HashiCorp Vault versions, br
   ```
   git commit CHANGELOG.md -m "Changelog updates for v$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)"
   ```
-- [ ] Git push the updated develop branch (`git push`) and open a PR to rebase merge the develop branch into main:  [https://github.com/hvac/hvac/compare/main...develop](https://github.com/hvac/hvac/compare/main...develop). Ensure the PR has the "release" label applied and then merge it.
+- [ ] Git push the release branch (`git push`) and open a PR. Ensure the PR has the "release" label applied and then merge it after review.
 
-- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases). Ensure the tag is set to the release name (e.g., vX.X.X) and the target is the main branch.
+- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases). Ensure the tag is set to the release name (e.g., vX.X.X) and the target is the `main` branch.
   NOTE: [release-drafter](https://github.com/toolmantim/release-drafter) sets the release name by default. If performing a minor or major update, these values will need to be manually updated before publishing the draft release subsequently.
