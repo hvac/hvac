@@ -159,6 +159,7 @@ class JWT(VaultApiBase):
         token_period=None,
         token_type=None,
         path=None,
+        user_claim_json_pointer=False,
     ):
         """Register a role in the JWT method.
 
@@ -177,7 +178,9 @@ class JWT(VaultApiBase):
             Required for "jwt" roles, optional for "oidc" roles.
         :type bound_audiences: list
         :param user_claim: The claim to use to uniquely identify the user; this will be used as the name for the
-            Identity entity alias created due to a successful login. The claim value must be a string.
+            Identity entity alias created due to a successful login. The interpretation of the user claim
+            is configured with user_claim_json_pointer. If set to True, user_claim supports JSON pointer syntax
+            for referencing a claim. The claim value must be a string.
         :type user_claim: str | unicode
         :param clock_skew_leeway: Only applicable with "jwt" roles.
         :type clock_skew_leeway: int
@@ -240,6 +243,9 @@ class JWT(VaultApiBase):
         :type token_type: str
         :param path: The "path" the method/backend was mounted on.
         :type path: str | unicode
+        :param user_claim_json_pointer: Specifies if the user_claim value uses JSON pointer syntax for referencing claims.
+            By default, the user_claim value will not use JSON pointer.
+        :type user_claim_json_pointer: bool
         :return: The response of the create_role request.
         :rtype: dict
         """
@@ -269,6 +275,7 @@ class JWT(VaultApiBase):
                 "token_num_uses": token_num_uses,
                 "token_period": token_period,
                 "token_type": token_type,
+                "user_claim_json_pointer": user_claim_json_pointer,
             }
         )
         api_path = utils.format_url(
