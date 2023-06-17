@@ -58,6 +58,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: package
+          path: dist
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -72,6 +73,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: package
+          path: dist
 
       - name: Add release asset
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
