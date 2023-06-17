@@ -5,10 +5,10 @@ on:
     types: [published]
 
 jobs:
-  deploy:
-
-    runs-on: ubuntu-20.04
-
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - uses: actions/checkout@v3
 
@@ -34,8 +34,47 @@ jobs:
       run: poetry install --no-interaction
 
     - name: Build and publish
-      env:
-        PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        poetry publish --build --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}"
+        poetry build
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: package
+        path: dist/
+        retention-days: 1
+        if-no-files-found: error
+
+  pypi:
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+        name: pypi-publishing
+        url: https://pypi.org/project/hvac/
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: package
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  asset:
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: package
+
+      - name: Add release asset
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        with:
+          files: |
+            dist/*
