@@ -5,7 +5,7 @@ updateDocsComment: >
   Thanks for opening this pull request!
   The maintainers of this repository would appreciate it if you would update some of our documentation based on your changes.
 
-  See: https://github.com/hvac/hvac/blob/develop/CONTRIBUTING.md#documentation
+  See: https://github.com/hvac/hvac/blob/main/CONTRIBUTING.md#documentation
 
 updateDocsWhiteList:
   - bug
