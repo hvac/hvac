@@ -60,6 +60,9 @@ jobs:
           name: package
           path: dist
 
+      - name: Show tree
+        run: tree
+
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -74,6 +77,9 @@ jobs:
         with:
           name: package
           path: dist
+
+      - name: Show tree
+        run: tree
 
       - name: Add release asset
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
