@@ -70,6 +70,8 @@ class Kv(VaultApiBase):
         :return: The selected secrets_engines class corresponding to this instance's default_kv_version setting
         :rtype: hvac.api.vault_api_base.VaultApiBase
         """
+        if item in ["_default_kv_version", "default_kv_version"]:
+            raise AttributeError
         if self.default_kv_version == "1":
             return getattr(self._kv_v1, item)
         elif self.default_kv_version == "2":
