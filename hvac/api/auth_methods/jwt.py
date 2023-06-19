@@ -243,8 +243,8 @@ class JWT(VaultApiBase):
         :type token_type: str
         :param path: The "path" the method/backend was mounted on.
         :type path: str | unicode
-        :param user_claim_json_pointer: Specifies if the user_claim value uses JSON pointer syntax for referencing claims.
-            By default, the user_claim value will not use JSON pointer.
+        :param user_claim_json_pointer: Specifies if the ``user_claim`` value uses JSON pointer syntax for referencing claims.
+            By default, the ``user_claim`` value will not use JSON pointer.
         :type user_claim_json_pointer: bool
         :return: The response of the create_role request.
         :rtype: dict
