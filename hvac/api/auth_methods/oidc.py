@@ -65,7 +65,7 @@ class OIDC(JWT):
         :type bound_audiences: list
         :param user_claim: The claim to use to uniquely identify the user; this will be used as the name for the
             Identity entity alias created due to a successful login. The interpretation of the user claim
-            is configured with user_claim_json_pointer. If set to True, user_claim supports JSON pointer syntax
+            is configured with ``user_claim_json_pointer``. If set to ``True``, ``user_claim`` supports JSON pointer syntax
             for referencing a claim. The claim value must be a string.
         :type user_claim: str | unicode
         :param clock_skew_leeway: Only applicable with "jwt" roles.
