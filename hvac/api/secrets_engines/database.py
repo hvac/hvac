@@ -261,6 +261,25 @@ class Database(VaultApiBase):
             url=api_path,
         )
 
+    def read_static_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint queries the static role definition.
+
+        :param name: Specifies the name of the role to read.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}", mount_point=mount_point, name=name
+        )
+
+        return self._adapter.get(
+            url=api_path,
+        )
+
     def list_roles(self, mount_point=DEFAULT_MOUNT_POINT):
         """This endpoint returns a list of available roles.
 
