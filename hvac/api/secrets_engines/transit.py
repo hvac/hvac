@@ -889,13 +889,10 @@ class Transit(VaultApiBase):
             )
         )
 
-        hash_algorithm = "" if not hash_algorithm else hash_algorithm
-
         api_path = utils.format_url(
-            "/v1/{mount_point}/sign/{name}/{hash_algorithm}",
+            "/v1/{mount_point}/sign/{name}",
             mount_point=mount_point,
             name=name,
-            hash_algorithm=hash_algorithm,
         )
         return self._adapter.post(
             url=api_path,
