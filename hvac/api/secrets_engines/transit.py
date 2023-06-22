@@ -868,9 +868,9 @@ class Transit(VaultApiBase):
                     allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
                 )
             )
-        
+
         hash_input = None if batch_input is not None else hash_input
-        
+
         params = {
             "input": hash_input,
         }
