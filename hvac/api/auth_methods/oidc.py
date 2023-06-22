@@ -45,7 +45,7 @@ class OIDC(JWT):
         token_period=None,
         token_type=None,
         path=None,
-        user_claim_json_pointer=False,
+        user_claim_json_pointer=None,
     ):
         """Register a role in the OIDC method.
 
