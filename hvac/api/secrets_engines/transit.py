@@ -869,23 +869,13 @@ class Transit(VaultApiBase):
                 )
             )
 
-        if (
-            hash_input is None
-            and batch_input is None
-        ):
+        if hash_input is None and batch_input is None:
             error_msg = "Invalid parameter combination: Please provide at least one of the following parameters: 'hash_input' or 'batch_input'."
-            raise exceptions.ParamValidationError(
-                message=error_msg
-            )
-        
-        if (
-            hash_input is not None
-            and batch_input is not None
-        ):
+            raise exceptions.ParamValidationError(message=error_msg)
+
+        if hash_input is not None and batch_input is not None:
             error_msg = "Invalid parameter combination: 'hash_input' or 'batch_input' should be provided, not both."
-            raise exceptions.ParamValidationError(
-                message=error_msg
-            )
+            raise exceptions.ParamValidationError(message=error_msg)
 
         params = {
             "input": hash_input,
