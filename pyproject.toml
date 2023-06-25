@@ -33,7 +33,7 @@ python = "^3.6.2"
 pyhcl = "^0.4.4"
 requests = "^2.27.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 Werkzeug = "2.0.3"
 Authlib = "^1.0.1"
 black = "22.6.0"
