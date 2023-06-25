@@ -55,10 +55,10 @@ Should new dependencies need to be added, they can be simply added with Poetry. 
 poetry add {package_name}
 ```
 
-If the dependency is only needed for development the `-D` flag can be used to mark the dependency as a development dependency.
+If the dependency is only needed for development, add it to the `dev` group like so:
 
 ```
-poetry add -D {dev_package_name}
+poetry add --group dev {dev_package_name}
 ```
 
 ### Adding New Documentation Files
