@@ -809,11 +809,12 @@ class Transit(VaultApiBase):
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :param batch_input: Specifies a list of items for processing.
-            When this parameter is set, if the parameter 'hash_input' is also set, it will be ignored.
-            Responses are returned in the 'batch_results' array component of the 'data' element of the response.
+            This parameter is mutually exclusive with the ``hash_input`` parameter, but one of them must be supplied. 
+            If both are set, or neither are set, an exception will be raised.
+            Responses are returned in the ``batch_results`` array component of the ``data`` element of the response.
             Any batch output will preserve the order of the batch input.
-            If the input data value of an item is invalid, the corresponding item in the 'batch_results'
-            will have the key 'error' with a value describing the error.
+            If the input data value of an item is invalid, the corresponding item in the ``batch_results``
+            will have the key ``error`` with a value describing the error.
         :type batch_input: List[Dict[str, str]]
         :return: The JSON response of the request.
         :rtype: dict
