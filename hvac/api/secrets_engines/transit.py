@@ -774,7 +774,9 @@ class Transit(VaultApiBase):
 
         :param name: Specifies the name of the encryption key to use for signing. This is specified as part of the URL.
         :type name: str | unicode
-        :param hash_input: Specifies the base64 encoded input data.
+        :param hash_input: This parameter is mutually exclusive with the ``batch_results`` parameter, but one of them must be supplied. 
+            If both are set, or neither are set, an exception will be raised.
+            ``hash_input`` Specifies the base64 encoded input data.
         :type hash_input: str | unicode
         :param key_version: Specifies the version of the key to use for signing. If not set, uses the latest version.
             Must be greater than or equal to the key's min_encryption_version, if set.
