@@ -775,7 +775,7 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key to use for signing. This is specified as part of the URL.
         :type name: str | unicode
         :param hash_input: Specifies the base64 encoded input data.
-            This parameter is mutually exclusive with the ``batch_results`` parameter, but one of them must be supplied. 
+            This parameter is mutually exclusive with the ``batch_results`` parameter, but one of them must be supplied.
             If both are set, or neither are set, an exception will be raised.
         :type hash_input: str | unicode
         :param key_version: Specifies the version of the key to use for signing. If not set, uses the latest version.
@@ -812,7 +812,7 @@ class Transit(VaultApiBase):
             Any batch output will preserve the order of the batch input.
             If the input data value of an item is invalid, the corresponding item in the ``batch_results``
             will have the key ``error`` with a value describing the error.
-            This parameter is mutually exclusive with the ``hash_input`` parameter, but one of them must be supplied. 
+            This parameter is mutually exclusive with the ``hash_input`` parameter, but one of them must be supplied.
             If both are set, or neither are set, an exception will be raised.
             Responses are returned in the ``batch_results`` array component of the ``data`` element of the response.
         :type batch_input: List[Dict[str, str]]
