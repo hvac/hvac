@@ -119,9 +119,15 @@ bumpversion {patch|minor|major}
 
 Choose `minor`, `major`, or `patch` as appropriate.
 
+Review the changed files, and commit the changes to the branch.
+
 ### Updating the changelog
 
 Pull up the current draft [hvac release](https://github.com/hvac/hvac/releases/) and use the [release-drafter](https://github.com/toolmantim/release-drafter) generated release body to update [CHANGELOG.md](CHANGELOG.md). **Take note of header levels, which may differ between the draft and the changelog.**
+
+⚠ **NOTE:** the changelog is written in markdown, but will be converted to reStructured Text (RST) for the docsite. Markdown supports nested formatting, but RST does not, and the conversion will not happen correctly. For example, in markdown we can write `**_this in bold and italics_**` but only one formatting will convert. While it didn't in the past, this should now fail (as a warning) in CI to bring it to our attention. Fix these by choosing a single formatting style for the selected text.
+
+When the changelog looks good, commit it to the branch.
 
 #### Handling announcements and deprecations
 
