@@ -55,10 +55,10 @@ Should new dependencies need to be added, they can be simply added with Poetry. 
 poetry add {package_name}
 ```
 
-If the dependency is only needed for development the `-D` flag can be used to mark the dependency as a development dependency.
+If the dependency is only needed for development, add it to the `dev` group like so:
 
 ```
-poetry add -D {dev_package_name}
+poetry add --group dev {dev_package_name}
 ```
 
 ### Adding New Documentation Files
@@ -94,7 +94,9 @@ Due to the close connection between this module and HashiCorp Vault versions, br
 
 ## Creating / Publishing Releases
 
-- [ ] Ensure your local `main` branch is up to date, and then checkout a new branch to create a release PR:
+### Preparing the release branch
+
+Ensure your local `main` branch is up to date, and then checkout a new branch to create a release PR:
 
   ```
   git checkout main
@@ -103,17 +105,50 @@ Due to the close connection between this module and HashiCorp Vault versions, br
   git checkout -b release/vX.Y.Z
   ```
 
-- [ ] Update the version number using [Poetry](https://python-poetry.org/docs/). Releases typically just use the "patch" bumpversion option; but "minor" and "major" are available as needed. This will also add an appropriate git commit for the new version.
+### Updating the version
 
-  ```
-  poetry version {patch|minor|major}
-  ```
-- [ ] Pull up the current draft [hvac release](https://github.com/hvac/hvac/releases/) and use the [release-drafter](https://github.com/toolmantim/release-drafter) generated release body to update [CHANGELOG.md](CHANGELOG.md). Then commit the changes:
+`hvac` uses [semver](https://semver.org/) so be aware of whether the next version is a minor, major, or patch release.
 
-  ```
-  git commit CHANGELOG.md -m "Changelog updates for v$(grep -oP '(?<=current_version = ).*' .bumpversion.cfg)"
-  ```
-- [ ] Git push the release branch (`git push`) and open a PR. Ensure the PR has the "release" label applied and then merge it after review.
+Minor will be most common, but it will depend on the PRs that have been accepted. Ideally, all PRs are added to a milestone and we can refer to those to determine what the next version must be.
 
-- [ ] Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases). Ensure the tag is set to the release name (e.g., vX.X.X) and the target is the `main` branch.
-  NOTE: [release-drafter](https://github.com/toolmantim/release-drafter) sets the release name by default. If performing a minor or major update, these values will need to be manually updated before publishing the draft release subsequently.
+Update the version number using [bump2version](https://github.com/c4urself/bump2version), which will update all the places that need to be updated.
+
+```
+bumpversion {patch|minor|major}
+```
+
+Choose `minor`, `major`, or `patch` as appropriate.
+
+Review the changed files, and commit the changes to the branch.
+
+### Updating the changelog
+
+Pull up the current draft [hvac release](https://github.com/hvac/hvac/releases/) and use the [release-drafter](https://github.com/toolmantim/release-drafter) generated release body to update [CHANGELOG.md](CHANGELOG.md). **Take note of header levels, which may differ between the draft and the changelog.**
+
+⚠ **NOTE:** the changelog is written in markdown, but will be converted to reStructured Text (RST) for the docsite. Markdown supports nested formatting, but RST does not, and the conversion will not happen correctly. For example, in markdown we can write `**_this in bold and italics_**` but only one formatting will convert. While it didn't in the past, this should now fail (as a warning) in CI to bring it to our attention. Fix these by choosing a single formatting style for the selected text.
+
+When the changelog looks good, commit it to the branch.
+
+#### Handling announcements and deprecations
+
+Release drafter is only aware of PRs. Deprecations or other announcements that are posted as issues or discussions, even if labeled appropriately, will not be included, and we must add these into the channgelog manually for now.
+
+[Search for issues with the `deprecation` or `announcement` labels](https://github.com/hvac/hvac/issues?q=is%3Aissue+is%3Aopen+label%3Aannouncement%2Cdeprecation) to see if anything needs to be added.
+
+If there were no PRs with these labels, release drafter will not have created the section header either. Use the following header:
+- `📢 Deprecations / Announcements`
+Ensure each entry have a link to the relevant GitHub issue/PR (see the other entries).
+
+### Opening the release PR
+
+Push the release branch (`git push`, with tracking if needed) and open a PR.
+Ensure the PR has the `release` label applied and then squash & merge it after review and tests pass.
+
+### Tag and release
+
+Publish the draft release on GitHub: [https://github.com/hvac/hvac/releases](https://github.com/hvac/hvac/releases).
+**Ensure the tag is set to the release name (e.g., `vX.Y.Z`) and the target is the `main` branch.**
+
+  NOTE: [release-drafter](https://github.com/toolmantim/release-drafter) sets the release name by default. If performing a minor or major update, these values may need to be manually updated before publishing the draft release subsequently, if some PRs were not labeled to tell release drafter that they required a specific level bump.
+
+Publishing the release will also create a tag, and this will trigger release to PyPI. Be sure to [check that workflow](https://github.com/hvac/hvac/actions/workflows/python-publish.yml) and the [`hvac` page on PyPI](https://pypi.org/project/hvac/) to ensure that it completes successfully.

@@ -33,7 +33,7 @@ python = "^3.6.2"
 pyhcl = "^0.4.4"
 requests = "^2.27.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 Werkzeug = "2.0.3"
 Authlib = "^1.0.1"
 black = "22.6.0"
@@ -58,6 +58,7 @@ sphinx-rtd-theme = "0.5.0"
 mistune = "0.8.4"
 docutils = "<0.18"
 packaging = "<23"
+bump2version = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
