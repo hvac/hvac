@@ -27,6 +27,11 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
+packages = [
+    { include = "hvac" },
+    { include = "tests", format = "sdist" },
+    { include = "docs", format = "sdist" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
