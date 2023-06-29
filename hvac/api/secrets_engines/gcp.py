@@ -560,6 +560,145 @@ class Gcp(VaultApiBase):
             api_path, key_algorithm, key_type, method
         )
 
+    def create_or_update_impersonated_account(
+        self,
+        name,
+        service_account_email,
+        token_scopes=None,
+        ttl=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Create an impersonated account or update an existing impersonated account.
+
+        See impersonated account docs for the GCP secrets backend to learn more about what happens when you create or update an
+            impersonated account.
+
+        Supported methods:
+            POST: /{mount_point}/impersonated-account/{name}. Produces: 204 (empty body)
+
+        :param name: Name of the impersonated account. Cannot be updated.
+        :type name: str | unicode
+        :param service_account_email: Email of the GCP service account to manage. Cannot be updated.
+        :type service_account_email: str | unicode
+        :param token_scopes: List of OAuth scopes to assign to access tokens generated under this impersonated account
+        :type token_scopes: list[str]
+        :param ttl: Lifetime of the token generated. Defaults to 1 hour and is limited to a maximum of 12 hours.
+            Uses duration format strings.
+        :type ttl: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        params = {
+            "service_account_email": service_account_email,
+        }
+        params.update(
+            utils.remove_nones(
+                {
+                    "token_scopes": token_scopes,
+                    "ttl": ttl,
+                }
+            )
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/impersonated-account/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_impersonated_account(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Read an impersonated account.
+
+        Supported methods:
+            GET: /{mount_point}/impersonated-account/{name}. Produces: 200 application/json
+
+        :param name: Name of the impersonated account.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/impersonated-account/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_impersonated_accounts(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List configured impersonated accounts.
+
+        Supported methods:
+            LIST: /{mount_point}/impersonated-accounts. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/impersonated-accounts", mount_point=mount_point
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def delete_impersonated_account(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete an existing impersonated account by the given name.
+
+        Supported methods:
+            DELETE: /{mount_point}/impersonated-account/{name} Produces: 204 (empty body)
+
+        :param name: Name of the impersonated account.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/impersonated-account/{name}",
+            name=name,
+            mount_point=mount_point,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def generate_impersonated_account_oauth2_access_token(
+        self, name, mount_point=DEFAULT_MOUNT_POINT
+    ):
+        """Generate an OAuth2 token with the scopes defined on the impersonated account.
+
+        This OAuth access token can be used in GCP API calls, e.g. curl -H "Authorization: Bearer $TOKEN" ...
+
+        Supported methods:
+            GET: /{mount_point}/impersonated-account/{name}/token. Produces: 200 application/json
+
+        :param name: Name of the impersonated account to generate an access token under.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/impersonated-account/{name}/token",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
     def _generate_service_account_key(
         self,
         api_path,

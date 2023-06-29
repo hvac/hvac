@@ -16,10 +16,12 @@ from hvac.exceptions import (
 
 TEST_MOUNT_POINT = "gcp-test"
 TEST_ROLESET_NAME = "hvac-roleset"
+TEST_SERVICE_ACCOUNT_ID = "test-hvac-sa"
 TEST_PROJECT_ID = "test-hvac"
 TEST_STATIC_ACCOUNT_NAME = "hvac-static-account"
+TEST_IMPERSONATED_ACCOUNT_NAME = "hvac-impersonated-account"
 TEST_SERVICE_ACCOUNT_EMAIL = (
-    f"{TEST_STATIC_ACCOUNT_NAME}@{TEST_PROJECT_ID}.iam.gserviceaccount.com"
+    f"{TEST_SERVICE_ACCOUNT_ID}@{TEST_PROJECT_ID}.iam.gserviceaccount.com"
 )
 DEFAULT_CREDENTIALS = dedent(
     """
@@ -1043,6 +1045,277 @@ class TestGcp(TestCase):
                     name=TEST_STATIC_ACCOUNT_NAME,
                     mount_point=TEST_MOUNT_POINT,
                     method=method,
+                )
+
+                self.assertEqual(resp, expected_response)
+
+    @parameterized.expand(
+        [
+            param(method="POST", expected_status_code=204, ttl="3h"),
+            param(
+                method="POST",
+                expected_status_code=400,
+                ttl="invalid",
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": ['error converting input invalid for field "ttl"']
+                },
+            ),
+        ]
+    )
+    def test_create_or_update_impersonated_account(
+        self,
+        method,
+        expected_status_code,
+        ttl,
+        raises=None,
+        expected_response=None,
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/impersonated-account/{name}".format(
+                mount_point=TEST_MOUNT_POINT,
+                name=TEST_IMPERSONATED_ACCOUNT_NAME,
+            )
+        )
+
+        token_scopes = DEFAULT_TOKEN_SCOPES
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.create_or_update_impersonated_account(
+                        name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                        service_account_email=TEST_SERVICE_ACCOUNT_EMAIL,
+                        token_scopes=token_scopes,
+                        ttl=ttl,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertIn(
+                    member='error converting input invalid for field "ttl"',
+                    container=str(cm.exception),
+                )
+            else:
+                resp = self._json_adapter.create_or_update_impersonated_account(
+                    name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                    service_account_email=TEST_SERVICE_ACCOUNT_EMAIL,
+                    token_scopes=token_scopes,
+                    ttl=ttl,
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp.status_code, expected_status_code)
+                self.assertTrue(len(resp.content) == 0)
+
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "service_account_email": TEST_SERVICE_ACCOUNT_EMAIL,
+                        "service_account_project": TEST_PROJECT_ID,
+                        "token_scopes": DEFAULT_TOKEN_SCOPES,
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=404,
+                raises=InvalidPath,
+            ),
+        ]
+    )
+    def test_read_impersonated_account(
+        self,
+        method,
+        expected_status_code,
+        raises=None,
+        expected_response=None,
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/impersonated-account/{name}".format(
+                mount_point=TEST_MOUNT_POINT,
+                name=TEST_IMPERSONATED_ACCOUNT_NAME,
+            )
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.read_impersonated_account(
+                        name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertEqual(cm.exception.json, expected_response)
+            else:
+                resp = self._json_adapter.read_impersonated_account(
+                    name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp, expected_response)
+
+    @parameterized.expand(
+        [
+            param(
+                method="LIST",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "keys": ["impersonated-account-01", "impersonated-account-02"]
+                    }
+                },
+            ),
+            param(method="LIST", expected_status_code=404, raises=InvalidPath),
+            param(method="LIST", expected_status_code=405, raises=UnexpectedError),
+        ]
+    )
+    def test_list_impersonated_accounts(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/impersonated-accounts".format(
+                mount_point=TEST_MOUNT_POINT,
+            )
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.list_impersonated_accounts(
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertEqual(cm.exception.json, expected_response)
+            else:
+                resp = self._json_adapter.list_impersonated_accounts(
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp, expected_response)
+
+    @parameterized.expand(
+        [
+            param(method="DELETE", expected_status_code=204),
+            param(method="DELETE", expected_status_code=404, raises=InvalidPath),
+            param(method="DELETE", expected_status_code=405, raises=UnexpectedError),
+        ]
+    )
+    def test_delete_impersonated_account(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = (
+            "http://localhost:8200/v1/{mount_point}/impersonated-account/{name}".format(
+                mount_point=TEST_MOUNT_POINT,
+                name=TEST_IMPERSONATED_ACCOUNT_NAME,
+            )
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.delete_impersonated_account(
+                        name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertEqual(cm.exception.json, expected_response)
+            else:
+                resp = self._json_adapter.delete_impersonated_account(
+                    name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                    mount_point=TEST_MOUNT_POINT,
+                )
+
+                self.assertEqual(resp.status_code, expected_status_code)
+                self.assertTrue(len(resp.content) == 0)
+
+    @parameterized.expand(
+        [
+            param(
+                method="GET",
+                expected_status_code=200,
+                expected_response={
+                    "data": {
+                        "expires_at_seconds": 1679109162,
+                        "token": "ya29.c.b0Aaekm1Le-n2NCqrzZjdMtjpbgRji2yhiJkO...",
+                        "token_ttl": 3598,
+                    }
+                },
+            ),
+            param(
+                method="GET",
+                expected_status_code=400,
+                raises=InvalidRequest,
+                expected_response={
+                    "errors": [
+                        'impersonated account "missing-account" does not exists'
+                    ],
+                },
+            ),
+        ]
+    )
+    def test_generate_impersonated_account_oauth2_access_token(
+        self, method, expected_status_code, raises=None, expected_response=None
+    ):
+        mock_url = "http://localhost:8200/v1/{mount_point}/impersonated-account/{name}/token".format(
+            mount_point=TEST_MOUNT_POINT,
+            name=TEST_IMPERSONATED_ACCOUNT_NAME,
+        )
+
+        with requests_mock.mock() as requests_mocker:
+            requests_mocker.register_uri(
+                method=method,
+                url=mock_url,
+                status_code=expected_status_code,
+                json=expected_response,
+                headers={"Content-Type": "application/json"},
+            )
+
+            if raises:
+                with self.assertRaises(raises) as cm:
+                    self._json_adapter.generate_impersonated_account_oauth2_access_token(
+                        name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                        mount_point=TEST_MOUNT_POINT,
+                    )
+
+                self.assertEqual(cm.exception.json, expected_response)
+            else:
+                resp = self._json_adapter.generate_impersonated_account_oauth2_access_token(
+                    name=TEST_IMPERSONATED_ACCOUNT_NAME,
+                    mount_point=TEST_MOUNT_POINT,
                 )
 
                 self.assertEqual(resp, expected_response)
