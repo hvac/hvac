@@ -67,6 +67,10 @@ class Adapter(metaclass=ABCMeta):
         else:
             if session.verify:
                 self.verify = session.verify
+            if session.cert:
+                self.cert = session.cert
+            if session.proxies:
+                self.proxies = session.proxies
 
         self.base_uri = base_uri
         self.token = token
