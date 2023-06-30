@@ -113,49 +113,30 @@ class TestRequest(TestCase):
         )
         self.assertEqual(first=mock_response, second=response.json())
 
+
 class TestAdapterVerify(TestCase):
     @parameterized.expand(
         [
-            param(
-                "Testing default",
-                verify = Client().session.verify,
-                use_session = False
-            ),
+            param("Testing default", verify=Client().session.verify, use_session=False),
             param(
                 "Testing default session",
-                verify = Client().session.verify,
-                use_session = True
+                verify=Client().session.verify,
+                use_session=True,
             ),
-            param(
-                "Testing verify true",
-                verify = True,
-                use_session = False            
-            ),
-            param(
-                "Testing verify true session",
-                verify = True,
-                use_session = True            
-            ),
-            param(
-                "Testing verify false",
-                verify = False,
-                use_session = False  
-            ),
-            param(
-                "Testing verify false session",
-                verify = False,
-                use_session = True  
-            ),
+            param("Testing verify true", verify=True, use_session=False),
+            param("Testing verify true session", verify=True, use_session=True),
+            param("Testing verify false", verify=False, use_session=False),
+            param("Testing verify false session", verify=False, use_session=True),
             param(
                 "use certificate for verify #991",
-                verify = utils.get_config_file_path("client-cert.pem"),
-                use_session = False
+                verify=utils.get_config_file_path("client-cert.pem"),
+                use_session=False,
             ),
             param(
                 "use certificate from session #991",
-                verify = utils.get_config_file_path("client-cert.pem"),
-                use_session = True
-            )
+                verify=utils.get_config_file_path("client-cert.pem"),
+                use_session=True,
+            ),
         ]
     )
     def test_session_verify_stickiness(self, label, verify, use_session):
