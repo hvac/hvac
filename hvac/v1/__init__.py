@@ -26,7 +26,7 @@ class Client:
         url=None,
         token=None,
         cert=None,
-        verify=None,
+        verify=True,
         timeout=30,
         proxies=None,
         allow_redirects=True,
@@ -84,9 +84,6 @@ class Client:
                 verify = VAULT_CAPATH
             if VAULT_CACERT:
                 verify = VAULT_CACERT
-            if not verify:
-                # default to verifying certificates if the above aren't defined
-                verify = True
 
         self._adapter = adapter(
             base_uri=url,
