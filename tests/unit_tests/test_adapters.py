@@ -262,4 +262,3 @@ class TestAdapterVerify(TestCase):
             c = Client()
         assert c._adapter.session.verify == verify
         assert c._adapter.session
-
