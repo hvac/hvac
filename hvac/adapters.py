@@ -66,11 +66,12 @@ class Adapter(metaclass=ABCMeta):
         # fix for issue 991 using session verify if set
         else:
             if session.verify:
-                self.verify = session.verify
+                # need to set the variable and not assign it to self so it is propperly passed in kwargs
+                verify = session.verify
             if session.cert:
-                self.cert = session.cert
+                cert = session.cert
             if session.proxies:
-                self.proxies = session.proxies
+                proxies = session.proxies
 
         self.base_uri = base_uri
         self.token = token

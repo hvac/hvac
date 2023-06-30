@@ -10,7 +10,9 @@ from parameterized import parameterized, param
 from hvac.constants.client import DEFAULT_URL
 from hvac import exceptions
 from hvac import adapters
-
+from tests import utils
+from hvac import Client
+import requests
 
 class TestRequest(TestCase):
     """Unit tests providing coverage for requests-related methods in the hvac Client class."""
@@ -109,6 +111,63 @@ class TestRequest(TestCase):
             second=response.status_code,
         )
         self.assertEqual(first=mock_response, second=response.json())
+
+class TestAdapterVerify(TestCase):
+    @parameterized.expand(
+        [
+            param(
+                "Testing default",
+                verify = Client().session.verify,
+                use_session = False
+            ),
+            param(
+                "Testing default session",
+                verify = Client().session.verify,
+                use_session = True
+            ),
+            param(
+                "Testing verify true",
+                verify = True,
+                use_session = False            
+            ),
+            param(
+                "Testing verify true session",
+                verify = True,
+                use_session = True            
+            ),
+            param(
+                "Testing verify false",
+                verify = False,
+                use_session = False  
+            ),
+            param(
+                "Testing verify false session",
+                verify = False,
+                use_session = True  
+            ),
+            param(
+                "use certificate for verify #991",
+                verify = utils.get_config_file_path("client-cert.pem"),
+                use_session = False
+            ),
+            param(
+                "use certificate from session #991",
+                verify = utils.get_config_file_path("client-cert.pem"),
+                use_session = True
+            )
+        ]
+    )
+    def test_session_verify_stickiness(self, label, verify, use_session):
+        if use_session:
+            s = requests.Session()
+            s.verify = verify
+            c = Client(session=s)
+        elif verify is not None:
+            c = Client(verify=verify)
+        else:
+            c = Client()
+        assert c._adapter.session.verify == verify
+        assert c._adapter.session
 
 
 @pytest.fixture
