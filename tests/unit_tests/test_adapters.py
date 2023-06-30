@@ -262,3 +262,55 @@ class TestAdapterVerify(TestCase):
             c = Client()
         assert c._adapter.session.verify == verify
         assert c._adapter.session
+
+    @parameterized.expand(
+        [
+            param("Testing default", cert=None, use_session=False),
+            param("Testing default with session", cert=None, use_session=False),
+            param(
+                "use certificate for #991",
+                cert=utils.get_config_file_path("client-cert.pem"),
+                use_session=False,
+            ),
+            param(
+                "use certificate from session #991",
+                cert=utils.get_config_file_path("client-cert.pem"),
+                use_session=True,
+            ),
+        ]
+    )
+    def test_session_certificate_stickiness(self, label, cert, use_session):
+        if use_session:
+            s = requests.Session()
+            s.cert = cert
+            c = Client(session=s)
+        elif cert is not None:
+            c = Client(cert=cert)
+        else:
+            c = Client()
+        assert c._adapter.session.cert == cert
+        assert c._adapter.session
+
+    @parameterized.expand(
+        [
+            param("Testing default", proxies=None, use_session=False),
+            param(
+                "Testing default session",
+                proxies=None,
+                use_session=True,
+            ),
+            param("Testing Proxy", proxies="localhost:8080", use_session=False),
+            param("Testing Proxy session", proxies="localhost:8080", use_session=True),
+        ]
+    )
+    def test_session_proxies_stickiness(self, label, proxies, use_session):
+        if use_session:
+            s = requests.Session()
+            s.proxies = proxies
+            c = Client(session=s)
+        elif proxies is not None:
+            c = Client(proxies=proxies)
+        else:
+            c = Client()
+        assert c._adapter.session.proxies == proxies
+        assert c._adapter.session
