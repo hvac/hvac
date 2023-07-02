@@ -152,6 +152,7 @@ jobs:
         name: coverage_reports
         path: reports/*.xml
         if-no-files-found: error
+        retention-days: 1
 
   integration-tests:
     name: Integration Tests
@@ -229,6 +230,7 @@ jobs:
         name: coverage_reports
         path: reports/*.xml
         if-no-files-found: error
+        retention-days: 1
 
   upload-to-codecov:
     name: Upload to Codecov
