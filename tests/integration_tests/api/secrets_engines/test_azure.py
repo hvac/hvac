@@ -111,7 +111,7 @@ class TestAzure(HvacIntegrationTestCase, TestCase):
         }
         if utils.vault_version_ge("1.9.0"):
             read_expected_response["root_password_ttl"] = 0
-            if utils.vault_version_lt("1.13.0"):
+            if utils.vault_version_lt("1.12.0"):
                 read_expected_response["use_microsoft_graph_api"] = False
         self.assertEqual(
             first=read_expected_response,
