@@ -8,6 +8,7 @@
 test/*.log
 /.coverage
 /cover
+/reports
 *~
 
 # sphinx build folder

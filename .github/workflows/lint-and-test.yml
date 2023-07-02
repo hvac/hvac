@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint
@@ -143,15 +146,16 @@ jobs:
       run: |
         poetry run pytest \
           --cov=hvac \
-          --cov-report=xml \
+          --cov-report=xml:reports/coverage_py${{ matrix.python-version }}.xml \
           tests/unit_tests
 
     - name: Upload unit tests coverage artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: unit_tests-coverage.xml
-        path: coverage.xml
+        name: coverage_reports
+        path: reports/*.xml
         if-no-files-found: error
+        retention-days: 1
 
   integration-tests:
     name: Integration Tests
@@ -215,18 +219,21 @@ jobs:
         sudo setcap cap_ipc_lock= /usr/bin/vault
 
     - name: pytest tests/integration_tests
+      env:
+        COVFILE: coverage_py${{ matrix.python-version }}_${{ matrix.vault-version }}.xml
       run: |
         poetry run pytest \
           --cov=hvac \
-          --cov-report=xml \
+          --cov-report=xml:reports/${COVFILE//[^A-Za-z0-9\-_\.]/_} \
           tests/integration_tests
 
     - name: Upload integration tests coverage artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: integration_tests-coverage.xml
-        path: coverage.xml
+        name: coverage_reports
+        path: reports/*.xml
         if-no-files-found: error
+        retention-days: 1
 
   upload-to-codecov:
     name: Upload to Codecov
