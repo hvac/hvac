@@ -24,7 +24,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         super().tearDown()
 
     # TODO: deprecate all dynamic SSH keys methods from hvac
-    @skipIf(utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature.")
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
+    )
     @parameterized.expand(
         [
             param(
@@ -48,7 +50,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
 
     # TODO: deprecate all dynamic SSH keys methods from hvac
-    @skipIf(utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature.")
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
+    )
     @parameterized.expand(
         [
             param(
