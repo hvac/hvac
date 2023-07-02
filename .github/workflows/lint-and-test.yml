@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTEST_ADDOPTS: '--color=yes'
+
 jobs:
   lint:
     name: Lint
