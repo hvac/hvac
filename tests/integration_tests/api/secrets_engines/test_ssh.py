@@ -24,15 +24,15 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         super().tearDown()
 
     # TODO: deprecate all dynamic SSH keys methods from hvac
-    @skipIf(
-        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
-    )
     @parameterized.expand(
         [
             param(
                 "success",
             ),
         ]
+    )
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
     )
     def test_create_key(self, label, raises=False, exception_message=""):
         with open(self.PRIVATE_SSH_KEY) as key_file:
@@ -50,15 +50,15 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         )
 
     # TODO: deprecate all dynamic SSH keys methods from hvac
-    @skipIf(
-        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
-    )
     @parameterized.expand(
         [
             param(
                 "success",
             ),
         ]
+    )
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
     )
     def test_delete_key(self, label, raises=False, exception_message=""):
         with open(self.PRIVATE_SSH_KEY) as key_file:
