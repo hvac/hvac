@@ -151,7 +151,7 @@ jobs:
       run: |
         poetry run pytest \
           --cov=hvac \
-          --cov-report=xml:reports/coverage_py${{ matrix.python-version }}.xml \
+          --cov-report=xml:reports/coverage_units_py${{ matrix.python-version }}.xml \
           tests/unit_tests
 
     - name: Upload unit tests coverage artifacts
@@ -229,7 +229,7 @@ jobs:
 
     - name: pytest tests/integration_tests
       env:
-        COVFILE: coverage_py${{ matrix.python-version }}_${{ matrix.vault-version }}.xml
+        COVFILE: coverage_integration_py${{ matrix.python-version }}_${{ matrix.vault-version }}.xml
       run: |
         poetry run pytest \
           --cov=hvac \
