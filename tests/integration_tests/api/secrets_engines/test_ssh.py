@@ -1,9 +1,10 @@
 import logging
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from parameterized import parameterized, param
 
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
+from tests import utils
 
 
 class TestPki(HvacIntegrationTestCase, TestCase):
@@ -22,12 +23,16 @@ class TestPki(HvacIntegrationTestCase, TestCase):
         self.client.sys.disable_secrets_engine(path=self.TEST_MOUNT_POINT)
         super().tearDown()
 
+    # TODO: deprecate all dynamic SSH keys methods from hvac
     @parameterized.expand(
         [
             param(
                 "success",
             ),
         ]
+    )
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
     )
     def test_create_key(self, label, raises=False, exception_message=""):
         with open(self.PRIVATE_SSH_KEY) as key_file:
@@ -44,12 +49,16 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             second=204,
         )
 
+    # TODO: deprecate all dynamic SSH keys methods from hvac
     @parameterized.expand(
         [
             param(
                 "success",
             ),
         ]
+    )
+    @skipIf(
+        utils.vault_version_ge("1.13.0"), reason="Vault 1.13.0 dropped this feature."
     )
     def test_delete_key(self, label, raises=False, exception_message=""):
         with open(self.PRIVATE_SSH_KEY) as key_file:
