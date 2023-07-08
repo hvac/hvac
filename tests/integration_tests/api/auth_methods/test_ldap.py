@@ -109,7 +109,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
 
         if utils.vault_version_lt("1.9.0"):
             # userFilter added in Vault 1.9.0, https://raw.githubusercontent.com/hashicorp/vault/main/CHANGELOG.md
-            del expected_parameters["userfilter"]
+            expected_parameters.pop("userfilter", None)
 
         if raises:
             with self.assertRaises(raises) as cm:
