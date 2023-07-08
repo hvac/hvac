@@ -85,6 +85,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
                     token_policies=["foo"],
                     token_type="service",
                     upndomain="bar",
+                    userfilter=r"({{.UserAttr}}={{.Username}})",
                     username_as_alias=True,
                 ),
             ),
