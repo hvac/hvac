@@ -94,7 +94,7 @@ class Ldap(VaultApiBase):
         :param userdn: Base DN under which to perform user search. Example: ou=Users,dc=example,dc=com
         :type userdn: str | unicode
         :param user_dn: See userdn
-        :type userdn: str | unicode
+        :type user_dn: str | unicode
         :param groupdn: LDAP search base to use for group membership search. This can be the root containing either
             groups or users. Example: ou=Groups,dc=example,dc=com
         :type groupdn: str | unicode
