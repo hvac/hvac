@@ -105,6 +105,12 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
                 "mount_point": self.TEST_LDAP_PATH,
             }
         )
+        expected_parameters = parameters.copy()
+
+        if utils.vault_version_lt("1.9.0"):
+            # userFilter added in Vault 1.9.0, https://raw.githubusercontent.com/hashicorp/vault/main/CHANGELOG.md
+            del expected_parameters["userFilter"]
+
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.auth.ldap.configure(**parameters)
@@ -122,7 +128,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
             read_config_response = self.client.auth.ldap.read_configuration(
                 mount_point=self.TEST_LDAP_PATH,
             )
-            for parameter, argument in parameters.items():
+            for parameter, argument in expected_parameters.items():
                 if parameter == "mount_point":
                     continue
                 self.assertIn(
