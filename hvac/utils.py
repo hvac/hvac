@@ -60,7 +60,8 @@ def aliased_parameter(
     then its position must be set to correctly detect multiple use and apply precedence.
     To set multiple aliases with different values for the optional parameters, use the decorator multiple times with the same name.
     This method will only work properly when the alias parameter is set as a keyword (named) arg, therefore the function in question
-    should ensure that any aliases come after *args or bare * (marking keyword-only arguments: https://peps.python.org/pep-3102/).
+    should ensure that any aliases come after \\*args or bare \\* (marking keyword-only arguments: https://peps.python.org/pep-3102/).
+    Note also that aliases do not have to appear in the original function's argument list.
 
     :param name: The canonical name of the parameter.
     :type name: str
