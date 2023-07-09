@@ -555,9 +555,9 @@ class Token(VaultApiBase):
         renewable=True,
         path_suffix=None,
         allowed_entity_aliases=None,
+        mount_point=DEFAULT_MOUNT_POINT,
         token_period=None,
         token_explicit_max_ttl=None,
-        mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Create (or replace) the named role.
 
