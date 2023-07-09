@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Raft methods module."""
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
-from hvac import utils
+from hvac import utils, adapters
 
 
 class Raft(SystemBackendMixin):
@@ -102,14 +102,17 @@ class Raft(SystemBackendMixin):
 
         The snapshot is returned as binary data and should be redirected to a file.
 
+        This endpoint will ignore your chosen adapter and always uses a RawAdapter.
+
         Supported methods:
             GET: /sys/storage/raft/snapshot.
 
-        :return: The response of the s request.
+        :return: The response of the snapshot request.
         :rtype: requests.Response
         """
         api_path = "/v1/sys/storage/raft/snapshot"
-        return self._adapter.get(
+        raw_adapter = adapters.RawAdapter.from_adapter(self._adapter)
+        return raw_adapter.get(
             url=api_path,
             stream=True,
         )
