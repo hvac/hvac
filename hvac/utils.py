@@ -49,6 +49,36 @@ def raise_for_error(
     )
 
 
+def generate_parameter_deprecation_message(
+    to_be_removed_in_version,
+    old_parameter_name,
+    new_parameter_name=None,
+    extra_notes=None,
+):
+    """Generate a message to be used when warning about the use of deprecated paramers.
+    This method determines "use" as a value other than None, so it cannot detect explicit None values being passed in.
+
+    :param to_be_removed_in_version: Version of this module the deprecated parameter will be removed in.
+    :type to_be_removed_in_version: str
+    :param old_parameter_name: Deprecated parameter name.
+    :type old_parameter_name: str
+    :param new_parameter_name: Parameter intended to replace the deprecated parameter, if applicable.
+    :type new_parameter_name: str | None
+    :param extra_notes: Optional freeform text used to provide additional context, alternatives, or notes.
+    :type extra_notes: str | None
+    :return: Full deprecation warning message for the indicated parameter.
+    :rtype: str
+    """
+
+    message = f"Value supplied for deprecated parameter '{old_parameter_name}'. This parameter will be removed in version '{to_be_removed_in_version}'."
+    if new_parameter_name is not None:
+        message += f" Please use the '{new_parameter_name}' parameter moving forward."
+    if extra_notes is not None:
+        message += f" {extra_notes}"
+
+    return message
+
+
 def generate_method_deprecation_message(
     to_be_removed_in_version, old_method_name, method_name=None, module_name=None
 ):
