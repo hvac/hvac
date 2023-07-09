@@ -56,7 +56,6 @@ def generate_parameter_deprecation_message(
     extra_notes=None,
 ):
     """Generate a message to be used when warning about the use of deprecated paramers.
-    This method determines "use" as a value other than None, so it cannot detect explicit None values being passed in.
 
     :param to_be_removed_in_version: Version of this module the deprecated parameter will be removed in.
     :type to_be_removed_in_version: str
