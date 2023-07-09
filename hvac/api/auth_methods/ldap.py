@@ -12,9 +12,12 @@ class Ldap(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/ldap/index.html
     """
 
+    @utils.aliased_parameter(
+        "userdn", "user_dn", removed_in_version="3.0.0", position=1
+    )
     def configure(
         self,
-        user_dn=None,
+        userdn=None,
         group_dn=None,
         url=None,
         case_sensitive_names=None,
@@ -35,6 +38,7 @@ class Ldap(VaultApiBase):
         token_ttl=None,
         token_max_ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        *,
         anonymous_group_search=None,
         binddn=None,
         bindpass=None,
@@ -52,7 +56,7 @@ class Ldap(VaultApiBase):
         token_type=None,
         upndomain=None,
         userattr=None,
-        userdn=None,
+        user_dn=None,
         userfilter=None,
         username_as_alias=None,
     ):
@@ -189,7 +193,7 @@ class Ldap(VaultApiBase):
                 "token_type": token_type,
                 "userfilter": userfilter,
                 "username_as_alias": username_as_alias,
-                "userdn": userdn or user_dn,
+                "userdn": userdn,  # or user_dn,
                 "groupdn": groupdn or group_dn,
                 "case_sensitive_names": case_sensitive_names,
                 "starttls": starttls,
