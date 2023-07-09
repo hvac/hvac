@@ -12,6 +12,52 @@ from hvac import exceptions
 from hvac import adapters
 
 
+class TestAdapters:
+    CONSTRUCTOR_ARGS = (
+        "base_uri",
+        "token",
+        "cert",
+        "verify",
+        "timeout",
+        "proxies",
+        "allow_redirects",
+        "session",
+        "namespace",
+        "ignore_exceptions",
+        "strict_http",
+        "request_header",
+    )
+
+    INTERNAL_KWARGS = (
+        "cert",
+        "verify",
+        "timeout",
+        "proxies",
+    )
+
+    @pytest.mark.parametrize(
+        "conargs",
+        [
+            {arg: arg.capitalize() for arg in CONSTRUCTOR_ARGS},
+            {arg: arg.upper() for arg in CONSTRUCTOR_ARGS},
+        ],
+    )
+    def test_from_adapter(self, conargs):
+        expected = conargs.copy()
+        for internal_kwarg in self.INTERNAL_KWARGS:
+            expected.setdefault("_kwargs", {})[internal_kwarg] = expected.pop(
+                internal_kwarg
+            )
+
+        # let's start with a JSONAdapter, and make a RawAdapter out of it
+        json_adapter = adapters.JSONAdapter(**conargs)
+
+        raw_adapter = adapters.RawAdapter.from_adapter(json_adapter)
+
+        for property, value in expected.items():
+            assert getattr(raw_adapter, property) == value
+
+
 class TestRequest(TestCase):
     """Unit tests providing coverage for requests-related methods in the hvac Client class."""
 
