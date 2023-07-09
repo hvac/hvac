@@ -57,12 +57,12 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
                 "update binddn",
                 dict(
                     url=MockLdapServer.ldap_url,
-                    bind_dn="cn=vault,ou=Users,dc=hvac,dc=network",
+                    binddn="cn=vault,ou=Users,dc=hvac,dc=network",
                 ),
             ),
             (
-                "update upn_domain",
-                dict(url=MockLdapServer.ldap_url, upn_domain="python-hvac.org"),
+                "update upndomain",
+                dict(url=MockLdapServer.ldap_url, upndomain="python-hvac.org"),
             ),
             (
                 "update certificate",
@@ -100,8 +100,8 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
     def test_configure(self, test_label, parameters, raises=None, exception_message=""):
         parameters.update(
             {
-                "user_dn": MockLdapServer.ldap_users_dn,
-                "group_dn": MockLdapServer.ldap_groups_dn,
+                "userdn": MockLdapServer.ldap_users_dn,
+                "groupdn": MockLdapServer.ldap_groups_dn,
                 "mount_point": self.TEST_LDAP_PATH,
             }
         )
@@ -503,12 +503,12 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         test_policy_name = "test-ldap-policy"
         self.client.auth.ldap.configure(
             url=self.ldap_server.url,
-            bind_dn=self.ldap_server.ldap_bind_dn,
-            bind_pass=self.ldap_server.ldap_bind_password,
-            user_dn=self.ldap_server.ldap_users_dn,
-            user_attr="uid",
-            group_dn=self.ldap_server.ldap_groups_dn,
-            group_attr="cn",
+            binddn=self.ldap_server.ldap_bind_dn,
+            bindpass=self.ldap_server.ldap_bind_password,
+            userdn=self.ldap_server.ldap_users_dn,
+            userattr="uid",
+            groupdn=self.ldap_server.ldap_groups_dn,
+            groupattr="cn",
             insecure_tls=True,
             mount_point=self.TEST_LDAP_PATH,
         )

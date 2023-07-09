@@ -28,8 +28,8 @@ class TestLdap(TestCase):
         )
         ldap = Ldap(adapter=JSONAdapter())
         response = ldap.configure(
-            user_dn="dc=users,cn=hvac,cn=network",
-            group_dn="ou=groups,cn=hvac,cn=network",
+            userdn="dc=users,cn=hvac,cn=network",
+            groupdn="ou=groups,cn=hvac,cn=network",
             url="ldaps://ldap.python-hvac.org",
             mount_point=mount_point,
             anonymous_group_search=False,
