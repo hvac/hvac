@@ -556,6 +556,8 @@ class Token(VaultApiBase):
         path_suffix=None,
         allowed_entity_aliases=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        token_period=None,
+        token_explicit_max_ttl=None,
     ):
         """Create (or replace) the named role.
 
@@ -586,6 +588,10 @@ class Token(VaultApiBase):
         :type path_suffix: str
         :param allowed_entity_aliases: not case sensitive.
         :type allowed_entity_aliases: str
+        :param token_period: the token will have no maximum TTL, every renewal will use the given period.
+        :type token_period: str
+        :param token_explicit_max_ttl: the token cannot be renewed past this TTL value.
+        :type token_explicit_max_ttl: str
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str
         :return: The response of the create_or_update_role request.
@@ -599,6 +605,8 @@ class Token(VaultApiBase):
                 "renewable": renewable,
                 "path_suffix": path_suffix,
                 "allowed_entity_aliases": allowed_entity_aliases,
+                "token_period": token_period,
+                "token_explicit_max_ttl": token_explicit_max_ttl,
             }
         )
         api_path = "/v1/auth/{mount_point}/roles/{role_name}".format(
