@@ -64,6 +64,11 @@ class Ldap(VaultApiBase):
         mount_point=DEFAULT_MOUNT_POINT,
         *,
         anonymous_group_search=None,
+        client_tls_cert=None,
+        client_tls_key=None,
+        connection_timeout=None,
+        dereference_aliases=None,
+        max_page_size=None,
         request_timeout=None,
         token_bound_cidrs=None,
         token_explicit_max_ttl=None,
@@ -84,6 +89,19 @@ class Ldap(VaultApiBase):
         :param anonymous_group_search: Use anonymous binds when performing LDAP group searches (note: even when true,
             the initial credentials will still be used for the initial connection test).
         :type anonymous_group_search: bool
+        :param client_tls_cert: Client certificate to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_cert: str | unicode
+        :param client_tls_key: Client certificate key to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_key: str | unicode
+        :param connection_timeout: Timeout, in seconds, when attempting to connect to the LDAP server before trying the
+            next URL in the configuration.
+        :type connection_timeout: int
+        :param dereference_aliases: When aliases should be dereferenced on search operations.
+            Accepted values are 'never', 'finding', 'searching', 'always'.
+        :type dereference_aliases: str | unicode
+        :param max_page_size: If set to a value greater than 0, the LDAP backend will use the LDAP server's paged search
+            control to request pages of up to the given size.
+        :type max_page_size: int
         :param request_timeout: Timeout, in seconds, for the connection when making requests against the server before
             returning back an error.
         :type request_timeout: str | unicode
@@ -195,34 +213,38 @@ class Ldap(VaultApiBase):
                 "anonymous_group_search": anonymous_group_search,
                 "binddn": binddn,
                 "bindpass": bindpass,
+                "case_sensitive_names": case_sensitive_names,
+                "certificate": certificate,
+                "client_tls_cert": client_tls_cert,
+                "client_tls_key": client_tls_key,
+                "connection_timeout": connection_timeout,
+                "deny_null_bind": deny_null_bind,
+                "dereference_aliases": dereference_aliases,
                 "discoverdn": discoverdn,
                 "groupattr": groupattr,
+                "groupdn": groupdn,
                 "groupfilter": groupfilter,
+                "insecure_tls": insecure_tls,
+                "max_page_size": max_page_size,
                 "request_timeout": request_timeout,
+                "starttls": starttls,
+                "tls_max_version": tls_max_version,
+                "tls_min_version": tls_min_version,
                 "token_bound_cidrs": token_bound_cidrs,
                 "token_explicit_max_ttl": token_explicit_max_ttl,
+                "token_max_ttl": token_max_ttl,
                 "token_no_default_policy": token_no_default_policy,
                 "token_num_uses": token_num_uses,
                 "token_period": token_period,
                 "token_policies": token_policies,
+                "token_ttl": token_ttl,
                 "token_type": token_type,
+                "upndomain": upndomain,
+                "use_token_groups": use_token_groups,
+                "userattr": userattr,
+                "userdn": userdn,
                 "userfilter": userfilter,
                 "username_as_alias": username_as_alias,
-                "userdn": userdn,
-                "groupdn": groupdn,
-                "case_sensitive_names": case_sensitive_names,
-                "starttls": starttls,
-                "tls_min_version": tls_min_version,
-                "tls_max_version": tls_max_version,
-                "insecure_tls": insecure_tls,
-                "certificate": certificate,
-                "userattr": userattr,
-                "deny_null_bind": deny_null_bind,
-                "upndomain": upndomain,
-                "certificate": certificate,
-                "use_token_groups": use_token_groups,
-                "token_ttl": token_ttl,
-                "token_max_ttl": token_max_ttl,
             }
         )
 

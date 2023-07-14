@@ -72,20 +72,51 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
                 ),
             ),
             (
+                "client certificate without key",
+                dict(
+                    url=MockLdapServer.ldap_url,
+                    client_tls_cert=utils.load_config_file("client-cert.pem"),
+                ),
+                exceptions.InvalidRequest,
+                "both client_tls_cert and client_tls_key must be set",
+            ),
+            (
+                "client certificate key without certificate",
+                dict(
+                    url=MockLdapServer.ldap_url,
+                    client_tls_key=utils.load_config_file("client-key.pem"),
+                ),
+                exceptions.InvalidRequest,
+                "both client_tls_cert and client_tls_key must be set",
+            ),
+            (
                 "update config with non-defaults",
                 dict(
                     url=MockLdapServer.ldap_url,
                     anonymous_group_search=True,
+                    case_sensitive_names=True,
+                    connection_timeout=60,
+                    deny_null_bind=False,
+                    dereference_aliases="always",
+                    discoverdn=True,
+                    groupfilter=r"((memberUid={{.Username}})(member={{.UserDN}}))",
+                    max_page_size=60,
                     request_timeout=60,
+                    starttls=True,
+                    tls_max_version="tls11",
+                    tls_min_version="tls11",
                     token_bound_cidrs=["10.0.0.0"],
                     token_explicit_max_ttl=60,
+                    token_max_ttl=60,
                     token_no_default_policy=True,
                     token_num_uses=10,
                     token_period=10,
                     token_policies=["foo"],
+                    token_ttl=60,
                     token_type="service",
                     upndomain="bar",
                     userfilter=r"({{.UserAttr}}={{.Username}})",
+                    use_token_groups=True,
                     username_as_alias=True,
                 ),
             ),
@@ -110,6 +141,15 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
         if utils.vault_version_lt("1.9.0"):
             # userFilter added in Vault 1.9.0, https://raw.githubusercontent.com/hashicorp/vault/main/CHANGELOG.md
             expected_parameters.pop("userfilter", None)
+
+        if utils.vault_version_lt("1.11.0"):
+            # connection_timeout and max_page_size added in Vault 1.11.0, https://raw.githubusercontent.com/hashicorp/vault/main/CHANGELOG.md
+            expected_parameters.pop("connection_timeout", None)
+            expected_parameters.pop("max_page_size", None)
+
+        if utils.vault_version_lt("1.14.0"):
+            # dereference_aliases added in Vault 1.14.0, https://raw.githubusercontent.com/hashicorp/vault/main/CHANGELOG.md
+            expected_parameters.pop("dereference_aliases", None)
 
         if raises:
             with self.assertRaises(raises) as cm:

@@ -754,7 +754,7 @@ class Transit(VaultApiBase):
     def sign_data(
         self,
         name,
-        hash_input=None,
+        hash_input,
         key_version=None,
         hash_algorithm=None,
         context=None,
@@ -763,7 +763,6 @@ class Transit(VaultApiBase):
         marshaling_algorithm=None,
         salt_length=None,
         mount_point=DEFAULT_MOUNT_POINT,
-        batch_input=None,
     ):
         """Return the cryptographic signature of the given data using the named key and the specified hash algorithm.
 
@@ -775,8 +774,6 @@ class Transit(VaultApiBase):
         :param name: Specifies the name of the encryption key to use for signing. This is specified as part of the URL.
         :type name: str | unicode
         :param hash_input: Specifies the base64 encoded input data.
-            This parameter is mutually exclusive with the ``batch_results`` parameter, but one of them must be supplied.
-            If both are set, or neither are set, an exception will be raised.
         :type hash_input: str | unicode
         :param key_version: Specifies the version of the key to use for signing. If not set, uses the latest version.
             Must be greater than or equal to the key's min_encryption_version, if set.
@@ -808,14 +805,6 @@ class Transit(VaultApiBase):
         :type salt_length: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :param batch_input: Specifies a list of items for processing.
-            Any batch output will preserve the order of the batch input.
-            If the input data value of an item is invalid, the corresponding item in the ``batch_results``
-            will have the key ``error`` with a value describing the error.
-            This parameter is mutually exclusive with the ``hash_input`` parameter, but one of them must be supplied.
-            If both are set, or neither are set, an exception will be raised.
-            Responses are returned in the ``batch_results`` array component of the ``data`` element of the response.
-        :type batch_input: List[Dict[str, str]]
         :return: The JSON response of the request.
         :rtype: dict
         """
@@ -871,15 +860,6 @@ class Transit(VaultApiBase):
                     allowed_types=transit_constants.ALLOWED_SALT_LENGTHS.pattern,
                 )
             )
-
-        if hash_input is None and batch_input is None:
-            error_msg = "Invalid parameter combination: Please provide only one of the following parameters: 'hash_input' or 'batch_input'."
-            raise exceptions.ParamValidationError(message=error_msg)
-
-        if hash_input is not None and batch_input is not None:
-            error_msg = "Invalid parameter combination: 'hash_input' or 'batch_input' should be provided, not both."
-            raise exceptions.ParamValidationError(message=error_msg)
-
         params = {
             "input": hash_input,
         }
@@ -893,11 +873,9 @@ class Transit(VaultApiBase):
                     "signature_algorithm": signature_algorithm,
                     "marshaling_algorithm": marshaling_algorithm,
                     "salt_length": salt_length,
-                    "batch_input": batch_input,
                 }
             )
         )
-
         api_path = utils.format_url(
             "/v1/{mount_point}/sign/{name}",
             mount_point=mount_point,
