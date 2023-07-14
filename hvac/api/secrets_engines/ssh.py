@@ -14,13 +14,14 @@ class Ssh(VaultApiBase):
     Reference: https://www.vaultproject.io/api-docs/secret/ssh
     """
 
+    # TODO: deprecate all dynamic SSH keys methods from hvac
     def create_or_update_key(
         self,
         name="",
         key="",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
-        """This endpoint updates a named key.
+        """This endpoint updates a named key. This method uses deprecated functionality that was removed in Vault 1.13.0.
 
         :param name: Specifies the name of the key to create.
         :type name: str | unicode
@@ -46,12 +47,13 @@ class Ssh(VaultApiBase):
             json=params,
         )
 
+    # TODO: deprecate all dynamic SSH keys methods from hvac
     def delete_key(
         self,
         name="",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
-        """This endpoint deletes a named key.
+        """This endpoint deletes a named key. This method uses deprecated functionality that was removed in Vault 1.13.0.
 
         :param name: Specifies the name of the key to delete.
         :type name: str | unicode

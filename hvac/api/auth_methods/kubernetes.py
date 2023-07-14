@@ -25,6 +25,7 @@ class Kubernetes(VaultApiBase):
         pem_keys=None,
         issuer=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        disable_local_ca_jwt=False,
     ):
         """Configure the connection parameters for Kubernetes.
 
@@ -50,6 +51,8 @@ class Kubernetes(VaultApiBase):
         :type token_reviewer_jwt: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param disable_local_ca_jwt: Disable defaulting to the local CA cert and service account JWT
+        :type disable_local_ca_jwt: bool
         :return: The response of the configure_method request.
         :rtype: requests.Response
         """
@@ -66,6 +69,7 @@ class Kubernetes(VaultApiBase):
 
         params = {
             "kubernetes_host": kubernetes_host,
+            "disable_local_ca_jwt": disable_local_ca_jwt,
         }
         params.update(
             utils.remove_nones(

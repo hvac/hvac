@@ -34,6 +34,8 @@ class VaultApiCategory(VaultApiBase, metaclass=ABCMeta):
         :return: The requested class instance where available.
         :rtype: hvac.api.VaultApiBase
         """
+        if item == "implemented_class_names":
+            raise AttributeError
         if item in self.implemented_class_names:
             private_attr_name = self.get_private_attr_name(item)
             return getattr(self, private_attr_name)
