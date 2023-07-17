@@ -610,7 +610,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             name="%s2" % self.TEST_ENTITY_NAME,
             mount_point=self.TEST_MOUNT_POINT,
         )
-        logging.debug("create_response2: %s" % create_response)
+        logging.debug("create_response2: %s" % create_response2)
         to_entity_id = create_response["data"]["id"]
         from_entity_ids = [create_response2["data"]["id"]]
         if raises:
@@ -633,6 +633,77 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             logging.debug("merge_entities_response: %s" % merge_entities_response)
             self.assertEqual(
                 first=bool(merge_entities_response),
+                second=True,
+            )
+
+    @parameterized.expand(
+        [
+            param(
+                "merge success",
+            ),
+            param(
+                "merge failure",
+            ),
+        ]
+    )
+    @skipIf(
+        utils.vault_version_lt("1.12.0"),
+        '"conflicting_alias_ids_to_keep" added in Vault v1.12.0',
+    )
+    def test_merge_entities_conflicting(self, label, raises=None, exception_message=""):
+        create_response = self.client.secrets.identity.create_or_update_entity(
+            name=self.TEST_ENTITY_NAME,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        logging.debug("create_response: %s" % create_response)
+        create_response2 = self.client.secrets.identity.create_or_update_entity(
+            name="%s2" % self.TEST_ENTITY_NAME,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        logging.debug("create_response2: %s" % create_response2)
+        create_response3 = self.client.secrets.identity.create_or_update_entity(
+            name="%s3" % self.TEST_ENTITY_NAME,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        logging.debug("create_response3: %s" % create_response3)
+        parent_id = create_response["data"]["id"]
+        merge_id1 = create_response2["data"]["id"]
+        merge_id2 = create_response3["data"]["id"]
+
+        merge_entities_response = self.client.secrets.identity.merge_entities(
+            from_entity_ids=[merge_id1],
+            to_entity_id=parent_id,
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+        logging.debug("merge_entities_response: %s" % merge_entities_response)
+
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.secrets.identity.merge_entities(
+                    from_entity_ids=merge_id2,
+                    to_entity_id=parent_id,
+                    mount_point=self.TEST_MOUNT_POINT,
+                    conflicting_alias_ids_to_keep=[merge_id1],
+                )
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            merge_conflicting_entities_response = (
+                self.client.secrets.identity.merge_entities(
+                    from_entity_ids=merge_id2,
+                    to_entity_id=parent_id,
+                    mount_point=self.TEST_MOUNT_POINT,
+                    conflicting_alias_ids_to_keep=[merge_id1],
+                )
+            )
+            logging.debug(
+                "merge_conflicting_entities_response: %s"
+                % merge_conflicting_entities_response
+            )
+            self.assertEqual(
+                first=bool(merge_conflicting_entities_response),
                 second=True,
             )
 
