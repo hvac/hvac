@@ -265,6 +265,23 @@ class Client:
         """
         return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
+    def write_fix_path(self, path, data={}, wrap_ttl=None):
+        """Same as write() method but fix issue #133 (you can pass `path` key in POST data)
+        
+        Supported methods:
+            POST /<path>
+
+        :param path:
+        :type path:
+        :param data:
+        :type dict:
+        :param wrap_ttl:
+        :type wrap_ttl:
+        :return:
+        :rtype:
+        """
+        return self._adapter.post(f"/v1/{path}", json=data, wrap_ttl=wrap_ttl)
+
     def delete(self, path):
         """DELETE /<path>
 
