@@ -143,18 +143,12 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.sys.disable_auth_method("userpass")
 
     def test_write_fix_path(self):
-        self.client.write_fix_path(
-            "secret/foo",
-            data={
-                "path": "foo1",
-                "foo": "foo2"
-            }
-        )
+        self.client.write_fix_path("secret/foo", data={"path": "foo1", "foo": "foo2"})
         result = self.client.read("secret/foo")
 
         assert result["data"]["path"] == "foo1"
         assert result["data"]["foo"] == "foo2"
-        
+
         self.client.delete("secret/foo")
 
     def test_missing_token(self):

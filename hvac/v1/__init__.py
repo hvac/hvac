@@ -267,7 +267,7 @@ class Client:
 
     def write_fix_path(self, path, data={}, wrap_ttl=None):
         """Same as write() method but fix issue #133 (you can pass `path` key in POST data)
-        
+
         Supported methods:
             POST /<path>
 
