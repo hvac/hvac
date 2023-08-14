@@ -14,6 +14,33 @@ from hvac.constants.client import DEFAULT_URL
 class Adapter(metaclass=ABCMeta):
     """Abstract base class used when constructing adapters for use with the Client class."""
 
+    @classmethod
+    def from_adapter(
+        cls,
+        adapter,
+    ):
+        """Create a new adapter based on an existing Adapter instance.
+        This can be used to create a new type of adapter that inherits the properties of an existing one.
+
+        :param adapter: The existing Adapter instance.
+        :type adapter: hvac.Adapters.Adapter
+        """
+
+        return cls(
+            base_uri=adapter.base_uri,
+            token=adapter.token,
+            cert=adapter._kwargs.get("cert"),
+            verify=adapter._kwargs.get("verify"),
+            timeout=adapter._kwargs.get("timeout"),
+            proxies=adapter._kwargs.get("proxies"),
+            allow_redirects=adapter.allow_redirects,
+            session=adapter.session,
+            namespace=adapter.namespace,
+            ignore_exceptions=adapter.ignore_exceptions,
+            strict_http=adapter.strict_http,
+            request_header=adapter.request_header,
+        )
+
     def __init__(
         self,
         base_uri=DEFAULT_URL,
