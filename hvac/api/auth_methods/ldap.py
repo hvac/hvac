@@ -12,10 +12,37 @@ class Ldap(VaultApiBase):
     Reference: https://www.vaultproject.io/api/auth/ldap/index.html
     """
 
+    @utils.aliased_parameter(
+        "userdn", "user_dn", removed_in_version="3.0.0", position=1
+    )
+    @utils.aliased_parameter(
+        "groupdn", "group_dn", removed_in_version="3.0.0", position=2
+    )
+    @utils.aliased_parameter(
+        "binddn", "bind_dn", removed_in_version="3.0.0", position=10
+    )
+    @utils.aliased_parameter(
+        "bindpass", "bind_pass", removed_in_version="3.0.0", position=11
+    )
+    @utils.aliased_parameter(
+        "userattr", "user_attr", removed_in_version="3.0.0", position=12
+    )
+    @utils.aliased_parameter(
+        "discoverdn", "discover_dn", removed_in_version="3.0.0", position=13
+    )
+    @utils.aliased_parameter(
+        "upndomain", "upn_domain", removed_in_version="3.0.0", position=15
+    )
+    @utils.aliased_parameter(
+        "groupfilter", "group_filter", removed_in_version="3.0.0", position=16
+    )
+    @utils.aliased_parameter(
+        "groupattr", "group_attr", removed_in_version="3.0.0", position=17
+    )
     def configure(
         self,
-        user_dn=None,
-        group_dn=None,
+        userdn=None,
+        groupdn=None,
         url=None,
         case_sensitive_names=None,
         starttls=None,
@@ -23,18 +50,35 @@ class Ldap(VaultApiBase):
         tls_max_version=None,
         insecure_tls=None,
         certificate=None,
-        bind_dn=None,
-        bind_pass=None,
-        user_attr=None,
-        discover_dn=None,
+        binddn=None,
+        bindpass=None,
+        userattr=None,
+        discoverdn=None,
         deny_null_bind=True,
-        upn_domain=None,
-        group_filter=None,
-        group_attr=None,
+        upndomain=None,
+        groupfilter=None,
+        groupattr=None,
         use_token_groups=None,
         token_ttl=None,
         token_max_ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        *,
+        anonymous_group_search=None,
+        client_tls_cert=None,
+        client_tls_key=None,
+        connection_timeout=None,
+        dereference_aliases=None,
+        max_page_size=None,
+        request_timeout=None,
+        token_bound_cidrs=None,
+        token_explicit_max_ttl=None,
+        token_no_default_policy=None,
+        token_num_uses=None,
+        token_period=None,
+        token_policies=None,
+        token_type=None,
+        userfilter=None,
+        username_as_alias=None,
     ):
         """
         Configure the LDAP auth method.
@@ -42,10 +86,56 @@ class Ldap(VaultApiBase):
         Supported methods:
             POST: /auth/{mount_point}/config. Produces: 204 (empty body)
 
-        :param user_dn: Base DN under which to perform user search. Example: ou=Users,dc=example,dc=com
+        :param anonymous_group_search: Use anonymous binds when performing LDAP group searches (note: even when true,
+            the initial credentials will still be used for the initial connection test).
+        :type anonymous_group_search: bool
+        :param client_tls_cert: Client certificate to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_cert: str | unicode
+        :param client_tls_key: Client certificate key to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_key: str | unicode
+        :param connection_timeout: Timeout, in seconds, when attempting to connect to the LDAP server before trying the
+            next URL in the configuration.
+        :type connection_timeout: int
+        :param dereference_aliases: When aliases should be dereferenced on search operations.
+            Accepted values are 'never', 'finding', 'searching', 'always'.
+        :type dereference_aliases: str | unicode
+        :param max_page_size: If set to a value greater than 0, the LDAP backend will use the LDAP server's paged search
+            control to request pages of up to the given size.
+        :type max_page_size: int
+        :param request_timeout: Timeout, in seconds, for the connection when making requests against the server before
+            returning back an error.
+        :type request_timeout: str | unicode
+        :param token_bound_cidrs: List of CIDR blocks; if set, specifies blocks of IP addresses which can authenticate
+            successfully, and ties the resulting token to these blocks as well.
+        :type token_bound_cidrs: list
+        :param token_explicit_max_ttl: If set, will encode an explicit max TTL onto the token. This is a hard cap even
+            if token_ttl and token_max_ttl would otherwise allow a renewal.
+        :type token_explicit_max_ttl: str | unicode
+        :param token_no_default_policy: If set, the default policy will not be set on generated tokens; otherwise it
+            will be added to the policies set in token_policies.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a generated token may be used (within its lifetime); 0 means
+            unlimited.
+        :type token_num_uses: int
+        :param token_period: The maximum allowed period value when a periodic token is requested from this role.
+        :type token_period: str | unicode
+        :param token_policies: List of token policies to encode onto generated tokens.
+        :type token_policies: list
+        :param token_type: The type of token that should be generated.
+        :type token_type: str | unicode
+        :param userfilter: An optional LDAP user search filter.
+        :type userfilter: str | unicode
+        :param username_as_alias: If set to true, forces the auth method to use the username passed by the user as the
+            alias name.
+        :type username_as_alias: bool
+        :param userdn: Base DN under which to perform user search. Example: ou=Users,dc=example,dc=com
+        :type userdn: str | unicode
+        :param user_dn: Alias for userdn. This alias will be removed in v3.0.0.
         :type user_dn: str | unicode
-        :param group_dn: LDAP search base to use for group membership search. This can be the root containing either
+        :param groupdn: LDAP search base to use for group membership search. This can be the root containing either
             groups or users. Example: ou=Groups,dc=example,dc=com
+        :type groupdn: str | unicode
+        :param group_dn: Alias for groupdn. This alias will be removed in v3.0.0.
         :type group_dn: str | unicode
         :param url: The LDAP server to connect to. Examples: ldap://ldap.myorg.com, ldaps://ldap.myorg.com:636.
             Multiple URLs can be specified with commas, e.g. ldap://ldap.myorg.com,ldap://ldap2.myorg.com; these will be
@@ -65,31 +155,45 @@ class Ldap(VaultApiBase):
         :type insecure_tls: bool
         :param certificate: CA certificate to use when verifying LDAP server certificate, must be x509 PEM encoded.
         :type certificate: str | unicode
-        :param bind_dn: Distinguished name of object to bind when performing user search. Example:
+        :param binddn: Distinguished name of object to bind when performing user search. Example:
             cn=vault,ou=Users,dc=example,dc=com
+        :type binddn: str | unicode
+        :param bind_dn: Alias for binddn. This alias will be removed in v3.0.0.
         :type bind_dn: str | unicode
-        :param bind_pass:  Password to use along with binddn when performing user search.
+        :param bindpass:  Password to use along with binddn when performing user search.
+        :type bindpass: str | unicode
+        :param bind_pass: Alias for bindpass. This alias will be removed in v3.0.0.
         :type bind_pass: str | unicode
-        :param user_attr: Attribute on user attribute object matching the username passed when authenticating. Examples:
+        :param userattr: Attribute on user attribute object matching the username passed when authenticating. Examples:
             sAMAccountName, cn, uid
+        :type userattr: str | unicode
+        :param user_attr: Alias for userattr. This alias will be removed in v3.0.0.
         :type user_attr: str | unicode
-        :param discover_dn: Use anonymous bind to discover the bind DN of a user.
+        :param discoverdn: Use anonymous bind to discover the bind DN of a user.
+        :type discoverdn: bool
+        :param discover_dn: Alias for discoverdn. This alias will be removed in v3.0.0.
         :type discover_dn: bool
         :param deny_null_bind: This option prevents users from bypassing authentication when providing an empty password.
         :type deny_null_bind: bool
-        :param upn_domain: The userPrincipalDomain used to construct the UPN string for the authenticating user. The
+        :param upndomain: The userPrincipalDomain used to construct the UPN string for the authenticating user. The
             constructed UPN will appear as [username]@UPNDomain. Example: example.com, which will cause vault to bind as
             username@example.com.
+        :type upndomain: str | unicode
+        :param upn_domain: Alias for upndomain. This alias will be removed in v3.0.0.
         :type upn_domain: str | unicode
-        :param group_filter: Go template used when constructing the group membership query. The template can access the
+        :param groupfilter: Go template used when constructing the group membership query. The template can access the
             following context variables: [UserDN, Username]. The default is
             `(|(memberUid={{.Username}})(member={{.UserDN}})(uniqueMember={{.UserDN}}))`, which is compatible with several
             common directory schemas. To support nested group resolution for Active Directory, instead use the following
             query: (&(objectClass=group)(member:1.2.840.113556.1.4.1941:={{.UserDN}})).
+        :type groupfilter: str | unicode
+        :param group_filter: Alias for groupfilter. This alias will be removed in v3.0.0.
         :type group_filter: str | unicode
-        :param group_attr: LDAP attribute to follow on objects returned by groupfilter in order to enumerate user group
+        :param groupattr: LDAP attribute to follow on objects returned by groupfilter in order to enumerate user group
             membership. Examples: for groupfilter queries returning group objects, use: cn. For queries returning user
             objects, use: memberOf. The default is cn.
+        :type groupattr: str | unicode
+        :param group_attr: Alias for groupattr. This alias will be removed in v3.0.0.
         :type group_attr: str | unicode
         :param use_token_groups: If true, groups are resolved through Active Directory tokens. This may speed up nested
             group membership resolution in large directories.
@@ -106,26 +210,41 @@ class Ldap(VaultApiBase):
         params = utils.remove_nones(
             {
                 "url": url,
-                "userdn": user_dn,
-                "groupdn": group_dn,
+                "anonymous_group_search": anonymous_group_search,
+                "binddn": binddn,
+                "bindpass": bindpass,
                 "case_sensitive_names": case_sensitive_names,
-                "starttls": starttls,
-                "tls_min_version": tls_min_version,
-                "tls_max_version": tls_max_version,
-                "insecure_tls": insecure_tls,
                 "certificate": certificate,
-                "userattr": user_attr,
-                "discoverdn": discover_dn,
+                "client_tls_cert": client_tls_cert,
+                "client_tls_key": client_tls_key,
+                "connection_timeout": connection_timeout,
                 "deny_null_bind": deny_null_bind,
-                "groupfilter": group_filter,
-                "groupattr": group_attr,
-                "upndomain": upn_domain,
-                "binddn": bind_dn,
-                "bindpass": bind_pass,
-                "certificate": certificate,
-                "use_token_groups": use_token_groups,
-                "token_ttl": token_ttl,
+                "dereference_aliases": dereference_aliases,
+                "discoverdn": discoverdn,
+                "groupattr": groupattr,
+                "groupdn": groupdn,
+                "groupfilter": groupfilter,
+                "insecure_tls": insecure_tls,
+                "max_page_size": max_page_size,
+                "request_timeout": request_timeout,
+                "starttls": starttls,
+                "tls_max_version": tls_max_version,
+                "tls_min_version": tls_min_version,
+                "token_bound_cidrs": token_bound_cidrs,
+                "token_explicit_max_ttl": token_explicit_max_ttl,
                 "token_max_ttl": token_max_ttl,
+                "token_no_default_policy": token_no_default_policy,
+                "token_num_uses": token_num_uses,
+                "token_period": token_period,
+                "token_policies": token_policies,
+                "token_ttl": token_ttl,
+                "token_type": token_type,
+                "upndomain": upndomain,
+                "use_token_groups": use_token_groups,
+                "userattr": userattr,
+                "userdn": userdn,
+                "userfilter": userfilter,
+                "username_as_alias": username_as_alias,
             }
         )
 

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 import logging
 import re
-import warnings
-
-from unittest.mock import patch
 
 from tests.utils import get_config_file_path, create_client, is_enterprise
 from tests.utils.server_manager import ServerManager
@@ -15,7 +12,6 @@ class HvacIntegrationTestCase:
 
     manager = None
     client = None
-    mock_warnings = None
     enable_vault_ha = False
     use_env = False
 
@@ -61,11 +57,6 @@ class HvacIntegrationTestCase:
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
         self.client = create_client(token=self.manager.root_token, use_env=self.use_env)
-
-        # Squelch deprecating warnings during tests as we may want to deliberately call deprecated methods and/or verify
-        # warnings invocations.
-        warnings_patcher = patch("hvac.utils.warnings", spec=warnings)
-        self.mock_warnings = warnings_patcher.start()
 
     def tearDown(self):
         """Ensure the hvac Client instance's root token is reset after any auth method tests that may have modified it.

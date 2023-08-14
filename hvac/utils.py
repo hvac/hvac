@@ -49,6 +49,113 @@ def raise_for_error(
     )
 
 
+def aliased_parameter(
+    name, *aliases, removed_in_version, position=None, raise_on_multiple=True
+):
+    """A decorator that can be used to define one or more aliases for a parameter,
+    and optionally display a deprecation warning when aliases are used.
+    It can also optionally raise an exception if a value is supplied via multiple names.
+    LIMITATIONS:
+    If the canonical parameter can be specified unnamed (positionally),
+    then its position must be set to correctly detect multiple use and apply precedence.
+    To set multiple aliases with different values for the optional parameters, use the decorator multiple times with the same name.
+    This method will only work properly when the alias parameter is set as a keyword (named) arg, therefore the function in question
+    should ensure that any aliases come after \\*args or bare \\* (marking keyword-only arguments: https://peps.python.org/pep-3102/).
+    Note also that aliases do not have to appear in the original function's argument list.
+
+    :param name: The canonical name of the parameter.
+    :type name: str
+    :param aliases: One or more alias names for the parameter.
+    :type aliases: str
+    :param removed_in_version: The version in which the alias will be removed. This should typically have a value.
+        In the rare case that an alias is not deprecated, set this to None.
+    :type removed_in_version: str | None
+    :param position: The 0-based position of the canonical argument if it could be specified positionally. Use None for a keyword-only (named) argument.
+    :type position: int
+    :param raise_on_multiple: When True (default), raise an exception if a value is supplied via multiple names.
+    :type raise_on_multiple: bool
+    """
+
+    def decorator(method):
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            has_canonical = False
+            try:
+                kwargs[name]
+            except KeyError:
+                if position is not None:
+                    try:
+                        args[position]
+                    except IndexError:
+                        pass
+                    else:
+                        has_canonical = True
+            else:
+                has_canonical = True
+
+            # At this point if has_canonical is True, we'll never use an alias value,
+            # but we're still looping so we can catch duplicates or deprecated aliases.
+            for alias in aliases:
+                if alias in kwargs:
+                    # do deprecation before (potentially) raising on a duplicate to aid the user in choosing the right parameter.
+                    if removed_in_version is not None:
+                        deprecation_message = generate_parameter_deprecation_message(
+                            to_be_removed_in_version=removed_in_version,
+                            old_parameter_name=alias,
+                            new_parameter_name=name,
+                        )
+                        warnings.warn(
+                            message=deprecation_message,
+                            category=DeprecationWarning,
+                            stacklevel=2,
+                        )
+
+                    if not (has_canonical or name in kwargs):
+                        kwargs[name] = kwargs[alias]
+                    else:
+                        if raise_on_multiple:
+                            raise ValueError(
+                                f"Parameter '{name}' was given a duplicate value via alias '{alias}'."
+                            )
+
+                    del kwargs[alias]
+
+            return method(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def generate_parameter_deprecation_message(
+    to_be_removed_in_version,
+    old_parameter_name,
+    new_parameter_name=None,
+    extra_notes=None,
+):
+    """Generate a message to be used when warning about the use of deprecated paramers.
+
+    :param to_be_removed_in_version: Version of this module the deprecated parameter will be removed in.
+    :type to_be_removed_in_version: str
+    :param old_parameter_name: Deprecated parameter name.
+    :type old_parameter_name: str
+    :param new_parameter_name: Parameter intended to replace the deprecated parameter, if applicable.
+    :type new_parameter_name: str | None
+    :param extra_notes: Optional freeform text used to provide additional context, alternatives, or notes.
+    :type extra_notes: str | None
+    :return: Full deprecation warning message for the indicated parameter.
+    :rtype: str
+    """
+
+    message = f"Value supplied for deprecated parameter '{old_parameter_name}'. This parameter will be removed in version '{to_be_removed_in_version}'."
+    if new_parameter_name is not None:
+        message += f" Please use the '{new_parameter_name}' parameter moving forward."
+    if extra_notes is not None:
+        message += f" {extra_notes}"
+
+    return message
+
+
 def generate_method_deprecation_message(
     to_be_removed_in_version, old_method_name, method_name=None, module_name=None
 ):
