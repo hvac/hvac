@@ -254,6 +254,9 @@ class Client:
     def write(self, path, wrap_ttl=None, **kwargs):
         """POST /<path>
 
+        Write data to a path. Because this method uses kwargs for the data to write, "path" and "wrap_ttl" data keys cannot be used.
+        If these names are needed, or if the key names are not known at design time, consider using the write_data method.
+        
         :param path:
         :type path:
         :param wrap_ttl:
@@ -265,8 +268,8 @@ class Client:
         """
         return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
-    def write_fix_path(self, path, data={}, wrap_ttl=None):
-        """Same as write() method but fix issue #133 (you can pass `path` key in POST data)
+    def write_data(self, path, *, data={}, wrap_ttl=None):
+        """Write data to a path. Similar to write() without restrictions on data keys.
 
         Supported methods:
             POST /<path>
