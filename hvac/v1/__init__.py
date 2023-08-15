@@ -256,7 +256,7 @@ class Client:
 
         Write data to a path. Because this method uses kwargs for the data to write, "path" and "wrap_ttl" data keys cannot be used.
         If these names are needed, or if the key names are not known at design time, consider using the write_data method.
-        
+
         :param path:
         :type path:
         :param wrap_ttl:
