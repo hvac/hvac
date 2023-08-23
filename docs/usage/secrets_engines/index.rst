@@ -9,6 +9,7 @@ Secrets Engines
    azure
    gcp
    identity
+   ldap
    pki
    kv
    kv_v1
