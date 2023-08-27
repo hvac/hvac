@@ -142,6 +142,15 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.token = self.manager.root_token
         self.client.sys.disable_auth_method("userpass")
 
+    def test_write_data(self):
+        self.client.write_data("secret/foo", data={"path": "foo1", "foo": "foo2"})
+        result = self.client.read("secret/foo")
+
+        assert result["data"]["path"] == "foo1"
+        assert result["data"]["foo"] == "foo2"
+
+        self.client.delete("secret/foo")
+
     def test_missing_token(self):
         client = utils.create_client()
         assert not client.is_authenticated()
