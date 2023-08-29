@@ -4,7 +4,7 @@ LDAP
 .. contents::
 
 Configure LDAP Secrets Secrets Engine
------------------------------------
+-------------------------------------
 
 Configure the LDAP secrets engine to either manage service accounts or service account libraries.
 
@@ -50,7 +50,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.read_config`
 
 
 Create or Update Static Role
----------------------
+----------------------------
 
 Create or Update a role which allows the retrieval and rotation of an LDAP account. Retrieve and rotate the actual credential via generate_static_credentials().
 
@@ -71,7 +71,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.create_or_update_stati
 
 
 Read Static Role
----------
+----------------
 
 Retrieve the role configuration which allows the retrieval and rotation of an LDAP account. Retrieve and rotate the actual credential via generate_static_credentials().
 
@@ -88,7 +88,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.read_static_role`
 
 
 List Static Roles
-----------
+-----------------
 
 List all configured roles which allows the retrieval and rotation of an LDAP account. Retrieve and rotate the actual credential via generate_static_credentials().
 
@@ -105,7 +105,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.list_static_roles`
 
 
 Delete Static Role
------------
+------------------
 
 Remove the role configuration which allows the retrieval and rotation of an LDAP account. 
 
@@ -124,7 +124,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.delete_static_role`
     deletion_response = client.secrets.ldap.delete_static_role(name='sql-service-account')
 
 Generate Static Credentials
---------------------
+---------------------------
 
 Retrieve a service account password from LDAP. Return the previous password (if known). Vault shall rotate
 the password before returning it, if it has breached its configured ttl.

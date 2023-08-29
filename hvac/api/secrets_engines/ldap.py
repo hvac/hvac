@@ -89,7 +89,7 @@ class Ldap(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         )
-    
+
     def rotate_root(self, mount_point=DEFAULT_MOUNT_POINT):
         """Rotate the root password for the binddn entry used to manage the ldap secrets engine.
 
@@ -101,13 +101,18 @@ class Ldap(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
-        api_path = utils.format_url("/v1/{mount_point}/rotate-root", mount_point=mount_point)
-        return self._adapter.post(
-            url=api_path
+        api_path = utils.format_url(
+            "/v1/{mount_point}/rotate-root", mount_point=mount_point
         )
+        return self._adapter.post(url=api_path)
 
     def create_or_update_static_role(
-        self, name, username=None, dn=None, rotation_period=None, mount_point=DEFAULT_MOUNT_POINT
+        self,
+        name,
+        username=None,
+        dn=None,
+        rotation_period=None,
+        mount_point=DEFAULT_MOUNT_POINT,
     ):
         """This endpoint creates or updates the ldap static role definition.
 
@@ -128,17 +133,8 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         api_path = utils.format_url("/v1/{}/static-role/{}", mount_point, name)
-        params = {
-            "username": username,
-            "rotation_period": rotation_period
-        }
-        params.update(
-            utils.remove_nones(
-                {
-                    "dn": dn
-                }
-            )
-        )
+        params = {"username": username, "rotation_period": rotation_period}
+        params.update(utils.remove_nones({"dn": dn}))
         return self._adapter.post(
             url=api_path,
             json=params,
