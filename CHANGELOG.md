@@ -11,6 +11,7 @@ This is the last expected release before `v2.0.0`.
 - Breaking changes coming to `Client.write` method ([GH-1034](https://github.com/hvac/hvac/issues/1034))
 - Support for Python 3.6 & 3.7 will be dropped in `v2.0.0` ([GH-877](https://github.com/hvac/hvac/issues/877))
 - Support for the Legacy MFA methods will be dropped from the `MFA` class in `v2.0.0` ([GH-1026](https://github.com/hvac/hvac/issues/1026))
+- Breaking changes coming to Adapters' use of custom sessions ([GH-1040](https://github.com/hvac/hvac/issues/1040))
 
 ### 🚀 Features
 
