@@ -119,7 +119,7 @@ class Kubernetes(VaultApiBase):
         policies=None,
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
-        alias_name_source="",
+        alias_name_source=None,
     ):
         """Create a role in the method.
 
