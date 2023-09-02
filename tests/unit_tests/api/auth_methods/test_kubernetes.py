@@ -175,8 +175,22 @@ class TestKubernetes(TestCase):
 
     @parameterized.expand(
         [
-            ("default mount point", None, "application1", "*", "some-namespace", "serviceaccount_uid"),
-            ("custom mount point", "k8s", "application2", "some-service-account", "*", "serviceaccount_name"),
+            (
+                "default mount point",
+                None,
+                "application1",
+                "*",
+                "some-namespace",
+                "serviceaccount_uid",
+            ),
+            (
+                "custom mount point",
+                "k8s",
+                "application2",
+                "some-service-account",
+                "*",
+                "serviceaccount_name",
+            ),
         ]
     )
     @requests_mock.Mocker()
