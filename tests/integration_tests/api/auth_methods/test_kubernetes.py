@@ -151,17 +151,36 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 "success",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
+                alias_name_source="serviceaccount_uid",
             ),
             param(
                 "both bounds wildcard permitted",
                 bound_service_account_names=["*"],
                 bound_service_account_namespaces=["*"],
+                alias_name_source="serviceaccount_uid",
             ),
             param(
                 "token type",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
+                alias_name_source="serviceaccount_uid",
                 token_type="service",
+            ),
+            param(
+                "serviceaccount name for alias",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                alias_name_source="serviceaccount_name",
+                token_type="service",
+            ),
+            param(
+                "raises with invalid alias",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                alias_name_source="serviceaccount_blah",
+                token_type="service",
+                raises=exceptions.InvalidRequest,
+                exception_message="invalid alias_name_source",
             ),
         ]
     )
@@ -171,6 +190,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         bound_service_account_names=None,
         bound_service_account_namespaces=None,
         token_type=None,
+        alias_name_source="",
         raises=None,
         exception_message="",
     ):
@@ -182,6 +202,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                     bound_service_account_names=bound_service_account_names,
                     bound_service_account_namespaces=bound_service_account_namespaces,
                     token_type=token_type,
+                    alias_name_source=alias_name_source,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -194,6 +215,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 bound_service_account_names=bound_service_account_names,
                 bound_service_account_namespaces=bound_service_account_namespaces,
                 token_type=token_type,
+                alias_name_source=alias_name_source,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("create_role_response: %s" % create_role_response)
