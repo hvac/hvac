@@ -119,6 +119,7 @@ class Kubernetes(VaultApiBase):
         policies=None,
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
+        alias_name_source="serviceaccount_uid",
     ):
         """Create a role in the method.
 
@@ -154,6 +155,9 @@ class Kubernetes(VaultApiBase):
         :type token_type: str
         :param mount_point: The "path" the kubernetes auth method was mounted on.
         :type mount_point: str | unicode
+        :param alias_name_source: Configures how identity aliases are generated.
+            Valid choices are: serviceaccount_uid, serviceaccount_name.
+        :type alias_name_source: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -175,6 +179,7 @@ class Kubernetes(VaultApiBase):
             "bound_service_account_namespaces": comma_delimited_to_list(
                 bound_service_account_namespaces
             ),
+            "alias_name_source": alias_name_source,
         }
         params.update(
             utils.remove_nones(
