@@ -178,7 +178,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         bound_service_account_names=None,
         bound_service_account_namespaces=None,
         token_type=None,
-        alias_name_source="",
+        alias_name_source=None,
         raises=None,
         exception_message="",
     ):
