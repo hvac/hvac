@@ -7,6 +7,7 @@ Secrets Engines
    activedirectory
    aws
    azure
+   database
    gcp
    identity
    pki
