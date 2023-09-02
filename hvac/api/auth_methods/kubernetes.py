@@ -180,7 +180,7 @@ class Kubernetes(VaultApiBase):
                 bound_service_account_namespaces
             ),
         }
-        if alias_name_source:
+        if alias_name_source is not None:
             params["alias_name_source"] = alias_name_source
 
         params.update(
