@@ -119,7 +119,7 @@ class Kubernetes(VaultApiBase):
         policies=None,
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
-        alias_name_source="serviceaccount_uid",
+        alias_name_source="",
     ):
         """Create a role in the method.
 
@@ -179,8 +179,10 @@ class Kubernetes(VaultApiBase):
             "bound_service_account_namespaces": comma_delimited_to_list(
                 bound_service_account_namespaces
             ),
-            "alias_name_source": alias_name_source,
         }
+        if alias_name_source:
+            params["alias_name_source"] = alias_name_source
+
         params.update(
             utils.remove_nones(
                 {

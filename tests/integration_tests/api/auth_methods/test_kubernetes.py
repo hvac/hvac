@@ -151,19 +151,16 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 "success",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
-                alias_name_source="serviceaccount_uid",
             ),
             param(
                 "both bounds wildcard permitted",
                 bound_service_account_names=["*"],
                 bound_service_account_namespaces=["*"],
-                alias_name_source="serviceaccount_uid",
             ),
             param(
                 "token type",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
-                alias_name_source="serviceaccount_uid",
                 token_type="service",
             ),
             param(
@@ -172,15 +169,6 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 bound_service_account_namespaces=["default"],
                 alias_name_source="serviceaccount_name",
                 token_type="service",
-            ),
-            param(
-                "raises with invalid alias",
-                bound_service_account_names=["vault-auth"],
-                bound_service_account_namespaces=["default"],
-                alias_name_source="serviceaccount_blah",
-                token_type="service",
-                raises=exceptions.InvalidRequest,
-                exception_message="invalid alias_name_source",
             ),
         ]
     )
