@@ -2,7 +2,7 @@ Database
 ==============
 
 .. note::
-    Every method under the :py:attr:`Database class attribute<hvac.api.secrets_engines.Database>` includes a `mount_point` parameter that can be used to address the Database secret engine under a custom mount path. E.g., If enabling the Database secret engine using Vault's CLI commands via `vault secrets enable -path=my-database database`", the `mount_point` parameter in :py:meth:`hvac.api.secrets_engines.Database()` methods would be set to "my-database".
+    Every method under the :py:attr:`Database class<hvac.api.secrets_engines.Database>` includes a ``mount_point`` parameter that can be used to address the Database secret engine under a custom mount path. E.g., If enabling the Database secret engine using Vault's CLI commands via ``vault secrets enable -path=my-database database``, the ``mount_point`` parameter in :py:meth:`hvac.api.secrets_engines.Database()` methods would be set to ``my-database``.
 
 
 Enable Database Secrets Engine
@@ -27,6 +27,8 @@ Configuration
 
 :py:meth:`hvac.api.secrets_engines.Database.configure`
 
+Configures the database engine:
+
 .. code:: python
 
     import hvac
@@ -42,7 +44,7 @@ Configuration
     )
 
 .. note::
-    The database needs to be created and available to connect before you can configure the database secrets engine using the above configure method
+    The database needs to be created and available to connect before you can configure the database secrets engine using the above configure method.
 
 
 Read Configuration
@@ -50,7 +52,7 @@ Read Configuration
 
 :py:meth:`hvac.api.secrets_engines.Database.read_connection`
 
-Returns the configuration settings for a connection mounted under a path of `my-database`:
+Returns the configuration settings for a connection mounted under a path of ``my-database``:
 
 .. code:: python
 
@@ -68,7 +70,7 @@ List Connections
 
 :py:meth:`hvac.api.secrets_engines.Database.list_connections`
 
-returns a list of available connections:
+Returns a list of available connections:
 
 .. code:: python
 
@@ -85,7 +87,7 @@ Delete Connection
 
 :py:meth:`hvac.api.secrets_engines.Database.delete_connection`
 
-Deletes a connection
+Deletes a connection:
 
 .. code:: python
 
@@ -103,7 +105,7 @@ Reset Connection
 
 :py:meth:`hvac.api.secrets_engines.Database.reset_connection`
 
-Closes a connection and its underlying plugin and restarts it with the configuration stored
+Closes a connection and its underlying plugin and restarts it with the configuration stored:
 
 .. code:: python
 
@@ -121,7 +123,7 @@ Create Role
 
 :py:meth:`hvac.api.secrets_engines.Database.create_role`
 
-Creates or updates a role definition
+Creates or updates a role definition:
 
 .. code:: python
 
@@ -150,7 +152,7 @@ Read A Role
 
 :py:meth:`hvac.api.secrets_engines.Database.read_role`
 
-Creates or updates a role definition
+Creates or updates a role definition:
 
 .. code:: python
 
@@ -168,7 +170,7 @@ List All The Roles
 
 :py:meth:`hvac.api.secrets_engines.Database.list_roles`
 
-Returns a list of available roles
+Returns a list of available roles:
 
 .. code:: python
 
@@ -184,7 +186,7 @@ Delete A Role
 
 :py:meth:`hvac.api.secrets_engines.Database.delete_role`
 
-Deletes a role definition
+Deletes a role definition:
 
 .. code:: python
 
@@ -204,7 +206,7 @@ Rotate Root Credentials
 :py:meth:`hvac.api.secrets_engines.Database.rotate_root_credentials()`
 
 Rotates the root credentials stored for the database connection.
-This user must have permissions to update its own password
+This user must have permissions to update its own password.
 
 .. code:: python
 
@@ -221,7 +223,7 @@ Generate Credentials
 
 :py:meth:`hvac.api.secrets_engines.Database.generate_credentials`
 
-Generates a new set of dynamic credentials based on the named role
+Generates a new set of dynamic credentials based on the named role:
 
 .. code:: python
 
@@ -238,7 +240,7 @@ Get Static Credentials
 
 :py:meth:`hvac.api.secrets_engines.Database.get_static_credentials`
 
-Returns the current credentials based on the named static role
+Returns the current credentials based on the named static role:
 
 .. code:: python
 
