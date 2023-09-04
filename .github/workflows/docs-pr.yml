@@ -69,7 +69,7 @@ jobs:
         with:
           version: 1.4.2
           virtualenvs-create: true
-          virtualenvs-in-project: true
+          virtualenvs-in-project: false
 
       - name: Set up Python
         id: python
