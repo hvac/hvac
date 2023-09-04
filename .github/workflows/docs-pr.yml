@@ -63,17 +63,24 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.base.sha }}
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.3
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
       - name: Set up Python
+        id: python
         uses: actions/setup-python@v4
         with:
           # TODO(2.0.0): upgrade python version
-          # for now, this is what RTD is set to use
           python-version: '3.6'
-          cache: pip
-          cache-dependency-path: docs/requirements.txt
+          cache: poetry
 
-      - name: Requirements
-        run: pip install -r docs/requirements.txt
+      - name: Install dependencies
+        if: steps.python.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
 
       - name: Build BASE
         id: build-base
