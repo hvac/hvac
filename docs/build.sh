@@ -7,4 +7,4 @@
 
 set -e
 
-make -C "${BASH_SOURCE%/*}" SPHINXOPTS='-E -a' html
+poetry run make -C "${BASH_SOURCE%/*}" SPHINXOPTS='-E -a' html
