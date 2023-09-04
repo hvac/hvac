@@ -17,6 +17,7 @@ env:
   DOCS_BUILD_BASE: docs/_build/html_base
   DOCS_BUILD_HEAD: docs/_build/html_head
   DOCS_BUILD_ARTIFACT_NAME: hvac_docs
+  READ_THE_DOCS_BUILD: true
 
 jobs:
   build-docs:
