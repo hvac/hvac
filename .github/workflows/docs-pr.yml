@@ -12,7 +12,7 @@ on:
 
 env:
   GHP_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
-  DOCS_BUILD_CMD: make -C docs html
+  DOCS_BUILD_CMD: docs/build.sh
   DOCS_BUILD_HTML: docs/_build/html
   DOCS_BUILD_BASE: docs/_build/html_base
   DOCS_BUILD_HEAD: docs/_build/html_head
@@ -72,7 +72,7 @@ jobs:
         id: build-base
         uses: ansible-community/github-docs-build/actions/ansible-docs-build-html@main
         with:
-          build-script: ${{ env.DOCS_BUILD_CMD }}
+          build-script: ${{ github.workspace }}/${{ env.DOCS_BUILD_CMD }}
           build-html: ${{ github.workspace}}/${{ env.DOCS_BUILD_HTML }}
           copy-build: ${{ github.workspace }}/${{ env.DOCS_BUILD_BASE }}
           artifact-upload: 'false'
@@ -86,7 +86,7 @@ jobs:
         id: build-head
         uses: ansible-community/github-docs-build/actions/ansible-docs-build-html@main
         with:
-          build-script: ${{ env.DOCS_BUILD_CMD }}
+          build-script: ${{ github.workspace }}/${{ env.DOCS_BUILD_CMD }}
           build-html: ${{ github.workspace}}/${{ env.DOCS_BUILD_HTML }}
           copy-build: ${{ github.workspace }}/${{ env.DOCS_BUILD_HEAD }}
           artifact-name: ${{ steps.vars.outputs.artifact-name }}
