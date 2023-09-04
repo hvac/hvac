@@ -121,7 +121,8 @@ class Ldap(VaultApiBase):
         :param username: The name of a pre-existing service account in LDAP that maps to this static role.
             This value is required on create and cannot be updated.
         :type username: str | unicode
-        :param dn: Distinguished name of the existing LDAP entry to manage password rotation for (takes precedence over username). Optional but cannot be modified after creation. The name of a pre-existing service account in Active Directory that maps to this role.
+        :param dn: Distinguished name of the existing LDAP entry to manage password rotation for (takes precedence over username). 
+            Optional but cannot be modified after creation. The name of a pre-existing service account in Active Directory that maps to this role.
         :type dn: str | unicode
         :param rotation_period: How often Vault should rotate the password.
             This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
