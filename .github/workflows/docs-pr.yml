@@ -58,6 +58,11 @@ jobs:
                 core.setOutput('pr-checkout-ref', 'refs/pull/${{ github.event.number }}/merge')
             }
 
+      - name: Checkout BASE
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -69,11 +74,6 @@ jobs:
 
       - name: Requirements
         run: pip install -r docs/requirements.txt
-
-      - name: Checkout BASE
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
 
       - name: Build BASE
         id: build-base
