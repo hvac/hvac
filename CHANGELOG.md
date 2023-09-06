@@ -1,5 +1,48 @@
 # Changelog
 
+## 1.2.0
+
+This is the last expected release before `v2.0.0`.
+
+### 📢 Deprecations / Announcements
+
+- ldap auth method - add missing `configure` params by vault api names ([GH-975](https://github.com/hvac/hvac/pull/975))
+- expand Vault CI matrix, announce deprecation of Vault dynamic SSH keys ([GH-1023](https://github.com/hvac/hvac/pull/1023))
+- Breaking changes coming to `Client.write` method ([GH-1034](https://github.com/hvac/hvac/issues/1034))
+- Support for Python 3.6 & 3.7 will be dropped in `v2.0.0` ([GH-877](https://github.com/hvac/hvac/issues/877))
+- Support for the Legacy MFA methods will be dropped from the `MFA` class in `v2.0.0` ([GH-1026](https://github.com/hvac/hvac/issues/1026))
+- Breaking changes coming to Adapters' use of custom sessions ([GH-1040](https://github.com/hvac/hvac/issues/1040))
+
+### 🚀 Features
+
+- Add alias_name_source for Kubernetes Auth create_role ([GH-1039](https://github.com/hvac/hvac/pull/1039))
+- add `Client.write_data` method ([GH-1028](https://github.com/hvac/hvac/pull/1028))
+- ldap auth method - add missing `configure` params by vault api names ([GH-975](https://github.com/hvac/hvac/pull/975))
+- Re-add arguments to create_or_update_role() from old API ([GH-842](https://github.com/hvac/hvac/pull/842))
+- Add new argument (conflicting_alias_ids_to_keep) to merge_entities method ([GH-968](https://github.com/hvac/hvac/pull/968))
+- Add impersonated account support to GCP secrets engine ([GH-1022](https://github.com/hvac/hvac/pull/1022))
+- support "user_claim_json_pointer" in create_role() for JWT/OIDC auth method ([GH-1006](https://github.com/hvac/hvac/pull/1006))
+- Add static account support to GCP secrets engine ([GH-956](https://github.com/hvac/hvac/pull/956))
+- adding batch_input to transit.sign_data #988 ([GH-990](https://github.com/hvac/hvac/pull/990))
+- Add a method to read static roles in the database engine ([GH-1009](https://github.com/hvac/hvac/pull/1009))
+- feat: add support for `disable_local_ca_jwt` in the Kubernetes auth method ([GH-997](https://github.com/hvac/hvac/pull/997))
+
+### 🐛 Bug Fixes
+
+- add `Client.write_data` method ([GH-1028](https://github.com/hvac/hvac/pull/1028))
+- Fix premature read on stream requests in the `sys.take_raft_snapshot` method ([GH-771](https://github.com/hvac/hvac/pull/771))
+- fix(`__getattr__`): non-existent attribute lookup ([GH-982](https://github.com/hvac/hvac/pull/982))
+
+### 📚 Documentation
+
+- docs(secrets-engines): Add database secrets engine docs ([GH-1036](https://github.com/hvac/hvac/pull/1036))
+- docs: make OIDC Authorization URL Request example work again. ([GH-1010](https://github.com/hvac/hvac/pull/1010))
+
+### 🧰 Miscellaneous
+
+- add tests and docs to sdist, improve build testing ([GH-1015](https://github.com/hvac/hvac/pull/1015))
+- Bump certifi from 2022.9.14 to 2022.12.7 ([GH-1013](https://github.com/hvac/hvac/pull/1013))
+
 ## 1.1.1
 
 ### 🐛 Bug Fixes
