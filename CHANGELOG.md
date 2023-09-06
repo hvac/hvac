@@ -15,6 +15,7 @@ This is the last expected release before `v2.0.0`.
 
 ### 🚀 Features
 
+- Add alias_name_source for Kubernetes Auth create_role ([GH-1039](https://github.com/hvac/hvac/pull/1039))
 - add `Client.write_data` method ([GH-1028](https://github.com/hvac/hvac/pull/1028))
 - ldap auth method - add missing `configure` params by vault api names ([GH-975](https://github.com/hvac/hvac/pull/975))
 - Re-add arguments to create_or_update_role() from old API ([GH-842](https://github.com/hvac/hvac/pull/842))
@@ -34,6 +35,7 @@ This is the last expected release before `v2.0.0`.
 
 ### 📚 Documentation
 
+- docs(secrets-engines): Add database secrets engine docs ([GH-1036](https://github.com/hvac/hvac/pull/1036))
 - docs: make OIDC Authorization URL Request example work again. ([GH-1010](https://github.com/hvac/hvac/pull/1010))
 
 ### 🧰 Miscellaneous
