@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.1
+
+This release fixes an inaccuracy in a warning message but does not otherwise change functionality.
+
+### 🐛 Bug Fixes
+
+- Fix raise_on_deleted_version warning ([GH-1045](https://github.com/hvac/hvac/pull/1045))
+
 ## 1.2.0
 
 This is the last expected release before `v2.0.0`.
