@@ -314,7 +314,7 @@ class Transit(VaultApiBase):
     def encrypt_data(
         self,
         name,
-        plaintext,
+        plaintext=None,
         context=None,
         key_version=None,
         nonce=None,
@@ -335,7 +335,7 @@ class Transit(VaultApiBase):
 
         :param name: Specifies the name of the encryption key to encrypt against. This is specified as part of the URL.
         :type name: str | unicode
-        :param plaintext: Specifies base64 encoded plaintext to be encoded.
+        :param plaintext: Specifies base64 encoded plaintext to be encoded. Ignored if ``batch_input`` is set, otherwise required.
         :type plaintext: str | unicode
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled for this key.
@@ -367,6 +367,8 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
+        if plaintext is None and batch_input is None:
+            raise ValueError("plaintext must be specified unless batch_input is set")
         params = {
             "plaintext": plaintext,
         }
@@ -395,7 +397,7 @@ class Transit(VaultApiBase):
     def decrypt_data(
         self,
         name,
-        ciphertext,
+        ciphertext=None,
         context=None,
         nonce=None,
         batch_input=None,
@@ -408,7 +410,7 @@ class Transit(VaultApiBase):
 
         :param name: Specifies the name of the encryption key to decrypt against. This is specified as part of the URL.
         :type name: str | unicode
-        :param ciphertext: the ciphertext to decrypt.
+        :param ciphertext: The ciphertext to decrypt. Ignored if ``batch_input`` is set, otherwise required.
         :type ciphertext: str | unicode
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled.
@@ -426,6 +428,8 @@ class Transit(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: dict
         """
+        if ciphertext is None and batch_input is None:
+            raise ValueError("ciphertext must be specified unless batch_input is set")
         params = {
             "ciphertext": ciphertext,
         }
