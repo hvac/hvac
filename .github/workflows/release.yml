@@ -41,7 +41,7 @@ jobs:
       with:
         name: package
         path: dist/
-        retention-days: 1
+        retention-days: 7
         if-no-files-found: error
 
   pypi:
@@ -83,6 +83,7 @@ jobs:
       - name: Add release asset
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           fail_on_unmatched_files: true
           files: |
             dist/*
