@@ -42,8 +42,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
-        cache: ${{ !startsWith(matrix.os, 'windows') && 'poetry' || '' }}
-        # cache: ${{ matrix.python-version != '3.6' && 'poetry' || !startsWith(matrix.os, 'windows') && 'poetry' || '' }}
+        cache: poetry
 
     - name: Install dependencies
       run: poetry install --no-interaction --no-root
