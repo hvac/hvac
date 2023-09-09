@@ -49,7 +49,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -83,7 +83,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -146,7 +146,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -207,7 +207,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
