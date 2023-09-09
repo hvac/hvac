@@ -30,7 +30,9 @@ jobs:
           # https://github.com/hvac/hvac/pull/1048
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
@@ -65,7 +67,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
@@ -127,7 +131,9 @@ jobs:
           # https://github.com/hvac/hvac/pull/1048
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
@@ -188,7 +194,9 @@ jobs:
           - "vault=1.14.*"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
@@ -257,7 +265,9 @@ jobs:
       - integration-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
