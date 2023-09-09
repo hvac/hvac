@@ -37,7 +37,10 @@ python = "^3.8"
 pyhcl = "^0.4.4"
 requests = "^2.27.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
 Werkzeug = "^2.3.7"
 Authlib = "^1.0.1"
 black = "22.6.0"
@@ -61,7 +64,7 @@ Sphinx = "3.1.2"
 sphinx-rtd-theme = "0.5.0"
 mistune = "0.8.4"
 docutils = "<0.18"
-packaging = "<23"
+packaging = "<24"
 bump2version = "^1.0.1"
 jinja2 = "<3.1.0"
 
