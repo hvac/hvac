@@ -38,6 +38,9 @@ python = "^3.6.2"
 pyhcl = "^0.4.4"
 requests = "^2.27.1"
 
+# Note on linux krb5 libs are required: `sudo apt install libkrb5-dev` or `yum install krb5-devel`
+requests_gssapi = { version = "^1.2.0", optional = true } # kerberos support, will include `gssapi`
+
 [tool.poetry.dev-dependencies]
 Werkzeug = "2.0.3"
 Authlib = "^1.0.1"
@@ -64,6 +67,9 @@ mistune = "0.8.4"
 docutils = "<0.18"
 packaging = "<23"
 bump2version = "^1.0.1"
+
+[tool.poetry.extras]
+kerberos = ["requests_gssapi"] # optional kerberos support
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
