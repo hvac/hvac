@@ -9,7 +9,7 @@ Configure MFA Auth Method Settings
 .. note::
 	The legacy/unsupported MFA auth method covered by this class's configuration API route only supports integration with a subset of Vault auth methods. See the list of supported auth methods in this module's :py:attr:`"SUPPORTED_AUTH_METHODS" attribute<hvac.api.auth_methods.mfa.SUPPORTED_AUTH_METHODS>` and/or the associated `Vault MFA documentation`_ for additional information.
 
-.. _Vault MFA documentation: https://www.vaultproject.io/docs/auth/mfa.html
+.. _Vault LegacyMFA documentation: https://developer.hashicorp.com/vault/docs/v1.10.x/auth/mfa
 
 .. code:: python
 
