@@ -6,6 +6,7 @@ from hvac.utils import (
     generate_property_deprecation_message,
     generate_parameter_deprecation_message,
     aliased_parameter,
+    comma_delimited_to_list,
 )
 
 
@@ -24,6 +25,36 @@ def aliasable_func():
 
 
 class TestUtils:
+    @pytest.mark.parametrize(
+        "list_param",
+        [[], ["one"], [1, "two"], [1, "2", None], ["1", None, ["!", "@"], {}]],
+    )
+    def test_comma_delimited_to_list_from_list(self, list_param):
+        result = comma_delimited_to_list(list_param=list_param)
+        assert result == list_param
+
+    @pytest.mark.parametrize(
+        "list_param",
+        [{}, {"a": 1}, None, 7, b"X,Y,Z"],
+    )
+    def test_comma_delimited_to_list_from_other(self, list_param):
+        result = comma_delimited_to_list(list_param=list_param)
+        assert result == []
+
+    @pytest.mark.parametrize(
+        ("list_param", "expected"),
+        [
+            ("", [""]),
+            ("a", ["a"]),
+            ("a,b,c", ["a", "b", "c"]),
+            ("a, b, c", ["a", " b", " c"]),
+            ("a,,c", ["a", "", "c"]),
+        ],
+    )
+    def test_comma_delimited_to_list_from_str(self, list_param, expected):
+        result = comma_delimited_to_list(list_param=list_param)
+        assert result == expected
+
     @pytest.mark.parametrize("to_be_removed_in_version", ["99.0.0"])
     @pytest.mark.parametrize("old_name", ["old_one"])
     @pytest.mark.parametrize("new_name", ["new_one"])
