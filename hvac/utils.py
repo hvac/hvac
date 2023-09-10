@@ -317,13 +317,12 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
 
 def validate_list_of_strings_param(param_name, param_argument):
     """Validate that an argument is a list of strings.
+    Returns nothing if valid, raises ParamValidationException if invalid.
 
     :param param_name: The name of the parameter being validated. Used in any resulting exception messages.
     :type param_name: str | unicode
     :param param_argument: The argument to validate.
     :type param_argument: list
-    :return: True if the argument is validated, False otherwise.
-    :rtype: bool
     """
     if param_argument is None:
         param_argument = []
