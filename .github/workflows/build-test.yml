@@ -14,19 +14,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-20.04, macos-latest, windows-latest]
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          # - "3.12"
+          # https://github.com/hvac/hvac/pull/1048
+        os: [ubuntu-latest, macos-latest, windows-latest]
     defaults:
       run:
         shell: bash
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
@@ -35,8 +43,8 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-        cache: ${{ !startsWith(matrix.os, 'windows') && 'poetry' || '' }}
-        # cache: ${{ matrix.python-version != '3.6' && 'poetry' || !startsWith(matrix.os, 'windows') && 'poetry' || '' }}
+        allow-prereleases: true
+        # cache: ${{ !startsWith(matrix.os, 'windows') && 'poetry' || '' }}
 
     - name: Install dependencies
       run: poetry install --no-interaction --no-root

@@ -10,12 +10,14 @@ jobs:
     permissions:
       contents: read
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
       uses: snok/install-poetry@v1.3.3
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
