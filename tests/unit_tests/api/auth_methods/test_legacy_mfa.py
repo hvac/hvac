@@ -4,7 +4,7 @@ import requests_mock
 from parameterized import parameterized
 
 from hvac.adapters import JSONAdapter
-from hvac.api.auth_methods import Mfa
+from hvac.api.auth_methods import LegacyMfa
 from hvac.api.auth_methods.github import DEFAULT_MOUNT_POINT
 
 
@@ -26,7 +26,7 @@ class TestMfa(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        mfa = Mfa(adapter=JSONAdapter())
+        mfa = LegacyMfa(adapter=JSONAdapter())
         response = mfa.configure(
             mount_point=mount_point,
         )
@@ -64,7 +64,7 @@ class TestMfa(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        mfa = Mfa(adapter=JSONAdapter())
+        mfa = LegacyMfa(adapter=JSONAdapter())
         response = mfa.read_configuration(
             mount_point=mount_point,
         )
@@ -90,7 +90,7 @@ class TestMfa(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        mfa = Mfa(adapter=JSONAdapter())
+        mfa = LegacyMfa(adapter=JSONAdapter())
         response = mfa.configure_duo_access(
             mount_point=mount_point,
             host="someapisubdomain.python-hvac.org",
@@ -119,7 +119,7 @@ class TestMfa(TestCase):
             url=mock_url,
             status_code=expected_status_code,
         )
-        mfa = Mfa(adapter=JSONAdapter())
+        mfa = LegacyMfa(adapter=JSONAdapter())
         response = mfa.configure_duo_behavior(
             mount_point=mount_point, push_info="howdy"
         )
@@ -159,7 +159,7 @@ class TestMfa(TestCase):
             status_code=expected_status_code,
             json=mock_response,
         )
-        mfa = Mfa(adapter=JSONAdapter())
+        mfa = LegacyMfa(adapter=JSONAdapter())
         response = mfa.read_duo_behavior_configuration(
             mount_point=mount_point,
         )
