@@ -8,7 +8,7 @@ from hvac.api.auth_methods import LegacyMfa
 from hvac.api.auth_methods.github import DEFAULT_MOUNT_POINT
 
 
-class TestMfa(TestCase):
+class TestLegacyMfa(TestCase):
     @parameterized.expand(
         [
             ("default mount point", DEFAULT_MOUNT_POINT),
