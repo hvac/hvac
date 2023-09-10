@@ -4,10 +4,10 @@ MFA
 Configure MFA Auth Method Settings
 -----------------------------------
 
-:py:meth:`hvac.api.auth_methods.Mfa.configure`
+:py:meth:`hvac.api.auth_methods.LegacyMfa.configure`
 
 .. note::
-	The legacy/unsupported MFA auth method covered by this class's configuration API route only supports integration with a subset of Vault auth methods. See the list of supported auth methods in this module's :py:attr:`"SUPPORTED_AUTH_METHODS" attribute<hvac.api.auth_methods.mfa.SUPPORTED_AUTH_METHODS>` and/or the associated `Vault MFA documentation`_ for additional information.
+	The legacy/unsupported MFA auth method covered by this class's configuration API route only supports integration with a subset of Vault auth methods. See the list of supported auth methods in this module's :py:attr:`"SUPPORTED_AUTH_METHODS" attribute<hvac.api.auth_methods.LegacyMfa.SUPPORTED_AUTH_METHODS>` and/or the associated `Vault MFA documentation`_ for additional information.
 
 .. _Vault LegacyMFA documentation: https://developer.hashicorp.com/vault/docs/v1.10.x/auth/mfa
 
@@ -34,7 +34,7 @@ Configure MFA Auth Method Settings
 Reading the MFA Auth Method Configuration
 -----------------------------------------
 
-:py:meth:`hvac.api.auth_methods.Mfa.read_configuration`
+:py:meth:`hvac.api.auth_methods.LegacyMfa.read_configuration`
 
 .. code:: python
 
@@ -49,7 +49,7 @@ Reading the MFA Auth Method Configuration
 Configure Duo MFA Type Access Credentials
 -----------------------------------------
 
-:py:meth:`hvac.api.auth_methods.Mfa.configure_duo_access`
+:py:meth:`hvac.api.auth_methods.LegacyMfa.configure_duo_access`
 
 .. code:: python
 
@@ -71,7 +71,7 @@ Configure Duo MFA Type Access Credentials
 Configure Duo MFA Type Behavior
 -------------------------------
 
-:py:meth:`hvac.api.auth_methods.Mfa.configure_duo_behavior`
+:py:meth:`hvac.api.auth_methods.LegacyMfa.configure_duo_behavior`
 
 .. code:: python
 
@@ -87,7 +87,7 @@ Configure Duo MFA Type Behavior
 Read Duo MFA Type Behavior
 --------------------------
 
-:py:meth:`hvac.api.auth_methods.Mfa.read_duo_behavior_configuration`
+:py:meth:`hvac.api.auth_methods.LegacyMfa.read_duo_behavior_configuration`
 
 .. code:: python
 
