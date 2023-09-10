@@ -1,12 +1,15 @@
 import pytest
 import warnings
 
+from unittest import mock
+
 from hvac.utils import (
     generate_method_deprecation_message,
     generate_property_deprecation_message,
     generate_parameter_deprecation_message,
     aliased_parameter,
     comma_delimited_to_list,
+    get_token_from_env,
 )
 
 
@@ -25,6 +28,34 @@ def aliasable_func():
 
 
 class TestUtils:
+    @pytest.mark.parametrize("token", ["token", "token2 ", " ", "\n"])
+    def test_get_token_from_env_env_var(self, token):
+        with mock.patch.dict("os.environ", {"VAULT_TOKEN": token}):
+            with mock.patch("builtins.open", mock.mock_open()) as mopen:
+                result = get_token_from_env()
+
+                mopen.assert_not_called()
+                assert result == token
+
+    @mock.patch.dict("os.environ", clear=True)
+    @mock.patch("os.path.expanduser", mock.Mock(return_value="/a/b/c/token"))
+    @pytest.mark.parametrize("token", ["token", "token2 ", "", " ", "\n"])
+    @pytest.mark.parametrize("exists", [True, False])
+    def test_get_token_from_env_token_sink(self, token, exists):
+        with mock.patch("os.path.exists", lambda x: exists):
+            with mock.patch("builtins.open", mock.mock_open(read_data=token)) as mopen:
+                result = get_token_from_env()
+
+                if exists:
+                    mopen.assert_called_once_with("/a/b/c/token")
+                    if token.strip():
+                        assert result == token.strip()
+                    else:
+                        assert result is None
+                else:
+                    mopen.assert_not_called()
+                    assert result is None
+
     @pytest.mark.parametrize(
         "list_param",
         [[], ["one"], [1, "two"], [1, "2", None], ["1", None, ["!", "@"], {}]],
