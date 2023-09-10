@@ -1,7 +1,12 @@
 import pytest
 import warnings
 
-from hvac.utils import generate_parameter_deprecation_message, aliased_parameter
+from hvac.utils import (
+    generate_method_deprecation_message,
+    generate_property_deprecation_message,
+    generate_parameter_deprecation_message,
+    aliased_parameter,
+)
 
 
 @pytest.fixture
@@ -19,6 +24,55 @@ def aliasable_func():
 
 
 class TestUtils:
+    @pytest.mark.parametrize("to_be_removed_in_version", ["99.0.0"])
+    @pytest.mark.parametrize("old_name", ["old_one"])
+    @pytest.mark.parametrize("new_name", ["new_one"])
+    @pytest.mark.parametrize("new_attribute", ["new_attr"])
+    @pytest.mark.parametrize("module_name", ["Client", "modulename"])
+    def test_generate_property_deprecation_message(
+        self,
+        to_be_removed_in_version,
+        old_name,
+        new_name,
+        new_attribute,
+        module_name,
+    ):
+        result = generate_property_deprecation_message(
+            to_be_removed_in_version=to_be_removed_in_version,
+            old_name=old_name,
+            new_name=new_name,
+            new_attribute=new_attribute,
+            module_name=module_name,
+        )
+
+        assert to_be_removed_in_version in result
+        assert old_name in result
+        assert new_name in result
+        assert module_name in result
+
+    @pytest.mark.parametrize("to_be_removed_in_version", ["99.0.0"])
+    @pytest.mark.parametrize("old_method_name", ["old_one"])
+    @pytest.mark.parametrize("method_name", [None, "new_one"])
+    @pytest.mark.parametrize("module_name", [None, "modulename"])
+    def test_generate_method_deprecation_message(
+        self,
+        to_be_removed_in_version,
+        old_method_name,
+        method_name,
+        module_name,
+    ):
+        result = generate_method_deprecation_message(
+            to_be_removed_in_version=to_be_removed_in_version,
+            old_method_name=old_method_name,
+            method_name=method_name,
+            module_name=module_name,
+        )
+
+        assert to_be_removed_in_version in result
+        assert old_method_name in result
+        if method_name is not None and module_name is not None:
+            assert method_name in result and module_name in result
+
     @pytest.mark.parametrize("to_be_removed_in_version", ["99.0.0"])
     @pytest.mark.parametrize("old_parameter_name", ["old_one"])
     @pytest.mark.parametrize("new_parameter_name", [None, "new_one"])
