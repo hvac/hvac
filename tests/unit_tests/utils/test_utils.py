@@ -3,6 +3,7 @@ import warnings
 
 from unittest import mock
 
+from hvac import exceptions
 from hvac.utils import (
     generate_method_deprecation_message,
     generate_property_deprecation_message,
@@ -10,6 +11,7 @@ from hvac.utils import (
     aliased_parameter,
     comma_delimited_to_list,
     get_token_from_env,
+    validate_list_of_strings_param,
 )
 
 
@@ -55,6 +57,27 @@ class TestUtils:
                 else:
                     mopen.assert_not_called()
                     assert result is None
+
+    @pytest.mark.parametrize("param_name", ["PARAM1", "PARAM2"])
+    @pytest.mark.parametrize(
+        "param_argument", [None, [], ["1", "2"], "1,2,3", "", ",,"]
+    )
+    def test_validate_list_of_strings_param_pass(self, param_name, param_argument):
+        result = validate_list_of_strings_param(param_name, param_argument)
+        assert result is None
+
+    @pytest.mark.parametrize("param_name", ["PARAM1", "PARAM2"])
+    @pytest.mark.parametrize(
+        "param_argument", [[None], [1], ["1", 2], ("1,2,3",), [["a"]]]
+    )
+    def test_validate_list_of_strings_param_fail(self, param_name, param_argument):
+        with pytest.raises(exceptions.ParamValidationError) as e:
+            validate_list_of_strings_param(param_name, param_argument)
+
+        msg = str(e.value)
+        assert str(param_name) in msg
+        assert str(param_argument) in msg
+        assert str(type(param_argument)) in msg
 
     @pytest.mark.parametrize(
         "list_param",
