@@ -214,8 +214,10 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
                 first=expected_status_code, second=configure_response.status_code
             )
 
-            read_config_response = self.client.auth.legacymfa.read_duo_behavior_configuration(
-                mount_point=mount_point,
+            read_config_response = (
+                self.client.auth.legacymfa.read_duo_behavior_configuration(
+                    mount_point=mount_point,
+                )
             )
             self.assertEqual(
                 first=push_info, second=read_config_response["data"]["push_info"]
