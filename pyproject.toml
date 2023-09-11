@@ -70,6 +70,13 @@ docutils = "<0.18"
 packaging = "<24"
 jinja2 = "<3.1.0"
 jwcrypto = "^1.5.0"
+typos = "^1.16.11"
+
+[tool.typos.default.extend-words]
+Hashi = "Hashi"
+
+[tool.typos.files]
+extend-exclude = ["*.csr", "tests/config_files/ssh-key"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
