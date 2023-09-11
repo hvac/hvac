@@ -1,7 +1,7 @@
 PYTHON_IMAGE		?= wpengine/python
 REQUIREMENTS_FILES	:= requirements requirements-dev
 
-.PHONY: clean package publish test update-all-requirements $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt
+.PHONY: clean package publish test update-all-requirements typos $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt
 
 test:
 	pytest --cov=hvac tests/
@@ -14,6 +14,9 @@ distclean: clean
 
 package:
 	python setup.py sdist bdist_wheel
+
+typos:
+	typos --format brief
 
 # Note, we breakout the docs/requirements target separately since its not reasonable to use filesystem paths in target names
 update-all-requirements: $(addprefix update-, $(REQUIREMENTS_FILES)) update-docs-requirements

@@ -62,6 +62,9 @@ jobs:
     - name: Lint with `flake8`
       run: poetry run flake8 . --count --statistics
 
+    - name: Check for typos
+      run: poetry run typos --color always
+
   docs-tests:
     name: Documentation Tests
     runs-on: ubuntu-latest

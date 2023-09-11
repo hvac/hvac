@@ -1360,6 +1360,25 @@ files = [
 ]
 
 [[package]]
+name = "typos"
+version = "1.16.11"
+description = "Source Code Spelling Correction"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "typos-1.16.11-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:5996c347cab149904c2f2a3f6194982f03c20c5302f9ee4ab866f4e5be0efed8"},
+    {file = "typos-1.16.11-py3-none-macosx_11_0_arm64.whl", hash = "sha256:05edd33a13ef6a6a88016e6f367f3a4158989f397371bc1ca07d5b4c38c94262"},
+    {file = "typos-1.16.11-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b208f42c939a348802e26a45a45cac7200ee6225643106ba27fb91aee418be85"},
+    {file = "typos-1.16.11-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:89f7c99b48ba34166a94e94d8e7e50c0fea503380e2e9bc8bb62bc6bb0d1a2fd"},
+    {file = "typos-1.16.11-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad94da00878fd53e9442ca3986f2d3edc1eb9321b54f41fcecaa1cec0a8b3dcb"},
+    {file = "typos-1.16.11-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:7282151b26d1c84c47b9bef2d91179ac0eb9ebc58c431ffbd7ec8fbfd2bdbd83"},
+    {file = "typos-1.16.11-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:63b8ee9d45f147acb68070ea0ca46a2a2f8b8e7fcc09cb39d1977fa6db3d1959"},
+    {file = "typos-1.16.11-py3-none-win32.whl", hash = "sha256:b64d6f0b77ca9389a3793a9758783670daa7e85e38b8391a98d1870c0b063519"},
+    {file = "typos-1.16.11-py3-none-win_amd64.whl", hash = "sha256:0c36c0b940a9d288edc25cea085b437df0e9dea1b2eb14bfc7a85b6984538f69"},
+    {file = "typos-1.16.11.tar.gz", hash = "sha256:44e94672544f811cb07e753a57468e4a1bd828868b2b25a5a86b1d0f06de9b23"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.0.4"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1498,4 +1517,4 @@ parser = ["pyhcl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "925d77e78d31845963740602b50d456251150d0a030155b8381c8a21899ef374"
+content-hash = "fa1b708c82458573f90c2b6331dab75cdb03ca3a68a7648d197169ebaff83de1"
