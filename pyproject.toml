@@ -67,6 +67,42 @@ docutils = "<0.18"
 packaging = "<24"
 bump2version = "^1.0.1"
 jinja2 = "<3.1.0"
+ruff = "~0.0.289"
+
+[tool.ruff]
+target-version = "py38"
+line-length = 160
+select = ["ALL"]
+
+ignore = [
+  "A002", "A003",
+  "ANN",
+  "B028",
+  "BLE001",
+  "C901",
+  "COM812",
+  "D",
+  "EM101", "EM102", "EM103",
+  "FBT002",
+  "FIX002",
+  "FLY002",
+  "I001",
+  "N806", "N818",
+  "PLR0912", "PLR0913",
+  "PLR2004",
+  "S110",
+  "SIM102", "SIM105", "SIM108",
+  "SLF001",
+  "TD002", "TD003", "TD004",
+  "TRY003", "TRY300",
+
+  # Potentially add later
+  "B024",
+  "PTH",
+  "RUF012",
+
+  "B904", "TRY200", # Same error
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
