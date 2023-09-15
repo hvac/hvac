@@ -268,7 +268,7 @@ class Client:
         """
         return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
-    def write_data(self, path, *, data={}, wrap_ttl=None):
+    def write_data(self, path, *, data=None, wrap_ttl=None):
         """Write data to a path. Similar to write() without restrictions on data keys.
 
         Supported methods:
@@ -283,7 +283,7 @@ class Client:
         :return:
         :rtype:
         """
-        return self._adapter.post(f"/v1/{path}", json=data, wrap_ttl=wrap_ttl)
+        return self._adapter.post(f"/v1/{path}", json={} if data is None else data, wrap_ttl=wrap_ttl)
 
     def delete(self, path):
         """DELETE /<path>
