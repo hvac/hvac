@@ -3,22 +3,22 @@
 from os import getenv
 
 DEPRECATED_PROPERTIES = {
-    "github": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "ldap": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "mfa": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "kv": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="secrets",
-    ),
+    "github": {
+        "to_be_removed_in_version": "0.9.0",
+        "client_property": "auth",
+    },
+    "ldap": {
+        "to_be_removed_in_version": "0.9.0",
+        "client_property": "auth",
+    },
+    "mfa": {
+        "to_be_removed_in_version": "0.9.0",
+        "client_property": "auth",
+    },
+    "kv": {
+        "to_be_removed_in_version": "0.9.0",
+        "client_property": "secrets",
+    },
 }
 
 DEFAULT_URL = "http://localhost:8200"

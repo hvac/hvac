@@ -310,7 +310,7 @@ class Cert(VaultApiBase):
             additional_request_kwargs = {
                 "verify": cacert,
                 # need to define dict as cert is a tuple
-                "cert": tuple([cert_pem, key_pem]),
+                "cert": (cert_pem, key_pem),
             }
 
         return self._adapter.login(

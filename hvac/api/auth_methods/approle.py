@@ -92,7 +92,7 @@ class AppRole(VaultApiBase):
                 )
             )
 
-        params = dict()
+        params = {}
 
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(

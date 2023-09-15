@@ -187,10 +187,10 @@ class Auth(SystemBackendMixin):
             "default_lease_ttl": {},
             "max_lease_ttl": {},
             "description": {},
-            "audit_non_hmac_request_keys": dict(comma_delimited_list=True),
-            "audit_non_hmac_response_keys": dict(comma_delimited_list=True),
+            "audit_non_hmac_request_keys": {"comma_delimited_list": True},
+            "audit_non_hmac_response_keys": {"comma_delimited_list": True},
             "listing_visibility": {},
-            "passthrough_request_headers": dict(comma_delimited_list=True),
+            "passthrough_request_headers": {"comma_delimited_list": True},
         }
         params = {}
         for optional_parameter, parameter_specification in optional_parameters.items():
