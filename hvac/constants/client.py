@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Constants related to the hvac.Client class."""
 
 from os import getenv

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Cert methods module."""
 import os
 import warnings

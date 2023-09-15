@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """KvV2 methods module."""
 
 import warnings

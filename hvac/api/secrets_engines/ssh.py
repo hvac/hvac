@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """SSH vault secrets backend module."""
 
 from hvac import utils

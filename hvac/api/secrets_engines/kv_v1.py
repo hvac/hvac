@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """KvV1 methods module."""
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase

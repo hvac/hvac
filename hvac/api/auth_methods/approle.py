@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """APPROLE methods module."""
 import json
 from hvac import exceptions, utils

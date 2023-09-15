@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Active Directory methods module."""
 
 from hvac import utils

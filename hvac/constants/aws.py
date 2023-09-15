@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Constants related to the AWS auth method and/or secrets engine."""
 
 DEFAULT_MOUNT_POINT = "aws"

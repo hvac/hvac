@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Aws methods module."""
 import json
 

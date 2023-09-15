@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Identity secret engine module."""
 import logging
 

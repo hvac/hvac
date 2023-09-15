@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Azure auth method module."""
 import logging
 

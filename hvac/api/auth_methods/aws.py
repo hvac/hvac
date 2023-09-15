@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """ AWS auth method module """
 import logging
 import json

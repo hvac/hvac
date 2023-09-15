@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Multi-factor authentication methods module."""
 from hvac.api.auth_methods.legacy_mfa import LegacyMfa
 from hvac.api.vault_api_base import VaultApiBase

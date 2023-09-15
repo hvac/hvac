@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Support for "Health"-related System Backend Methods."""
 from hvac import exceptions, utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin

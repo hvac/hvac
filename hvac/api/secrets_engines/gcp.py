@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Gcp methods module."""
 import json
 import logging
