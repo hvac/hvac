@@ -77,7 +77,5 @@ class Health(SystemBackendMixin):
                 raise_exception=False,
             )
         else:
-            error_message = '"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)

@@ -179,9 +179,7 @@ class Auth(SystemBackendMixin):
         """
 
         if listing_visibility is not None and listing_visibility not in ["unauth", ""]:
-            error_msg = 'invalid listing_visibility argument provided: "{arg}"; valid values: "unauth" or ""'.format(
-                arg=listing_visibility,
-            )
+            error_msg = f'invalid listing_visibility argument provided: "{listing_visibility}"; valid values: "unauth" or ""'
             raise exceptions.ParamValidationError(error_msg)
 
         # All parameters are optional for this method. Until/unless we include input validation, we simply loop over the

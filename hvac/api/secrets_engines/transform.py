@@ -36,10 +36,7 @@ class Transform(VaultApiBase):
         params = {
             "transformations": transformations,
         }
-        api_path = "/v1/{mount_point}/role/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/role/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -58,10 +55,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_role request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/role/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/role/{name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -95,10 +89,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_role request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/role/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/role/{name}"
         return self._adapter.delete(
             url=api_path,
         )
@@ -159,10 +150,7 @@ class Transform(VaultApiBase):
                 }
             )
         )
-        api_path = "/v1/{mount_point}/transformation/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformation/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -210,10 +198,7 @@ class Transform(VaultApiBase):
                 "allowed_roles": allowed_roles,
             }
         )
-        api_path = "/v1/{mount_point}/transformations/fpe/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformations/fpe/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -261,10 +246,7 @@ class Transform(VaultApiBase):
                 "allowed_roles": allowed_roles,
             }
         )
-        api_path = "/v1/{mount_point}/transformations/masking/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformations/masking/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -317,10 +299,7 @@ class Transform(VaultApiBase):
                 "stores": stores,
             }
         )
-        api_path = "/v1/{mount_point}/transformations/tokenization/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformations/tokenization/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -339,10 +318,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_ation request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/transformation/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformation/{name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -377,10 +353,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_ation request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/transformation/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformation/{name}"
         return self._adapter.delete(
             url=api_path,
         )
@@ -419,10 +392,7 @@ class Transform(VaultApiBase):
             "pattern": pattern,
             "alphabet": alphabet,
         }
-        api_path = "/v1/{mount_point}/template/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/template/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -441,10 +411,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_template request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/template/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/template/{name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -482,10 +449,7 @@ class Transform(VaultApiBase):
         params = {
             "name": name,
         }
-        api_path = "/v1/{mount_point}/template/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/template/{name}"
         return self._adapter.delete(
             url=api_path,
             json=params,
@@ -515,10 +479,7 @@ class Transform(VaultApiBase):
         params = {
             "alphabet": alphabet,
         }
-        api_path = "/v1/{mount_point}/alphabet/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/alphabet/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -538,10 +499,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_alphabet request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/alphabet/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/alphabet/{name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -575,10 +533,7 @@ class Transform(VaultApiBase):
         :return: The response of the delete_alphabet request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/alphabet/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/alphabet/{name}"
         return self._adapter.delete(
             url=api_path,
         )
@@ -650,10 +605,7 @@ class Transform(VaultApiBase):
                 "max_connection_lifetime": max_connection_lifetime,
             }
         )
-        api_path = "/v1/{mount_point}/store/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/store/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -703,10 +655,7 @@ class Transform(VaultApiBase):
                 "batch_input": batch_input,
             }
         )
-        api_path = "/v1/{mount_point}/encode/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/{mount_point}/encode/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -756,10 +705,7 @@ class Transform(VaultApiBase):
                 "batch_input": batch_input,
             }
         )
-        api_path = "/v1/{mount_point}/decode/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/{mount_point}/decode/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -807,10 +753,7 @@ class Transform(VaultApiBase):
                 "batch_input": batch_input,
             }
         )
-        api_path = "/v1/{mount_point}/validate/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/{mount_point}/validate/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -860,10 +803,7 @@ class Transform(VaultApiBase):
                 "batch_input": batch_input,
             }
         )
-        api_path = "/v1/{mount_point}/tokenized/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/{mount_point}/tokenized/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -912,10 +852,7 @@ class Transform(VaultApiBase):
                 "batch_input": batch_input,
             }
         )
-        api_path = "/v1/{mount_point}/metadata/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/{mount_point}/metadata/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -955,10 +892,7 @@ class Transform(VaultApiBase):
             }
         )
         api_path = (
-            "/v1/{mount_point}/transformations/tokenization/snapshot/{name}".format(
-                mount_point=mount_point,
-                name=name,
-            )
+            f"/v1/{mount_point}/transformations/tokenization/snapshot/{name}"
         )
         return self._adapter.post(
             url=api_path,
@@ -989,10 +923,7 @@ class Transform(VaultApiBase):
             "values": values,
         }
         api_path = (
-            "/v1/{mount_point}/transformations/tokenization/restore/{name}".format(
-                mount_point=mount_point,
-                name=name,
-            )
+            f"/v1/{mount_point}/transformations/tokenization/restore/{name}"
         )
         return self._adapter.post(
             url=api_path,
@@ -1029,10 +960,7 @@ class Transform(VaultApiBase):
                 "continuation": continuation,
             }
         )
-        api_path = "/v1/{mount_point}/transformations/tokenization/export-decoded/{name}".format(
-            mount_point=mount_point,
-            name=name,
-        )
+        api_path = f"/v1/{mount_point}/transformations/tokenization/export-decoded/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -1054,10 +982,7 @@ class Transform(VaultApiBase):
         :return: The response of the rotate_tokenization_key request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/tokenization/keys/{transform_name}/rotate".format(
-            mount_point=mount_point,
-            transform_name=transform_name,
-        )
+        api_path = f"/v1/{mount_point}/tokenization/keys/{transform_name}/rotate"
         return self._adapter.post(
             url=api_path,
         )
@@ -1087,10 +1012,7 @@ class Transform(VaultApiBase):
             "transform_name": transform_name,
             "min_decryption_version": min_decryption_version,
         }
-        api_path = "/v1/{mount_point}/tokenization/keys/{transform_name}/config".format(
-            mount_point=mount_point,
-            transform_name=transform_name,
-        )
+        api_path = f"/v1/{mount_point}/tokenization/keys/{transform_name}/config"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -1108,9 +1030,7 @@ class Transform(VaultApiBase):
         :return: The response of the list_tokenization_key_configuration request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/tokenization/keys/".format(
-            mount_point=mount_point,
-        )
+        api_path = f"/v1/{mount_point}/tokenization/keys/"
         return self._adapter.list(
             url=api_path,
         )
@@ -1133,10 +1053,7 @@ class Transform(VaultApiBase):
         :return: The response of the read_tokenization_key_configuration request.
         :rtype: requests.Response
         """
-        api_path = "/v1/{mount_point}/tokenization/keys/{transform_name}".format(
-            mount_point=mount_point,
-            transform_name=transform_name,
-        )
+        api_path = f"/v1/{mount_point}/tokenization/keys/{transform_name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -1164,10 +1081,7 @@ class Transform(VaultApiBase):
         params = {
             "min_available_version": min_available_version,
         }
-        api_path = "/v1/{mount_point}/tokenization/keys/{transform_name}/trim".format(
-            mount_point=mount_point,
-            transform_name=transform_name,
-        )
+        api_path = f"/v1/{mount_point}/tokenization/keys/{transform_name}/trim"
         return self._adapter.post(
             url=api_path,
             json=params,

@@ -173,15 +173,9 @@ def generate_method_deprecation_message(
     :return: Full deprecation warning message for the indicated method.
     :rtype: str
     """
-    message = "Call to deprecated function '{old_method_name}'. This method will be removed in version '{version}'".format(
-        old_method_name=old_method_name,
-        version=to_be_removed_in_version,
-    )
+    message = f"Call to deprecated function '{old_method_name}'. This method will be removed in version '{to_be_removed_in_version}'"
     if method_name is not None and module_name is not None:
-        message += " Please use the '{method_name}' method on the '{module_name}' class moving forward.".format(
-            method_name=method_name,
-            module_name=module_name,
-        )
+        message += f" Please use the '{method_name}' method on the '{module_name}' class moving forward."
     return message
 
 
@@ -203,15 +197,8 @@ def generate_property_deprecation_message(
     :return: Full deprecation warning message for the indicated property.
     :rtype: str
     """
-    message = "Call to deprecated property '{name}'. This property will be removed in version '{version}'".format(
-        name=old_name,
-        version=to_be_removed_in_version,
-    )
-    message += " Please use the '{new_name}' property on the '{module_name}.{new_attribute}' attribute moving forward.".format(
-        new_name=new_name,
-        module_name=module_name,
-        new_attribute=new_attribute,
-    )
+    message = f"Call to deprecated property '{old_name}'. This property will be removed in version '{to_be_removed_in_version}'"
+    message += f" Please use the '{new_name}' property on the '{module_name}.{new_attribute}' attribute moving forward."
     return message
 
 
@@ -248,10 +235,7 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
         )
 
     raise AttributeError(
-        "'{class_name}' has no attribute '{item}'".format(
-            class_name=obj.__class__.__name__,
-            item=item,
-        )
+        f"'{obj.__class__.__name__}' has no attribute '{item}'"
     )
 
 
@@ -299,14 +283,11 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
                 new_method.__doc__ if new_method.__doc__ is not None else "N/A"
             )
             if new_method.__doc__ is not None:
-                new_func.__doc__ = """\
-                    {message}
+                new_func.__doc__ = f"""\
+                    {deprecation_message}
                     Docstring content from this method's replacement copied below:
-                    {docstring_copy}
-                    """.format(
-                    message=deprecation_message,
-                    docstring_copy=dedent(docstring_copy),
-                )
+                    {dedent(docstring_copy)}
+                    """
 
         else:
             new_func.__doc__ = deprecation_message

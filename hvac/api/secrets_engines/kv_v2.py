@@ -227,9 +227,7 @@ class KvV2(VaultApiBase):
             )
         except exceptions.InvalidPath:
             raise exceptions.InvalidPath(
-                'No value found at "{path}"; patch only works on existing data.'.format(
-                    path=path
-                )
+                f'No value found at "{path}"; patch only works on existing data.'
             )
 
         # Update existing secret dict.
@@ -290,9 +288,7 @@ class KvV2(VaultApiBase):
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
-            error_msg = 'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'.format(
-                versions=versions
-            )
+            error_msg = f'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'
             raise exceptions.ParamValidationError(error_msg)
         params = {
             "versions": versions,
@@ -325,9 +321,7 @@ class KvV2(VaultApiBase):
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
-            error_msg = 'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'.format(
-                versions=versions
-            )
+            error_msg = f'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'
             raise exceptions.ParamValidationError(error_msg)
         params = {
             "versions": versions,
@@ -359,9 +353,7 @@ class KvV2(VaultApiBase):
         :rtype: requests.Response
         """
         if not isinstance(versions, list) or len(versions) == 0:
-            error_msg = 'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'.format(
-                versions=versions
-            )
+            error_msg = f'argument to "versions" must be a list containing one or more integers, "{versions}" provided.'
             raise exceptions.ParamValidationError(error_msg)
         params = {
             "versions": versions,
@@ -462,18 +454,14 @@ class KvV2(VaultApiBase):
         if cas_required is not None:
             if not isinstance(cas_required, bool):
                 error_msg = (
-                    "bool expected for cas_required param, {type} received".format(
-                        type=type(cas_required)
-                    )
+                    f"bool expected for cas_required param, {type(cas_required)} received"
                 )
                 raise exceptions.ParamValidationError(error_msg)
             params["cas_required"] = cas_required
         if custom_metadata is not None:
             if not isinstance(custom_metadata, dict):
                 error_msg = (
-                    "dict expected for custom_metadata param, {type} received".format(
-                        type=type(custom_metadata)
-                    )
+                    f"dict expected for custom_metadata param, {type(custom_metadata)} received"
                 )
                 raise exceptions.ParamValidationError(error_msg)
             params["custom_metadata"] = custom_metadata

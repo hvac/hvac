@@ -295,9 +295,7 @@ class Token(VaultApiBase):
         params = {
             "accessor": accessor,
         }
-        api_path = "/v1/auth/{mount_point}/lookup-accessor".format(
-            mount_point=mount_point
-        )
+        api_path = f"/v1/auth/{mount_point}/lookup-accessor"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -402,9 +400,7 @@ class Token(VaultApiBase):
                 "increment": increment,
             }
         )
-        api_path = "/v1/auth/{mount_point}/renew-accessor".format(
-            mount_point=mount_point
-        )
+        api_path = f"/v1/auth/{mount_point}/renew-accessor"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -470,9 +466,7 @@ class Token(VaultApiBase):
         params = {
             "accessor": accessor,
         }
-        api_path = "/v1/auth/{mount_point}/revoke-accessor".format(
-            mount_point=mount_point
-        )
+        api_path = f"/v1/auth/{mount_point}/revoke-accessor"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -498,9 +492,7 @@ class Token(VaultApiBase):
         params = {
             "token": token,
         }
-        api_path = "/v1/auth/{mount_point}/revoke-orphan".format(
-            mount_point=mount_point
-        )
+        api_path = f"/v1/auth/{mount_point}/revoke-orphan"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -519,10 +511,7 @@ class Token(VaultApiBase):
         :return: The response of the read_role request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/roles/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/auth/{mount_point}/roles/{role_name}"
         return self._adapter.get(
             url=api_path,
         )
@@ -609,10 +598,7 @@ class Token(VaultApiBase):
                 "token_explicit_max_ttl": token_explicit_max_ttl,
             }
         )
-        api_path = "/v1/auth/{mount_point}/roles/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/auth/{mount_point}/roles/{role_name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -631,10 +617,7 @@ class Token(VaultApiBase):
         :return: The response of the delete_role request.
         :rtype: requests.Response
         """
-        api_path = "/v1/auth/{mount_point}/roles/{role_name}".format(
-            mount_point=mount_point,
-            role_name=role_name,
-        )
+        api_path = f"/v1/auth/{mount_point}/roles/{role_name}"
         return self._adapter.delete(
             url=api_path,
         )

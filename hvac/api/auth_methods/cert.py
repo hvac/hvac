@@ -153,9 +153,7 @@ class Cert(VaultApiBase):
             }
         )
 
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -178,9 +176,7 @@ class Cert(VaultApiBase):
         params = {
             "name": name,
         }
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.get(
             url=api_path,
             json=params,
@@ -213,9 +209,7 @@ class Cert(VaultApiBase):
         :param mount_point:
         :type mount_point:
         """
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.delete(
             url=api_path,
         )

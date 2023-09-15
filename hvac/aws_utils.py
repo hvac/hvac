@@ -47,9 +47,7 @@ class SigV4Auth:
         signature = hmac.new(key, string_to_sign.encode("utf-8"), sha256).hexdigest()
 
         # https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-        authorization = "{} Credential={}/{}, SignedHeaders={}, Signature={}".format(
-            algorithm, self.access_key, credential_scope, signed_headers, signature
-        )
+        authorization = f"{algorithm} Credential={self.access_key}/{credential_scope}, SignedHeaders={signed_headers}, Signature={signature}"
         request.headers["Authorization"] = authorization
 
 

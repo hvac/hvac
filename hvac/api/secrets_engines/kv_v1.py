@@ -116,9 +116,7 @@ class KvV1(VaultApiBase):
             )
 
         else:
-            error_message = '"method" parameter provided invalid value; POST or PUT allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; POST or PUT allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
     def delete_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):

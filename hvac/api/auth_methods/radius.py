@@ -63,8 +63,8 @@ class Radius(VaultApiBase):
             if not isinstance(unregistered_user_policies, list):
                 error_msg = (
                     '"unregistered_user_policies" argument must be an instance of list or None, '
-                    '"{unregistered_user_policies}" provided.'
-                ).format(unregistered_user_policies=type(unregistered_user_policies))
+                    f'"{type(unregistered_user_policies)}" provided.'
+                )
                 raise exceptions.ParamValidationError(error_msg)
 
             params["unregistered_user_policies"] = ",".join(unregistered_user_policies)
@@ -114,9 +114,7 @@ class Radius(VaultApiBase):
         :rtype: requests.Response
         """
         if policies is not None and not isinstance(policies, list):
-            error_msg = '"policies" argument must be an instance of list or None, "{policies_type}" provided.'.format(
-                policies_type=type(policies),
-            )
+            error_msg = f'"policies" argument must be an instance of list or None, "{type(policies)}" provided.'
             raise exceptions.ParamValidationError(error_msg)
 
         params = {}

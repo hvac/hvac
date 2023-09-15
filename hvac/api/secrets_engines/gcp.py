@@ -738,9 +738,7 @@ class Gcp(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
