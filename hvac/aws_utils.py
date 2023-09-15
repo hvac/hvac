@@ -1,5 +1,5 @@
 import hmac
-from datetime import datetime
+from datetime import datetime, timezone
 from hashlib import sha256
 import requests
 
@@ -12,7 +12,7 @@ class SigV4Auth:
         self.region = region
 
     def add_auth(self, request):
-        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         request.headers["X-Amz-Date"] = timestamp
 
         if self.session_token:
