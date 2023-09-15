@@ -139,7 +139,7 @@ class Gcp(VaultApiBase):
 
         if isinstance(bindings, dict):
             bindings = json.dumps(bindings).replace(" ", "")
-            logging.debug("bindings: %s" % bindings)
+            logging.debug("bindings: %s", bindings)
 
         params = {
             "project": project,
@@ -384,7 +384,7 @@ class Gcp(VaultApiBase):
 
         if isinstance(bindings, dict):
             bindings = json.dumps(bindings).replace(" ", "")
-            logging.debug("bindings: %s" % bindings)
+            logging.debug("bindings: %s", bindings)
 
         params = {
             "service_account_email": service_account_email,
