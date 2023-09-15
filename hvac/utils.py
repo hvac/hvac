@@ -365,10 +365,11 @@ def comma_delimited_to_list(list_param):
     """
     if isinstance(list_param, list):
         return list_param
+
     if isinstance(list_param, str):
         return list_param.split(",")
-    else:
-        return []
+
+    return []
 
 
 def validate_pem_format(param_name, param_argument):

@@ -74,7 +74,7 @@ class Kv(VaultApiBase):
             raise AttributeError
         if self.default_kv_version == "1":
             return getattr(self._kv_v1, item)
-        elif self.default_kv_version == "2":
+        if self.default_kv_version == "2":
             return getattr(self._kv_v2, item)
 
         raise AttributeError

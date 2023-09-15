@@ -75,5 +75,4 @@ def generate_sigv4_auth_request(header_value=None):
     if header_value:
         request.headers["X-Vault-AWS-IAM-Server-ID"] = header_value
 
-    prepared_request = request.prepare()
-    return prepared_request
+    return request.prepare()

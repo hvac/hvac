@@ -343,12 +343,12 @@ class Client:
             if accessor:
                 path = "/v1/auth/token/lookup-accessor"
                 return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl)
-            else:
-                path = "/v1/auth/token/lookup"
-                return self._adapter.post(path, json=token_param)
-        else:
-            path = "/v1/auth/token/lookup-self"
-            return self._adapter.get(path, wrap_ttl=wrap_ttl)
+
+            path = "/v1/auth/token/lookup"
+            return self._adapter.post(path, json=token_param)
+
+        path = "/v1/auth/token/lookup-self"
+        return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     def revoke_token(self, token, orphan=False, accessor=False):
         """POST /auth/token/revoke
@@ -369,7 +369,7 @@ class Client:
         if accessor and orphan:
             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
             raise exceptions.InvalidRequest(msg)
-        elif accessor:
+        if accessor:
             params = {"accessor": token}
             self._adapter.post("/v1/auth/token/revoke-accessor", json=params)
         elif orphan:

@@ -105,7 +105,7 @@ class KvV1(VaultApiBase):
                 json=secret,
             )
 
-        elif method == "PUT":
+        if method == "PUT":
             api_path = utils.format_url(
                 "/v1/{mount_point}/{path}", mount_point=mount_point, path=path
             )
@@ -114,9 +114,8 @@ class KvV1(VaultApiBase):
                 json=secret,
             )
 
-        else:
-            error_message = f'"method" parameter provided invalid value; POST or PUT allowed, "{method}" provided'
-            raise exceptions.ParamValidationError(error_message)
+        error_message = f'"method" parameter provided invalid value; POST or PUT allowed, "{method}" provided'
+        raise exceptions.ParamValidationError(error_message)
 
     def delete_secret(self, path, mount_point=DEFAULT_MOUNT_POINT):
         """Delete the secret at the specified location.

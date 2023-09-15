@@ -285,8 +285,8 @@ class Cert(VaultApiBase):
                 raise self.CertificateAuthError(
                     "cacert must be True, a file_path, or valid CA Certificate."
                 )
-            else:
-                cacert = self._adapter._kwargs.get("verify")
+
+            cacert = self._adapter._kwargs.get("verify")
         else:
             validate_pem_format("verify", cacert)
         # if cert_pem is a string its ready to be used and either has the key with it or the key is provided as an arg
