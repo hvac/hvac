@@ -112,11 +112,10 @@ def aliased_parameter(
 
                     if not (has_canonical or name in kwargs):
                         kwargs[name] = kwargs[alias]
-                    else:
-                        if raise_on_multiple:
-                            raise ValueError(
-                                f"Parameter '{name}' was given a duplicate value via alias '{alias}'."
-                            )
+                    elif raise_on_multiple:
+                        raise ValueError(
+                            f"Parameter '{name}' was given a duplicate value via alias '{alias}'."
+                        )
 
                     del kwargs[alias]
 
