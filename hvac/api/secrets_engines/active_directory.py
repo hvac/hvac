@@ -21,7 +21,6 @@ class ActiveDirectory(VaultApiBase):
         ttl=None,
         max_ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
-        *args,
         **kwargs
     ):
         """Configure shared information for the ad secrets engine.
