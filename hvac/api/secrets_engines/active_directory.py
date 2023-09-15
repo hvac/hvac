@@ -38,7 +38,7 @@ class ActiveDirectory(VaultApiBase):
         :type userdn: str | unicode
         :param upndomain: userPrincipalDomain used to construct the UPN string for the authenticating user.
         :type upndomain: str | unicode
-        :param ttl: – The default password time-to-live in seconds. Once the ttl has passed, a password will be rotated the next time it's requested.
+        :param ttl: The default password time-to-live in seconds. Once the ttl has passed, a password will be rotated the next time it's requested.
         :type ttl: int | str
         :param max_ttl: The maximum password time-to-live in seconds. No role will be allowed to set a custom ttl greater than the max_ttl
             integer number of seconds or Go duration format string.**

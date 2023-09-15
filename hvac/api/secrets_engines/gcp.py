@@ -30,7 +30,7 @@ class Gcp(VaultApiBase):
         :param credentials: JSON credentials (either file contents or '@path/to/file') See docs for alternative ways to
             pass in to this parameter, as well as the required permissions.
         :type credentials: str | unicode
-        :param ttl: – Specifies default config TTL for long-lived credentials (i.e. service account keys). Accepts
+        :param ttl: Specifies default config TTL for long-lived credentials (i.e. service account keys). Accepts
             integer number of seconds or Go duration format string.
         :type ttl: int | str
         :param max_ttl: Specifies the maximum config TTL for long-lived credentials (i.e. service account keys). Accepts
