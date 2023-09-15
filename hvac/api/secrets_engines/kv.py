@@ -14,7 +14,7 @@ class Kv(VaultApiBase):
 
     """
 
-    allowed_kv_versions = ["1", "2"]
+    allowed_kv_versions = ("1", "2")
 
     def __init__(self, adapter, default_kv_version="2"):
         """Create a new Kv instance.
