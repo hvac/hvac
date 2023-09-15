@@ -143,7 +143,9 @@ class Cert(VaultApiBase):
                 "token_ttl": token_ttl,
                 "token_max_ttl": token_max_ttl,
                 "token_policies": [] if token_policies is None else token_policies,
-                "token_bound_cidrs": [] if token_bound_cidrs is None else token_bound_cidrs,
+                "token_bound_cidrs": []
+                if token_bound_cidrs is None
+                else token_bound_cidrs,
                 "token_explicit_max_ttl": token_explicit_max_ttl,
                 "token_no_default_policy": token_no_default_policy,
                 "token_num_uses": token_num_uses,

@@ -27,7 +27,7 @@ class Auth(SystemBackendMixin):
         plugin_name=None,
         local=False,
         path=None,
-        **kwargs
+        **kwargs,
     ):
         """Enable a new auth method.
 
@@ -138,7 +138,7 @@ class Auth(SystemBackendMixin):
         audit_non_hmac_response_keys=None,
         listing_visibility=None,
         passthrough_request_headers=None,
-        **kwargs
+        **kwargs,
     ):
         """Tune configuration parameters for a given auth path.
 

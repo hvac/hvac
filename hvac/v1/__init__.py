@@ -283,7 +283,9 @@ class Client:
         :return:
         :rtype:
         """
-        return self._adapter.post(f"/v1/{path}", json={} if data is None else data, wrap_ttl=wrap_ttl)
+        return self._adapter.post(
+            f"/v1/{path}", json={} if data is None else data, wrap_ttl=wrap_ttl
+        )
 
     def delete(self, path):
         """DELETE /<path>

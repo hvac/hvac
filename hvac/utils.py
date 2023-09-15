@@ -233,9 +233,7 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
             client_property, deprecated_properties[item].get("new_property", item)
         )
 
-    raise AttributeError(
-        f"'{obj.__class__.__name__}' has no attribute '{item}'"
-    )
+    raise AttributeError(f"'{obj.__class__.__name__}' has no attribute '{item}'")
 
 
 def deprecated_method(to_be_removed_in_version, new_method=None):

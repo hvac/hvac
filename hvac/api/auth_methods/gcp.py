@@ -242,7 +242,9 @@ class Gcp(VaultApiBase):
             )
             for param, default_arg in type_specific_params["gce"].items():
                 if locals().get(param) != default_arg:
-                    warning_msg = f'Argument for parameter "{param}" ignored for role type iam'
+                    warning_msg = (
+                        f'Argument for parameter "{param}" ignored for role type iam'
+                    )
                     logger.warning(warning_msg)
         elif role_type == "gce":
             if bound_zones is not None:
@@ -257,7 +259,9 @@ class Gcp(VaultApiBase):
                 params["bound_labels"] = list_to_comma_delimited(bound_labels)
             for param, default_arg in type_specific_params["iam"].items():
                 if locals().get(param) != default_arg:
-                    warning_msg = f'Argument for parameter "{param}" ignored for role type gce'
+                    warning_msg = (
+                        f'Argument for parameter "{param}" ignored for role type gce'
+                    )
                     logger.warning(warning_msg)
 
         api_path = utils.format_url(

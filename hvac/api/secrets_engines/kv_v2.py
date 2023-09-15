@@ -452,16 +452,12 @@ class KvV2(VaultApiBase):
             params["max_versions"] = max_versions
         if cas_required is not None:
             if not isinstance(cas_required, bool):
-                error_msg = (
-                    f"bool expected for cas_required param, {type(cas_required)} received"
-                )
+                error_msg = f"bool expected for cas_required param, {type(cas_required)} received"
                 raise exceptions.ParamValidationError(error_msg)
             params["cas_required"] = cas_required
         if custom_metadata is not None:
             if not isinstance(custom_metadata, dict):
-                error_msg = (
-                    f"dict expected for custom_metadata param, {type(custom_metadata)} received"
-                )
+                error_msg = f"dict expected for custom_metadata param, {type(custom_metadata)} received"
                 raise exceptions.ParamValidationError(error_msg)
             params["custom_metadata"] = custom_metadata
         api_path = utils.format_url(

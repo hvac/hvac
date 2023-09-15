@@ -890,9 +890,7 @@ class Transform(VaultApiBase):
                 "continuation": continuation,
             }
         )
-        api_path = (
-            f"/v1/{mount_point}/transformations/tokenization/snapshot/{name}"
-        )
+        api_path = f"/v1/{mount_point}/transformations/tokenization/snapshot/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -921,9 +919,7 @@ class Transform(VaultApiBase):
         params = {
             "values": values,
         }
-        api_path = (
-            f"/v1/{mount_point}/transformations/tokenization/restore/{name}"
-        )
+        api_path = f"/v1/{mount_point}/transformations/tokenization/restore/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -959,7 +955,9 @@ class Transform(VaultApiBase):
                 "continuation": continuation,
             }
         )
-        api_path = f"/v1/{mount_point}/transformations/tokenization/export-decoded/{name}"
+        api_path = (
+            f"/v1/{mount_point}/transformations/tokenization/export-decoded/{name}"
+        )
         return self._adapter.post(
             url=api_path,
             json=params,
