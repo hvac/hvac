@@ -12,6 +12,7 @@ from hvac.utils import (
     comma_delimited_to_list,
     get_token_from_env,
     validate_list_of_strings_param,
+    getattr_with_deprecated_properties,
 )
 
 
@@ -29,7 +30,66 @@ def aliasable_func():
     return _func
 
 
+class ClassWithDeprecatedProperties:
+    class _Sub:
+        old1 = "new1"
+        new1 = "NG"
+        old2 = "old2"
+        new2 = "new2"
+
+    sub = _Sub()
+
+    DEPRECATED_PROPERTIES = {
+        "old1": dict(
+            to_be_removed_in_version="99.88.77",
+            client_property="sub",
+        ),
+        "old2": dict(
+            to_be_removed_in_version="99.99.99",
+            client_property="sub",
+            new_property="new2",
+        ),
+    }
+
+
 class TestUtils:
+    @pytest.mark.parametrize(
+        ["item", "expected_new_prop", "expected_value", "expected_version"],
+        [("old1", "old1", "new1", "99.88.77"), ("old2", "new2", "new2", "99.99.99")],
+    )
+    def test_getattr_with_deprecated_properties(
+        self, item, expected_new_prop, expected_value, expected_version
+    ):
+        with mock.patch(
+            "hvac.utils.generate_property_deprecation_message",
+            new=mock.Mock(return_value=mock.sentinel.depmsg),
+        ) as gen_msg, mock.patch("warnings.warn") as warn:
+            result = getattr_with_deprecated_properties(
+                ClassWithDeprecatedProperties,
+                item,
+                ClassWithDeprecatedProperties.DEPRECATED_PROPERTIES,
+            )
+
+            gen_msg.assert_called_once_with(
+                to_be_removed_in_version=expected_version,
+                old_name=item,
+                new_name=expected_new_prop,
+                new_attribute="sub",
+            )
+            warn.assert_called_once_with(
+                message=mock.sentinel.depmsg, category=DeprecationWarning, stacklevel=2
+            )
+            assert result == expected_value
+
+    @pytest.mark.parametrize("item", ["old9", "old8"])
+    def test_getattr_with_deprecated_properties_no_item(self, item):
+        with pytest.raises(AttributeError, match=rf"has no attribute '{item}'"):
+            getattr_with_deprecated_properties(
+                ClassWithDeprecatedProperties,
+                item,
+                ClassWithDeprecatedProperties.DEPRECATED_PROPERTIES,
+            )
+
     @pytest.mark.parametrize("token", ["token", "token2 ", " ", "\n"])
     def test_get_token_from_env_env_var(self, token):
         with mock.patch.dict("os.environ", {"VAULT_TOKEN": token}):
