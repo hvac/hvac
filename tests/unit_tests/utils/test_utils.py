@@ -94,7 +94,9 @@ class TestUtils:
 
     @pytest.mark.parametrize("removed_in_version", ["99.88.77", "99.99.99"])
     @pytest.mark.parametrize("new_meth_doc", [None, "newdoc"])
-    def test_deprecated_method_new(self, removed_in_version, deprecatable_method, new_meth_doc):
+    def test_deprecated_method_new(
+        self, removed_in_version, deprecatable_method, new_meth_doc
+    ):
         old_method = deprecatable_method
         dep_meth_msg = "depmsg"
 
@@ -124,7 +126,10 @@ class TestUtils:
                 assert "N/A" in wrapped.__doc__
 
             assert dep_meth_msg in wrapped.__doc__
-            assert "Docstring content from this method's replacement copied below" in wrapped.__doc__
+            assert (
+                "Docstring content from this method's replacement copied below"
+                in wrapped.__doc__
+            )
 
         with mock.patch("warnings.warn") as warn:
             result = wrapped()
