@@ -222,9 +222,11 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
     :type obj: object
     :param item: Name of the attribute being requested.
     :type item: str
-    :param deprecated_properties: List of deprecated properties. Each item in the list is a dict with at least a
-        "to_be_removed_in_version" and "client_property" key to be used in the displayed deprecation warning.
-    :type deprecated_properties: List[dict]
+    :param deprecated_properties: Dict of deprecated properties. Each key is the name of the old property.
+        Each value is a dict with at least a "to_be_removed_in_version" and "client_property" key to be
+        used in the displayed deprecation warning. An optional "new_property" key contains the name of
+        the new property within the "client_property", otherwise the original name is used.
+    :type deprecated_properties: Dict
     :return: The new property indicated where available.
     :rtype: object
     """
