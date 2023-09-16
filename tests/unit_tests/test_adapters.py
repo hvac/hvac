@@ -46,11 +46,8 @@ class TestAdapters:
         ],
     )
     def test_from_adapter(self, conargs):
-        session = requests.Session()
-        session.cert = conargs["cert"]
-        session.verify = conargs["verify"]
-        session.proxies = conargs["proxies"]
-        conargs["session"] = session
+        # set session to None so that the adapter will create its own internally
+        conargs["session"] = None
         expected = conargs.copy()
         for internal_kwarg in self.INTERNAL_KWARGS:
             expected.setdefault("_kwargs", {})[internal_kwarg] = expected.pop(
@@ -59,6 +56,9 @@ class TestAdapters:
 
         # let's start with a JSONAdapter, and make a RawAdapter out of it
         json_adapter = adapters.JSONAdapter(**conargs)
+
+        # reset the expected session to to be the one created by the JSONAdapter
+        expected["session"] = json_adapter.session
 
         raw_adapter = adapters.RawAdapter.from_adapter(json_adapter)
 
