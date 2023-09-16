@@ -46,6 +46,11 @@ class TestAdapters:
         ],
     )
     def test_from_adapter(self, conargs):
+        session = requests.Session()
+        session.cert = conargs["cert"]
+        session.verify = conargs["verify"]
+        session.proxies = conargs["proxies"]
+        conargs["session"] = session
         expected = conargs.copy()
         for internal_kwarg in self.INTERNAL_KWARGS:
             expected.setdefault("_kwargs", {})[internal_kwarg] = expected.pop(
