@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Consul methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase

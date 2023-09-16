@@ -25,7 +25,7 @@ class Capabilities(SystemBackendMixin):
 
         if token and accessor:
             raise ValueError("You can specify either token or accessor, not both.")
-        elif token:
+        if token:
             # https://www.vaultproject.io/api/system/capabilities.html
             params["token"] = token
             api_path = "/v1/sys/capabilities"

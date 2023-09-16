@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """RabbitMQ vault secrets backend module."""
 
 from hvac import utils

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Cert methods module."""
 import os
 import warnings
@@ -28,8 +27,8 @@ class Cert(VaultApiBase):
         display_name="",
         token_ttl=0,
         token_max_ttl=0,
-        token_policies=[],
-        token_bound_cidrs=[],
+        token_policies=None,
+        token_bound_cidrs=None,
         token_explicit_max_ttl=0,
         token_no_default_policy=False,
         token_num_uses=0,
@@ -143,8 +142,10 @@ class Cert(VaultApiBase):
                 "display_name": display_name,
                 "token_ttl": token_ttl,
                 "token_max_ttl": token_max_ttl,
-                "token_policies": token_policies,
-                "token_bound_cidrs": token_bound_cidrs,
+                "token_policies": [] if token_policies is None else token_policies,
+                "token_bound_cidrs": []
+                if token_bound_cidrs is None
+                else token_bound_cidrs,
                 "token_explicit_max_ttl": token_explicit_max_ttl,
                 "token_no_default_policy": token_no_default_policy,
                 "token_num_uses": token_num_uses,
@@ -153,9 +154,7 @@ class Cert(VaultApiBase):
             }
         )
 
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -178,9 +177,7 @@ class Cert(VaultApiBase):
         params = {
             "name": name,
         }
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.get(
             url=api_path,
             json=params,
@@ -213,9 +210,7 @@ class Cert(VaultApiBase):
         :param mount_point:
         :type mount_point:
         """
-        api_path = "/v1/auth/{mount_point}/certs/{name}".format(
-            mount_point=mount_point, name=name
-        )
+        api_path = f"/v1/auth/{mount_point}/certs/{name}"
         return self._adapter.delete(
             url=api_path,
         )
@@ -292,8 +287,8 @@ class Cert(VaultApiBase):
                 raise self.CertificateAuthError(
                     "cacert must be True, a file_path, or valid CA Certificate."
                 )
-            else:
-                cacert = self._adapter._kwargs.get("verify")
+
+            cacert = self._adapter._kwargs.get("verify")
         else:
             validate_pem_format("verify", cacert)
         # if cert_pem is a string its ready to be used and either has the key with it or the key is provided as an arg
@@ -317,7 +312,7 @@ class Cert(VaultApiBase):
             additional_request_kwargs = {
                 "verify": cacert,
                 # need to define dict as cert is a tuple
-                "cert": tuple([cert_pem, key_pem]),
+                "cert": (cert_pem, key_pem),
             }
 
         return self._adapter.login(

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Support for "Health"-related System Backend Methods."""
 from hvac import exceptions, utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
@@ -69,15 +68,13 @@ class Health(SystemBackendMixin):
                 url=api_path,
                 raise_exception=False,
             )
-        elif method == "GET":
+        if method == "GET":
             api_path = utils.format_url("/v1/sys/health")
             return self._adapter.get(
                 url=api_path,
                 params=params,
                 raise_exception=False,
             )
-        else:
-            error_message = '"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'.format(
-                method=method
-            )
-            raise exceptions.ParamValidationError(error_message)
+
+        error_message = f'"method" parameter provided invalid value; HEAD or GET allowed, "{method}" provided'
+        raise exceptions.ParamValidationError(error_message)

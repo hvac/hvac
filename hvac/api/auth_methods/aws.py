@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """ AWS auth method module """
 import logging
 import json
@@ -176,9 +175,7 @@ class Aws(VaultApiBase):
                 "ec2_alias": ec2_alias,
             }
         )
-        api_auth = "/v1/auth/{mount_point}/config/identity".format(
-            mount_point=mount_point
-        )
+        api_auth = f"/v1/auth/{mount_point}/config/identity"
         return self._adapter.post(
             url=api_auth,
             json=params,

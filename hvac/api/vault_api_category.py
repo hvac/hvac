@@ -96,5 +96,4 @@ class VaultApiCategory(VaultApiBase, metaclass=ABCMeta):
         :return: The private attribute label for the provided class.
         :rtype: str
         """
-        private_attr_name = f"_{class_name}"
-        return private_attr_name
+        return f"_{class_name}"

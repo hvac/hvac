@@ -268,7 +268,7 @@ class Client:
         """
         return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
-    def write_data(self, path, *, data={}, wrap_ttl=None):
+    def write_data(self, path, *, data=None, wrap_ttl=None):
         """Write data to a path. Similar to write() without restrictions on data keys.
 
         Supported methods:
@@ -283,7 +283,9 @@ class Client:
         :return:
         :rtype:
         """
-        return self._adapter.post(f"/v1/{path}", json=data, wrap_ttl=wrap_ttl)
+        return self._adapter.post(
+            f"/v1/{path}", json={} if data is None else data, wrap_ttl=wrap_ttl
+        )
 
     def delete(self, path):
         """DELETE /<path>
@@ -343,12 +345,12 @@ class Client:
             if accessor:
                 path = "/v1/auth/token/lookup-accessor"
                 return self._adapter.post(path, json=accessor_param, wrap_ttl=wrap_ttl)
-            else:
-                path = "/v1/auth/token/lookup"
-                return self._adapter.post(path, json=token_param)
-        else:
-            path = "/v1/auth/token/lookup-self"
-            return self._adapter.get(path, wrap_ttl=wrap_ttl)
+
+            path = "/v1/auth/token/lookup"
+            return self._adapter.post(path, json=token_param)
+
+        path = "/v1/auth/token/lookup-self"
+        return self._adapter.get(path, wrap_ttl=wrap_ttl)
 
     def revoke_token(self, token, orphan=False, accessor=False):
         """POST /auth/token/revoke
@@ -369,7 +371,7 @@ class Client:
         if accessor and orphan:
             msg = "revoke_token does not support 'orphan' and 'accessor' flags together"
             raise exceptions.InvalidRequest(msg)
-        elif accessor:
+        if accessor:
             params = {"accessor": token}
             self._adapter.post("/v1/auth/token/revoke-accessor", json=params)
         elif orphan:

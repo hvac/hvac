@@ -117,7 +117,7 @@ class Adapter(metaclass=ABCMeta):
         :rtype: str | unicode
         """
 
-        return "/".join(map(lambda x: str(x).strip("/"), args))
+        return "/".join(str(x).strip("/") for x in args)
 
     def close(self):
         """Close the underlying Requests session."""

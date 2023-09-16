@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """USERPASS methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -44,9 +43,7 @@ class Userpass(VaultApiBase):
         )
         params.update(kwargs)
 
-        api_path = "/v1/auth/{mount_point}/users/{username}".format(
-            mount_point=mount_point, username=username
-        )
+        api_path = f"/v1/auth/{mount_point}/users/{username}"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -83,9 +80,7 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the read_group request.
         :rtype: dict
         """
-        api_path = "/v1/auth/{mount_point}/users/{username}".format(
-            mount_point=mount_point, username=username
-        )
+        api_path = f"/v1/auth/{mount_point}/users/{username}"
         return self._adapter.get(
             url=api_path,
         )
@@ -104,9 +99,7 @@ class Userpass(VaultApiBase):
         :return: The JSON response of the read_group request.
         :rtype: dict
         """
-        api_path = "/v1/auth/{mount_point}/users/{username}".format(
-            mount_point=mount_point, username=username
-        )
+        api_path = f"/v1/auth/{mount_point}/users/{username}"
         return self._adapter.delete(
             url=api_path,
         )
@@ -130,9 +123,7 @@ class Userpass(VaultApiBase):
         params = {
             "password": password,
         }
-        api_path = "/v1/auth/{mount_point}/users/{username}/password".format(
-            mount_point=mount_point, username=username
-        )
+        api_path = f"/v1/auth/{mount_point}/users/{username}/password"
         return self._adapter.post(
             url=api_path,
             json=params,
@@ -157,9 +148,7 @@ class Userpass(VaultApiBase):
         params = {
             "password": password,
         }
-        api_path = "/v1/auth/{mount_point}/login/{username}".format(
-            mount_point=mount_point, username=username
-        )
+        api_path = f"/v1/auth/{mount_point}/login/{username}"
         return self._adapter.login(
             url=api_path,
             use_token=use_token,

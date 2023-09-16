@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Gcp methods module."""
 import json
 import logging
@@ -31,7 +30,7 @@ class Gcp(VaultApiBase):
         :param credentials: JSON credentials (either file contents or '@path/to/file') See docs for alternative ways to
             pass in to this parameter, as well as the required permissions.
         :type credentials: str | unicode
-        :param ttl: – Specifies default config TTL for long-lived credentials (i.e. service account keys). Accepts
+        :param ttl: Specifies default config TTL for long-lived credentials (i.e. service account keys). Accepts
             integer number of seconds or Go duration format string.
         :type ttl: int | str
         :param max_ttl: Specifies the maximum config TTL for long-lived credentials (i.e. service account keys). Accepts
@@ -140,7 +139,7 @@ class Gcp(VaultApiBase):
 
         if isinstance(bindings, dict):
             bindings = json.dumps(bindings).replace(" ", "")
-            logging.debug("bindings: %s" % bindings)
+            logging.debug("bindings: %s", bindings)
 
         params = {
             "project": project,
@@ -385,7 +384,7 @@ class Gcp(VaultApiBase):
 
         if isinstance(bindings, dict):
             bindings = json.dumps(bindings).replace(" ", "")
-            logging.debug("bindings: %s" % bindings)
+            logging.debug("bindings: %s", bindings)
 
         params = {
             "service_account_email": service_account_email,
@@ -738,9 +737,7 @@ class Gcp(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; POST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response

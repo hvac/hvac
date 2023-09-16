@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Database methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -20,7 +19,6 @@ class Database(VaultApiBase):
         allowed_roles=None,
         root_rotation_statements=None,
         mount_point=DEFAULT_MOUNT_POINT,
-        *args,
         **kwargs
     ):
         """This endpoint configures the connection string used to communicate with the desired database.

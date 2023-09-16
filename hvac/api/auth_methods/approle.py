@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """APPROLE methods module."""
 import json
 from hvac import exceptions, utils
@@ -93,7 +92,7 @@ class AppRole(VaultApiBase):
                 )
             )
 
-        params = dict()
+        params = {}
 
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(

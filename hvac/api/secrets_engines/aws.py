@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Aws methods module."""
 import json
 
@@ -400,8 +399,8 @@ class Aws(VaultApiBase):
                 url=api_path,
                 json=params,
             )
-        else:
-            return self._adapter.get(
-                url=api_path,
-                params=params,
-            )
+
+        return self._adapter.get(
+            url=api_path,
+            params=params,
+        )

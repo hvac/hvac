@@ -1,5 +1,5 @@
 import hmac
-from datetime import datetime
+from datetime import datetime, timezone
 from hashlib import sha256
 import requests
 
@@ -12,7 +12,7 @@ class SigV4Auth:
         self.region = region
 
     def add_auth(self, request):
-        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         request.headers["X-Amz-Date"] = timestamp
 
         if self.session_token:
@@ -47,9 +47,7 @@ class SigV4Auth:
         signature = hmac.new(key, string_to_sign.encode("utf-8"), sha256).hexdigest()
 
         # https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-        authorization = "{} Credential={}/{}, SignedHeaders={}, Signature={}".format(
-            algorithm, self.access_key, credential_scope, signed_headers, signature
-        )
+        authorization = f"{algorithm} Credential={self.access_key}/{credential_scope}, SignedHeaders={signed_headers}, Signature={signature}"
         request.headers["Authorization"] = authorization
 
 
@@ -77,5 +75,4 @@ def generate_sigv4_auth_request(header_value=None):
     if header_value:
         request.headers["X-Vault-AWS-IAM-Server-ID"] = header_value
 
-    prepared_request = request.prepare()
-    return prepared_request
+    return request.prepare()

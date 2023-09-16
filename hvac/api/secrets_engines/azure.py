@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Azure secret engine methods module."""
 import json
 

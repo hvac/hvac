@@ -14,7 +14,7 @@ class TestAwsIamMethods(TestCase):
     @mock.patch("hvac.aws_utils.datetime")
     @mock.patch("hvac.adapters.Adapter.login")
     def test_auth_aws_iam(self, login_mock, datetime_mock):
-        datetime_mock.utcnow.return_value = datetime(2015, 8, 30, 12, 36, 0)
+        datetime_mock.now.return_value = datetime(2015, 8, 30, 12, 36, 0)
         client = Client()
         client.auth.aws.iam_login(
             "AKIDEXAMPLE", "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"

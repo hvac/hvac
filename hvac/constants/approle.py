@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Constants related to the APPROLE auth method."""
 
 DEFAULT_MOUNT_POINT = "approle"

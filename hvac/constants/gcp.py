@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Constants related to the GCP auth method and/or secrets engine."""
 
 DEFAULT_MOUNT_POINT = "gcp"

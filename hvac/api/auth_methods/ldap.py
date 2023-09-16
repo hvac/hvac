@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """LDAP methods module."""
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -296,9 +295,7 @@ class Ldap(VaultApiBase):
         :rtype: requests.Response
         """
         if policies is not None and not isinstance(policies, list):
-            error_msg = '"policies" argument must be an instance of list or None, "{policies_type}" provided.'.format(
-                policies_type=type(policies),
-            )
+            error_msg = f'"policies" argument must be an instance of list or None, "{type(policies)}" provided.'
             raise exceptions.ParamValidationError(error_msg)
 
         params = {}
@@ -415,10 +412,7 @@ class Ldap(VaultApiBase):
         }
         for param_name, param_arg in list_required_params.items():
             if param_arg is not None and not isinstance(param_arg, list):
-                error_msg = '"{param_name}" argument must be an instance of list or None, "{param_type}" provided.'.format(
-                    param_name=param_name,
-                    param_type=type(param_arg),
-                )
+                error_msg = f'"{param_name}" argument must be an instance of list or None, "{type(param_arg)}" provided.'
                 raise exceptions.ParamValidationError(error_msg)
 
         params = {}

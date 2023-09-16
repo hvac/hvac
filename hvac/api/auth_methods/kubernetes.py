@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Kubernetes methods module."""
 from hvac import utils
 from hvac.api.vault_api_base import VaultApiBase
@@ -300,9 +299,8 @@ class Kubernetes(VaultApiBase):
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/login", mount_point=mount_point
         )
-        response = self._adapter.login(
+        return self._adapter.login(
             url=api_path,
             use_token=use_token,
             json=params,
         )
-        return response

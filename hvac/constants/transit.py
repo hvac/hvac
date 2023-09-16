@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Constants related to the Transit secrets engine."""
 
 import re

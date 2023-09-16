@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """GCP methods module."""
 import logging
 
@@ -243,8 +242,8 @@ class Gcp(VaultApiBase):
             )
             for param, default_arg in type_specific_params["gce"].items():
                 if locals().get(param) != default_arg:
-                    warning_msg = 'Argument for parameter "{param}" ignored for role type iam'.format(
-                        param=param
+                    warning_msg = (
+                        f'Argument for parameter "{param}" ignored for role type iam'
                     )
                     logger.warning(warning_msg)
         elif role_type == "gce":
@@ -260,8 +259,8 @@ class Gcp(VaultApiBase):
                 params["bound_labels"] = list_to_comma_delimited(bound_labels)
             for param, default_arg in type_specific_params["iam"].items():
                 if locals().get(param) != default_arg:
-                    warning_msg = 'Argument for parameter "{param}" ignored for role type gce'.format(
-                        param=param
+                    warning_msg = (
+                        f'Argument for parameter "{param}" ignored for role type gce'
                     )
                     logger.warning(warning_msg)
 

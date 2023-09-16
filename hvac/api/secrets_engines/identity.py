@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Identity secret engine module."""
 import logging
 
@@ -292,9 +291,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
@@ -327,9 +324,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
@@ -523,9 +518,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
@@ -814,9 +807,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
@@ -850,9 +841,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
@@ -1133,9 +1122,7 @@ class Identity(VaultApiBase):
                 url=api_path,
             )
         else:
-            error_message = '"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'.format(
-                method=method
-            )
+            error_message = f'"method" parameter provided invalid value; LIST or GET allowed, "{method}" provided'
             raise exceptions.ParamValidationError(error_message)
 
         return response
