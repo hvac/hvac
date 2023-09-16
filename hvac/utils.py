@@ -300,15 +300,14 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
             docstring_copy = (
                 new_method.__doc__ if new_method.__doc__ is not None else "N/A"
             )
-            if new_method.__doc__ is not None:
-                new_func.__doc__ = """\
-                    {message}
-                    Docstring content from this method's replacement copied below:
-                    {docstring_copy}
-                    """.format(
-                    message=deprecation_message,
-                    docstring_copy=dedent(docstring_copy),
-                )
+            new_func.__doc__ = """\
+                {message}
+                Docstring content from this method's replacement copied below:
+                {docstring_copy}
+                """.format(
+                message=deprecation_message,
+                docstring_copy=dedent(docstring_copy),
+            )
 
         else:
             new_func.__doc__ = deprecation_message
