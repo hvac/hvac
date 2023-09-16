@@ -13,6 +13,7 @@ from hvac.utils import (
     get_token_from_env,
     validate_list_of_strings_param,
     getattr_with_deprecated_properties,
+    deprecated_method,
 )
 
 
@@ -28,6 +29,15 @@ def aliasable_func():
         }
 
     return _func
+
+
+@pytest.fixture
+def deprecatable_method():
+    def _meth():
+        """docstring"""
+        return mock.sentinel.dep_meth_retval
+
+    return _meth
 
 
 class ClassWithDeprecatedProperties:
@@ -53,6 +63,78 @@ class ClassWithDeprecatedProperties:
 
 
 class TestUtils:
+    @pytest.mark.parametrize("removed_in_version", ["99.88.77", "99.99.99"])
+    def test_deprecated_method_no_new(self, removed_in_version, deprecatable_method):
+        old_method = deprecatable_method
+
+        with mock.patch(
+            "hvac.utils.generate_method_deprecation_message",
+            new=mock.Mock(return_value=mock.sentinel.dep_meth_msg),
+        ) as gen_msg:
+            wrapped = deprecated_method(
+                to_be_removed_in_version=removed_in_version,
+            )(old_method)
+
+            gen_msg.assert_called_once_with(
+                to_be_removed_in_version=removed_in_version,
+                old_method_name=old_method.__name__,
+                method_name=None,
+                module_name=None,
+            )
+            assert wrapped.__doc__ == mock.sentinel.dep_meth_msg
+
+        with mock.patch("warnings.warn") as warn:
+            result = wrapped()
+            warn.assert_called_once_with(
+                message=mock.sentinel.dep_meth_msg,
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            assert result == mock.sentinel.dep_meth_retval
+
+    @pytest.mark.parametrize("removed_in_version", ["99.88.77", "99.99.99"])
+    @pytest.mark.parametrize("new_meth_doc", [None, "newdoc"])
+    def test_deprecated_method_new(self, removed_in_version, deprecatable_method, new_meth_doc):
+        old_method = deprecatable_method
+        dep_meth_msg = "depmsg"
+
+        def new_method():
+            pass
+
+        new_method.__doc__ = new_meth_doc
+
+        with mock.patch(
+            "hvac.utils.generate_method_deprecation_message",
+            new=mock.Mock(return_value=dep_meth_msg),
+        ) as gen_msg:
+            wrapped = deprecated_method(
+                to_be_removed_in_version=removed_in_version,
+                new_method=new_method,
+            )(old_method)
+
+            gen_msg.assert_called_once_with(
+                to_be_removed_in_version=removed_in_version,
+                old_method_name=old_method.__name__,
+                method_name=new_method.__name__,
+                module_name=__name__,
+            )
+            if new_meth_doc is not None:
+                assert new_meth_doc in wrapped.__doc__
+            else:
+                assert "N/A" in wrapped.__doc__
+
+            assert dep_meth_msg in wrapped.__doc__
+            assert "Docstring content from this method's replacement copied below" in wrapped.__doc__
+
+        with mock.patch("warnings.warn") as warn:
+            result = wrapped()
+            warn.assert_called_once_with(
+                message=dep_meth_msg,
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            assert result == mock.sentinel.dep_meth_retval
+
     @pytest.mark.parametrize(
         ["item", "expected_new_prop", "expected_value", "expected_version"],
         [("old1", "old1", "new1", "99.88.77"), ("old2", "new2", "new2", "99.99.99")],
@@ -62,7 +144,7 @@ class TestUtils:
     ):
         with mock.patch(
             "hvac.utils.generate_property_deprecation_message",
-            new=mock.Mock(return_value=mock.sentinel.depmsg),
+            new=mock.Mock(return_value=mock.sentinel.dep_prop_msg),
         ) as gen_msg, mock.patch("warnings.warn") as warn:
             result = getattr_with_deprecated_properties(
                 ClassWithDeprecatedProperties,
@@ -77,7 +159,9 @@ class TestUtils:
                 new_attribute="sub",
             )
             warn.assert_called_once_with(
-                message=mock.sentinel.depmsg, category=DeprecationWarning, stacklevel=2
+                message=mock.sentinel.dep_prop_msg,
+                category=DeprecationWarning,
+                stacklevel=2,
             )
             assert result == expected_value
 
