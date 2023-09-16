@@ -34,8 +34,11 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pyhcl = "^0.4.4"
+pyhcl = { version = "^0.4.4", optional = true }
 requests = "^2.27.1"
+
+[tool.poetry.extras]
+parser = ["pyhcl"]
 
 [tool.poetry.group.dev]
 optional = true
@@ -52,6 +55,7 @@ ipaddress = "^1.0.23"
 mock = "^4.0.3"
 nose = "^1.3.7"
 parameterized = "^0.8.1"
+pyhcl = "^0.4.4"
 pytest = "7.0.1"
 pytest-cov = "^3.0.0"
 python-ldap-test = "^0.3.1"
