@@ -90,6 +90,15 @@ class Adapter(metaclass=ABCMeta):
         if not session:
             session = requests.Session()
             session.cert, session.verify, session.proxies = cert, verify, proxies
+        # fix for issue 991 using session verify if set
+        else:
+            if session.verify:
+                # need to set the variable and not assign it to self so it is propperly passed in kwargs
+                verify = session.verify
+            if session.cert:
+                cert = session.cert
+            if session.proxies:
+                proxies = session.proxies
 
         self.base_uri = base_uri
         self.token = token

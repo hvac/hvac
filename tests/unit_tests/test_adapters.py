@@ -10,6 +10,9 @@ from parameterized import parameterized, param
 from hvac.constants.client import DEFAULT_URL
 from hvac import exceptions
 from hvac import adapters
+from tests import utils
+from hvac import Client
+import requests
 
 
 class TestAdapters:
@@ -43,6 +46,8 @@ class TestAdapters:
         ],
     )
     def test_from_adapter(self, conargs):
+        # set session to None so that the adapter will create its own internally
+        conargs["session"] = None
         expected = conargs.copy()
         for internal_kwarg in self.INTERNAL_KWARGS:
             expected.setdefault("_kwargs", {})[internal_kwarg] = expected.pop(
@@ -51,6 +56,9 @@ class TestAdapters:
 
         # let's start with a JSONAdapter, and make a RawAdapter out of it
         json_adapter = adapters.JSONAdapter(**conargs)
+
+        # reset the expected session to to be the one created by the JSONAdapter
+        expected["session"] = json_adapter.session
 
         raw_adapter = adapters.RawAdapter.from_adapter(json_adapter)
 
@@ -221,3 +229,93 @@ class TestRawAdapter:
                 assert e.value.text == text
                 assert e.value.json == json
                 assert e.value.errors == errors
+
+
+class TestAdapterVerify(TestCase):
+    @parameterized.expand(
+        [
+            param("Testing default", verify=Client().session.verify, use_session=False),
+            param(
+                "Testing default session",
+                verify=Client().session.verify,
+                use_session=True,
+            ),
+            param("Testing verify true", verify=True, use_session=False),
+            param("Testing verify true session", verify=True, use_session=True),
+            param("Testing verify false", verify=False, use_session=False),
+            param("Testing verify false session", verify=False, use_session=True),
+            param(
+                "use certificate for verify #991",
+                verify=utils.get_config_file_path("client-cert.pem"),
+                use_session=False,
+            ),
+            param(
+                "use certificate from session #991",
+                verify=utils.get_config_file_path("client-cert.pem"),
+                use_session=True,
+            ),
+        ]
+    )
+    def test_session_verify_stickiness(self, label, verify, use_session):
+        if use_session:
+            s = requests.Session()
+            s.verify = verify
+            c = Client(session=s)
+        elif verify is not None:
+            c = Client(verify=verify)
+        else:
+            c = Client()
+        assert c._adapter.session.verify == verify
+        assert c._adapter.session
+
+    @parameterized.expand(
+        [
+            param("Testing default", cert=None, use_session=False),
+            param("Testing default with session", cert=None, use_session=False),
+            param(
+                "use certificate for #991",
+                cert=utils.get_config_file_path("client-cert.pem"),
+                use_session=False,
+            ),
+            param(
+                "use certificate from session #991",
+                cert=utils.get_config_file_path("client-cert.pem"),
+                use_session=True,
+            ),
+        ]
+    )
+    def test_session_certificate_stickiness(self, label, cert, use_session):
+        if use_session:
+            s = requests.Session()
+            s.cert = cert
+            c = Client(session=s)
+        elif cert is not None:
+            c = Client(cert=cert)
+        else:
+            c = Client()
+        assert c._adapter.session.cert == cert
+        assert c._adapter.session
+
+    @parameterized.expand(
+        [
+            param("Testing default", proxies=None, use_session=False),
+            param(
+                "Testing default session",
+                proxies=None,
+                use_session=True,
+            ),
+            param("Testing Proxy", proxies="localhost:8080", use_session=False),
+            param("Testing Proxy session", proxies="localhost:8080", use_session=True),
+        ]
+    )
+    def test_session_proxies_stickiness(self, label, proxies, use_session):
+        if use_session:
+            s = requests.Session()
+            s.proxies = proxies
+            c = Client(session=s)
+        elif proxies is not None:
+            c = Client(proxies=proxies)
+        else:
+            c = Client()
+        assert c._adapter.session.proxies == proxies
+        assert c._adapter.session
