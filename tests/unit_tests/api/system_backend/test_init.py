@@ -151,3 +151,25 @@ class TestInit:
             )
 
         mock_adapter.request.assert_not_called()
+
+    def test_initialize_value_pass(self, sys_init):
+        (r_args, r_kwargs) = sys_init.initialize(
+            secret_threshold=0,
+            secret_shares=2,
+            root_token_pgp_key="abc",
+            pgp_keys=[1, 2],
+            stored_shares=2,
+            recovery_shares=3,
+            recovery_pgp_keys=[1, 2, 3],
+            recovery_threshold=3,
+        )
+        params = r_kwargs["json"]
+
+        assert params["secret_threshold"] == 0
+        assert params["secret_shares"] == 2
+        assert params["root_token_pgp_key"] == "abc"
+        assert params["pgp_keys"] == [1, 2]
+        assert params["stored_shares"] == 2
+        assert params["recovery_shares"] == 3
+        assert params["recovery_pgp_keys"] == [1, 2, 3]
+        assert params["recovery_threshold"] == 3
