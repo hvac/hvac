@@ -10,7 +10,7 @@ from hvac.api.auth_methods.jwt import JWT
 from hvac.api.auth_methods.kubernetes import Kubernetes
 from hvac.api.auth_methods.ldap import Ldap
 from hvac.api.auth_methods.userpass import Userpass
-from hvac.api.auth_methods.mfa import Mfa
+from hvac.api.auth_methods.legacy_mfa import LegacyMfa
 from hvac.api.auth_methods.oidc import OIDC
 from hvac.api.auth_methods.okta import Okta
 from hvac.api.auth_methods.radius import Radius
@@ -30,7 +30,7 @@ __all__ = (
     "Kubernetes",
     "Ldap",
     "Userpass",
-    "Mfa",
+    "LegacyMfa",
     "OIDC",
     "Okta",
     "Radius",
@@ -52,7 +52,7 @@ class AuthMethods(VaultApiCategory):
         Kubernetes,
         Ldap,
         Userpass,
-        Mfa,
+        LegacyMfa,
         OIDC,
         Okta,
         Radius,
@@ -63,6 +63,7 @@ class AuthMethods(VaultApiCategory):
     unimplemented_classes = [
         "AppId",
         "AliCloud",
+        "Mfa",
     ]
 
     def __call__(self, *args, **kwargs):

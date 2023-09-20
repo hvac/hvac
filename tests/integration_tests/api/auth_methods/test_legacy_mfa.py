@@ -90,7 +90,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     ):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.auth.mfa.configure(
+                self.client.auth.legacymfa.configure(
                     mount_point=mount_point,
                     mfa_type=mfa_type,
                     force=force,
@@ -101,7 +101,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.auth.mfa.configure(
+            configure_response = self.client.auth.legacymfa.configure(
                 mount_point=mount_point,
                 mfa_type=mfa_type,
                 force=force,
@@ -110,7 +110,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
                 first=expected_status_code, second=configure_response.status_code
             )
 
-            read_config_response = self.client.auth.mfa.read_configuration(
+            read_config_response = self.client.auth.legacymfa.read_configuration(
                 mount_point=mount_point,
             )
             self.assertEqual(
@@ -124,11 +124,11 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     )
     def test_read_configuration(self, test_label, mount_point, add_configuration=True):
         if add_configuration:
-            self.client.auth.mfa.configure(
+            self.client.auth.legacymfa.configure(
                 mount_point=mount_point,
             )
 
-        response = self.client.auth.mfa.read_configuration(
+        response = self.client.auth.legacymfa.read_configuration(
             mount_point=mount_point,
         )
         self.assertIn(
@@ -153,7 +153,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     ):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.auth.mfa.configure_duo_access(
+                self.client.auth.legacymfa.configure_duo_access(
                     mount_point=mount_point,
                     host=host,
                     integration_key=integration_key,
@@ -165,7 +165,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.auth.mfa.configure_duo_access(
+            configure_response = self.client.auth.legacymfa.configure_duo_access(
                 mount_point=mount_point,
                 host=host,
                 integration_key=integration_key,
@@ -192,7 +192,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
     ):
         if raises:
             with self.assertRaises(raises) as cm:
-                self.client.auth.mfa.configure_duo_behavior(
+                self.client.auth.legacymfa.configure_duo_behavior(
                     mount_point=mount_point,
                     push_info=push_info,
                     user_agent=user_agent,
@@ -204,7 +204,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
             )
         else:
             expected_status_code = 204
-            configure_response = self.client.auth.mfa.configure_duo_behavior(
+            configure_response = self.client.auth.legacymfa.configure_duo_behavior(
                 mount_point=mount_point,
                 push_info=push_info,
                 user_agent=user_agent,
@@ -214,8 +214,10 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
                 first=expected_status_code, second=configure_response.status_code
             )
 
-            read_config_response = self.client.auth.mfa.read_duo_behavior_configuration(
-                mount_point=mount_point,
+            read_config_response = (
+                self.client.auth.legacymfa.read_duo_behavior_configuration(
+                    mount_point=mount_point,
+                )
             )
             self.assertEqual(
                 first=push_info, second=read_config_response["data"]["push_info"]
@@ -230,11 +232,11 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
         self, test_label, mount_point, add_configuration=True
     ):
         if add_configuration:
-            self.client.auth.mfa.configure(
+            self.client.auth.legacymfa.configure(
                 mount_point=mount_point,
             )
 
-        response = self.client.auth.mfa.read_duo_behavior_configuration(
+        response = self.client.auth.legacymfa.read_duo_behavior_configuration(
             mount_point=mount_point,
         )
         self.assertIn(
@@ -258,11 +260,11 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
         username = "somedude"
         password = "myverygoodpassword"
 
-        self.client.auth.mfa.configure(
+        self.client.auth.legacymfa.configure(
             mount_point=TEST_AUTH_PATH,
         )
         if configure_access:
-            self.client.auth.mfa.configure_duo_access(
+            self.client.auth.legacymfa.configure_duo_access(
                 mount_point=TEST_AUTH_PATH,
                 host=f"localhost:{self.mock_server_port}",
                 integration_key="an-integration-key",

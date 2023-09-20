@@ -12,7 +12,7 @@ Auth Methods
    jwt-oidc
    kubernetes
    ldap
-   mfa
+   legacymfa
    okta
    token
    userpass
