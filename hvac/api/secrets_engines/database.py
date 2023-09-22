@@ -381,3 +381,25 @@ class Database(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         )
+
+    def rotate_static_role_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint is used to rotate the Static Role credentials stored for a given role name.
+        While Static Roles are rotated automatically by Vault at configured rotation periods,
+        users can use this endpoint to manually trigger a rotation to change the stored password and
+        reset the TTL of the Static Role's password.
+
+        :param name: Specifies the name of the role to create credentials against
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/rotate-role/{name}", mount_point=mount_point, name=name
+        )
+
+        return self._adapter.post(
+            url=api_path,
+        )
