@@ -875,12 +875,15 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
+    @utils.aliased_parameter(
+        "saftey_buffer", "safety_buffer", removed_in_version="3.0.0", position=1
+    )
     def tidy_blacklist_tags(
-        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+        self, safety_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
     ):
         """Cleans up the entries in the blacklist based on expiration time on the entry and safety_buffer
 
-        :param saftey_buffer:
+        :param safety_buffer:
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
         :return: The response of the request.
@@ -890,7 +893,7 @@ class Aws(VaultApiBase):
             "/v1/auth/{mount_point}/tidy/roletag-blacklist", mount_point=mount_point
         )
         params = {
-            "safety_buffer": saftey_buffer,
+            "safety_buffer": safety_buffer,
         }
         return self._adapter.post(
             url=api_path,
@@ -946,12 +949,15 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
+    @utils.aliased_parameter(
+        "saftey_buffer", "safety_buffer", removed_in_version="3.0.0", position=1
+    )
     def tidy_identity_whitelist_entries(
-        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+        self, safety_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
     ):
         """Cleans up the entries in the whitelist based on expiration time and safety_buffer
 
-        :param saftey_buffer:
+        :param safety_buffer:
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
         :return: The response of the request.
@@ -961,6 +967,6 @@ class Aws(VaultApiBase):
             "/v1/auth/{mount_point}/tidy/identity-whitelist", mount_point=mount_point
         )
         params = {
-            "safety_buffer": saftey_buffer,
+            "safety_buffer": safety_buffer,
         }
         return self._adapter.post(url=api_path, json=params)
