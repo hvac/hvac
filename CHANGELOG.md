@@ -76,7 +76,7 @@ This is the last expected release before `v2.0.0`.
 ### 🐛 Bug Fixes
 
 - Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
-- fix vault client certificates loaded from envirnoment variables ([GH-943](https://github.com/hvac/hvac/pull/943))
+- fix vault client certificates loaded from environment variables ([GH-943](https://github.com/hvac/hvac/pull/943))
 - approle - fix metadata for generated secret IDs, re-add `wrap_ttl` ([GH-782](https://github.com/hvac/hvac/pull/782))
 - AWS secret engine - fix `generate_credentials` for STS endpoint ([GH-934](https://github.com/hvac/hvac/pull/934))
 - Propagate client's adapter to API categories ([GH-939](https://github.com/hvac/hvac/pull/939))
@@ -93,7 +93,7 @@ This is the last expected release before `v2.0.0`.
 - Update Azure guideline with proper client variable ([GH-935](https://github.com/hvac/hvac/pull/935))
 - Update wrapping.rst - example for unauthenticated unwrap ([GH-789](https://github.com/hvac/hvac/pull/789))
 - Fix typo in the AWS auth method docs ([GH-911](https://github.com/hvac/hvac/pull/911))
-- Replace Azure docs occurence to Kubernetes ([GH-904](https://github.com/hvac/hvac/pull/904))
+- Replace Azure docs occurrence to Kubernetes ([GH-904](https://github.com/hvac/hvac/pull/904))
 
 ### 🧰 Miscellaneous
 
@@ -180,7 +180,7 @@ Breakfix release to revert some unintended post-1.0 requirements changes.
 
 - **Note**: This is _actually and truly_ (😝)  intended to by the last hvac release supporting Python 2.7.
 
-  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explicitly supported versions.**
 - Requirements - Cleanup & Upgrades (`install_requires` => `requests>=2.25.1` ). GH-741
 
 ### 🚀 Features
@@ -204,7 +204,7 @@ Thanks to @Tylerlhess, @anhdat, @ayav09, @bobmshannon, @bpatterson971, @briantis
 
 - **Note**: This is intended to by the last hvac release supporting Python 2.7.
 
-  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explicitly supported versions.**
 - Userpass: Add `use_token` param on `login()`, Accept passthrough `**kwargs` on create user . GH-733
 
 ### 🚀 Features
@@ -668,7 +668,7 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
-* Fix for comparision `recovery_threshold` and `recovery_shares` during initialization. [GH-398](https://github.com/hvac/hvac/pull/398)
+* Fix for comparison `recovery_threshold` and `recovery_shares` during initialization. [GH-398](https://github.com/hvac/hvac/pull/398)
 * Fix request method for AWS secrets engine `generate_credentials()` method. [GH-403](https://github.com/hvac/hvac/pull/403)
 * Fix request parameter (`n_bytes` -> `bytes`) for Transit secrets engine `generate_random_bytes()` method. [GH-377](https://github.com/hvac/hvac/pull/377)
 
@@ -780,7 +780,7 @@ Thanks to @otakup0pe, @FabianFrank, @andrewheald for their lovely contributions.
 
 BACKWARDS COMPATIBILITY NOTICE:
 
-* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` propery on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
+* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` property on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
 
 See the [Advanced Usage](https://hvac.readthedocs.io/en/latest/advanced_usage.html#custom-requests-http-adapter) section of this module's documentation for additional details.
 

@@ -57,7 +57,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             entity_ids = list_entities_response["data"]["keys"]
         except exceptions.InvalidPath:
             logging.debug(
-                "InvalidPath raised when calling list_entites_by_id in tearDown..."
+                "InvalidPath raised when calling list_entities_by_id in tearDown..."
             )
             entity_ids = []
         for entity_id in entity_ids:
@@ -81,7 +81,7 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             alias_ids = list_entity_aliases_response["keys"]
         except exceptions.InvalidPath:
             logging.debug(
-                "InvalidPath raised when calling list_entites_by_id in tearDown..."
+                "InvalidPath raised when calling list_entities_by_id in tearDown..."
             )
             alias_ids = []
         for alias_id in alias_ids:

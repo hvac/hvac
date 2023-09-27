@@ -50,7 +50,7 @@ class Init(SystemBackendMixin):
         :type secret_shares: int
         :param secret_threshold: Specifies the number of shares required to reconstruct the master key. This must be
             less than or equal secret_shares. If using Vault HSM with auto-unsealing, this value must be the same as
-            secret_shares, or ommitted, depending on the version of Vault and the seal type.
+            secret_shares, or omitted, depending on the version of Vault and the seal type.
         :type secret_threshold: int
         :param pgp_keys: List of PGP public keys used to encrypt the output unseal keys.
             Ordering is preserved. The keys must be base64-encoded from their original binary representation.

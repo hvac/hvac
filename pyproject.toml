@@ -74,6 +74,7 @@ typos = "^1.16.11"
 
 [tool.typos.default.extend-words]
 Hashi = "Hashi"
+saftey = "saftey"
 
 [tool.typos.files]
 extend-exclude = ["*.csr", "tests/config_files/ssh-key"]

@@ -185,7 +185,7 @@ class ServerManager:
                 )
             except KeyError as error:
                 logger.debug(
-                    "Unable to find explict Vault address in config file {path}: {err}".format(
+                    "Unable to find explicit Vault address in config file {path}: {err}".format(
                         path=config_path,
                         err=error,
                     )

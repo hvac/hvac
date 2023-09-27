@@ -399,7 +399,7 @@ class Transform(VaultApiBase):
         :param name: the name of the template to create.
         :type name: str | unicode
         :param template_type: Specifies the type of pattern matching to perform.
-            The ony type currently supported by this backend is regex.
+            The only type currently supported by this backend is regex.
         :type template_type: str | unicode
         :param pattern: the pattern used to match a particular value. For regex type
             matching, capture group determines the set of character that should be matched

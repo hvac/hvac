@@ -15,7 +15,7 @@ def create_app(config=None):
     if "WEBSITE_CONF" in os.environ:
         app.config.from_envvar("WEBSITE_CONF")
 
-    # load app sepcified configuration
+    # load app specified configuration
     if config is not None:
         if isinstance(config, dict):
             app.config.update(config)

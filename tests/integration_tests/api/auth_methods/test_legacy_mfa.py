@@ -274,7 +274,7 @@ class TestLegacyMfa(HvacIntegrationTestCase, TestCase):
         self.client.auth.userpass.create_or_update_user(
             username=username,
             password=password,
-            policies=["defaut"],
+            policies=["default"],
             mount_point=TEST_AUTH_PATH,
         )
         if raises:

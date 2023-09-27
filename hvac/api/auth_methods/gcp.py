@@ -442,7 +442,7 @@ class Gcp(VaultApiBase):
         :param jwt: A signed JSON web token
         :type jwt: str | unicode
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapter Client attribute.
         :type use_token: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode

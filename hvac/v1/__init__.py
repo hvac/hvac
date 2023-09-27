@@ -440,7 +440,7 @@ class Client:
         """Perform a login request with a wrapped token.
 
         Stores the unwrapped token in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter`
-            instance under the _adapater Client attribute.
+            instance under the _adapter Client attribute.
 
         :param token: Wrapped token
         :type token: str | unicode
@@ -454,13 +454,13 @@ class Client:
         """Perform a login request.
 
         Associated request is typically to a path prefixed with "/v1/auth") and optionally stores the client token sent
-            in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapater
+            in the resulting Vault response for use by the :py:meth:`hvac.adapters.Adapter` instance under the _adapter
             Client attribute.
 
         :param url: Path to send the authentication request to.
         :type url: str | unicode
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapter Client attribute.
         :type use_token: bool
         :param kwargs: Additional keyword arguments to include in the params sent with the request.
         :type kwargs: dict

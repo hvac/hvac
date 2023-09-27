@@ -135,7 +135,7 @@ class TestLegacyMfa(TestCase):
         ]
     )
     @requests_mock.Mocker()
-    def test_read_duo_behvaior_configuration(
+    def test_read_duo_behavior_configuration(
         self, test_label, mount_point, requests_mocker
     ):
         expected_status_code = 200
