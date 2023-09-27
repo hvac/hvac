@@ -127,7 +127,7 @@ class Ssh(VaultApiBase):
         :param allowed_users: If only certain usernames are to be allowed, then this list enforces it.
         :type allowed_users: str | unicode
         :param allowed_users_template: If set, allowed_users can be specified using identity template policies.
-            (default: flase)
+            (default: false)
         :type allowed_users_template: bool
         :param allowed_domains: The list of domains for which a client can request a host certificate.
         :type allowed_domains: str | unicode

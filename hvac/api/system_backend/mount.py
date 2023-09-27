@@ -171,7 +171,7 @@ class Mount(SystemBackendMixin):
         :param audit_non_hmac_response_keys: Specifies the comma-separated list of keys that will not be HMAC'd by audit
             devices in the response data object.
         :type audit_non_hmac_response_keys: list
-        :param listing_visibility: Speficies whether to show this mount in the UI-specific listing endpoint. Valid
+        :param listing_visibility: Specifies whether to show this mount in the UI-specific listing endpoint. Valid
             values are "unauth" or "".
         :type listing_visibility: str
         :param passthrough_request_headers: Comma-separated list of headers to whitelist and pass from the request

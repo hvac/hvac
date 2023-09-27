@@ -11,7 +11,7 @@ GCP
 
     client.sys.enable_secrets_engine('gcp')
 
-    # mock out external calls that are diffcult to support in test environments
+    # mock out external calls that are difficult to support in test environments
     mock_urls = {
         'https://127.0.0.1:8200/v1/gcp/rolesets': 'LIST',
         'https://127.0.0.1:8200/v1/gcp/roleset/hvac-doctest': ANY,

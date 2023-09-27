@@ -300,15 +300,15 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
                 container=str(cm.exception),
             )
         else:
-            edit_labled_response = self.client.auth.gcp.edit_labels_on_gce_role(
+            edit_labeled_response = self.client.auth.gcp.edit_labels_on_gce_role(
                 name=role_name,
                 add=add,
                 remove=remove,
                 mount_point=self.TEST_MOUNT_POINT,
             )
-            logging.debug("create_role_response: %s" % edit_labled_response)
+            logging.debug("create_role_response: %s" % edit_labeled_response)
             self.assertEqual(
-                first=bool(edit_labled_response),
+                first=bool(edit_labeled_response),
                 second=True,
             )
 

@@ -32,7 +32,7 @@ You then use hvac's Client.session and requests.Session() to pass the new CA bun
 		Instantiates a hvac / vault client.
 		:param vault_url: string, protocol + address + port for the vault service
 		:param certs: tuple, Optional tuple of self-signed certs to use for verification
-			with hvac's requests adapater.
+			with hvac's requests adapter.
 		:return: hvac.Client
 		"""
 		logger.debug('Retrieving a vault (hvac) client...')
@@ -59,7 +59,7 @@ You then use hvac's Client.session and requests.Session() to pass the new CA bun
 
 If only using the certificate authority for trust, not authentication, SSL verification can be set using the `verify` parameter.
 
-This configures the client to trust the connection only if the certificate recieved is signed by a CA in that bundle:
+This configures the client to trust the connection only if the certificate received is signed by a CA in that bundle:
 
 .. code:: python
 
