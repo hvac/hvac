@@ -1,0 +1,14 @@
+# .git-blame-ignore-revs
+# - https://github.com/hvac/hvac/pull/1087
+
+# Fixing typos
+# - https://github.com/hvac/hvac/commit/b2df800aeee724957b13102e18f7b0aa6f4aeb65
+# - https://github.com/hvac/hvac/pull/1057
+6c31f14cea1eb3f1aca816a78f9e5be56b90e08c
+
+# Introduction of black formatter
+# - https://github.com/hvac/hvac/commit/68aefde34ded8efb3fa29e4eb6c618229717fb8c
+# - https://github.com/hvac/hvac/commit/439f3cfcceae25df9e1b0afcb37caf536222eddb
+# - https://github.com/hvac/hvac/pull/726
+68aefde34ded8efb3fa29e4eb6c618229717fb8c
+439f3cfcceae25df9e1b0afcb37caf536222eddb
