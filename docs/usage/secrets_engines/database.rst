@@ -201,7 +201,7 @@ Deletes a role definition:
 
 
 Rotate Root Credentials
------------------------
+------------------------
 
 :py:meth:`hvac.api.secrets_engines.Database.rotate_root_credentials()`
 
@@ -251,3 +251,84 @@ Returns the current credentials based on the named static role:
         name='role-name',
         mount_point='my-database'
     )
+
+Create Static Role
+--------------------
+
+:py:meth:`hvac.api.secrets_engines.Database.create_static_role`
+
+Creates or updates a static role:
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    rotation_statement = ["ALTER USER \"{{name}}\" WITH PASSWORD '{{password}}';"]
+
+    credentials = client.secrets.database.create_static_role(
+        name='role-name',
+        db_name='db-connection-name',
+        username='static-role-username'
+        rotation_statements=rotation_statement,
+        rotation_period=86400,
+        mount_point='my-database'
+    )
+
+.. note::
+    The ``username`` referenced above needs to be pre-created in the database prior to calling this method as Vault will be referencing this username to rotate its password.
+
+
+Read Static Role
+-----------------
+
+:py:meth:`hvac.api.secrets_engines.Database.read_static_role`
+
+Queries a static role definition:
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.database.read_static_role(
+        name='role-name',
+        mount_point='my-database'
+    )
+
+
+List Static Roles
+-------------------
+
+:py:meth:`hvac.api.secrets_engines.Database.list_static_roles`
+
+Returns a list of available static roles:
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    static_roles = client.secrets.database.list_static_roles(
+        mount_point='my-database'
+    )
+
+
+Rotate Static Role Credentials
+------------------------------
+
+:py:meth:`hvac.api.secrets_engines.Database.rotate_static_role_credentials`
+
+This endpoint is used to rotate the Static Role credentials stored for a given role name. While Static Roles are rotated automatically by Vault at configured rotation periods, users can use this endpoint to manually trigger a rotation to change the stored password and reset the TTL of the Static Role's password.
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.database.rotate_static_role_credentials(
+        name='role-name',
+        mount_point='my-database'
+    )
+
+
