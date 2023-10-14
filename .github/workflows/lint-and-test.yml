@@ -184,15 +184,11 @@ jobs:
         vault-version:
           - "vault-enterprise=1.6.*+ent"
           - "vault-enterprise=1.7.*+ent"
-          - "vault=1.6.*"
-          - "vault=1.7.*"
-          - "vault=1.8.*"
-          - "vault=1.9.*"
-          - "vault=1.10.*"
           - "vault=1.11.*"
           - "vault=1.12.*"
           - "vault=1.13.*"
           - "vault=1.14.*"
+          - "vault=1.15.*"
 
     steps:
     - uses: actions/checkout@v4
