@@ -188,7 +188,8 @@ jobs:
           - "vault=1.12.*"
           - "vault=1.13.*"
           - "vault=1.14.*"
-          - "vault=1.15.*"
+          # - "vault=1.15.*"
+          # https://github.com/hvac/hvac/issues/1075
 
     steps:
     - uses: actions/checkout@v4
