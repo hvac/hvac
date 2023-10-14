@@ -1,4 +1,5 @@
 # .git-blame-ignore-revs
+# - https://github.com/hvac/hvac/pull/1087
 
 # Fixing typos
 # - https://github.com/hvac/hvac/commit/b2df800aeee724957b13102e18f7b0aa6f4aeb65
