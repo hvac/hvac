@@ -24,6 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
 ]
 packages = [
@@ -49,7 +50,7 @@ Authlib = "^1.0.1"
 black = "22.6.0"
 Flask = "^2.2.5"
 Flask-SQLAlchemy = "^3.0.5"
-flake8 = "4.0.1"
+flake8 = "^5.0.0"
 coverage = "^6.3"
 ipaddress = "^1.0.23"
 mock = "^4.0.3"
@@ -69,6 +70,7 @@ mistune = "0.8.4"
 docutils = "<0.18"
 packaging = "<24"
 jinja2 = "<3.1.0"
+greenlet = "^3.0.0"
 jwcrypto = "^1.5.0"
 typos = "^1.16.11"
 

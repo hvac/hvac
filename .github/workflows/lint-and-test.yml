@@ -26,8 +26,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          # - "3.12"
-          # https://github.com/hvac/hvac/pull/1048
+          - "3.12"
 
     steps:
     - uses: actions/checkout@v4
@@ -130,8 +129,7 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          # - "3.12"
-          # https://github.com/hvac/hvac/pull/1048
+          - "3.12"
 
     steps:
     - uses: actions/checkout@v4
