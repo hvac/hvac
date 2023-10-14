@@ -10,7 +10,7 @@ HVAC uses poetry to manage dependencies, the virtual environment, and versioning
 git clone https://github.com/hvac/hvac.git
 cd hvac
 
-poetry install
+poetry install --with dev
 
 # Run the following command on Linux
 source $(poetry env info --path)/bin/activate
@@ -28,7 +28,7 @@ the latest `vault` binary is available in your `PATH`.
 
 ```
 cd hvac
-poetry install
+poetry install --with dev
 ```
 
 3. Enter the virtual environment
@@ -107,19 +107,23 @@ Ensure your local `main` branch is up to date, and then checkout a new branch to
 
 ### Updating the version
 
+We use the `poetry-bumpversion` plugin for bumping versions. Check the `poetry` documentation for [using plugins](https://python-poetry.org/docs/master/plugins/#using-plugins) for instructions on installing the plugin in your `poetry` environment.
+
 `hvac` uses [semver](https://semver.org/) so be aware of whether the next version is a minor, major, or patch release.
 
 Minor will be most common, but it will depend on the PRs that have been accepted. Ideally, all PRs are added to a milestone and we can refer to those to determine what the next version must be.
 
-Update the version number using [bump2version](https://github.com/c4urself/bump2version), which will update all the places that need to be updated.
+Update the version number in all the places that need to be updated:
 
 ```
-bumpversion {patch|minor|major}
+poetry version {patch|minor|major}
 ```
+
+**IMPORTANT:** if you do not see any line(s) in the output that look like `poetry_bumpversion: processed file <filename>` then you must install the `poetry-bumpversion` plugin. Without that, only `pyproject.toml` is updated, which is not correct.
 
 Choose `minor`, `major`, or `patch` as appropriate.
 
-Review the changed files, and commit the changes to the branch.
+Review the changed files (ensure all files listed in `[tool.poetry_bumpversion.file.*]` entries in `pyproject.toml` are modified), and commit the changes to the branch.
 
 ### Updating the changelog
 
