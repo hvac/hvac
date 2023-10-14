@@ -1013,20 +1013,6 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
-name = "python-jwt"
-version = "3.3.5"
-description = "Module for generating and verifying JSON Web Tokens"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-files = [
-    {file = "python_jwt-3.3.5-py2.py3-none-any.whl", hash = "sha256:6799ced84d0ec939a7407680ee39e7a7331ce11b68e39b5e104728799f399d4f"},
-    {file = "python_jwt-3.3.5.tar.gz", hash = "sha256:152e197c3f600e1ca41b9eae85eb232ece6284a34583ab92c919b7f47252fb09"},
-]
-
-[package.dependencies]
-jwcrypto = {version = ">=1.0.0", markers = "python_version >= \"3.0\""}
-
-[[package]]
 name = "python-ldap-test"
 version = "0.3.1"
 description = "Tool for testing code speaking with LDAP server. Allows to easily configure and run an embedded, in-memory LDAP server. Uses UnboundID LDAP SDK through Py4J."
@@ -1523,4 +1509,4 @@ parser = ["pyhcl"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "054a69257de8656548c2b126485040b28484ba06eeef7f5bf0de16a1f4537106"
+content-hash = "9f2617c42d96f069a4225cf021da293698bc3b689d5e92465a73410f3780d76f"
