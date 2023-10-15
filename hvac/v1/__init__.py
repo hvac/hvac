@@ -340,7 +340,7 @@ class Client:
                     " In v3.0.0 the 'data' key will be treated specially. Consider using the write_data() method instead."
                     " For more information see: https://github.com/hvac/hvac/issues/1034"
                 ),
-                FutureWarning,
+                PendingDeprecationWarning,
                 stacklevel=2,
             )
 
