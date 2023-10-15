@@ -1,6 +1,7 @@
 import pytest
 
 from pytest_mock import MockFixture
+from mock import MagicMock
 from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
@@ -46,32 +47,62 @@ class TestSmartPop:
         assert "a" not in dict
 
 
+class TestClientWriteData:
+    test_url = "https://vault.example.com"
+    test_path = "whatever/fake"
+    response = dict(a=1, b="two")
+
+    @pytest.fixture(autouse=True)
+    def write_mock(self, requests_mock: requests_mock.Mocker):
+        yield requests_mock.register_uri(
+            method="POST",
+            url=f"{self.test_url}/v1/{self.test_path}",
+            json=self.response,
+        )
+
+    @pytest.fixture
+    def client(self) -> Client:
+        return Client(url=self.test_url)
+
+    @pytest.mark.parametrize("wrap_ttl", [None, "3m"])
+    def test_write_data(self, client: Client, wrap_ttl: str):
+        response = client.write_data(self.test_path, data="cool", wrap_ttl=wrap_ttl)
+        assert response == self.response
+
+
 class TestOldClientWrite:
     test_url = "https://vault.example.com"
     test_path = "whatever/fake"
 
     @pytest.fixture(autouse=True)
-    def write_mock(self, requests_mock: requests_mock.Mocker):
-        yield requests_mock.register_uri(
-            method="POST", url=f"{self.test_url}/v1/{self.test_path}", json={}
-        )
+    def mock_write_data(self, mocker: MockFixture) -> MagicMock:
+        yield mocker.patch.object(Client, "write_data")
 
     @pytest.fixture
-    def client(self):
+    def client(self) -> Client:
         return Client(url=self.test_url)
 
     @pytest.mark.parametrize("kwargs", [{}, {"wrap_ttl": "5m"}, {"other": 5}])
     def test_client_write_no_path(
-        self, client: Client, mocker: MockFixture, kwargs: dict
+        self,
+        client: Client,
+        mocker: MockFixture,
+        kwargs: dict,
+        mock_write_data: MagicMock,
     ):
         popper = mocker.patch("hvac.v1._smart_pop", new=mocker.Mock(wraps=_smart_pop))
         with pytest.raises(TypeError):
             client.write(**kwargs)
         popper.assert_called_once_with(mocker.ANY, "path", posvalue=_sentinel)
+        mock_write_data.assert_not_called()
 
     @pytest.mark.parametrize("kwargs", [{}, {"other": 5}])
     def test_client_write_no_wrap_ttl(
-        self, client: Client, mocker: MockFixture, kwargs: dict, write_mock
+        self,
+        client: Client,
+        mocker: MockFixture,
+        kwargs: dict,
+        mock_write_data: MagicMock,
     ):
         popper = mocker.patch("hvac.v1._smart_pop", new=mocker.Mock(wraps=_smart_pop))
         client.write(self.test_path, **kwargs)
@@ -80,6 +111,21 @@ class TestOldClientWrite:
             mocker.ANY, "wrap_ttl", default=None, posvalue=_sentinel
         )
         popper.assert_has_calls([expected_call])
+        mock_write_data.assert_called_once_with(
+            self.test_path, wrap_ttl=None, data=kwargs
+        )
+
+    def test_client_write_data_field(
+        self, client: Client, mocker: MockFixture, mock_write_data: MagicMock
+    ):
+        with pytest.warns(
+            PendingDeprecationWarning,
+            match=r"argument 'data' was supplied as a keyword argument",
+        ):
+            client.write(self.test_path, data="thing")
+        mock_write_data.assert_called_once_with(
+            self.test_path, wrap_ttl=None, data=dict(data="thing")
+        )
 
 
 class TestSystemBackendMethods(TestCase):
