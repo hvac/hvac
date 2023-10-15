@@ -1,4 +1,7 @@
 import os
+import typing as t
+
+from warnings import warn
 
 from hvac import adapters, api, exceptions, utils
 from hvac.constants.client import (
@@ -16,6 +19,48 @@ try:
     has_hcl_parser = True
 except ImportError:
     has_hcl_parser = False
+
+
+# TODO(v4.0.0): remove _sentinel and _smart_pop when write no longer has deprecated behavior:
+# https://github.com/hvac/hvac/issues/1034
+_sentinel = object()
+
+
+def _smart_pop(
+    dict: dict,
+    member: str,
+    default: t.Any = _sentinel,
+    *,
+    posvalue: t.Any = _sentinel,
+    method: str = "write",
+    replacement_method: str = "write_data",
+):
+    try:
+        value = dict.pop(member)
+    except KeyError:
+        if posvalue is not _sentinel:
+            return posvalue
+        elif default is not _sentinel:
+            return default
+        else:
+            raise TypeError(
+                f"{method}() missing one required positional argument: '{member}'"
+            )
+    else:
+        if posvalue is not _sentinel:
+            raise TypeError(f"{method}() got multiple values for argument '{member}'")
+
+        warn(
+            (
+                f"{method}() argument '{member}' was supplied as a keyword argument and will not be written as data."
+                f" To write this data with a '{member}' key, use the {replacement_method}() method."
+                f" To continue using {method}() and suppress this warning, supply this argument positionally."
+                f" For more information see: https://github.com/hvac/hvac/issues/1034"
+            ),
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        return value
 
 
 class Client:
@@ -251,35 +296,72 @@ class Client:
         except exceptions.InvalidPath:
             return None
 
-    def write(self, path, wrap_ttl=None, **kwargs):
+    # TODO(v4.0.0): remove overload when write doesn't use args and kwargs anymore
+    @t.overload
+    def write(self, path: str, wrap_ttl: t.Optional[str], **kwargs: t.Dict[str, t.Any]):
+        pass
+
+    def write(self, *args: list, **kwargs: t.Dict[str, t.Any]):
         """POST /<path>
 
         Write data to a path. Because this method uses kwargs for the data to write, "path" and "wrap_ttl" data keys cannot be used.
         If these names are needed, or if the key names are not known at design time, consider using the write_data method.
 
         :param path:
-        :type path:
+        :type path: str
         :param wrap_ttl:
-        :type wrap_ttl:
+        :type wrap_ttl: str | None
         :param kwargs:
-        :type kwargs:
+        :type kwargs: dict
         :return:
         :rtype:
         """
-        return self._adapter.post(f"/v1/{path}", json=kwargs, wrap_ttl=wrap_ttl)
 
-    def write_data(self, path, *, data={}, wrap_ttl=None):
+        try:
+            path = args[0]
+        except IndexError:
+            path = _sentinel
+
+        path = _smart_pop(kwargs, "path", posvalue=path)
+
+        try:
+            wrap_ttl = args[1]
+        except IndexError:
+            wrap_ttl = _sentinel
+
+        wrap_ttl = _smart_pop(kwargs, "wrap_ttl", default=None, posvalue=wrap_ttl)
+
+        if "data" in kwargs:
+            warn(
+                (
+                    "write() argument 'data' was supplied as a keyword argument."
+                    " In v3.0.0 the 'data' key will be treated specially. Consider using the write_data() method instead."
+                    " For more information see: https://github.com/hvac/hvac/issues/1034"
+                ),
+                PendingDeprecationWarning,
+                stacklevel=2,
+            )
+
+        return self.write_data(path, wrap_ttl=wrap_ttl, data=kwargs)
+
+    def write_data(
+        self,
+        path: str,
+        *,
+        data: t.Dict[str, t.Any] = {},
+        wrap_ttl: t.Optional[str] = None,
+    ):
         """Write data to a path. Similar to write() without restrictions on data keys.
 
         Supported methods:
             POST /<path>
 
         :param path:
-        :type path:
+        :type path: str
         :param data:
-        :type dict:
+        :type data: dict
         :param wrap_ttl:
-        :type wrap_ttl:
+        :type wrap_ttl: str | None
         :return:
         :rtype:
         """
