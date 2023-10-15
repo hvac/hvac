@@ -296,7 +296,7 @@ class Client:
         except exceptions.InvalidPath:
             return None
 
-    # TODO(v4.0.0): remove overload when write
+    # TODO(v4.0.0): remove overload when write doesn't use args and kwargs anymore
     @t.overload
     def write(
         self, path: str, write_ttl: t.Optional[str], **kwargs: t.Dict[str, t.Any]
