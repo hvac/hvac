@@ -253,22 +253,28 @@ def configure_pki(
 
     client.sys.enable_secrets_engine(backend_type="pki", path=mount_point)
 
-    client.write(
+    client.write_data(
         path=f"{mount_point}/root/generate/internal",
-        common_name=common_name,
-        ttl="8760h",
+        data=dict(
+            common_name=common_name,
+            ttl="8760h",
+        ),
     )
-    client.write(
+    client.write_data(
         path=f"{mount_point}/config/urls",
-        issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
-        crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
+        data=dict(
+            issuing_certificates="http://127.0.0.1:8200/v1/pki/ca",
+            crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl",
+        ),
     )
-    client.write(
+    client.write_data(
         path=f"{mount_point}/roles/{role_name}",
-        allowed_domains=common_name,
-        allow_subdomains=True,
-        generate_lease=True,
-        max_ttl="72h",
+        data=dict(
+            allowed_domains=common_name,
+            allow_subdomains=True,
+            generate_lease=True,
+            max_ttl="72h",
+        ),
     )
 
 
