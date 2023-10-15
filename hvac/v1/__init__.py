@@ -298,9 +298,7 @@ class Client:
 
     # TODO(v4.0.0): remove overload when write doesn't use args and kwargs anymore
     @t.overload
-    def write(
-        self, path: str, wrap_ttl: t.Optional[str], **kwargs: t.Dict[str, t.Any]
-    ):
+    def write(self, path: str, wrap_ttl: t.Optional[str], **kwargs: t.Dict[str, t.Any]):
         pass
 
     def write(self, *args: list, **kwargs: t.Dict[str, t.Any]):
