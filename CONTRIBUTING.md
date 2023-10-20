@@ -141,7 +141,7 @@ Release drafter is only aware of PRs. Deprecations or other announcements that a
 
 If there were no PRs with these labels, release drafter will not have created the section header either. Use the following header:
 - `📢 Deprecations / Announcements`
-Ensure each entry have a link to the relevant GitHub issue/PR (see the other entries).
+Ensure each entry has a link to the relevant GitHub issue/PR (see the other entries).
 
 ### Opening the release PR
 

@@ -1,5 +1,57 @@
 # Changelog
 
+## 2.0.0
+
+This release makes a number of breaking changes. Most notably, dropping support for Python 3.6 & 3.7, dropping support for Vault versions 1.6.x through 1.10.x, and removing previously deprecated methods and code paths. Most of the other breaking changes are fairly minor or only affect specific use cases, but please review all changes carefully.
+
+There are also several other deprecations and announcements to be aware of. We hope to have a more rapid release schedule going forward.
+
+In accordance with [our supported Python version policy](https://github.com/hvac/hvac/issues/877) we will continue to drop Python versions as they become end-of-life. These may not be announced in advance, but will be done in major versions.
+
+### 💥 Breaking Changes
+
+- `Client.write` method breaking changes 2.0.0 ([GH-1089](https://github.com/hvac/hvac/pull/1089))
+- Drop support for Vault 1.6-1.10 ([GH-1074](https://github.com/hvac/hvac/pull/1074))
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- Remove old deprecated `client` attributes ([GH-1062](https://github.com/hvac/hvac/pull/1062))
+- Remove MFA class ([GH-1056](https://github.com/hvac/hvac/pull/1056))
+- adapters: if `session` is user-supplied, do not overwrite session options with `Client`/`Adapter` options ([GH-1021](https://github.com/hvac/hvac/pull/1021))
+- Make `pyhcl` optional again ([GH-1060](https://github.com/hvac/hvac/pull/1060))
+- Drop Python 3.6 & 3.7, Add Python 3.11, bump some dependencies ([GH-1048](https://github.com/hvac/hvac/pull/1048))
+
+### 📢 Deprecations / Announcements
+
+- Breaking changes coming to Adapters' use of custom sessions ([GH-1040](https://github.com/hvac/hvac/issues/1040))
+- Breaking changes coming to `Client.write` method ([GH-1034](https://github.com/hvac/hvac/issues/1034))
+- The default value of `raise_on_deleted_version` will change from `True` to `False` in `v3.0.0` ([GH-955](https://github.com/hvac/hvac/issues/955))
+- The `certificate` parameter for `create_ca_certificate_role` will stop accepting file paths in v3.0.0 ([GH-914](https://github.com/hvac/hvac/issues/914))
+- Drop support for Vault 1.6-1.10 ([GH-1074](https://github.com/hvac/hvac/pull/1074))
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- Fix typo in `safety_buffer` argument in AWS auth ([GH-1068](https://github.com/hvac/hvac/pull/1068))
+
+### 🚀 Features
+
+- Add support for Python 3.12 ([GH-1073](https://github.com/hvac/hvac/pull/1073))
+- Database Secrets Engine - add `rotate_static_credentials` method, docs updates, unit tests ([GH-1069](https://github.com/hvac/hvac/pull/1069))
+- Make `plaintext` and `ciphertext` optional for batch operations ([GH-1049](https://github.com/hvac/hvac/pull/1049))
+
+### 🐛 Bug Fixes
+
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- adapters: if `session` is user-supplied, do not overwrite session options with `Client`/`Adapter` options ([GH-1021](https://github.com/hvac/hvac/pull/1021))
+
+### 📚 Documentation
+
+- update docstring for sys step-down ([GH-1086](https://github.com/hvac/hvac/pull/1086))
+- Database Secrets Engine - add `rotate_static_credentials` method, docs updates, unit tests ([GH-1069](https://github.com/hvac/hvac/pull/1069))
+- Fix invalid build and test status ([GH-1072](https://github.com/hvac/hvac/pull/1072))
+
+### 🧰 Miscellaneous
+
+- add .git-blame-ignore-revs ([GH-1087](https://github.com/hvac/hvac/pull/1087))
+- Fix typos, add `typos` linter to CI ([GH-1057](https://github.com/hvac/hvac/pull/1057))
+- drop python-jwt dev dependency ([GH-1084](https://github.com/hvac/hvac/pull/1084))
+
 ## 1.2.1
 
 This release fixes an inaccuracy in a warning message but does not otherwise change functionality.
