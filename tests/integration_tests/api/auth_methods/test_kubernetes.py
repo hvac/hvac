@@ -1,8 +1,7 @@
 import logging
-from unittest import TestCase
-from unittest import skipIf
+from unittest import TestCase, skipIf
 
-from parameterized import parameterized, param
+from parameterized import param, parameterized
 
 from hvac import exceptions
 from tests import utils
@@ -84,16 +83,21 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
     ):
         kubernetes_host = "https://192.168.99.100:8443"
         if raises:
-            with self.assertRaises(raises) as cm:
-                self.client.auth.kubernetes.configure(
-                    kubernetes_host=kubernetes_host,
-                    kubernetes_ca_cert=kubernetes_ca_cert,
-                    token_reviewer_jwt=token_reviewer_jwt,
-                    pem_keys=pem_keys,
-                    mount_point=self.TEST_MOUNT_POINT,
-                    disable_local_ca_jwt=disable_local_ca_jwt,
-                )
-            self.assertIn(member=exception_message, container=str(cm.exception))
+            # Vault version 1.15.0 removed requirement for JWT to be valid. Disabling param 4 if version >= 1.15.0
+            if not (
+                utils.vault_version_ge("1.15.0")
+                and raises == exceptions.InternalServerError
+            ):
+                with self.assertRaises(raises) as cm:
+                    self.client.auth.kubernetes.configure(
+                        kubernetes_host=kubernetes_host,
+                        kubernetes_ca_cert=kubernetes_ca_cert,
+                        token_reviewer_jwt=token_reviewer_jwt,
+                        pem_keys=pem_keys,
+                        mount_point=self.TEST_MOUNT_POINT,
+                        disable_local_ca_jwt=disable_local_ca_jwt,
+                    )
+                self.assertIn(member=exception_message, container=str(cm.exception))
         else:
             configure_response = self.client.auth.kubernetes.configure(
                 kubernetes_host=kubernetes_host,
