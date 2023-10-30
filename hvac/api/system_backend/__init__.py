@@ -11,11 +11,12 @@ from hvac.api.system_backend.leader import Leader
 from hvac.api.system_backend.lease import Lease
 from hvac.api.system_backend.mount import Mount
 from hvac.api.system_backend.namespace import Namespace
+from hvac.api.system_backend.policies import Policies
 from hvac.api.system_backend.policy import Policy
 from hvac.api.system_backend.raft import Raft
 from hvac.api.system_backend.seal import Seal
-from hvac.api.system_backend.wrapping import Wrapping
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
+from hvac.api.system_backend.wrapping import Wrapping
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
@@ -30,6 +31,7 @@ __all__ = (
     "Mount",
     "Namespace",
     "Policy",
+    "Policies",
     "Raft",
     "Seal",
     "SystemBackend",
@@ -54,6 +56,7 @@ class SystemBackend(
     Mount,
     Namespace,
     Policy,
+    Policies,
     Raft,
     Seal,
     Wrapping,
@@ -70,6 +73,7 @@ class SystemBackend(
         Mount,
         Namespace,
         Policy,
+        Policies,
         Raft,
         Seal,
         Wrapping,

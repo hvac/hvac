@@ -13,6 +13,7 @@ System Backend
    lease
    mount
    namespace
+   policies
    policy
    raft
    seal
