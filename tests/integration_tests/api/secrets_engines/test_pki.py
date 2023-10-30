@@ -754,6 +754,31 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             second=new_name,
         )
 
+    # Update issuer - no extra params
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_update_issuer_no_extra_param(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        # Read current state of issuer to make sure nothing changes
+        pki_read_response = self.client.secrets.pki.read_issuer(
+            issuer_ref=pki_list_response["data"]["keys"][0],
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        pki_update_response = self.client.secrets.pki.update_issuer(
+            issuer_ref=pki_list_response["data"]["keys"][0],
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        self.assertEqual(
+            first=pki_update_response["data"]["usage"],
+            second=pki_read_response["data"]["usage"],
+        )
+
     # Revoke issuer
     @skipIf(utils.vault_version_lt("1.12.0"), reason="Support added in version 1.12.0.")
     def test_revoke_issuer(self):

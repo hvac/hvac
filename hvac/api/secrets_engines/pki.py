@@ -817,8 +817,6 @@ class Pki(VaultApiBase):
         :return: The JSON response of the request.
         :rtype: requests.Response
         """
-        if extra_params is None:
-            extra_params = {}
         params = extra_params
 
         api_path = utils.format_url(
