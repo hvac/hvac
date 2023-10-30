@@ -56,8 +56,8 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0"),
-        "Newer version of quota JSON changes path structure and adds role",
+        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_create_quota(self):
         quota_dict = {
@@ -138,8 +138,8 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0"),
-        "Newer version of quota JSON changes path structure and adds role",
+        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_update_quota(self):
         quota_dict = {
@@ -217,8 +217,8 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0"),
-        "Newer version of quota JSON changes path structure and adds role",
+        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_read_quota(self):
         quota_dict = {
@@ -254,6 +254,10 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             second=read_quota_response["data"],
         )
 
+    @skipIf(
+        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
+    )
     def test_list_quotas(self):
         quota_dict = {
             "block_interval": "600",
@@ -320,8 +324,8 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0"),
-        "Newer version of quota JSON changes path structure and adds role",
+        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_delete_quota(self):
         quota_dict = {

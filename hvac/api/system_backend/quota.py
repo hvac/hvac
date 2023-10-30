@@ -39,6 +39,7 @@ class Quota(SystemBackendMixin):
         interval=None,
         block_interval=None,
         role=None,
+        rate_limit_type=None,
         inheritable=None,
     ):
         """Create quota if it doesn't exist or update if already created. Only works when calling on the root namespace.
@@ -58,31 +59,25 @@ class Quota(SystemBackendMixin):
         :type block_interval: str | unicode
         :param role: If quota is set on an auth mount path, restrict login requests that are made with a specified role.
         :type role: str | unicode
-        :param inheritable: If set to true on a path that is a namespace, quoat will be applied to all child namespaces
+        :param rate_limit_type: Type of rate limit quota. Can be lease-count or rate-limit.
+        :type rate_limit_type: str | unicode
+        :param inheritable: If set to true on a path that is a namespace, quota will be applied to all child namespaces
         :type inheritable: bool
         :return: API status code from request.
         :rtype: requests.Response
         """
         api_path = utils.format_url("/v1/sys/quotas/rate-limit/{name}", name=name)
-        params = {
-            "name": name,
-            "path": path,
-            "rate": rate,
-            "interval": interval,
-            "block_interval": block_interval,
-            "role": role,
-            "inheritable": inheritable,
-        }
-        params.update(
-            utils.remove_nones(
-                {
-                    "path": path,
-                    "interval": interval,
-                    "block_interval": block_interval,
-                    "role": role,
-                    "inheritable": inheritable,
-                }
-            )
+        params = utils.remove_nones(
+            {
+                "name": name,
+                "path": path,
+                "rate": rate,
+                "interval": interval,
+                "block_interval": block_interval,
+                "role": role,
+                "type": rate_limit_type,
+                "inheritable": inheritable,
+            }
         )
         return self._adapter.post(
             url=api_path,
