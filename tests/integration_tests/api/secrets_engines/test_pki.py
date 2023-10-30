@@ -1,8 +1,9 @@
 import logging
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
-from parameterized import parameterized, param
+from parameterized import param, parameterized
 
+from hvac import exceptions
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
@@ -699,3 +700,98 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             first=bool(tidy_response),
             second=True,
         )
+
+    # Read issuer
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_read_issuer(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        self.assertIn(
+            member="issuer_name",
+            container=self.client.secrets.pki.read_issuer(
+                issuer_ref=pki_list_response["data"]["keys"][0],
+                mount_point=self.TEST_MOUNT_POINT,
+            )["data"].keys(),
+        )
+
+    # List issuer
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_list_issuers(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        self.assertIn("keys", pki_list_response["data"].keys())
+
+    # Update issuer
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_update_issuer(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        new_name = "new_issuer_name"
+
+        self.client.secrets.pki.update_issuer(
+            issuer_ref=pki_list_response["data"]["keys"][0],
+            mount_point=self.TEST_MOUNT_POINT,
+            extra_params={"issuer_name": new_name},
+        )
+
+        self.assertEqual(
+            first=self.client.secrets.pki.read_issuer(
+                issuer_ref=pki_list_response["data"]["keys"][0],
+                mount_point=self.TEST_MOUNT_POINT,
+            )["data"]["issuer_name"],
+            second=new_name,
+        )
+
+    # Revoke issuer
+    @skipIf(utils.vault_version_lt("1.12.0"), reason="Support added in version 1.12.0.")
+    def test_revoke_issuer(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        self.client.secrets.pki.revoke_issuer(
+            issuer_ref=pki_list_response["data"]["keys"][0],
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        self.assertEqual(
+            first=self.client.secrets.pki.read_issuer(
+                issuer_ref=pki_list_response["data"]["keys"][0],
+                mount_point=self.TEST_MOUNT_POINT,
+            )["data"]["revoked"],
+            second=True,
+        )
+
+    # Revoke issuer
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_delete_issuer(self):
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        self.client.secrets.pki.delete_issuer(
+            issuer_ref=pki_list_response["data"]["keys"][0],
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        with self.assertRaises(exceptions.InternalServerError):
+            self.client.secrets.pki.read_issuer(
+                issuer_ref=pki_list_response["data"]["keys"][0],
+                mount_point=self.TEST_MOUNT_POINT,
+            )

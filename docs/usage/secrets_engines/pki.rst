@@ -399,3 +399,74 @@ Tidy
         tidy_response = client.secrets.pki.tidy()
 
 
+Read Issuer
+-----------
+
+:py:meth:`hvac.api.secrets_engines.pki.read_issuer`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_list_response = client.secrets.pki.list_issuers()
+
+        issuer_read_response = client.secrets.pki.read_issuer(issuer_list_response["keys"][0])
+
+
+List Issuers
+------------
+
+:py:meth:`hvac.api.secrets_engines.pki.list_issuers`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_list_response = client.secrets.pki.list_issuers()
+
+
+Update Issuer
+-------------
+
+:py:meth:`hvac.api.secrets_engines.pki.update_issuer`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_list_response = client.secrets.pki.list_issuers()
+
+        issuer_update_response = client.secrets.pki.update_issuer(issuer_list_response["keys"][0],extra_params={'issuer_name':'my_new_issuer_name')
+
+
+Revoke Issuer
+-------------
+
+:py:meth:`hvac.api.secrets_engines.pki.revoke_issuer`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_list_response = client.secrets.pki.list_issuers()
+
+        issuer_update_response = client.secrets.pki.revoke_issuer(issuer_list_response["keys"][0])
+
+
+Delete Issuer
+-------------
+
+:py:meth:`hvac.api.secrets_engines.pki.delete_issuer`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_list_response = client.secrets.pki.list_issuers()
+
+        issuer_update_response = client.secrets.pki.delete_issuer(issuer_list_response["keys"][0])

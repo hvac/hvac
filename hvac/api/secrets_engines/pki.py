@@ -750,3 +750,131 @@ class Pki(VaultApiBase):
             url=api_path,
             json=params,
         )
+
+    def read_issuer(self, issuer_ref, mount_point=DEFAULT_MOUNT_POINT):
+        """Read issuer.
+
+        Get configuration of a issuer by its reference ID.
+
+        Supported methods:
+            GET: /{mount_point}/issuer/{issuer_ref}. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param issuer_ref: The reference ID of the issuer to get
+        :type issuer_ref: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/issuer/{issuer_ref}",
+            mount_point=mount_point,
+            issuer_ref=issuer_ref,
+        )
+
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_issuers(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List issuers.
+
+        Get list of all issuers for a given pki mount.
+
+        Supported methods:
+            LIST: /{mount_point}/issuers. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/issuers",
+            mount_point=mount_point,
+        )
+
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def update_issuer(
+        self, issuer_ref, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
+        """Update issuer.
+
+        Update a given issuer.
+
+        Supported methods:
+            POST: /{mount_point}/issuer/{issuer_ref}. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param issuer_ref: The reference ID of the issuer to update
+        :type issuer_ref: str | unicode
+        :param extra_params: Dictionary with extra parameters.
+        :type extra_params: dict
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        if extra_params is None:
+            extra_params = {}
+        params = extra_params
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/issuer/{issuer_ref}",
+            mount_point=mount_point,
+            issuer_ref=issuer_ref,
+        )
+
+        return self._adapter.post(url=api_path, json=params)
+
+    def revoke_issuer(self, issuer_ref, mount_point=DEFAULT_MOUNT_POINT):
+        """Revoke issuer.
+
+        Revokes a given issuer.
+
+        Supported methods:
+            POST: /{mount_point}/issuer/{issuer_ref}/revoke. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param issuer_ref: The reference ID of the issuer to revoke
+        :type issuer_ref: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/issuer/{issuer_ref}/revoke",
+            mount_point=mount_point,
+            issuer_ref=issuer_ref,
+        )
+
+        return self._adapter.post(
+            url=api_path,
+        )
+
+    def delete_issuer(self, issuer_ref, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete issuer.
+
+        Delete a given issuer. Deleting the default issuer will result in a warning
+
+        Supported methods:
+            DELETE: /{mount_point}/issuer/{issuer_ref}. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param issuer_ref: The reference ID of the issuer to delete
+        :type issuer_ref: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/issuer/{issuer_ref}",
+            mount_point=mount_point,
+            issuer_ref=issuer_ref,
+        )
+
+        return self._adapter.delete(
+            url=api_path,
+        )
