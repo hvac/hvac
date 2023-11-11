@@ -9,7 +9,12 @@ import typing as t
 
 import distutils.spawn
 from unittest import SkipTest
-from tests.utils import get_config_file_path, load_config_file, create_client, PortGetter
+from tests.utils import (
+    get_config_file_path,
+    load_config_file,
+    create_client,
+    PortGetter,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +24,9 @@ class TestProcessInfo:
     process: subprocess.Popen
     extra: t.List[str]
 
-    def __init__(self, name: str, process: subprocess.Popen, *extra: t.List[str]) -> None:
+    def __init__(
+        self, name: str, process: subprocess.Popen, *extra: t.List[str]
+    ) -> None:
         self.name = name
         self.process = process
         self.extra = extra
@@ -51,12 +58,23 @@ class ServerManager:
 
         self._processes: t.List[TestProcessInfo] = []
 
-    def patch_config_port(self, config_file: str, *, port_getter: PortGetter.PortGetterProtocol, insert: bool = False, address: str = None, additional_sections: t.Optional[t.Dict[str, t.Any]] = None, output_dir: str = "generated"):
+    def patch_config_port(
+        self,
+        config_file: str,
+        *,
+        port_getter: PortGetter.PortGetterProtocol,
+        insert: bool = False,
+        address: str = None,
+        additional_sections: t.Optional[t.Dict[str, t.Any]] = None,
+        output_dir: str = "generated",
+    ):
         worker = os.getenv("PYTEST_XDIST_WORKER", "solo")
         config_parent = os.path.dirname(config_file)
         if not os.path.isabs(output_dir):
             output_dir = os.path.join(config_parent, output_dir)
-        output_file = os.path.join(output_dir, os.path.basename(config_file).replace(".hcl", f"_{worker}.json"))
+        output_file = os.path.join(
+            output_dir, os.path.basename(config_file).replace(".hcl", f"_{worker}.json")
+        )
 
         with open(config_file, "r") as f:
             config: dict = hcl.load(f)
@@ -101,14 +119,21 @@ class ServerManager:
             }
         self.start_vault(consul_config=consul_config)
 
-    def start_vault(self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1): # port_getter: TCPPortGetter.PortGetterProtocol
+    def start_vault(
+        self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
+    ):  # port_getter: TCPPortGetter.PortGetterProtocol
         """Launch the vault server process and wait until its online and ready."""
         if distutils.spawn.find_executable("vault") is None:
             raise SkipTest("Vault executable not found")
 
         with PortGetter() as g:
             self.active_config_paths = [
-                self.patch_config_port(config_path, port_getter=g.get_port, insert=True, additional_sections=consul_config)
+                self.patch_config_port(
+                    config_path,
+                    port_getter=g.get_port,
+                    insert=True,
+                    additional_sections=consul_config,
+                )
                 for config_path in self.config_paths
             ]
 
@@ -133,7 +158,9 @@ class ServerManager:
             process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            self._processes.append(TestProcessInfo("vault", process, os.path.basename(config_path)))
+            self._processes.append(
+                TestProcessInfo("vault", process, os.path.basename(config_path))
+            )
             logger.debug(f"Spawned vault server with PID {process.pid}")
 
             attempts_left = 20
@@ -149,11 +176,19 @@ class ServerManager:
                         # stdout, stderr = process.communicate()
                         stdout, stderr = process.stdout, process.stderr
                         if attempt < max_attempts:
-                            logger.debug(f"Starting Vault failed (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout}\n{stderr}")
+                            logger.debug(
+                                f"Starting Vault failed (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout}\n{stderr}"
+                            )
                             time.sleep(delay_s)
-                            self.start_vault(attempt=(attempt+1), max_attempts=max_attempts, delay_s=delay_s)
+                            self.start_vault(
+                                attempt=(attempt + 1),
+                                max_attempts=max_attempts,
+                                delay_s=delay_s,
+                            )
                         else:
-                            raise Exception("Vault server terminated before becoming ready")
+                            raise Exception(
+                                "Vault server terminated before becoming ready"
+                            )
                     logger.debug("Waiting for Vault to start")
                     time.sleep(0.5)
                     attempts_left -= 1
@@ -163,9 +198,15 @@ class ServerManager:
                     process.kill()
                 stdout, stderr = process.communicate()
                 if attempt < max_attempts:
-                    logger.debug(f"Vault never became ready (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout}\n{stderr}")
+                    logger.debug(
+                        f"Vault never became ready (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout}\n{stderr}"
+                    )
                     time.sleep(delay_s)
-                    self.start_vault(attempt=(attempt+1), max_attempts=max_attempts, delay_s=delay_s)
+                    self.start_vault(
+                        attempt=(attempt + 1),
+                        max_attempts=max_attempts,
+                        delay_s=delay_s,
+                    )
                 else:
                     raise Exception(
                         "Unable to start Vault in background:\n{err}\n{stdout}\n{stderr}".format(
@@ -175,7 +216,9 @@ class ServerManager:
                         )
                     )
 
-    def start_consul(self) -> str: #, *, port_getter: TCPPortGetter.PortGetterProtocol):
+    def start_consul(
+        self,
+    ) -> str:  # , *, port_getter: TCPPortGetter.PortGetterProtocol):
         if distutils.spawn.find_executable("consul") is None:
             raise SkipTest("Consul executable not found")
 
@@ -206,14 +249,16 @@ class ServerManager:
                 # "-hcl=ports { grpc_tls = -1 }",
                 f"-bind={http_addr}",
                 f"-http-port={http_port}",
-                "-dns-port=-1"
+                "-dns-port=-1",
             ]
 
         logger.debug(f"Starting consul service with command: {command}")
         process = subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        self._processes.append(TestProcessInfo("consul", process, os.getenv("PYTEST_XDIST_WORKER", "solo")))
+        self._processes.append(
+            TestProcessInfo("consul", process, os.getenv("PYTEST_XDIST_WORKER", "solo"))
+        )
         attempts_left = 20
         last_exception = None
         while attempts_left > 0:
@@ -256,7 +301,9 @@ class ServerManager:
         """Stop the vault server process being managed by this class."""
         self.client = None
         for process_num, pinfo in reversed(list(enumerate(self._processes))):
-            logger.debug(f"Terminating {pinfo.name} server with PID {pinfo.process.pid}")
+            logger.debug(
+                f"Terminating {pinfo.name} server with PID {pinfo.process.pid}"
+            )
             if pinfo.process.poll() is None:
                 pinfo.process.kill()
 
@@ -288,7 +335,9 @@ class ServerManager:
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
         # assert not self.client.sys.is_initialized()
         if self.client.sys.is_initialized():
-            raise RuntimeError(f"Vault is already initialized: {self.get_active_vault_addresses()}")
+            raise RuntimeError(
+                f"Vault is already initialized: {self.get_active_vault_addresses()}"
+            )
 
         result = self.client.sys.initialize(secret_shares=5, secret_threshold=3)
 
@@ -321,7 +370,11 @@ class ServerManager:
 
     def get_active_vault_addresses(self):
         vault_addresses = []
-        config_paths = self.active_config_paths if self.active_config_paths is not None else self.config_paths
+        config_paths = (
+            self.active_config_paths
+            if self.active_config_paths is not None
+            else self.config_paths
+        )
         for config_path in config_paths:
             vault_addresses.append(self.get_config_vault_address(config_path))
         return vault_addresses

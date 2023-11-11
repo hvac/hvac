@@ -123,10 +123,18 @@ class PortGetter:
         self._default_addr = default_address
 
     class PortGetterProtocol(t.Protocol):
-        def __call__(self, *, address: t.Optional[str] = None, port: t.Optional[int] = None) -> int:
+        def __call__(
+            self, *, address: t.Optional[str] = None, port: t.Optional[int] = None
+        ) -> int:
             pass
 
-    def get_port(self, *, address: t.Optional[str] = None, port: t.Optional[int] = None, proto: socket.SocketKind = socket.SOCK_STREAM) -> t.Tuple[str, int]:
+    def get_port(
+        self,
+        *,
+        address: t.Optional[str] = None,
+        port: t.Optional[int] = None,
+        proto: socket.SocketKind = socket.SOCK_STREAM,
+    ) -> t.Tuple[str, int]:
         if not self._entered:
             raise RuntimeError("Enter the context manager before calling get_port.")
 
@@ -148,16 +156,18 @@ class PortGetter:
 
     def __enter__(self):
         if self._entered:
-            raise RuntimeError("This context manager can only be entered once at a time. Exit first or use a new instance.")
+            raise RuntimeError(
+                "This context manager can only be entered once at a time. Exit first or use a new instance."
+            )
         self._entered = True
         self._sockets.clear()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        for socket in self._sockets:
+        for sock in self._sockets:
             try:
-                socket.close()
-            except:
+                sock.close()
+            except Exception:
                 pass
         self._sockets.clear()
         self._entered = False

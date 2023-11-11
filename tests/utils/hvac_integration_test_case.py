@@ -8,6 +8,7 @@ from tests.utils.server_manager import ServerManager
 import distutils.spawn
 from hvac import Client
 
+
 class HvacIntegrationTestCase:
     """Base class intended to be used by all hvac integration test cases."""
 
@@ -50,7 +51,9 @@ class HvacIntegrationTestCase:
                 cls.manager.unseal()
             except Exception as e:
                 cls.manager.stop()
-                logging.debug(f"Failure in ServerManager (retries remaining: {cls.server_retry_count})\n{str(e)}")
+                logging.debug(
+                    f"Failure in ServerManager (retries remaining: {cls.server_retry_count})\n{str(e)}"
+                )
                 if cls.server_retry_count > 0:
                     cls.server_retry_count -= 1
                     time.sleep(cls.server_retry_delay_seconds)

@@ -41,7 +41,7 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             ),
         ]
     )
-    def test_configure(self, label): #, issuer):
+    def test_configure(self, label):  # , issuer):
         issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
@@ -68,7 +68,7 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             ),
         ]
     )
-    def test_read_config(self, label): #, issuer):
+    def test_read_config(self, label):  # , issuer):
         issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
@@ -102,7 +102,9 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_create_role(self, label, role_name, allowed_redirect_uris, user_claim):
-        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -133,7 +135,9 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_read_role(self, label, role_name, allowed_redirect_uris, user_claim):
-        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -163,7 +167,9 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_list_roles(self, label, role_name, allowed_redirect_uris, user_claim):
-        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -192,7 +198,9 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         ]
     )
     def test_delete_role(self, label, role_name, allowed_redirect_uris, user_claim):
-        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -224,9 +232,11 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
     )
     def test_jwt_login(
         self, label, role_name, allowed_redirect_uris, user_claim
-    ): # issuer
+    ):  # issuer
         issuer = self.client.url
-        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         if "%s/" % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="approle",
