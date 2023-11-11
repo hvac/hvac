@@ -7,6 +7,7 @@ import os
 import re
 import socket
 import subprocess
+import typing as t
 from distutils.spawn import find_executable
 from unittest import SkipTest, mock
 
@@ -79,7 +80,8 @@ def get_generate_root_otp():
     return test_otp
 
 
-def create_client(url="https://localhost:8200", use_env=False, **kwargs):
+# ="https://localhost:8200"
+def create_client(url, use_env=False, **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
     :param url: Vault address to configure the client with.
@@ -113,6 +115,54 @@ def create_client(url="https://localhost:8200", use_env=False, **kwargs):
     return client
 
 
+class PortGetter:
+    _entered: bool = False
+    _sockets: t.List[socket.socket] = []
+
+    def __init__(self, default_address: str = "localhost"):
+        self._default_addr = default_address
+
+    class PortGetterProtocol(t.Protocol):
+        def __call__(self, *, address: t.Optional[str] = None, port: t.Optional[int] = None) -> int:
+            pass
+
+    def get_port(self, *, address: t.Optional[str] = None, port: t.Optional[int] = None, proto: socket.SocketKind = socket.SOCK_STREAM) -> t.Tuple[str, int]:
+        if not self._entered:
+            raise RuntimeError("Enter the context manager before calling get_port.")
+
+        if address is None:
+            address = self._default_addr
+
+        s = socket.socket(socket.AF_INET, type=proto)
+
+        if port is not None:
+            try:
+                s.bind((address, port))
+            except OSError:
+                s.bind((address, 0))
+        else:
+            s.bind((address, 0))
+
+        self._sockets.append(s)
+        return s.getsockname()
+
+    def __enter__(self):
+        if self._entered:
+            raise RuntimeError("This context manager can only be entered once at a time. Exit first or use a new instance.")
+        self._entered = True
+        self._sockets.clear()
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        for socket in self._sockets:
+            try:
+                socket.close()
+            except:
+                pass
+        self._sockets.clear()
+        self._entered = False
+
+
 def get_free_port():
     """Small helper method used to discover an open port to use by mock API HTTP servers.
 
@@ -140,13 +190,13 @@ def load_config_file(filename):
     return test_data
 
 
-def get_config_file_path(filename):
+def get_config_file_path(*components):
     """Get the path to a config file under the "tests/config_files" directory.
 
      I.e., the directory containing self-signed certificates, configuration files, etc. that are used for various tests.
 
-    :param filename: Name of the test data file.
-    :type filename: str | unicode
+    :param components: One or more path components, the last of which is usually the name of the test data file.
+    :type components: str | unicode
     :return: The absolute path to the test data directory.
     :rtype: str | unicode
     """
@@ -154,10 +204,10 @@ def get_config_file_path(filename):
     relative_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), "..", "config_files"
     )
-    return os.path.join(os.path.abspath(relative_path), filename)
+    return os.path.join(os.path.abspath(relative_path), *components)
 
 
-def decode_generated_root_token(encoded_token, otp):
+def decode_generated_root_token(encoded_token, otp, url):
     """Decode a newly generated root token via Vault CLI.
 
     :param encoded_token: The token to decode.
@@ -177,7 +227,8 @@ def decode_generated_root_token(encoded_token, otp):
         [
             "generate-root",
             "-address",
-            "https://127.0.0.1:8200",
+            url,
+            # "https://127.0.0.1:8200",
             "-tls-skip-verify",
             "-decode",
             encoded_token,

@@ -37,7 +37,7 @@ class HvacIntegrationTestCase:
             ]
         cls.manager = ServerManager(
             config_paths=config_paths,
-            client=create_client(),
+            # client=create_client(),
             use_consul=cls.enable_vault_ha,
         )
         try:
@@ -56,7 +56,8 @@ class HvacIntegrationTestCase:
 
     def setUp(self):
         """Set the client attribute to an authenticated hvac Client instance."""
-        self.client = create_client(token=self.manager.root_token, use_env=self.use_env)
+        # self.client = create_client(token=self.manager.root_token, use_env=self.use_env)
+        self.client = self.manager.client
 
     def tearDown(self):
         """Ensure the hvac Client instance's root token is reset after any auth method tests that may have modified it.

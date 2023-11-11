@@ -37,11 +37,12 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                issuer="https://localhost:8200",
+                # issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_configure(self, label, issuer):
+    def test_configure(self, label): #, issuer):
+        issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
@@ -63,11 +64,12 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                issuer="https://localhost:8200",
+                # issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_read_config(self, label, issuer):
+    def test_read_config(self, label): #, issuer):
+        issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
@@ -94,12 +96,13 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/jwt-test/callback"],
+                allowed_redirect_uris=["{url}/jwt-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_create_role(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
         response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -124,12 +127,13 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/jwt-test/callback"],
+                allowed_redirect_uris=["{url}/jwt-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_read_role(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -153,12 +157,13 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/jwt-test/callback"],
+                allowed_redirect_uris=["{url}/jwt-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_list_roles(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -181,12 +186,13 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/jwt-test/callback"],
+                allowed_redirect_uris=["{url}/jwt-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_delete_role(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
         create_role_response = self.client.auth.jwt.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -209,16 +215,18 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "success",
-                issuer="https://localhost:8200",
+                # issuer="https://localhost:8200",
                 role_name="hvac-jwt",
-                allowed_redirect_uris=["https://localhost:8200/jwt-test/oidc/callback"],
+                allowed_redirect_uris=["{url}/jwt-test/oidc/callback"],
                 user_claim="sub",
             ),
         ]
     )
     def test_jwt_login(
-        self, label, issuer, role_name, allowed_redirect_uris, user_claim
-    ):
+        self, label, role_name, allowed_redirect_uris, user_claim
+    ): # issuer
+        issuer = self.client.url
+        allowed_redirect_uris = [uri.format(url=self.client.url) for uri in allowed_redirect_uris]
         if "%s/" % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="approle",
@@ -253,10 +261,10 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         logging.debug("create_named_key response: %s" % create_named_key_response)
 
         self.client.secrets.identity.configure_tokens_backend(
-            issuer="https://localhost:8200",
+            issuer=issuer,
         )
         response = self.client.auth.jwt.configure(
-            jwks_url="https://localhost:8200/v1/identity/oidc/.well-known/keys",
+            jwks_url=f"{issuer}/v1/identity/oidc/.well-known/keys",
             jwks_ca_pem="".join(
                 open(utils.get_config_file_path("server-cert.pem")).readlines()
             ),
