@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 import logging
 import re
+import time
 
 from tests.utils import get_config_file_path, create_client, is_enterprise
 from tests.utils.server_manager import ServerManager
 import distutils.spawn
-
+from hvac import Client
 
 class HvacIntegrationTestCase:
     """Base class intended to be used by all hvac integration test cases."""
 
-    manager = None
-    client = None
-    enable_vault_ha = False
-    use_env = False
+    manager: ServerManager = None
+    client: Client = None
+    enable_vault_ha: bool = False
+    use_env: bool = False
+    server_retry_count: int = 2  # num retries not total tries
+    server_retry_delay_seconds: float = 0.1
 
     @classmethod
     def setUpClass(cls):
@@ -40,13 +43,21 @@ class HvacIntegrationTestCase:
             # client=create_client(),
             use_consul=cls.enable_vault_ha,
         )
-        try:
-            cls.manager.start()
-            cls.manager.initialize()
-            cls.manager.unseal()
-        except Exception:
-            cls.manager.stop()
-            raise
+        while True:
+            try:
+                cls.manager.start()
+                cls.manager.initialize()
+                cls.manager.unseal()
+            except Exception as e:
+                cls.manager.stop()
+                logging.debug(f"Failure in ServerManager (retries remaining: {cls.server_retry_count})\n{str(e)}")
+                if cls.server_retry_count > 0:
+                    cls.server_retry_count -= 1
+                    time.sleep(cls.server_retry_delay_seconds)
+                else:
+                    raise
+            else:
+                break
 
     @classmethod
     def tearDownClass(cls):
