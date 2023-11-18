@@ -11,14 +11,15 @@ from tests.utils.server_manager import ServerManager
 
 
 def doctest_global_setup():
-    client = test_utils.create_client()
     manager = ServerManager(
         config_paths=[test_utils.get_config_file_path("vault-doctest.hcl")],
-        client=client,
+        patch_config=False,
     )
     manager.start()
     manager.initialize()
     manager.unseal()
+
+    client = manager.client
 
     mocker = Mocker(real_http=True)
     mocker.start()
@@ -27,7 +28,7 @@ def doctest_global_setup():
         f"ldap/login/{MockLdapServer.ldap_user_name}",
     ]
     for auth_method_path in auth_method_paths:
-        mock_url = f"https://127.0.0.1:8200/v1/auth/{auth_method_path}"
+        mock_url = f"{client.url}/v1/auth/{auth_method_path}"
         mock_response = {
             "auth": {
                 "client_token": manager.root_token,

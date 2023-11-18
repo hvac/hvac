@@ -16,6 +16,8 @@ from tests.utils import (
     PortGetter,
 )
 
+from hvac.v1 import Client
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,7 +41,19 @@ class TestProcessInfo:
 class ServerManager:
     """Runs vault process running with test configuration and associates a hvac Client instance with this process."""
 
-    def __init__(self, config_paths, client=None, use_consul=False):
+    active_config_paths: t.Optional[t.List[str]]
+    config_paths: t.List[str]
+    client: t.Optional[Client]
+    use_consul: bool
+    patch_config: bool
+
+    def __init__(
+        self,
+        config_paths: t.List[str],
+        client: Client = None,
+        use_consul: bool = False,
+        patch_config: bool = True,
+    ):
         """Set up class attributes for managing a vault server process.
 
         :param config_paths: Full path to the Vault config to use when launching `vault server`.
@@ -52,6 +66,7 @@ class ServerManager:
         self.config_paths = config_paths
         self.client = client
         self.use_consul = use_consul
+        self.patch_config = patch_config
 
         self.keys = None
         self.root_token = None
@@ -134,6 +149,8 @@ class ServerManager:
                     insert=True,
                     additional_sections=consul_config,
                 )
+                if self.patch_config
+                else config_path
                 for config_path in self.config_paths
             ]
 
@@ -177,7 +194,7 @@ class ServerManager:
                         stdout, stderr = process.stdout, process.stderr
                         if attempt < max_attempts:
                             logger.debug(
-                                f"Starting Vault failed (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout}\n{stderr}"
+                                f"Starting Vault failed (attempt {attempt} of {max_attempts}):\n{last_exception}\n{stdout.readlines()}\n{stderr.readlines()}"
                             )
                             time.sleep(delay_s)
                             self.start_vault(
