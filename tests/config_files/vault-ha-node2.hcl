@@ -10,7 +10,7 @@ disable_mlock = true
 default_lease_ttl = "768h"
 max_lease_ttl = "768h"
 
-// storage "consul" {
-//   address = "127.0.0.1:8500"
-//   path    = "vault_123/"
-// }
+storage "consul" {
+  address = "127.0.0.1:8500"
+  path    = "vault_123/"
+}
