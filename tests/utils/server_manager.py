@@ -120,7 +120,6 @@ class ServerManager:
         return output_file
 
     def start(self):
-        # with TCPPortGetter() as g:
         consul_config = None
         if self.use_consul:
             consul_addr = self.start_consul()
@@ -136,7 +135,7 @@ class ServerManager:
 
     def start_vault(
         self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
-    ):  # port_getter: TCPPortGetter.PortGetterProtocol
+    ):
         """Launch the vault server process and wait until its online and ready."""
         if distutils.spawn.find_executable("vault") is None:
             raise SkipTest("Vault executable not found")
@@ -161,15 +160,6 @@ class ServerManager:
             if self.client is None:
                 self.client = this_client
 
-            # If a vault server is already running then we won't be able to start another one.
-            # If we can't start our vault server then we don't know what we're testing against.
-            # try:
-            #     this_client.sys.is_initialized()
-            # except Exception:
-            #     pass
-            # else:
-            #     raise Exception("Vault server already running")
-
             command = ["vault", "server", "-config=" + config_path]
             logger.debug(f"Starting vault server with command: {command}")
             process = subprocess.Popen(
@@ -190,7 +180,6 @@ class ServerManager:
                     break
                 except Exception as ex:
                     if process.poll() is not None:
-                        # stdout, stderr = process.communicate()
                         stdout, stderr = process.stdout, process.stderr
                         if attempt < max_attempts:
                             logger.debug(
@@ -235,16 +224,9 @@ class ServerManager:
 
     def start_consul(
         self,
-    ) -> str:  # , *, port_getter: TCPPortGetter.PortGetterProtocol):
+    ) -> str:
         if distutils.spawn.find_executable("consul") is None:
             raise SkipTest("Consul executable not found")
-
-        # try:
-        #     requests.get("http://127.0.0.1:8500/v1/catalog/nodes")
-        # except Exception:
-        #     pass
-        # else:
-        #     raise Exception("Consul service already running")
 
         with PortGetter() as g:
             http_addr, http_port = g.get_port()
@@ -262,8 +244,6 @@ class ServerManager:
                 f"-server-port={server_port}",
                 "-grpc-port=-1",
                 "-grpc-tls-port=-1",
-                # "-hcl=tls { grpc { use_auto_cert = false } }",
-                # "-hcl=ports { grpc_tls = -1 }",
                 f"-bind={http_addr}",
                 f"-http-port={http_port}",
                 "-dns-port=-1",
@@ -335,13 +315,11 @@ class ServerManager:
                         os.mkdir(log_dir)
                     except FileExistsError:
                         pass
-                    # stderr_filename = f"vault{process_num}_stderr.log"
                     stderr_filename = pinfo.log_name(process_num, "stderr")
                     stderr_path = get_config_file_path(log_dir, stderr_filename)
                     with open(stderr_path, "w") as f:
                         logger.debug(stderr_lines.decode())
                         f.writelines(stderr_lines.decode())
-                    # stdout_filename = f"vault{process_num}_stdout.log"
                     stdout_filename = pinfo.log_name(process_num, "stdout")
                     stdout_path = get_config_file_path(log_dir, stdout_filename)
                     with open(get_config_file_path(stdout_path), "w") as f:
@@ -350,7 +328,6 @@ class ServerManager:
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
-        # assert not self.client.sys.is_initialized()
         if self.client.sys.is_initialized():
             raise RuntimeError(
                 f"Vault is already initialized: {self.get_active_vault_addresses()}"
@@ -398,9 +375,7 @@ class ServerManager:
 
     def unseal(self):
         """Unseal the vault server process."""
-        assert self.client.sys.is_initialized()
         vault_addresses = self.get_active_vault_addresses()
         for vault_address in vault_addresses:
             client = create_client(url=vault_address)
-            assert client.sys.is_initialized(), f"'{client.url}' == '{self.client.url}'"
             client.sys.submit_unseal_keys(self.keys)

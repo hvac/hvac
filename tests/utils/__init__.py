@@ -80,7 +80,6 @@ def get_generate_root_otp():
     return test_otp
 
 
-# ="https://localhost:8200"
 def create_client(url, use_env=False, **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
@@ -174,6 +173,7 @@ class PortGetter:
 
 
 def get_free_port():
+    # TODO: deprecated: remove in favor of port getter class once LDAP mock is refactored
     """Small helper method used to discover an open port to use by mock API HTTP servers.
 
     :return: An available port number.
@@ -203,7 +203,7 @@ def load_config_file(filename):
 def get_config_file_path(*components):
     """Get the path to a config file under the "tests/config_files" directory.
 
-     I.e., the directory containing self-signed certificates, configuration files, etc. that are used for various tests.
+    I.e., the directory containing self-signed certificates, configuration files, etc. that are used for various tests.
 
     :param components: One or more path components, the last of which is usually the name of the test data file.
     :type components: str | unicode
@@ -238,7 +238,6 @@ def decode_generated_root_token(encoded_token, otp, url):
             "generate-root",
             "-address",
             url,
-            # "https://127.0.0.1:8200",
             "-tls-skip-verify",
             "-decode",
             encoded_token,

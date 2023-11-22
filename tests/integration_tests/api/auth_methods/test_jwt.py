@@ -37,11 +37,10 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                # issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_configure(self, label):  # , issuer):
+    def test_configure(self, label):
         issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
@@ -64,11 +63,10 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                # issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_read_config(self, label):  # , issuer):
+    def test_read_config(self, label):
         issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
@@ -223,16 +221,13 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "success",
-                # issuer="https://localhost:8200",
                 role_name="hvac-jwt",
                 allowed_redirect_uris=["{url}/jwt-test/oidc/callback"],
                 user_claim="sub",
             ),
         ]
     )
-    def test_jwt_login(
-        self, label, role_name, allowed_redirect_uris, user_claim
-    ):  # issuer
+    def test_jwt_login(self, label, role_name, allowed_redirect_uris, user_claim):
         issuer = self.client.url
         allowed_redirect_uris = [
             uri.format(url=self.client.url) for uri in allowed_redirect_uris
