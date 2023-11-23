@@ -128,7 +128,7 @@ class PortGetter:
             address: t.Optional[str] = None,
             port: t.Optional[int] = None,
             proto: socket.SocketKind = socket.SOCK_STREAM,
-        ) -> int:
+        ) -> t.Tuple[str, int]:
             pass
 
     def get_port(
