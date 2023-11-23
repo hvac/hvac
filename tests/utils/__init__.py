@@ -123,7 +123,11 @@ class PortGetter:
 
     class PortGetterProtocol(t.Protocol):
         def __call__(
-            self, *, address: t.Optional[str] = None, port: t.Optional[int] = None
+            self,
+            *,
+            address: t.Optional[str] = None,
+            port: t.Optional[int] = None,
+            proto: socket.SocketKind = socket.SOCK_STREAM,
         ) -> int:
             pass
 
