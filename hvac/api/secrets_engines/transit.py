@@ -316,6 +316,7 @@ class Transit(VaultApiBase):
         name,
         plaintext=None,
         context=None,
+        associated_data=None,
         key_version=None,
         nonce=None,
         batch_input=None,
@@ -340,6 +341,8 @@ class Transit(VaultApiBase):
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled for this key.
         :type context: str | unicode
+        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also be authenticated with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
+        :type associated_data: str | unicode
         :param key_version: Specifies the version of the key to use for encryption. If not set, uses the latest version.
             Must be greater than or equal to the key's min_encryption_version, if set.
         :type key_version: int
@@ -376,6 +379,7 @@ class Transit(VaultApiBase):
             utils.remove_nones(
                 {
                     "context": context,
+                    "associated_data": associated_data,
                     "key_version": key_version,
                     "nonce": nonce,
                     "batch_input": batch_input,
@@ -399,6 +403,7 @@ class Transit(VaultApiBase):
         name,
         ciphertext=None,
         context=None,
+        associated_data=None,
         nonce=None,
         batch_input=None,
         mount_point=DEFAULT_MOUNT_POINT,
@@ -415,6 +420,8 @@ class Transit(VaultApiBase):
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled.
         :type context: str | unicode
+        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also be authenticated with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
+        :type associated_data: str | unicode
         :param nonce: Specifies a base64 encoded nonce value used during encryption. Must be provided if convergent
             encryption is enabled for this key and the key was generated with Vault 0.6.1. Not required for keys created
             in 0.6.2+.
@@ -437,6 +444,7 @@ class Transit(VaultApiBase):
             utils.remove_nones(
                 {
                     "context": context,
+                    "associated_data": associated_data,
                     "nonce": nonce,
                     "batch_input": batch_input,
                 }
