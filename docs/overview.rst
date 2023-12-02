@@ -109,13 +109,13 @@ Read and write to secrets engines
 KV Secrets Engine - Version 2
 """""""""""""""""""""""""""""
 
+.. testsetup:: kvv2
+
+    client = manager.client
 
 .. doctest:: kvv2
    :skipif: client.sys.retrieve_mount_option('secret', 'version', '1') != '2'
 
-    >>> # Retrieve an authenticated hvac.Client() instance
-    >>> client = test_utils.create_client()
-    >>>
     >>> # Write a k/v pair under path: secret/foo
     >>> create_response = client.secrets.kv.v2.create_or_update_secret(
     ...     path='foo',

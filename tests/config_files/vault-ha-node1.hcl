@@ -1,5 +1,5 @@
 listener "tcp" {
-  address = "127.0.0.1:8200"
+  // address = "127.0.0.1:8200"
   tls_cert_file = "tests/config_files/server-cert.pem"
   tls_key_file  = "tests/config_files/server-key.pem"
 }
@@ -11,5 +11,5 @@ max_lease_ttl = "768h"
 
 storage "consul" {
   address = "127.0.0.1:8500"
-  path    = "vault"
+  path    = "vault_123/"
 }
