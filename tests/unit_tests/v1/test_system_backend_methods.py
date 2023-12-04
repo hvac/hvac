@@ -1,7 +1,7 @@
 import pytest
 
 from pytest_mock import MockFixture
-from mock import MagicMock
+from unittest.mock import MagicMock
 from unittest import TestCase
 import requests_mock
 from parameterized import parameterized
