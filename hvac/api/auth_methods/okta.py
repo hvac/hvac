@@ -297,7 +297,12 @@ class Okta(VaultApiBase):
         )
 
     def login(
-        self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT, totp=None
+        self,
+        username,
+        password,
+        use_token=True,
+        mount_point=DEFAULT_MOUNT_POINT,
+        totp=None,
     ):
         """Login with the username and password.
 
@@ -322,7 +327,7 @@ class Okta(VaultApiBase):
             "username": username,
             "password": password,
         }
-        if (totp is not None):
+        if totp is not None:
             params["totp"] = totp
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/login/{username}",
