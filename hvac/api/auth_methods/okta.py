@@ -323,7 +323,7 @@ class Okta(VaultApiBase):
             "password": password,
         }
         if (totp is not None):
-            params.update({"totp": totp})
+            params["totp"] = totp
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/login/{username}",
             mount_point=mount_point,
