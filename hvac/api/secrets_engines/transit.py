@@ -316,13 +316,13 @@ class Transit(VaultApiBase):
         name,
         plaintext=None,
         context=None,
-        associated_data=None,
         key_version=None,
         nonce=None,
         batch_input=None,
         type=None,
         convergent_encryption=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        associated_data=None,
     ):
         """Encrypt the provided plaintext using the named key.
 
@@ -403,10 +403,10 @@ class Transit(VaultApiBase):
         name,
         ciphertext=None,
         context=None,
-        associated_data=None,
         nonce=None,
         batch_input=None,
         mount_point=DEFAULT_MOUNT_POINT,
+        associated_data=None,
     ):
         """Decrypt the provided ciphertext using the named key.
 
