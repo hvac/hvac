@@ -74,6 +74,10 @@ greenlet = "^3.0.0"
 jwcrypto = "^1.5.0"
 typos = "^1.16.11"
 pytest-mock = "^3.11.1"
+pytest-xdist = "^3.3.1"
+
+[tool.pytest.ini_options]
+addopts = "-n auto --dist worksteal"
 
 [tool.typos.default.extend-words]
 Hashi = "Hashi"

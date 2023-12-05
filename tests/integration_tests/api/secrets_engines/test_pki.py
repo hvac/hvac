@@ -774,9 +774,9 @@ class TestPki(HvacIntegrationTestCase, TestCase):
             mount_point=self.TEST_MOUNT_POINT,
         )
 
-        self.assertEqual(
-            first=pki_update_response["data"]["usage"],
-            second=pki_read_response["data"]["usage"],
+        self.assertCountEqual(
+            first=pki_update_response["data"]["usage"].split(","),
+            second=pki_read_response["data"]["usage"].split(","),
         )
 
     # Revoke issuer
