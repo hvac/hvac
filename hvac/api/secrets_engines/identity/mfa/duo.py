@@ -4,6 +4,11 @@ from hvac.constants.identity import DEFAULT_MOUNT_POINT
 
 
 class Duo(MfaMethodMixin):
+    """Identity MFA Duo MFA Method (API).
+
+    Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity/mfa/duo
+    """
+
     method_type = "duo"
 
     def create(

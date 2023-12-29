@@ -8,6 +8,7 @@ __all__ = ("LoginEnforcement",)
 
 class LoginEnforcement(VaultApiBase):
     """Identity MFA Login Enforcement Methods (API).
+
     Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity/mfa/login-enforcement
     """
 

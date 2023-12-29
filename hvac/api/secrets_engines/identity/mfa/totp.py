@@ -4,6 +4,11 @@ from hvac.constants.identity import DEFAULT_MOUNT_POINT
 
 
 class TOTP(MfaMethodMixin):
+    """Identity MFA TOTP MFA Method (API).
+
+    Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity/mfa/totp
+    """
+
     method_type = "totp"
 
     def create(

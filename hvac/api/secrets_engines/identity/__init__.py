@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class Identity(VaultApiCategory):
     """Identity Secrets Engine (API).
 
-    Reference: https://www.vaultproject.io/api/secret/identity/entity.html
+    Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity
     """
 
     implemented_classes = [

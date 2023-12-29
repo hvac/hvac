@@ -4,6 +4,11 @@ from hvac.constants.identity import DEFAULT_MOUNT_POINT
 
 
 class PingID(MfaMethodMixin):
+    """Identity MFA PingID MFA Method (API).
+
+    Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity/mfa/pingid
+    """
+
     method_type = "pingid"
 
     def create(

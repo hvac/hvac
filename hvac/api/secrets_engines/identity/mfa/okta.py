@@ -4,6 +4,11 @@ from hvac.constants.identity import DEFAULT_MOUNT_POINT
 
 
 class Okta(MfaMethodMixin):
+    """Identity MFA Okta MFA Method (API).
+
+    Reference: https://developer.hashicorp.com/vault/api-docs/secret/identity/mfa/okta
+    """
+
     method_type = "okta"
 
     def create(

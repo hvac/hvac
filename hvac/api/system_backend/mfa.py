@@ -4,6 +4,9 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 
 class MFA(SystemBackendMixin):
+    """Identity MFA PingID MFA Method (API).
+    Reference: https://developer.hashicorp.com/vault/api-docs/system/mfa/validate
+    """
 
     def validate_mfa(self, mfa_request_id, mfa_payload, use_token=True):
         """Validate a login request which is subject to MFA validation.
