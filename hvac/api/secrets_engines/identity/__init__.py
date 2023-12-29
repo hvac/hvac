@@ -3,17 +3,30 @@
 import logging
 
 from hvac import exceptions, utils
-from hvac.api.vault_api_base import VaultApiBase
+from hvac.api.secrets_engines.identity.mfa import MFA
+from hvac.api.vault_api_category import VaultApiCategory
 from hvac.constants.identity import ALLOWED_GROUP_TYPES, DEFAULT_MOUNT_POINT
 
 logger = logging.getLogger(__name__)
 
 
-class Identity(VaultApiBase):
+class Identity(VaultApiCategory):
     """Identity Secrets Engine (API).
 
     Reference: https://www.vaultproject.io/api/secret/identity/entity.html
     """
+
+    implemented_classes = [
+        MFA,
+    ]
+    unimplemented_classes = [
+        # TODO: move methods from this class into these:
+        "Entity",
+        "EntityAlias",
+        "Group",
+        "GroupAlias",
+        "OIDC",
+    ]
 
     def create_or_update_entity(
         self,
