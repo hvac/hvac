@@ -1,6 +1,6 @@
 # Requirements.txt file for Read the Docs
 autodocsumm==0.1.13
-m2r2==0.2.5
+m2r2>=0.3.3,<0.4
 mistune==0.8.4
 python-ldap-test==0.3.1
 requests-mock==1.9.3
