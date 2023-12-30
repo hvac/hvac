@@ -88,7 +88,6 @@ jobs:
         cache: poetry
 
     - name: Install dependencies
-      if: steps.python.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root --with dev,docs
 
     - name: Install library
