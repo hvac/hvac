@@ -87,7 +87,7 @@ doctest_global_setup = """
 import os
 from pprint import pprint, pformat
 
-import mock
+import unittest.mock
 
 import hvac
 from tests import utils as test_utils
