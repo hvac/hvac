@@ -13,6 +13,7 @@ from hvac.api.system_backend.mount import Mount
 from hvac.api.system_backend.namespace import Namespace
 from hvac.api.system_backend.policies import Policies
 from hvac.api.system_backend.policy import Policy
+from hvac.api.system_backend.quota import Quota
 from hvac.api.system_backend.raft import Raft
 from hvac.api.system_backend.seal import Seal
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
@@ -30,8 +31,9 @@ __all__ = (
     "Lease",
     "Mount",
     "Namespace",
-    "Policy",
     "Policies",
+    "Policy",
+    "Quota",
     "Raft",
     "Seal",
     "SystemBackend",
@@ -55,8 +57,9 @@ class SystemBackend(
     Lease,
     Mount,
     Namespace,
-    Policy,
     Policies,
+    Policy,
+    Quota,
     Raft,
     Seal,
     Wrapping,
@@ -72,8 +75,9 @@ class SystemBackend(
         Lease,
         Mount,
         Namespace,
-        Policy,
         Policies,
+        Policy,
+        Quota,
         Raft,
         Seal,
         Wrapping,

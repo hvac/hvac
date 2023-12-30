@@ -152,22 +152,22 @@ class IntegrationTest(HvacIntegrationTestCase, TestCase):
         self.client.delete("secret/foo")
 
     def test_missing_token(self):
-        client = utils.create_client()
+        client = utils.create_client(url=self.client.url)
         assert not client.is_authenticated()
 
     def test_invalid_token(self):
-        client = utils.create_client(token="not-a-real-token")
+        client = utils.create_client(url=self.client.url, token="not-a-real-token")
         assert not client.is_authenticated()
 
     def test_illegal_token(self):
-        client = utils.create_client(token="token-with-new-line\n")
+        client = utils.create_client(url=self.client.url, token="token-with-new-line\n")
         try:
             client.is_authenticated()
         except ValueError as e:
             assert "Invalid header value" in str(e)
 
     def test_broken_token(self):
-        client = utils.create_client(token="\x1b")
+        client = utils.create_client(url=self.client.url, token="\x1b")
         try:
             client.is_authenticated()
         except exceptions.InvalidRequest as e:
