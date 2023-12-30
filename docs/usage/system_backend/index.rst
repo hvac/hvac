@@ -14,6 +14,7 @@ System Backend
    mount
    namespace
    policy
+   quota
    raft
    seal
    wrapping
