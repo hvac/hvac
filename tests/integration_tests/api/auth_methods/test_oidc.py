@@ -41,11 +41,11 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_configure(self, label, issuer):
+    def test_configure(self, label):
+        issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
@@ -67,11 +67,11 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "configure using vault identity OIDC",
-                issuer="https://localhost:8200",
             ),
         ]
     )
-    def test_read_config(self, label, issuer):
+    def test_read_config(self, label):
+        issuer = self.client.url
         oidc_discovery_url = f"{issuer}/v1/identity/oidc"
         self.client.secrets.identity.configure_tokens_backend(
             issuer=issuer,
@@ -98,12 +98,15 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/oidc-test/callback"],
+                allowed_redirect_uris=["{url}/oidc-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_read_role(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.oidc.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -126,12 +129,15 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/oidc-test/callback"],
+                allowed_redirect_uris=["{url}/oidc-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_list_roles(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.oidc.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -153,12 +159,15 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/oidc-test/callback"],
+                allowed_redirect_uris=["{url}/oidc-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_delete_role(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         create_role_response = self.client.auth.oidc.create_role(
             name=role_name,
             allowed_redirect_uris=allowed_redirect_uris,
@@ -180,16 +189,19 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
         [
             param(
                 "success",
-                issuer="https://localhost:8200",
                 role_name="hvac",
-                allowed_redirect_uris=["https://localhost:8200/oidc-test/callback"],
+                allowed_redirect_uris=["{url}/oidc-test/callback"],
                 user_claim="https://vault/user",
             ),
         ]
     )
     def test_oidc_authorization_url_request(
-        self, label, issuer, role_name, allowed_redirect_uris, user_claim
+        self, label, role_name, allowed_redirect_uris, user_claim
     ):
+        issuer = self.client.url
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         if "%s/" % self.TEST_APPROLE_PATH not in self.client.sys.list_auth_methods():
             self.client.sys.enable_auth_method(
                 method_type="approle",
@@ -268,14 +280,15 @@ class TestOIDC(HvacIntegrationTestCase, TestCase):
             param(
                 "success",
                 role_name="hvac-oidc",
-                allowed_redirect_uris=[
-                    "https://localhost:8200/v1/auth/oidc-test/oidc/callback"
-                ],
+                allowed_redirect_uris=["{url}/v1/auth/oidc-test/oidc/callback"],
                 user_claim="sub",
             ),
         ]
     )
     def test_oidc_callback(self, label, role_name, allowed_redirect_uris, user_claim):
+        allowed_redirect_uris = [
+            uri.format(url=self.client.url) for uri in allowed_redirect_uris
+        ]
         self.oidc_server = MockOauthProviderServerThread()
         self.oidc_server.start()
         oidc_details = create_user_session_and_client(

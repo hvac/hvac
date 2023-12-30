@@ -88,8 +88,7 @@ jobs:
         cache: poetry
 
     - name: Install dependencies
-      if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root --with dev
+      run: poetry install --no-interaction --no-root --with dev,docs
 
     - name: Install library
       run: poetry install --no-interaction
@@ -161,6 +160,7 @@ jobs:
     - name: pytest tests/unit_tests
       run: |
         poetry run pytest \
+          -rsxfE \
           --cov=hvac \
           --cov-report=xml:reports/coverage_units_py${{ matrix.python-version }}.xml \
           tests/unit_tests
@@ -242,6 +242,7 @@ jobs:
         COVFILE: coverage_integration_py${{ matrix.python-version }}_${{ matrix.vault-version }}.xml
       run: |
         poetry run pytest \
+          -rsxfE \
           --cov=hvac \
           --cov-report=xml:reports/${COVFILE//[^A-Za-z0-9\-_\.]/_} \
           tests/integration_tests

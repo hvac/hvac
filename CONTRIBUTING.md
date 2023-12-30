@@ -10,7 +10,7 @@ HVAC uses poetry to manage dependencies, the virtual environment, and versioning
 git clone https://github.com/hvac/hvac.git
 cd hvac
 
-poetry install --with dev
+poetry install --with dev,docs
 
 # Run the following command on Linux
 source $(poetry env info --path)/bin/activate
@@ -55,10 +55,16 @@ Should new dependencies need to be added, they can be simply added with Poetry. 
 poetry add {package_name}
 ```
 
-If the dependency is only needed for development, add it to the `dev` group like so:
+If the dependency is only needed for development (including doctests), add it to the `dev` group like so:
 
 ```
 poetry add --group dev {dev_package_name}
+```
+
+If the dependency is only needed for building docs (without doctest), add it to the `docs` group:
+
+```
+poetry add --group docs {docs_package_name}
 ```
 
 ### Adding New Documentation Files
@@ -70,6 +76,12 @@ When adding documentation for an entirely new feature / class, it often makes se
 3. Verify the new file is being included and rendered as expected by running `make html` from the `docs/` subdirectory. You can then view the rendered HTML documentation, in a browser or otherwise, by opening `docs/_build/html/index.html`.
 
 ### Testing Docs
+
+Ensure that both the `dev` and `docs` dependency groups are installed.
+
+```
+poetry install --with dev,docs
+```
 
 ```
 # Run the following command on Linux

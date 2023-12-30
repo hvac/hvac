@@ -327,6 +327,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         new_root_token = utils.decode_generated_root_token(
             encoded_token=last_generate_root_response["encoded_root_token"],
             otp=test_otp,
+            url=self.client.url,
         )
         logging.debug("new_root_token: %s" % new_root_token)
         token_lookup_resp = self.client.auth.token.lookup(token=new_root_token)
