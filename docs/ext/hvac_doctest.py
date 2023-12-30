@@ -25,7 +25,7 @@ from packaging.version import Version
 import sphinx
 from sphinx.builders import Builder
 from sphinx.locale import __
-from sphinx.util import force_decode, logging
+from sphinx.util import logging
 from sphinx.util.console import bold  # type: ignore
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import set_source_info
@@ -368,8 +368,6 @@ class DocTestBuilder(Builder):
             logger.warning(text)
         else:
             logger.info(text, nonl=True)
-        if isinstance(text, bytes):
-            text = force_decode(text, None)
         self.outfile.write(text)
 
     def get_target_uri(self, docname, typ=None):
