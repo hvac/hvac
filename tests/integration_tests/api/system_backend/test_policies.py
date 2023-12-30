@@ -2,6 +2,7 @@ import json
 import logging
 from unittest import TestCase, skipIf
 
+from parameterized import parameterized, param
 from hvac import exceptions
 from tests import utils
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
@@ -35,7 +36,19 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             second=self.client.sys.read_acl_policy(policy_dict["name"])["data"],
         )
 
-    def test_create_acl_policy_dict(self):
+    @parameterized.expand(
+        [
+            param(
+                "pretty",
+                pretty_print=True,
+            ),
+            param(
+                "compact",
+                pretty_print=False,
+            ),
+        ]
+    )
+    def test_create_acl_policy_dict(self, label, pretty_print):
         dict_policy = {
             "path": {
                 "sys/health": {
@@ -50,13 +63,14 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
 
         # Create policy
         create_or_update_policy_response = self.client.sys.create_or_update_acl_policy(
-            name=policy_dict["name"], policy=dict_policy
+            name=policy_dict["name"], policy=dict_policy, pretty_print=pretty_print
         )
         logging.debug(
             "create_or_update_policy_response: %s" % create_or_update_policy_response
         )
 
         policy_read_response = self.client.sys.read_acl_policy(policy_dict["name"])
+        json_line_count = len(policy_read_response["data"]["policy"].splitlines())
 
         self.assertEqual(
             first=policy_dict["name"],
@@ -67,6 +81,17 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             d1=json.loads(policy_read_response["data"]["policy"]),
             d2=policy_dict["policy"],
         )
+
+        if pretty_print:
+            self.assertGreater(
+                a=json_line_count,
+                b=1,
+            )
+        else:
+            self.assertEqual(
+                first=json_line_count,
+                second=1,
+            )
 
     def test_update_acl_policy(self):
         policy_dict = {
