@@ -88,7 +88,7 @@ jobs:
         cache: poetry
 
     - name: Install dependencies
-      run: poetry install --no-interaction --no-root --with dev
+      run: poetry install --no-interaction --no-root --with dev,docs
 
     - name: Install library
       run: poetry install --no-interaction
