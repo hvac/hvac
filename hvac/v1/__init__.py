@@ -348,7 +348,7 @@ class Client:
         self,
         path: str,
         *,
-        data: t.Dict[str, t.Any] = None,
+        data: t.Optional[t.Dict[str, t.Any]] = None,
         wrap_ttl: t.Optional[str] = None,
     ):
         """Write data to a path. Similar to write() without restrictions on data keys.
