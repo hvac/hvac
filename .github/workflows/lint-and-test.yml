@@ -115,15 +115,7 @@ jobs:
     - name: Sphinx - doctest Build
       working-directory: ./docs
       run: |
-        poetry run make html
-
-    - name: Upload rendered docsite
-      uses: actions/upload-artifact@v4
-      with:
-        name: docs
-        path: docs/_build/html/
-        if-no-files-found: error
-        retention-days: 15
+        poetry run make doctest
 
   unit-tests:
     name: Unit Tests
