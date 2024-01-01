@@ -6,11 +6,11 @@ Support for HTTP/2 onward with Niquests
    :depth: 1
 
 
-While unofficial, hvac can speak HTTP/2, and HTTP/3 using the alternative HTTP backend Niquests.
+While unofficial, ``hvac`` can speak HTTP/2, and HTTP/3 using the alternative HTTP backend Niquests.
 It is made possible thanks to the library backward compatibility with Requests. We can explore
 a few possible integrations.
 
-.. warning:: The samples presented in this section is not covered by hvac maintainers. Any issue is to be addressed to Niquests maintainers.
+.. warning:: The samples presented in this section is not covered by ``hvac`` maintainers. Any issue is to be addressed to Niquests maintainers.
 
 Session
 *******
@@ -35,7 +35,7 @@ Basically, the fastest way to upgrade the client is:
 Security
 ********
 
-hvac handles critical operations that can bring undesired eyes into your HTTP interactions.
+``hvac`` handles critical operations that can bring undesired eyes into your HTTP interactions.
 Fortunately, Niquests enforce some best security practices like OCSP certificate validation and
 support encrypted DNS protocols, like but not limited to DNS-over-HTTPS or DNS-over-QUIC.
 
@@ -60,7 +60,7 @@ Multiplexing
 ************
 
 You may leverage a multiplexed connection thanks to Niquests native capabilities.
-Unfortunately hvac does access the response immediately after receiving it, thus preventing non-blocking IO.
+Unfortunately ``hvac`` does access the response immediately after receiving it, thus preventing non-blocking IO.
 
 To be able to make concurrent requests using one connection, you will have to override the default adapter.
 
@@ -187,7 +187,7 @@ To be able to make concurrent requests using one connection, you will have to ov
 
 .. note:: To know more about multiplexing, visit https://niquests.readthedocs.io/en/latest/user/quickstart.html#multiplexed-connection
 
-Then you would use the newly constructed adapter into your hvac client like so:
+Then you would use the newly constructed adapter into your ``hvac`` client like so:
 
 .. code:: python
 
