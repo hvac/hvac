@@ -1,4 +1,4 @@
-User-contributed usage
+User-Contributed Usage
 ======================
 
 .. toctree::
