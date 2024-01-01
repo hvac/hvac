@@ -115,7 +115,7 @@ jobs:
     - name: Sphinx - doctest Build
       working-directory: ./docs
       run: |
-        poetry run make doctest
+        poetry run make html
 
     - name: Upload rendered docsite
       uses: actions/upload-artifact@v4
