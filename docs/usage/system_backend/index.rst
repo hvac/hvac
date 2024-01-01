@@ -13,7 +13,9 @@ System Backend
    lease
    mount
    namespace
+   policies
    policy
+   quota
    raft
    seal
    wrapping
