@@ -6,11 +6,11 @@ Support for HTTP/2 onward with Niquests
    :depth: 1
 
 
-While unofficial, ``hvac`` can speak HTTP/2, and HTTP/3 using the alternative HTTP backend Niquests.
-It is made possible thanks to the library backward compatibility with Requests. We can explore
+While unofficial, ``hvac`` can speak HTTP/2, and HTTP/3 using the alternative HTTP backend `Niquests <https://pypi.org/project/niquests/>`_.
+It is made possible thanks to the library backward compatibility with `Requests <https://pypi.org/project/requests/>`_. We can explore
 a few possible integrations.
 
-.. warning:: The samples presented in this section is not covered by ``hvac`` maintainers. Any issue is to be addressed to Niquests maintainers.
+.. warning:: The samples presented in this section is not covered by ``hvac`` maintainers. Any issue is to be addressed to `Niquests maintainers <https://github.com/jawah/niquests/issues>`_.
 
 Session
 *******
@@ -185,7 +185,7 @@ To be able to make concurrent requests using one connection, you will have to ov
             return response
 
 
-.. note:: To know more about multiplexing, visit https://niquests.readthedocs.io/en/latest/user/quickstart.html#multiplexed-connection
+.. note:: To know more about multiplexing, see the `Multiplexing documentation <https://niquests.readthedocs.io/en/latest/user/quickstart.html#multiplexed-connection>`_.
 
 Then you would use the newly constructed adapter into your ``hvac`` client like so:
 
