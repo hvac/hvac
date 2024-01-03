@@ -88,9 +88,26 @@ poetry install --with dev,docs
 source $(poetry env info --path)/bin/activate
 # Otherwise run this command on Windows
 poetry shell
-
 cd docs/
+```
+
+Certain examples in documentation are run as actual integration tests. Use the ``doctest`` make target for that.
+```
 make doctest
+```
+
+To build HTML output use the ``html`` target:
+```
+make html
+```
+
+Check the ``docs/_build/html/`` directory for rendered output.
+
+**NOTE:** in some environments, both the ``html`` and ``doctest`` targets will run tests. If you want to avoid running the tests locally, you may also set the ``READ_THE_DOCS_BUILD`` environment variable to any value to skip them, for example:
+
+```
+export READ_THE_DOCS_BUILD=true
+make html
 ```
 
 ### Examples
