@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.1.0
+
+### 🚀 Features
+
+- Add support for sys/policies endpoint ([GH-1100](https://github.com/hvac/hvac/pull/1100))
+- add quota support to system backend ([GH-1092](https://github.com/hvac/hvac/pull/1092))
+- Add support to PKI class to perform CRUD on issuers ([GH-1102](https://github.com/hvac/hvac/pull/1102))
+
+### 🐛 Bug Fixes
+
+- `Client.write_data` - remove potentially dangerous default ([GH-1120](https://github.com/hvac/hvac/pull/1120))
+
+### 📚 Documentation
+
+- 📝 Add HTTP/2+ use case into the advanced usage section ([GH-1111](https://github.com/hvac/hvac/pull/1111))
+- update the KV documentation ([GH-1122](https://github.com/hvac/hvac/pull/1122))
+- Add support for sys/policies endpoint ([GH-1100](https://github.com/hvac/hvac/pull/1100))
+- fix readthedocs (RTD) public docsite, modernize some of the docs build/testing ([GH-1119](https://github.com/hvac/hvac/pull/1119))
+- Add support to PKI class to perform CRUD on issuers ([GH-1102](https://github.com/hvac/hvac/pull/1102))
+- Update GCP secrets engine documentation ([GH-1099](https://github.com/hvac/hvac/pull/1099))
+
+### 🧰 Miscellaneous
+
+- fix readthedocs (RTD) public docsite, modernize some of the docs build/testing ([GH-1119](https://github.com/hvac/hvac/pull/1119))
+- Revamp integration tests, run in parallel ([GH-1105](https://github.com/hvac/hvac/pull/1105))
+- Add Vault 1.15.x to integration tests ([GH-1103](https://github.com/hvac/hvac/pull/1103))
+
 ## 2.0.0
 
 This release makes a number of breaking changes. Most notably, dropping support for Python 3.6 & 3.7, dropping support for Vault versions 1.6.x through 1.10.x, and removing previously deprecated methods and code paths. Most of the other breaking changes are fairly minor or only affect specific use cases, but please review all changes carefully.
