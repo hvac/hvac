@@ -14,6 +14,7 @@
 
 ### 📚 Documentation
 
+- 📝 Add HTTP/2+ use case into the advanced usage section ([GH-1111](https://github.com/hvac/hvac/pull/1111))
 - update the KV documentation ([GH-1122](https://github.com/hvac/hvac/pull/1122))
 - Add support for sys/policies endpoint ([GH-1100](https://github.com/hvac/hvac/pull/1100))
 - fix readthedocs (RTD) public docsite, modernize some of the docs build/testing ([GH-1119](https://github.com/hvac/hvac/pull/1119))
