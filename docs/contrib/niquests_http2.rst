@@ -67,16 +67,26 @@ To be able to make concurrent requests using one connection, you will have to ov
 .. code:: python
 
     import niquests
-    import hvac
+
     from hvac.adapters import RawAdapter
+    from hvac.constants.client import DEFAULT_URL
+    from hvac import utils
+
 
     class NiquestsAdapter(RawAdapter):
 
-        def __init__(self, base_uri=DEFAULT_URL, token=None, cert=None, verify=True, timeout=30, proxies=None,
-                     allow_redirects=True, session=None, namespace=None, ignore_exceptions=False, strict_http=False,
-                     request_header=True):
+        def __init__(
+            self, base_uri=DEFAULT_URL, token=None, cert=None,
+            verify=True, timeout=30, proxies=None, allow_redirects=True,
+            session=None, namespace=None, ignore_exceptions=False, strict_http=False,
+            request_header=True, resolver=None, source_address=None
+        ):
             if not session:
-                session = niquests.Session(multiplexed=True)
+                session = niquests.Session(
+                    multiplexed=True,
+                    resolver=resolver,
+                    source_address=source_address,
+                )
                 session.cert, session.verify, session.proxies = cert, verify, proxies
             else:
                 if session.verify:
@@ -142,20 +152,16 @@ To be able to make concurrent requests using one connection, you will have to ov
                     nonlocal method, url
 
                     if not resp.ok:
-                        msg = json = text = errors = None
+                        msg = json = errors = None
+
+                        text = response.text
 
                         try:
-                            text = response.text
-                        except Exception:
+                            json = response.json()
+                        except JSONDecodeError:
                             pass
-
-                        if "json" in response.headers.get("Content-Type"):
-                            try:
-                                json = response.json()
-                            except Exception:
-                                pass
-                            else:
-                                errors = json.get("errors")
+                        else:
+                            errors = json.get("errors")
 
                         if errors is None:
                             msg = text
@@ -190,6 +196,8 @@ To be able to make concurrent requests using one connection, you will have to ov
 Then you would use the newly constructed adapter into your ``hvac`` client like so:
 
 .. code:: python
+
+    import hvac
 
     client = hvac.Client(
         url='https://vault.example.com',
