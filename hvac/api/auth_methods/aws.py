@@ -158,7 +158,7 @@ class Aws(VaultApiBase):
             To use only particular fields, select the explicit fields. To restore to defaults, send only a field of ``default``.
             Only select fields that will have a low rate of change for your ``iam_alias`` because each change triggers a storage
             write and can have a performance impact at scale.
-        :type iam_metadata: str | unicode, list
+        :type iam_metadata: str | unicode | list
         :param ec2_alias: Configures how to generate the identity alias when using the ec2 auth method. Valid choices
             are role_id, instance_id, and image_id. When role_id is selected, the randomly generated ID of the role is
             used. When instance_id is selected, the instance identifier is used as the identity alias name. When
@@ -170,7 +170,7 @@ class Aws(VaultApiBase):
             To use only particular fields, select the explicit fields. To restore to defaults, send only a field of ``default``.
             Only select fields that will have a low rate of change for your ``ec2_alias`` because each change triggers a storage
             write and can have a performance impact at scale.
-        :type ec2_metadata: str | unicode, list
+        :type ec2_metadata: str | unicode | list
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request
