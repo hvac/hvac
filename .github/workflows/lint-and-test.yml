@@ -42,7 +42,7 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -82,7 +82,7 @@ jobs:
 
     - name: Set up Python
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.x"
         cache: poetry
@@ -144,7 +144,7 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
@@ -204,7 +204,7 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
