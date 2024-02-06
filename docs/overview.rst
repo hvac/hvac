@@ -30,16 +30,6 @@ Using TLS with client-side certificate authentication:
     True
 
 
-Using `Vault Enterprise namespace <https://www.vaultproject.io/docs/enterprise/namespaces/index.html>`_\ :
-
-.. doctest:: init
-
-    >>> client = hvac.Client(
-    ...     url='https://localhost:8200',
-    ...     namespace=os.getenv('VAULT_NAMESPACE'),
-    ... )
-
-
 Using plaintext / HTTP (not recommended for anything other than development work):
 
 .. doctest:: init
