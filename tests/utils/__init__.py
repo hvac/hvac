@@ -18,13 +18,29 @@ logger = logging.getLogger(__name__)
 VERSION_REGEX = re.compile(r"Vault v([0-9.]+)")
 LATEST_VAULT_VERSION = "1.1.3"
 
+def vault_running_inside_docker():
+    command = ["docker", "ps"]
+    process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
+    output, _ = process.communicate()
+    lines = output.strip().split('\n')
+    for l in lines:
+        if 'hashicorp/vault' in l:
+            return l.split()[0].strip()
+        
+    return None
 
 def get_vault_version_string():
     if "cache" in get_vault_version_string.__dict__:
         return get_vault_version_string.cache
-    if not find_executable("vault"):
-        raise SkipTest("Vault executable not found")
+
     command = ["vault", "-version"]
+    container = vault_running_inside_docker()
+    if not container:
+        if not find_executable("vault"):
+            raise SkipTest("Vault executable not found")
+    else:
+        command = ["docker", "exec", container] + command
+
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))
     output, _ = process.communicate()
     version_string = output.strip().split()[1].lstrip("v")
@@ -185,6 +201,10 @@ def decode_generated_root_token(encoded_token, otp):
             otp,
         ]
     )
+
+    container = vault_running_inside_docker()
+    if container:
+        command = ["docker", "exec", container] + command
     process = subprocess.Popen(
         **get_popen_kwargs(args=command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     )

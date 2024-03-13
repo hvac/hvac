@@ -8,7 +8,7 @@ import hcl
 
 import distutils.spawn
 from unittest import SkipTest
-from tests.utils import get_config_file_path, load_config_file, create_client
+from tests.utils import get_config_file_path, load_config_file, create_client, vault_running_inside_docker
 
 logger = logging.getLogger(__name__)
 
@@ -38,21 +38,31 @@ class ServerManager:
         if self.use_consul:
             self.start_consul()
 
-        if distutils.spawn.find_executable("vault") is None:
-            raise SkipTest("Vault executable not found")
+        pre_cmd = []
+        container = vault_running_inside_docker()
+        if not container:
+            if distutils.spawn.find_executable("vault") is None:
+                raise SkipTest("Vault executable not found")
+        else:
+            pre_cmd = ["docker", "exec", container]
 
         # If a vault server is already running then we won't be able to start another one.
         # If we can't start our vault server then we don't know what we're testing against.
         try:
             self.client.sys.is_initialized()
-        except Exception:
+        except Exception as e:
             pass
         else:
+            if container:
+                return
             raise Exception("Vault server already running")
+            
+        if container:
+            return # We are already configured
 
         cluster_ready = False
         for config_path in self.config_paths:
-            command = ["vault", "server", "-config=" + config_path]
+            command = pre_cmd + ["vault", "server", "-config=" + config_path]
             logger.debug(f"Starting vault server with command: {command}")
             process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -71,6 +81,7 @@ class ServerManager:
                 except Exception as ex:
                     if process.poll() is not None:
                         raise Exception("Vault server terminated before becoming ready")
+
                     logger.debug("Waiting for Vault to start")
                     time.sleep(0.5)
                     attempts_left -= 1
@@ -78,6 +89,7 @@ class ServerManager:
             if not cluster_ready:
                 if process.poll() is None:
                     process.kill()
+
                 stdout, stderr = process.communicate()
                 raise Exception(
                     "Unable to start Vault in background:\n{err}\n{stdout}\n{stderr}".format(
@@ -144,6 +156,10 @@ class ServerManager:
 
     def stop(self):
         """Stop the vault server process being managed by this class."""
+        container = vault_running_inside_docker()
+        if container:
+            return
+
         for process_num, process in enumerate(self._processes):
             logger.debug(f"Terminating vault server with PID {process.pid}")
             if process.poll() is None:
@@ -161,6 +177,34 @@ class ServerManager:
 
     def initialize(self):
         """Perform initialization of the vault server process and record the provided unseal keys and root token."""
+        container = vault_running_inside_docker()
+        """
+        if container:
+            #time.sleep(5)
+            # We can't init externally, need to run it inside the container directly
+            command = ['docker', 'exec', container, 'vault', 'operator', 'init']
+            process = subprocess.Popen(command, stdout=subprocess.PIPE)
+            output, _ = process.communicate()
+            output = output.decode().splitlines()
+            keys = []
+            token = None
+            for line in output:
+                if 'Unseal Key' in line:
+                    keys.append(line.split(':')[1].strip())
+                if 'Initial Root Token' in line:
+                    token = line.split(':')[1].strip()
+
+            self.keys = keys
+            self.root_token = token
+        else:
+            # Container has hardcoded token
+            assert not self.client.sys.is_initialized()
+
+            result = self.client.sys.initialize()
+
+            self.root_token = result["root_token"]
+            self.keys = result["keys"]
+        """
         assert not self.client.sys.is_initialized()
 
         result = self.client.sys.initialize()
@@ -183,6 +227,8 @@ class ServerManager:
                 vault_address = "https://{addr}".format(
                     addr=config["listener"]["tcp"]["address"]
                 )
+                # Force use of localhost if we're serving locally
+                vault_address = vault_address.replace('0.0.0.0', '127.0.0.1')
             except KeyError as error:
                 logger.debug(
                     "Unable to find explict Vault address in config file {path}: {err}".format(
@@ -200,3 +246,11 @@ class ServerManager:
         vault_addresses = self.get_active_vault_addresses()
         for vault_address in vault_addresses:
             create_client(url=vault_address).sys.submit_unseal_keys(self.keys)
+
+    def configure(self):
+        """Configure any pre-requisites for tests."""
+        if distutils.spawn.find_executable("terraform"):
+            terraform_dir = get_config_file_path("vault-ldap")
+            # Now we need to run terraform to setup
+            subprocess.check_call(f"terraform -chdir='{terraform_dir}' init", shell=True)
+            subprocess.check_call(f"terraform -chdir='{terraform_dir}' apply -var='token={self.root_token}' -auto-approve", shell=True)
