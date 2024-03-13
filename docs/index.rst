@@ -7,6 +7,7 @@ hvac
    Overview<overview>
    usage/index
    advanced_usage
+   contrib/index
    source/index
    contributing
    changelog

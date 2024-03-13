@@ -175,8 +175,22 @@ class TestKubernetes(TestCase):
 
     @parameterized.expand(
         [
-            ("default mount point", None, "application1", "*", "some-namespace"),
-            ("custom mount point", "k8s", "application2", "some-service-account", "*"),
+            (
+                "default mount point",
+                None,
+                "application1",
+                "*",
+                "some-namespace",
+                "serviceaccount_uid",
+            ),
+            (
+                "custom mount point",
+                "k8s",
+                "application2",
+                "some-service-account",
+                "*",
+                "serviceaccount_name",
+            ),
         ]
     )
     @requests_mock.Mocker()
@@ -187,6 +201,7 @@ class TestKubernetes(TestCase):
         role_name,
         bound_service_account_names,
         bound_service_account_namespaces,
+        alias_name_source,
         requests_mocker,
     ):
         expected_status_code = 204
@@ -205,6 +220,7 @@ class TestKubernetes(TestCase):
             name=role_name,
             bound_service_account_names=bound_service_account_names,
             bound_service_account_namespaces=bound_service_account_namespaces,
+            alias_name_source=alias_name_source,
         )
         if mount_point:
             test_arguments["mount_point"] = mount_point

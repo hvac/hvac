@@ -222,9 +222,11 @@ def getattr_with_deprecated_properties(obj, item, deprecated_properties):
     :type obj: object
     :param item: Name of the attribute being requested.
     :type item: str
-    :param deprecated_properties: List of deprecated properties. Each item in the list is a dict with at least a
-        "to_be_removed_in_version" and "client_property" key to be used in the displayed deprecation warning.
-    :type deprecated_properties: List[dict]
+    :param deprecated_properties: Dict of deprecated properties. Each key is the name of the old property.
+        Each value is a dict with at least a "to_be_removed_in_version" and "client_property" key to be
+        used in the displayed deprecation warning. An optional "new_property" key contains the name of
+        the new property within the "client_property", otherwise the original name is used.
+    :type deprecated_properties: Dict
     :return: The new property indicated where available.
     :rtype: object
     """
@@ -298,15 +300,14 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
             docstring_copy = (
                 new_method.__doc__ if new_method.__doc__ is not None else "N/A"
             )
-            if new_method.__doc__ is not None:
-                new_func.__doc__ = """\
-                    {message}
-                    Docstring content from this method's replacement copied below:
-                    {docstring_copy}
-                    """.format(
-                    message=deprecation_message,
-                    docstring_copy=dedent(docstring_copy),
-                )
+            new_func.__doc__ = """\
+                {message}
+                Docstring content from this method's replacement copied below:
+                {docstring_copy}
+                """.format(
+                message=deprecation_message,
+                docstring_copy=dedent(docstring_copy),
+            )
 
         else:
             new_func.__doc__ = deprecation_message
@@ -317,13 +318,12 @@ def deprecated_method(to_be_removed_in_version, new_method=None):
 
 def validate_list_of_strings_param(param_name, param_argument):
     """Validate that an argument is a list of strings.
+    Returns nothing if valid, raises ParamValidationException if invalid.
 
     :param param_name: The name of the parameter being validated. Used in any resulting exception messages.
     :type param_name: str | unicode
     :param param_argument: The argument to validate.
     :type param_argument: list
-    :return: True if the argument is validated, False otherwise.
-    :rtype: bool
     """
     if param_argument is None:
         param_argument = []

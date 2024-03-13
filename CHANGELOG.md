@@ -1,5 +1,135 @@
 # Changelog
 
+## 2.1.0
+
+### 🚀 Features
+
+- Add support for sys/policies endpoint ([GH-1100](https://github.com/hvac/hvac/pull/1100))
+- add quota support to system backend ([GH-1092](https://github.com/hvac/hvac/pull/1092))
+- Add support to PKI class to perform CRUD on issuers ([GH-1102](https://github.com/hvac/hvac/pull/1102))
+
+### 🐛 Bug Fixes
+
+- `Client.write_data` - remove potentially dangerous default ([GH-1120](https://github.com/hvac/hvac/pull/1120))
+
+### 📚 Documentation
+
+- 📝 Add HTTP/2+ use case into the advanced usage section ([GH-1111](https://github.com/hvac/hvac/pull/1111))
+- update the KV documentation ([GH-1122](https://github.com/hvac/hvac/pull/1122))
+- Add support for sys/policies endpoint ([GH-1100](https://github.com/hvac/hvac/pull/1100))
+- fix readthedocs (RTD) public docsite, modernize some of the docs build/testing ([GH-1119](https://github.com/hvac/hvac/pull/1119))
+- Add support to PKI class to perform CRUD on issuers ([GH-1102](https://github.com/hvac/hvac/pull/1102))
+- Update GCP secrets engine documentation ([GH-1099](https://github.com/hvac/hvac/pull/1099))
+
+### 🧰 Miscellaneous
+
+- fix readthedocs (RTD) public docsite, modernize some of the docs build/testing ([GH-1119](https://github.com/hvac/hvac/pull/1119))
+- Revamp integration tests, run in parallel ([GH-1105](https://github.com/hvac/hvac/pull/1105))
+- Add Vault 1.15.x to integration tests ([GH-1103](https://github.com/hvac/hvac/pull/1103))
+
+## 2.0.0
+
+This release makes a number of breaking changes. Most notably, dropping support for Python 3.6 & 3.7, dropping support for Vault versions 1.6.x through 1.10.x, and removing previously deprecated methods and code paths. Most of the other breaking changes are fairly minor or only affect specific use cases, but please review all changes carefully.
+
+There are also several other deprecations and announcements to be aware of. We hope to have a more rapid release schedule going forward.
+
+In accordance with [our supported Python version policy](https://github.com/hvac/hvac/issues/877) we will continue to drop Python versions as they become end-of-life. These may not be announced in advance, but will be done in major versions.
+
+### 💥 Breaking Changes
+
+- `Client.write` method breaking changes 2.0.0 ([GH-1089](https://github.com/hvac/hvac/pull/1089))
+- Drop support for Vault 1.6-1.10 ([GH-1074](https://github.com/hvac/hvac/pull/1074))
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- Remove old deprecated `client` attributes ([GH-1062](https://github.com/hvac/hvac/pull/1062))
+- Remove MFA class ([GH-1056](https://github.com/hvac/hvac/pull/1056))
+- adapters: if `session` is user-supplied, do not overwrite session options with `Client`/`Adapter` options ([GH-1021](https://github.com/hvac/hvac/pull/1021))
+- Make `pyhcl` optional again ([GH-1060](https://github.com/hvac/hvac/pull/1060))
+- Drop Python 3.6 & 3.7, Add Python 3.11, bump some dependencies ([GH-1048](https://github.com/hvac/hvac/pull/1048))
+
+### 📢 Deprecations / Announcements
+
+- Breaking changes coming to Adapters' use of custom sessions ([GH-1040](https://github.com/hvac/hvac/issues/1040))
+- Breaking changes coming to `Client.write` method ([GH-1034](https://github.com/hvac/hvac/issues/1034))
+- The default value of `raise_on_deleted_version` will change from `True` to `False` in `v3.0.0` ([GH-955](https://github.com/hvac/hvac/issues/955))
+- The `certificate` parameter for `create_ca_certificate_role` will stop accepting file paths in v3.0.0 ([GH-914](https://github.com/hvac/hvac/issues/914))
+- Drop support for Vault 1.6-1.10 ([GH-1074](https://github.com/hvac/hvac/pull/1074))
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- Fix typo in `safety_buffer` argument in AWS auth ([GH-1068](https://github.com/hvac/hvac/pull/1068))
+
+### 🚀 Features
+
+- Add support for Python 3.12 ([GH-1073](https://github.com/hvac/hvac/pull/1073))
+- Database Secrets Engine - add `rotate_static_credentials` method, docs updates, unit tests ([GH-1069](https://github.com/hvac/hvac/pull/1069))
+- Make `plaintext` and `ciphertext` optional for batch operations ([GH-1049](https://github.com/hvac/hvac/pull/1049))
+
+### 🐛 Bug Fixes
+
+- Changing default values for `sys.initialize` parameters `secret_shares` and `secret_threshold` ([GH-1063](https://github.com/hvac/hvac/pull/1063))
+- adapters: if `session` is user-supplied, do not overwrite session options with `Client`/`Adapter` options ([GH-1021](https://github.com/hvac/hvac/pull/1021))
+
+### 📚 Documentation
+
+- update docstring for sys step-down ([GH-1086](https://github.com/hvac/hvac/pull/1086))
+- Database Secrets Engine - add `rotate_static_credentials` method, docs updates, unit tests ([GH-1069](https://github.com/hvac/hvac/pull/1069))
+- Fix invalid build and test status ([GH-1072](https://github.com/hvac/hvac/pull/1072))
+
+### 🧰 Miscellaneous
+
+- add .git-blame-ignore-revs ([GH-1087](https://github.com/hvac/hvac/pull/1087))
+- Fix typos, add `typos` linter to CI ([GH-1057](https://github.com/hvac/hvac/pull/1057))
+- drop python-jwt dev dependency ([GH-1084](https://github.com/hvac/hvac/pull/1084))
+
+## 1.2.1
+
+This release fixes an inaccuracy in a warning message but does not otherwise change functionality.
+
+### 🐛 Bug Fixes
+
+- Fix raise_on_deleted_version warning ([GH-1045](https://github.com/hvac/hvac/pull/1045))
+
+## 1.2.0
+
+This is the last expected release before `v2.0.0`.
+
+### 📢 Deprecations / Announcements
+
+- ldap auth method - add missing `configure` params by vault api names ([GH-975](https://github.com/hvac/hvac/pull/975))
+- expand Vault CI matrix, announce deprecation of Vault dynamic SSH keys ([GH-1023](https://github.com/hvac/hvac/pull/1023))
+- Breaking changes coming to `Client.write` method ([GH-1034](https://github.com/hvac/hvac/issues/1034))
+- Support for Python 3.6 & 3.7 will be dropped in `v2.0.0` ([GH-877](https://github.com/hvac/hvac/issues/877))
+- Support for the Legacy MFA methods will be dropped from the `MFA` class in `v2.0.0` ([GH-1026](https://github.com/hvac/hvac/issues/1026))
+- Breaking changes coming to Adapters' use of custom sessions ([GH-1040](https://github.com/hvac/hvac/issues/1040))
+
+### 🚀 Features
+
+- Add alias_name_source for Kubernetes Auth create_role ([GH-1039](https://github.com/hvac/hvac/pull/1039))
+- add `Client.write_data` method ([GH-1028](https://github.com/hvac/hvac/pull/1028))
+- ldap auth method - add missing `configure` params by vault api names ([GH-975](https://github.com/hvac/hvac/pull/975))
+- Re-add arguments to create_or_update_role() from old API ([GH-842](https://github.com/hvac/hvac/pull/842))
+- Add new argument (conflicting_alias_ids_to_keep) to merge_entities method ([GH-968](https://github.com/hvac/hvac/pull/968))
+- Add impersonated account support to GCP secrets engine ([GH-1022](https://github.com/hvac/hvac/pull/1022))
+- support "user_claim_json_pointer" in create_role() for JWT/OIDC auth method ([GH-1006](https://github.com/hvac/hvac/pull/1006))
+- Add static account support to GCP secrets engine ([GH-956](https://github.com/hvac/hvac/pull/956))
+- adding batch_input to transit.sign_data #988 ([GH-990](https://github.com/hvac/hvac/pull/990))
+- Add a method to read static roles in the database engine ([GH-1009](https://github.com/hvac/hvac/pull/1009))
+- feat: add support for `disable_local_ca_jwt` in the Kubernetes auth method ([GH-997](https://github.com/hvac/hvac/pull/997))
+
+### 🐛 Bug Fixes
+
+- add `Client.write_data` method ([GH-1028](https://github.com/hvac/hvac/pull/1028))
+- Fix premature read on stream requests in the `sys.take_raft_snapshot` method ([GH-771](https://github.com/hvac/hvac/pull/771))
+- fix(`__getattr__`): non-existent attribute lookup ([GH-982](https://github.com/hvac/hvac/pull/982))
+
+### 📚 Documentation
+
+- docs(secrets-engines): Add database secrets engine docs ([GH-1036](https://github.com/hvac/hvac/pull/1036))
+- docs: make OIDC Authorization URL Request example work again. ([GH-1010](https://github.com/hvac/hvac/pull/1010))
+
+### 🧰 Miscellaneous
+
+- add tests and docs to sdist, improve build testing ([GH-1015](https://github.com/hvac/hvac/pull/1015))
+- Bump certifi from 2022.9.14 to 2022.12.7 ([GH-1013](https://github.com/hvac/hvac/pull/1013))
+
 ## 1.1.1
 
 ### 🐛 Bug Fixes
@@ -25,7 +155,7 @@
 ### 🐛 Bug Fixes
 
 - Allow for reading deleted secret versions (kv2) without an exception ([GH-907](https://github.com/hvac/hvac/pull/907))
-- fix vault client certificates loaded from envirnoment variables ([GH-943](https://github.com/hvac/hvac/pull/943))
+- fix vault client certificates loaded from environment variables ([GH-943](https://github.com/hvac/hvac/pull/943))
 - approle - fix metadata for generated secret IDs, re-add `wrap_ttl` ([GH-782](https://github.com/hvac/hvac/pull/782))
 - AWS secret engine - fix `generate_credentials` for STS endpoint ([GH-934](https://github.com/hvac/hvac/pull/934))
 - Propagate client's adapter to API categories ([GH-939](https://github.com/hvac/hvac/pull/939))
@@ -42,7 +172,7 @@
 - Update Azure guideline with proper client variable ([GH-935](https://github.com/hvac/hvac/pull/935))
 - Update wrapping.rst - example for unauthenticated unwrap ([GH-789](https://github.com/hvac/hvac/pull/789))
 - Fix typo in the AWS auth method docs ([GH-911](https://github.com/hvac/hvac/pull/911))
-- Replace Azure docs occurence to Kubernetes ([GH-904](https://github.com/hvac/hvac/pull/904))
+- Replace Azure docs occurrence to Kubernetes ([GH-904](https://github.com/hvac/hvac/pull/904))
 
 ### 🧰 Miscellaneous
 
@@ -129,7 +259,7 @@ Breakfix release to revert some unintended post-1.0 requirements changes.
 
 - **Note**: This is _actually and truly_ (😝)  intended to by the last hvac release supporting Python 2.7.
 
-  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explicitly supported versions.**
 - Requirements - Cleanup & Upgrades (`install_requires` => `requests>=2.25.1` ). GH-741
 
 ### 🚀 Features
@@ -153,7 +283,7 @@ Thanks to @Tylerlhess, @anhdat, @ayav09, @bobmshannon, @bpatterson971, @briantis
 
 - **Note**: This is intended to by the last hvac release supporting Python 2.7.
 
-  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explictly supported versions.**
+  **Starting with hvac version `1.0.0`, Python versions `>=3.6` will be the only explicitly supported versions.**
 - Userpass: Add `use_token` param on `login()`, Accept passthrough `**kwargs` on create user . GH-733
 
 ### 🚀 Features
@@ -617,7 +747,7 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
-* Fix for comparision `recovery_threshold` and `recovery_shares` during initialization. [GH-398](https://github.com/hvac/hvac/pull/398)
+* Fix for comparison `recovery_threshold` and `recovery_shares` during initialization. [GH-398](https://github.com/hvac/hvac/pull/398)
 * Fix request method for AWS secrets engine `generate_credentials()` method. [GH-403](https://github.com/hvac/hvac/pull/403)
 * Fix request parameter (`n_bytes` -> `bytes`) for Transit secrets engine `generate_random_bytes()` method. [GH-377](https://github.com/hvac/hvac/pull/377)
 
@@ -729,7 +859,7 @@ Thanks to @otakup0pe, @FabianFrank, @andrewheald for their lovely contributions.
 
 BACKWARDS COMPATIBILITY NOTICE:
 
-* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` propery on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
+* With the newly added `hvac.adapters.Request` class, request kwargs can no longer be directly modified via the `_kwargs` attribute on the `Client` class. If runtime modifications to this dictionary are required, callers either need to explicitly pass in a new `adapter` instance with the desired settings via the `adapter` property on the `Client` class *or* access the `_kwargs` property via the `adapter` property on the `Client` class.
 
 See the [Advanced Usage](https://hvac.readthedocs.io/en/latest/advanced_usage.html#custom-requests-http-adapter) section of this module's documentation for additional details.
 

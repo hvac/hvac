@@ -5,3 +5,4 @@ ALLOWED_GROUP_TYPES = [
     "internal",
     "external",
 ]
+DEFAULT_MOUNT_POINT = "identity"

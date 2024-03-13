@@ -20,7 +20,7 @@ Create Or Update Entity
 
 	create_response = client.secrets.identity.create_or_update_entity(
 			name='hvac-entity',
-			metadata=dict(extra_datas='yup'),
+			metadata=dict(extra_data='yup'),
 		)
 	entity_id = create_response['data']['id']
 	print('Entity ID for "hvac-entity" is: {id}'.format(id=entity_id))
@@ -38,7 +38,7 @@ Create Or Update Entity By Name
 
 	client.secrets.identity.create_or_update_entity_by_name(
 		name='hvac-entity',
-		metadata=dict(new_datas='uhuh'),
+		metadata=dict(new_data='uhuh'),
 	)
 
 
@@ -273,7 +273,7 @@ Create Or Update Group
 
 	create_response = client.secrets.identity.create_or_update_group(
 		name='hvac-group',
-		metadata=dict(extra_datas='we gots em'),
+		metadata=dict(extra_data='we gots em'),
 	)
 	group_id = create_response['data']['id']
 	print('Group ID for "hvac-group" is: {id}'.format(id=group_id))
@@ -373,7 +373,7 @@ Create Or Update Group By Name
 
 	client.secrets.identity.create_or_update_group_by_name(
 		name='hvac-group',
-		metadata=dict(new_datas='uhuh'),
+		metadata=dict(new_data='uhuh'),
 	)
 
 

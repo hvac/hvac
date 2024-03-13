@@ -128,7 +128,12 @@ class Aws(VaultApiBase):
         return self._adapter.delete(url=api_path)
 
     def configure_identity_integration(
-        self, iam_alias=None, ec2_alias=None, mount_point=AWS_DEFAULT_MOUNT_POINT
+        self,
+        iam_alias=None,
+        ec2_alias=None,
+        mount_point=AWS_DEFAULT_MOUNT_POINT,
+        iam_metadata=None,
+        ec2_metadata=None,
     ):
         """Configure the way that Vault interacts with the Identity store.
 
@@ -146,34 +151,44 @@ class Aws(VaultApiBase):
             select full_arn and then delete and recreate the IAM role, Vault won't be aware and any identity aliases
             set up for the role name will still be valid
         :type iam_alias: str | unicode
+        :param iam_metadata: The metadata to include on the token returned by the login endpoint.
+            This metadata will be added to both audit logs, and on the ``iam_alias``. By default, it includes ``account_id``
+            and ``auth_type``. Additionally, ``canonical_arn``, ``client_arn``, ``client_user_id``, ``inferred_aws_region``, ``inferred_entity_id``,
+            and ``inferred_entity_type`` are available. To include no metadata, set to an empty list ``[]``.
+            To use only particular fields, select the explicit fields. To restore to defaults, send only a field of ``default``.
+            Only select fields that will have a low rate of change for your ``iam_alias`` because each change triggers a storage
+            write and can have a performance impact at scale.
+        :type iam_metadata: str | unicode | list
         :param ec2_alias: Configures how to generate the identity alias when using the ec2 auth method. Valid choices
             are role_id, instance_id, and image_id. When role_id is selected, the randomly generated ID of the role is
             used. When instance_id is selected, the instance identifier is used as the identity alias name. When
             image_id is selected, AMI ID of the instance is used as the identity alias name
         :type ec2_alias: str | unicode
+        :param ec2_metadata: The metadata to include on the token returned by the login endpoint. This metadata will be
+            added to both audit logs, and on the ``ec2_alias``. By default, it includes ``account_id`` and ``auth_type``. Additionally,
+            ``ami_id``, ``instance_id``, and ``region`` are available. To include no metadata, set to an empty list ``[]``.
+            To use only particular fields, select the explicit fields. To restore to defaults, send only a field of ``default``.
+            Only select fields that will have a low rate of change for your ``ec2_alias`` because each change triggers a storage
+            write and can have a performance impact at scale.
+        :type ec2_metadata: str | unicode | list
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request
         :rtype: request.Response
         """
         if iam_alias is not None and iam_alias not in ALLOWED_IAM_ALIAS_TYPES:
-            error_msg = 'invalid iam alias type provided: "{arg}"; supported iam alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=iam_alias, environments=",".join(ALLOWED_IAM_ALIAS_TYPES)
-                )
-            )
+            error_msg = f"invalid iam alias type provided: '{iam_alias}' - supported iam alias types: '{','.join(ALLOWED_IAM_ALIAS_TYPES)}'"
+            raise exceptions.ParamValidationError(error_msg)
         if ec2_alias is not None and ec2_alias not in ALLOWED_EC2_ALIAS_TYPES:
-            error_msg = 'invalid ec2 alias type provided: "{arg}"; supported ec2 alias types: "{alias_types}"'
-            raise exceptions.ParamValidationError(
-                error_msg.format(
-                    arg=ec2_alias, environments=",".join(ALLOWED_EC2_ALIAS_TYPES)
-                )
-            )
+            error_msg = f"invalid ec2 alias type provided: '{ec2_alias}' - supported ec2 alias types: '{','.join(ALLOWED_EC2_ALIAS_TYPES)}'"
+            raise exceptions.ParamValidationError(error_msg)
+
         params = utils.remove_nones(
             {
                 "iam_alias": iam_alias,
                 "ec2_alias": ec2_alias,
+                "ec2_metadata": ec2_metadata,
+                "iam_metadata": iam_metadata,
             }
         )
         api_auth = "/v1/auth/{mount_point}/config/identity".format(
@@ -738,7 +753,7 @@ class Aws(VaultApiBase):
         :param role: Name of the role against which the login is being attempted.
         :type role: str
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapter Client attribute.
         :type use_token: bool
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
@@ -786,7 +801,7 @@ class Aws(VaultApiBase):
         :param role: Name of the role against which the login is being attempted.
         :type role: str
         :param use_token: if True, uses the token in the response received from the auth request to set the "token"
-            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapater Client attribute.
+            attribute on the the :py:meth:`hvac.adapters.Adapter` instance under the _adapter Client attribute.
         :type use_token: bool
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
@@ -875,12 +890,15 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
+    @utils.aliased_parameter(
+        "saftey_buffer", "safety_buffer", removed_in_version="3.0.0", position=1
+    )
     def tidy_blacklist_tags(
-        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+        self, safety_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
     ):
         """Cleans up the entries in the blacklist based on expiration time on the entry and safety_buffer
 
-        :param saftey_buffer:
+        :param safety_buffer:
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
         :return: The response of the request.
@@ -890,7 +908,7 @@ class Aws(VaultApiBase):
             "/v1/auth/{mount_point}/tidy/roletag-blacklist", mount_point=mount_point
         )
         params = {
-            "safety_buffer": saftey_buffer,
+            "safety_buffer": safety_buffer,
         }
         return self._adapter.post(
             url=api_path,
@@ -946,12 +964,15 @@ class Aws(VaultApiBase):
             url=api_path,
         )
 
+    @utils.aliased_parameter(
+        "saftey_buffer", "safety_buffer", removed_in_version="3.0.0", position=1
+    )
     def tidy_identity_whitelist_entries(
-        self, saftey_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
+        self, safety_buffer="72h", mount_point=AWS_DEFAULT_MOUNT_POINT
     ):
         """Cleans up the entries in the whitelist based on expiration time and safety_buffer
 
-        :param saftey_buffer:
+        :param safety_buffer:
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str
         :return: The response of the request.
@@ -961,6 +982,6 @@ class Aws(VaultApiBase):
             "/v1/auth/{mount_point}/tidy/identity-whitelist", mount_point=mount_point
         )
         params = {
-            "safety_buffer": saftey_buffer,
+            "safety_buffer": safety_buffer,
         }
         return self._adapter.post(url=api_path, json=params)

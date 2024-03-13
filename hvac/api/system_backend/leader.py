@@ -19,7 +19,8 @@ class Leader(SystemBackendMixin):
     def step_down(self):
         """Force the node to give up active status.
 
-        If the node does not have active status, this endpoint does nothing.
+        When executed against a non-active node, i.e. a standby or performance
+        standby node, the request will be forwarded to the active node.
         Note that the node will sleep for ten seconds before attempting to grab
         the active lock again, but if no standby nodes grab the active lock in
         the interim, the same node may become the active node again. Requires a

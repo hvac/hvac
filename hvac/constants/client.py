@@ -3,24 +3,23 @@
 
 from os import getenv
 
-DEPRECATED_PROPERTIES = {
-    "github": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "ldap": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "mfa": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="auth",
-    ),
-    "kv": dict(
-        to_be_removed_in_version="0.9.0",
-        client_property="secrets",
-    ),
-}
+DEPRECATED_PROPERTIES = {}
+# ^ this follows the format defined in utils.getattr_with_deprecated_properties
+# example:
+#   {
+#       "old_property_one": {
+#           "to_be_removed_in_version": "99.0.0",
+#           "client_property": "auth",
+#       },
+#       "old_property_two": {
+#           "to_be_removed_in_version": "99.0.0",
+#           "client_property": "secrets",
+#           "new_property": "new_property_two",
+#       },
+#   }
+#
+# Result is that `client.old_property_one` will return the value of `client.auth.old_property_one`,
+# and `client.old_property_two` will return `client.secrets.new_property_two`.
 
 DEFAULT_URL = "http://localhost:8200"
 VAULT_CACERT = getenv("VAULT_CACERT")

@@ -690,7 +690,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
         test_label,
         path,
         write_secret_before_test=1,
-        destoryed_versions=None,
+        destroyed_versions=None,
         raises=None,
         exception_message="",
     ):
@@ -708,7 +708,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             with self.assertRaises(raises) as cm:
                 self.client.secrets.kv.v2.destroy_secret_versions(
                     path=path,
-                    versions=destoryed_versions,
+                    versions=destroyed_versions,
                     mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             self.assertIn(
@@ -719,7 +719,7 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             destroy_secret_versions_result = (
                 self.client.secrets.kv.v2.destroy_secret_versions(
                     path=path,
-                    versions=destoryed_versions,
+                    versions=destroyed_versions,
                     mount_point=self.DEFAULT_MOUNT_POINT,
                 )
             )
@@ -735,29 +735,29 @@ class TestKvV2(HvacIntegrationTestCase, TestCase):
             logging.debug(
                 "read_secret_metadata_result: %s" % read_secret_metadata_result
             )
-            for destoryed_version in destoryed_versions:
+            for destroyed_version in destroyed_versions:
                 if (
-                    str(destoryed_version)
+                    str(destroyed_version)
                     in read_secret_metadata_result["data"]["versions"]
                 ):
                     self.assertTrue(
                         expr=read_secret_metadata_result["data"]["versions"][
-                            str(destoryed_version)
+                            str(destroyed_version)
                         ]["destroyed"],
-                        msg='Version "{num}" should be destoryed but is not. Full read metadata response versions: {metadata}'.format(
-                            num=destoryed_version,
+                        msg='Version "{num}" should be destroyed but is not. Full read metadata response versions: {metadata}'.format(
+                            num=destroyed_version,
                             metadata=read_secret_metadata_result["data"]["versions"],
                         ),
                     )
-            for nondestoryed_version in set(
+            for nondestroyed_version in set(
                 range(1, write_secret_before_test + 1)
-            ) - set(destoryed_versions):
+            ) - set(destroyed_versions):
                 self.assertFalse(
                     expr=read_secret_metadata_result["data"]["versions"][
-                        str(nondestoryed_version)
+                        str(nondestroyed_version)
                     ]["destroyed"],
-                    msg='Version "{num}" should not be destoryed but is. Full read metadata response versions: {metadata}'.format(
-                        num=nondestoryed_version,
+                    msg='Version "{num}" should not be destroyed but is. Full read metadata response versions: {metadata}'.format(
+                        num=nondestroyed_version,
                         metadata=read_secret_metadata_result["data"]["versions"],
                     ),
                 )

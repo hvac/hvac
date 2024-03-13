@@ -4,9 +4,7 @@ import logging
 
 from hvac import exceptions, utils
 from hvac.api.vault_api_base import VaultApiBase
-from hvac.constants.identity import ALLOWED_GROUP_TYPES
-
-DEFAULT_MOUNT_POINT = "identity"
+from hvac.constants.identity import ALLOWED_GROUP_TYPES, DEFAULT_MOUNT_POINT
 
 logger = logging.getLogger(__name__)
 

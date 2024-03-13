@@ -10,7 +10,7 @@ HVAC uses poetry to manage dependencies, the virtual environment, and versioning
 git clone https://github.com/hvac/hvac.git
 cd hvac
 
-poetry install
+poetry install --with dev,docs
 
 # Run the following command on Linux
 source $(poetry env info --path)/bin/activate
@@ -28,7 +28,7 @@ the latest `vault` binary is available in your `PATH`.
 
 ```
 cd hvac
-poetry install
+poetry install --with dev
 ```
 
 3. Enter the virtual environment
@@ -55,10 +55,16 @@ Should new dependencies need to be added, they can be simply added with Poetry. 
 poetry add {package_name}
 ```
 
-If the dependency is only needed for development, add it to the `dev` group like so:
+If the dependency is only needed for development (including doctests), add it to the `dev` group like so:
 
 ```
 poetry add --group dev {dev_package_name}
+```
+
+If the dependency is only needed for building docs (without doctest), add it to the `docs` group:
+
+```
+poetry add --group docs {docs_package_name}
 ```
 
 ### Adding New Documentation Files
@@ -71,14 +77,37 @@ When adding documentation for an entirely new feature / class, it often makes se
 
 ### Testing Docs
 
+Ensure that both the `dev` and `docs` dependency groups are installed.
+
+```
+poetry install --with dev,docs
+```
+
 ```
 # Run the following command on Linux
 source $(poetry env info --path)/bin/activate
 # Otherwise run this command on Windows
 poetry shell
-
 cd docs/
+```
+
+Certain examples in documentation are run as actual integration tests. Use the ``doctest`` make target for that.
+```
 make doctest
+```
+
+To build HTML output use the ``html`` target:
+```
+make html
+```
+
+Check the ``docs/_build/html/`` directory for rendered output.
+
+**NOTE:** in some environments, both the ``html`` and ``doctest`` targets will run tests. If you want to avoid running the tests locally, you may also set the ``READ_THE_DOCS_BUILD`` environment variable to any value to skip them, for example:
+
+```
+export READ_THE_DOCS_BUILD=true
+make html
 ```
 
 ### Examples
@@ -107,19 +136,23 @@ Ensure your local `main` branch is up to date, and then checkout a new branch to
 
 ### Updating the version
 
+We use the `poetry-bumpversion` plugin for bumping versions. Check the `poetry` documentation for [using plugins](https://python-poetry.org/docs/master/plugins/#using-plugins) for instructions on installing the plugin in your `poetry` environment.
+
 `hvac` uses [semver](https://semver.org/) so be aware of whether the next version is a minor, major, or patch release.
 
 Minor will be most common, but it will depend on the PRs that have been accepted. Ideally, all PRs are added to a milestone and we can refer to those to determine what the next version must be.
 
-Update the version number using [bump2version](https://github.com/c4urself/bump2version), which will update all the places that need to be updated.
+Update the version number in all the places that need to be updated:
 
 ```
-bumpversion {patch|minor|major}
+poetry version {patch|minor|major}
 ```
+
+**IMPORTANT:** if you do not see any line(s) in the output that look like `poetry_bumpversion: processed file <filename>` then you must install the `poetry-bumpversion` plugin. Without that, only `pyproject.toml` is updated, which is not correct.
 
 Choose `minor`, `major`, or `patch` as appropriate.
 
-Review the changed files, and commit the changes to the branch.
+Review the changed files (ensure all files listed in `[tool.poetry_bumpversion.file.*]` entries in `pyproject.toml` are modified), and commit the changes to the branch.
 
 ### Updating the changelog
 
@@ -137,7 +170,7 @@ Release drafter is only aware of PRs. Deprecations or other announcements that a
 
 If there were no PRs with these labels, release drafter will not have created the section header either. Use the following header:
 - `📢 Deprecations / Announcements`
-Ensure each entry have a link to the relevant GitHub issue/PR (see the other entries).
+Ensure each entry has a link to the relevant GitHub issue/PR (see the other entries).
 
 ### Opening the release PR
 

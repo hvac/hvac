@@ -17,37 +17,40 @@ env:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - "3.6"
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.3
+      uses: snok/install-poetry@v1.3.4
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
         cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -58,30 +61,34 @@ jobs:
     - name: Lint with `flake8`
       run: poetry run flake8 . --count --statistics
 
+    - name: Check for typos
+      run: poetry run typos --color always
+
   docs-tests:
     name: Documentation Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.3
+      uses: snok/install-poetry@v1.3.4
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
-    - name: Set up Python 3.6
+    - name: Set up Python
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.6
+        python-version: "3.x"
         cache: poetry
 
     - name: Install dependencies
-      if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev,docs
 
     - name: Install library
       run: poetry install --no-interaction
@@ -112,37 +119,40 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - "3.6"
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.3
+      uses: snok/install-poetry@v1.3.4
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
         cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -150,6 +160,7 @@ jobs:
     - name: pytest tests/unit_tests
       run: |
         poetry run pytest \
+          -rsxfE \
           --cov=hvac \
           --cov-report=xml:reports/coverage_units_py${{ matrix.python-version }}.xml \
           tests/unit_tests
@@ -164,45 +175,44 @@ jobs:
 
   integration-tests:
     name: Integration Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.7
+          - "3.8"
         vault-version:
           - "vault-enterprise=1.6.*+ent"
           - "vault-enterprise=1.7.*+ent"
-          - "vault=1.6.*"
-          - "vault=1.7.*"
-          - "vault=1.8.*"
-          - "vault=1.9.*"
-          - "vault=1.10.*"
           - "vault=1.11.*"
           - "vault=1.12.*"
           - "vault=1.13.*"
           - "vault=1.14.*"
+          - "vault=1.15.*"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.3
+      uses: snok/install-poetry@v1.3.4
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
     - name: Set up Python ${{ matrix.python-version }}
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
         cache: poetry
 
     - name: Install dependencies
       if: steps.python.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: poetry install --no-interaction --no-root --with dev
 
     - name: Install library
       run: poetry install --no-interaction
@@ -232,6 +242,7 @@ jobs:
         COVFILE: coverage_integration_py${{ matrix.python-version }}_${{ matrix.vault-version }}.xml
       run: |
         poetry run pytest \
+          -rsxfE \
           --cov=hvac \
           --cov-report=xml:reports/${COVFILE//[^A-Za-z0-9\-_\.]/_} \
           tests/integration_tests
@@ -246,13 +257,15 @@ jobs:
 
   upload-to-codecov:
     name: Upload to Codecov
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs:
       - unit-tests
       - integration-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - name: Download artifacts
         uses: actions/download-artifact@v3

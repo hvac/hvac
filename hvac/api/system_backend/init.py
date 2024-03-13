@@ -1,3 +1,4 @@
+import warnings
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.exceptions import ParamValidationError
 
@@ -28,8 +29,8 @@ class Init(SystemBackendMixin):
 
     def initialize(
         self,
-        secret_shares=5,
-        secret_threshold=3,
+        secret_shares=None,
+        secret_threshold=None,
         pgp_keys=None,
         root_token_pgp_key=None,
         stored_shares=None,
@@ -49,7 +50,7 @@ class Init(SystemBackendMixin):
         :type secret_shares: int
         :param secret_threshold: Specifies the number of shares required to reconstruct the master key. This must be
             less than or equal secret_shares. If using Vault HSM with auto-unsealing, this value must be the same as
-            secret_shares.
+            secret_shares, or omitted, depending on the version of Vault and the seal type.
         :type secret_threshold: int
         :param pgp_keys: List of PGP public keys used to encrypt the output unseal keys.
             Ordering is preserved. The keys must be base64-encoded from their original binary representation.
@@ -73,20 +74,49 @@ class Init(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
+
+        # TODO(v3.0.0): remove this
+        if recovery_shares is None and secret_shares is None:
+            msg = (
+                "The secret_shares parameter will default to None in hvac v3.0.0. "
+                "To use the old default with no warning, explicitly set this value to 5. "
+                "See https://github.com/hvac/hvac/issues/1030"
+            )
+            warnings.warn(
+                message=msg,
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            secret_shares = 5
+
+        # TODO(v3.0.0): remove this
+        if recovery_threshold is None and secret_threshold is None:
+            msg = (
+                "The secret_threshold parameter will default to None in hvac v3.0.0. "
+                "To use the old default with no warning, explicitly set this value to 3. "
+                "See https://github.com/hvac/hvac/issues/1030"
+            )
+            warnings.warn(
+                message=msg,
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            secret_threshold = 3
+
         params = {
             "secret_shares": secret_shares,
             "secret_threshold": secret_threshold,
             "root_token_pgp_key": root_token_pgp_key,
         }
 
-        if pgp_keys is not None:
+        if pgp_keys is not None and secret_shares is not None:
             if len(pgp_keys) != secret_shares:
                 raise ParamValidationError(
                     "length of pgp_keys list argument must equal secret_shares value"
                 )
             params["pgp_keys"] = pgp_keys
 
-        if stored_shares is not None:
+        if stored_shares is not None and secret_shares is not None:
             if stored_shares != secret_shares:
                 raise ParamValidationError(
                     "value for stored_shares argument must equal secret_shares argument"
@@ -96,18 +126,18 @@ class Init(SystemBackendMixin):
         if recovery_shares is not None:
             params["recovery_shares"] = recovery_shares
 
-        if recovery_threshold is not None:
-            if recovery_threshold > recovery_shares:
-                error_msg = "value for recovery_threshold argument be less than or equal to recovery_shares argument"
-                raise ParamValidationError(error_msg)
-            params["recovery_threshold"] = recovery_threshold
+            if recovery_threshold is not None:
+                if recovery_threshold > recovery_shares:
+                    error_msg = "value for recovery_threshold argument must be less than or equal to recovery_shares argument"
+                    raise ParamValidationError(error_msg)
+                params["recovery_threshold"] = recovery_threshold
 
-        if recovery_pgp_keys is not None:
-            if len(recovery_pgp_keys) != recovery_shares:
-                raise ParamValidationError(
-                    "length of recovery_pgp_keys list argument must equal recovery_shares value"
-                )
-            params["recovery_pgp_keys"] = recovery_pgp_keys
+            if recovery_pgp_keys is not None:
+                if len(recovery_pgp_keys) != recovery_shares:
+                    raise ParamValidationError(
+                        "length of recovery_pgp_keys list argument must equal recovery_shares value"
+                    )
+                params["recovery_pgp_keys"] = recovery_pgp_keys
 
         api_path = "/v1/sys/init"
         return self._adapter.put(

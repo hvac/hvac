@@ -1,4 +1,4 @@
-name: Upload Python Package
+name: Release
 
 on:
   release:
@@ -10,18 +10,20 @@ jobs:
     permissions:
       contents: read
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.3
+      uses: snok/install-poetry@v1.3.4
       with:
-        version: 1.4.2
+        version: 1.6.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 
     - name: Set up Python
       id: python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
         cache: poetry
@@ -41,7 +43,7 @@ jobs:
       with:
         name: package
         path: dist/
-        retention-days: 1
+        retention-days: 7
         if-no-files-found: error
 
   pypi:
@@ -83,6 +85,7 @@ jobs:
       - name: Add release asset
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           fail_on_unmatched_files: true
           files: |
             dist/*

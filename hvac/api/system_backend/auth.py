@@ -50,7 +50,7 @@ class Auth(SystemBackendMixin):
               the request data object.
             * **audit_non_hmac_response_keys**: Comma-separated list of keys that will not be HMAC'd by audit devices in
               the response data object.
-            * **listing_visibility**: Speficies whether to show this mount in the UI-specific listing endpoint.
+            * **listing_visibility**: Specifies whether to show this mount in the UI-specific listing endpoint.
             * **passthrough_request_headers**: Comma-separated list of headers to whitelist and pass from the request to
               the backend.
         :type config: dict

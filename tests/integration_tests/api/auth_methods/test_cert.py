@@ -10,7 +10,7 @@ class TestCert(HvacIntegrationTestCase, TestCase):
     TEST_MOUNT_POINT = "cert-test"
     TEST_ROLE_NAME = "testrole"
     TEST_CLIENT_CERTIFICATE_FILE = utils.get_config_file_path("client-cert.pem")
-    cert = utils.create_client()._adapter._kwargs.get("cert")
+    cert = utils.create_client(url="fake")._adapter._kwargs.get("cert")
     with open(TEST_CLIENT_CERTIFICATE_FILE, "r") as fp:
         TEST_CERTIFICATE = fp.read()
 

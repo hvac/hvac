@@ -1,26 +1,11 @@
 import pytest
 
-from unittest import mock
 from hvac.api.auth_methods.token import Token
-from hvac.adapters import Adapter
-
-
-# TODO: move this to a conftest.py somewhere
-class MockAdapter(Adapter):
-    def __init__(self, *args, **kwargs):
-        kwargs["session"] = mock.MagicMock()
-        super().__init__(*args, **kwargs)
-
-    def request(self, *args, **kwargs):
-        return (args, kwargs)
-
-    def get_login_token(self, response):
-        raise NotImplementedError()
 
 
 @pytest.fixture
-def token_auth():
-    return Token(MockAdapter())
+def token_auth(mock_adapter):
+    return Token(mock_adapter)
 
 
 class TestToken:

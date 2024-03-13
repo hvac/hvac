@@ -16,9 +16,9 @@ copyright = "2018-2020, Ian Unruh, Jeffrey Hogan"
 author = "Ian Unruh, Jeffrey Hogan"
 
 # The short X.Y version
-version = "1.1.1"
+version = "2.1.0"
 # The full version, including alpha/beta/rc tags
-release = "1.1.1"
+release = "2.1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,6 +33,13 @@ extensions = [
     "autodocsumm",
 ]
 
+# https://github.com/CrossNox/m2r2/blob/0408d7acea843485d9ff42ee08a105a79f045493/m2r2.py#L675C27-L675C51
+# https://github.com/CrossNox/m2r2/issues/30
+# We use m2r primarily to convert the markdown changelog to RST, so we don't need named references.
+# Since we may have multiple changelog entries refer to the same GitHub issue, and we use the same text
+# to anchor it (GH-###), it would result in duplicate explicit target names.
+m2r_anonymous_references = True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -41,7 +48,7 @@ source_suffix = [".rst", ".md"]
 # The master toctree document.
 master_doc = "index"
 
-language = None
+language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 pygments_style = "sphinx"
 
@@ -80,7 +87,7 @@ doctest_global_setup = """
 import os
 from pprint import pprint, pformat
 
-import mock
+import unittest.mock
 
 import hvac
 from tests import utils as test_utils

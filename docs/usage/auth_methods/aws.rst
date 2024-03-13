@@ -228,7 +228,7 @@ Authentication using EC2 instance role credentials and the EC2 metadata service
         Helper method to authenticate to vault using the "auth_ec2" backend.
         :param vault_client: hvac.Client
         :param pkcs7: pkcs7-encoded identity document from the EC2 metadata service
-        :param nonce: string, the nonce retruned from the initial AWS EC2 auth request (if applicable)
+        :param nonce: string, the nonce returned from the initial AWS EC2 auth request (if applicable)
         :param role: string, the role/policy to request. Defaults to the current instance's AMI ID if not provided.
         :param mount_point: string, the path underwhich the AWS EC2 auth backend is provided
         :param store_nonce: bool, if True, store the nonce received in the auth_ec2 response on disk for later use.

@@ -989,3 +989,11 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
                 first=bool(trim_key_response),
                 second=True,
             )
+
+    def test_encrypt_data_requires_plaintext_arg_if_not_in_batch_mode(self):
+        with self.assertRaises(ValueError, msg="plaintext must be specified"):
+            self.client.secrets.transit.encrypt_data(name="any-key")
+
+    def test_decrypt_data_requires_cipher_arg_if_not_in_batch_mode(self):
+        with self.assertRaises(ValueError, msg="ciphertext must be specified"):
+            self.client.secrets.transit.decrypt_data(name="any-key")

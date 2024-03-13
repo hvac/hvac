@@ -1,4 +1,9 @@
 [flake8]
+extend-ignore =
+    E231
+    # ^ https://github.com/PyCQA/pycodestyle/issues/1178
+    # Fixed in pycodestyle>=2.11, which needs flake8>=6.1, which needs python>=3.8.1
+    # TODO: drop this ignore when we drop Python 3.8
 max-line-length = 160
 exclude =
     .git,

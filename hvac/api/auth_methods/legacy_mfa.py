@@ -16,7 +16,7 @@ class LegacyMfa(VaultApiBase):
         This class's methods correspond to a legacy / unsupported set of Vault API routes. Please see the reference link
         for additional context.
 
-    Reference: https://www.vaultproject.io/docs/auth/mfa.html
+    Reference: https://developer.hashicorp.com/vault/docs/v1.10.x/auth/mfa
     """
 
     def configure(self, mount_point, mfa_type="duo", force=False):

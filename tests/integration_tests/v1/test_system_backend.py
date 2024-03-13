@@ -70,7 +70,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
             self.client.sys.enable_auth_method("approle")
 
         self.client.write("auth/approle/role/testrole")
-        result = self.client.write(
+        result = self.client.write_data(
             "auth/approle/role/testrole/secret-id", wrap_ttl="10s"
         )
         self.assertIn("token", result["wrap_info"])
@@ -327,6 +327,7 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         new_root_token = utils.decode_generated_root_token(
             encoded_token=last_generate_root_response["encoded_root_token"],
             otp=test_otp,
+            url=self.client.url,
         )
         logging.debug("new_root_token: %s" % new_root_token)
         token_lookup_resp = self.client.auth.token.lookup(token=new_root_token)
@@ -383,9 +384,9 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
     def test_read_lease(self):
         # Set up a test pki backend and issue a cert against some role so we.
         utils.configure_pki(client=self.client)
-        pki_issue_response = self.client.write(
+        pki_issue_response = self.client.write_data(
             path="pki/issue/my-role",
-            common_name="test.hvac.com",
+            data=dict(common_name="test.hvac.com"),
         )
 
         # Read the lease of our test cert that was just issued.
