@@ -138,13 +138,17 @@ class ServerManager:
         self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
     ):
         """Launch the vault server process and wait until its online and ready."""
-        pre_cmd = []
         container = vault_running_inside_docker()
         if not container:
             if distutils.spawn.find_executable("vault") is None:
                 raise SkipTest("Vault executable not found")
         else:
-            pre_cmd = ["docker", "exec", container]
+            if self.client is None:
+                this_addr = self.get_config_vault_address('vault-tls.hcl')
+                this_addr = this_addr.replace('0.0.0.0', '127.0.0.1')
+                this_client = create_client(url=this_addr)
+                self.client = this_client
+            return
 
         with PortGetter() as g:
             self.active_config_paths = [
@@ -162,11 +166,12 @@ class ServerManager:
         cluster_ready = False
         for config_path in self.active_config_paths:
             this_addr = self.get_config_vault_address(config_path)
+            this_addr = this_addr.replace('0.0.0.0', '127.0.0.1')
             this_client = create_client(url=this_addr)
             if self.client is None:
                 self.client = this_client
 
-            command = pre_cmd + ["vault", "server", "-config=" + config_path]
+            command = ["vault", "server", "-config=" + config_path]
             logger.debug(f"Starting vault server with command: {command}")
             process = subprocess.Popen(
                 command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
