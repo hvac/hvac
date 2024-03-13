@@ -11,10 +11,6 @@ class TestLDAP(HvacIntegrationTestCase, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.client = Client(
-            url="http://localhost:8200",
-            token="root"
-        )
 
     def tearDown(self):
         super().tearDown()
@@ -130,6 +126,7 @@ class TestLDAP(HvacIntegrationTestCase, TestCase):
         [
             ("vault-static", DEFAULT_MOUNT_POINT, False),
             ("vault-static-already-managed", DEFAULT_MOUNT_POINT, False, exceptions.InvalidPath),
+            ("vault-static-1", DEFAULT_MOUNT_POINT, True),
         ]
     )
     def test_read_static_role(
@@ -142,8 +139,11 @@ class TestLDAP(HvacIntegrationTestCase, TestCase):
     ):
         username="vaulttest"
         dn="cn=vaulttest,ou=users,dc=example,dc=org"
-        rotation_period=86400
+        rotation_period=600
         if create_role_before_test:
+            username="vaulttest1"
+            dn="cn=vaulttest1,ou=users,dc=example,dc=org"
+            rotation_period=86400
             self.client.secrets.ldap.create_or_update_static_role(name, username, dn, rotation_period, mount_point=mount_point)
 
         if raises:
@@ -169,31 +169,89 @@ class TestLDAP(HvacIntegrationTestCase, TestCase):
                 second=static_result["data"]["rotation_period"],
             )
 
+    @parameterized.expand(
+        [
+            ("invalid", exceptions.InvalidPath),
+            (DEFAULT_MOUNT_POINT),
+        ]
+    )
     def test_list_static_roles(
         self, 
         mount_point=DEFAULT_MOUNT_POINT,
-        create_role_before_test=True,
         raises=None, 
         exception_message=""
     ):
-        pass
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.secrets.ldap.list_static_roles(mount_point)
 
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            list_result = self.client.secrets.ldap.list_static_roles(mount_point)
+            self.assertTrue(
+                len(list_result["data"]) > 0
+            )
+
+    @parameterized.expand(
+        [
+            ("vault-static", "invalid", False, exceptions.InvalidPath),
+            ("vault-static-deleteme", DEFAULT_MOUNT_POINT, True),
+        ]
+    )
     def test_delete_static_role(
         self, 
         name, 
         mount_point=DEFAULT_MOUNT_POINT,
-        create_role_before_test=True,
+        create_role_before_test=False,
         raises=None, 
         exception_message=""
     ):
-        pass
+        username="vaulttest2"
+        dn="cn=vaulttest2,ou=users,dc=example,dc=org"
+        rotation_period=86400
+        if create_role_before_test:
+            self.client.secrets.ldap.create_or_update_static_role(name, username, dn, rotation_period, mount_point=mount_point)
+        
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.secrets.ldap.delete_static_role(name, mount_point)
 
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            delete_result = self.client.secrets.ldap.delete_static_role(name, mount_point)
+            self.assertEqual(
+                first=204,
+                second=delete_result.status_code,
+            )
+
+    @parameterized.expand(
+        [
+            ("vault-static", "invalid", exceptions.InvalidPath),
+            ("vault-static", DEFAULT_MOUNT_POINT),
+        ]
+    )
     def test_generate_static_credentials(
         self, 
         name, 
         mount_point=DEFAULT_MOUNT_POINT,
-        create_role_before_test=True,
         raises=None, 
         exception_message=""
     ):
-        pass
+        if raises:
+            with self.assertRaises(raises) as cm:
+                self.client.secrets.ldap.generate_static_credentials(name, mount_point)
+
+            self.assertIn(
+                member=exception_message,
+                container=str(cm.exception),
+            )
+        else:
+            credentials_result = self.client.secrets.ldap.generate_static_credentials(name, mount_point)
+            self.assertIsNotNone(credentials_result['data'])
+            self.assertIsNotNone(credentials_result['data']['password'])
