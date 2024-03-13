@@ -49,7 +49,7 @@ class HvacIntegrationTestCase:
                 cls.manager.start()
                 cls.manager.initialize()
                 cls.manager.unseal()
-              cls.manager.configure()
+                cls.manager.configure()
             except Exception as e:
                 cls.manager.stop()
                 logging.debug(
