@@ -35,5 +35,5 @@ services:
     environment:
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=adminpassword
-      - LDAP_USERS=vaulttest
-      - LDAP_PASSWORDS=vaulttestpassword
+      - LDAP_USERS=vaulttest,vaulttest1,vaulttest2
+      - LDAP_PASSWORDS=vaulttestpassword,vaulttestpassword,vaulttestpassword

@@ -3,8 +3,11 @@ REQUIREMENTS_FILES	:= requirements requirements-dev
 
 .PHONY: clean package publish test update-all-requirements typos $(addsuffix .txt, $(REQUIREMENTS_FILES)) docs/requirements.txt
 
-test:
+docker_test:
 	pytest --cov=hvac tests/
+
+test:
+	pytest --cov=hvac -n auto --dist worksteal tests/
 
 clean:
 	rm -rf dist hvac.egg-info

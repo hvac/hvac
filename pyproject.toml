@@ -82,10 +82,6 @@ docutils = "^0.20"
 jinja2 = "<3.2.0"
 setuptools = "^69"
 
-
-[tool.pytest.ini_options]
-addopts = "-n auto --dist worksteal"
-
 [tool.typos.default.extend-words]
 Hashi = "Hashi"
 saftey = "saftey"
