@@ -8,7 +8,7 @@ import re
 import socket
 import subprocess
 import typing as t
-from distutils.spawn import find_executable
+from shutil import which
 from unittest import SkipTest, mock
 
 from hvac import Client
@@ -23,7 +23,7 @@ LATEST_VAULT_VERSION = "1.1.3"
 def get_vault_version_string():
     if "cache" in get_vault_version_string.__dict__:
         return get_vault_version_string.cache
-    if not find_executable("vault"):
+    if not which("vault"):
         raise SkipTest("Vault executable not found")
     command = ["vault", "-version"]
     process = subprocess.Popen(**get_popen_kwargs(args=command, stdout=subprocess.PIPE))

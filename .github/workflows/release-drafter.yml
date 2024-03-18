@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Run release-drafter action
         id: release-drafter
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         with:
           disable-autolabeler: true
         env:

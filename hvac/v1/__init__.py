@@ -348,7 +348,7 @@ class Client:
         self,
         path: str,
         *,
-        data: t.Dict[str, t.Any] = {},
+        data: t.Optional[t.Dict[str, t.Any]] = None,
         wrap_ttl: t.Optional[str] = None,
     ):
         """Write data to a path. Similar to write() without restrictions on data keys.
@@ -359,7 +359,7 @@ class Client:
         :param path:
         :type path: str
         :param data:
-        :type data: dict
+        :type data: dict | None
         :param wrap_ttl:
         :type wrap_ttl: str | None
         :return:

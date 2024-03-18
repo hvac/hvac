@@ -16,9 +16,9 @@ copyright = "2018-2020, Ian Unruh, Jeffrey Hogan"
 author = "Ian Unruh, Jeffrey Hogan"
 
 # The short X.Y version
-version = "2.0.0"
+version = "2.1.0"
 # The full version, including alpha/beta/rc tags
-release = "2.0.0"
+release = "2.1.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,7 +48,7 @@ source_suffix = [".rst", ".md"]
 # The master toctree document.
 master_doc = "index"
 
-language = None
+language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 pygments_style = "sphinx"
 
@@ -87,7 +87,7 @@ doctest_global_setup = """
 import os
 from pprint import pprint, pformat
 
-import mock
+import unittest.mock
 
 import hvac
 from tests import utils as test_utils
