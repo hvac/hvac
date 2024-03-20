@@ -166,7 +166,7 @@ jobs:
           tests/unit_tests
 
     - name: Upload unit tests coverage artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage_reports
         path: reports/*.xml
@@ -248,7 +248,7 @@ jobs:
           tests/integration_tests
 
     - name: Upload integration tests coverage artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage_reports
         path: reports/*.xml
