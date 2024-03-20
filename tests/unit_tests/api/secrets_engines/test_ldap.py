@@ -112,10 +112,8 @@ class TestLdap(TestCase):
     @requests_mock.Mocker()
     def test_rotate_root(self, test_label, mount_point, requests_mocker):
         expected_status_code = 204
-        mock_url = (
-            "http://localhost:8200/v1/{mount_point}/rotate-root".format(
-                mount_point=mount_point,
-            )
+        mock_url = "http://localhost:8200/v1/{mount_point}/rotate-root".format(
+            mount_point=mount_point,
         )
         requests_mocker.register_uri(
             method="POST",
@@ -138,7 +136,9 @@ class TestLdap(TestCase):
         ]
     )
     @requests_mock.Mocker()
-    def test_create_or_update_static_role(self, test_label, mount_point, name, requests_mocker):
+    def test_create_or_update_static_role(
+        self, test_label, mount_point, name, requests_mocker
+    ):
         expected_status_code = 204
         mock_url = "http://localhost:8200/v1/{mount_point}/static-role/{name}".format(
             mount_point=mount_point,
@@ -179,7 +179,7 @@ class TestLdap(TestCase):
             "data": {
                 "username": "myuser",
                 "dn": "cn=myuser,ou=users,dc=example,dc=com",
-                "rotation_period": 600
+                "rotation_period": 600,
             },
             "renewable": False,
         }
@@ -249,11 +249,13 @@ class TestLdap(TestCase):
             "lease_duration": 0,
             "request_id": "0c34cc02-2f75-7deb-a531-33cf7434a729",
             "data": {
-                "roles": [{
-                    "username": "myuser",
-                    "dn": "cn=myuser,ou=users,dc=example,dc=com",
-                    "rotation_period": 600
-                }]
+                "roles": [
+                    {
+                        "username": "myuser",
+                        "dn": "cn=myuser,ou=users,dc=example,dc=com",
+                        "rotation_period": 600,
+                    }
+                ]
             },
             "renewable": False,
         }
