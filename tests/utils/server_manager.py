@@ -14,7 +14,6 @@ from tests.utils import (
     load_config_file,
     create_client,
     PortGetter,
-    vault_running_inside_docker,
 )
 
 from hvac.v1 import Client
@@ -138,17 +137,8 @@ class ServerManager:
         self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
     ):
         """Launch the vault server process and wait until its online and ready."""
-        container = vault_running_inside_docker()
-        if not container:
-            if distutils.spawn.find_executable("vault") is None:
-                raise SkipTest("Vault executable not found")
-        else:
-            if self.client is None:
-                this_addr = self.get_config_vault_address('vault-tls.hcl')
-                this_addr = this_addr.replace('0.0.0.0', '127.0.0.1')
-                this_client = create_client(url=this_addr)
-                self.client = this_client
-            return
+        if distutils.spawn.find_executable("vault") is None:
+            raise SkipTest("Vault executable not found")
 
         with PortGetter() as g:
             self.active_config_paths = [
@@ -166,7 +156,6 @@ class ServerManager:
         cluster_ready = False
         for config_path in self.active_config_paths:
             this_addr = self.get_config_vault_address(config_path)
-            this_addr = this_addr.replace('0.0.0.0', '127.0.0.1')
             this_client = create_client(url=this_addr)
             if self.client is None:
                 self.client = this_client
@@ -206,7 +195,6 @@ class ServerManager:
                             raise Exception(
                                 "Vault server terminated before becoming ready"
                             )
-
                     logger.debug("Waiting for Vault to start")
                     time.sleep(0.5)
                     attempts_left -= 1
@@ -214,7 +202,6 @@ class ServerManager:
             if not cluster_ready:
                 if process.poll() is None:
                     process.kill()
-
                 stdout, stderr = process.communicate()
                 if attempt < max_attempts:
                     logger.debug(
@@ -309,10 +296,6 @@ class ServerManager:
 
     def stop(self):
         """Stop the vault server process being managed by this class."""
-        container = vault_running_inside_docker()
-        if container:
-            return
-
         self.client = None
         for process_num, pinfo in reversed(list(enumerate(self._processes))):
             logger.debug(
@@ -387,9 +370,7 @@ class ServerManager:
             else self.config_paths
         )
         for config_path in config_paths:
-            vault_addr = self.get_config_vault_address(config_path)
-            vault_addr = vault_addr.replace('0.0.0.0', '127.0.0.1')
-            vault_addresses.append(vault_addr)
+            vault_addresses.append(self.get_config_vault_address(config_path))
         return vault_addresses
 
     def unseal(self):
@@ -398,11 +379,3 @@ class ServerManager:
         for vault_address in vault_addresses:
             client = create_client(url=vault_address)
             client.sys.submit_unseal_keys(self.keys)
-
-    def configure(self):
-        """Configure any pre-requisites for tests."""
-        if distutils.spawn.find_executable("terraform"):
-            terraform_dir = get_config_file_path("vault-ldap")
-            # Now we need to run terraform to setup
-            subprocess.check_call(f"terraform -chdir='{terraform_dir}' init", shell=True)
-            subprocess.check_call(f"terraform -chdir='{terraform_dir}' apply -var='token={self.root_token}' -auto-approve", shell=True)

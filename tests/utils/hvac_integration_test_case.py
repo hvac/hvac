@@ -43,13 +43,11 @@ class HvacIntegrationTestCase:
             config_paths=config_paths,
             use_consul=cls.enable_vault_ha,
         )
-
         while True:
             try:
                 cls.manager.start()
                 cls.manager.initialize()
                 cls.manager.unseal()
-                cls.manager.configure()
             except Exception as e:
                 cls.manager.stop()
                 logging.debug(
@@ -62,7 +60,6 @@ class HvacIntegrationTestCase:
                     raise
             else:
                 break
-
 
     @classmethod
     def tearDownClass(cls):
