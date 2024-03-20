@@ -112,7 +112,6 @@ class TestLdap(TestCase):
     @requests_mock.Mocker()
     def test_rotate_root(self, test_label, mount_point, requests_mocker):
         expected_status_code = 204
-        group_name = "hvac"
         mock_url = (
             "http://localhost:8200/v1/{mount_point}/rotate-root".format(
                 mount_point=mount_point,
