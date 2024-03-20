@@ -341,7 +341,8 @@ class Transit(VaultApiBase):
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled for this key.
         :type context: str | unicode
-        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also be authenticated with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
+        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also be authenticated
+            with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
         :type associated_data: str | unicode
         :param key_version: Specifies the version of the key to use for encryption. If not set, uses the latest version.
             Must be greater than or equal to the key's min_encryption_version, if set.
@@ -420,7 +421,8 @@ class Transit(VaultApiBase):
         :param context: Specifies the base64 encoded context for key derivation. This is required if key derivation is
             enabled.
         :type context: str | unicode
-        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also be authenticated with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
+        :param associated_data: Specifies base64 encoded associated data (also known as additional data or AAD) to also
+            be authenticated with AEAD ciphers (aes128-gcm96, aes256-gcm, and chacha20-poly1305)
         :type associated_data: str | unicode
         :param nonce: Specifies a base64 encoded nonce value used during encryption. Must be provided if convergent
             encryption is enabled for this key and the key was generated with Vault 0.6.1. Not required for keys created
