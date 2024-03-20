@@ -39,11 +39,11 @@ class JWT(VaultApiBase):
         jwks_ca_pem=None,
         jwt_validation_pubkeys=None,
         bound_issuer=None,
-        namespace_in_state=None,
         jwt_supported_algs=None,
         default_role=None,
         provider_config=None,
         path=None,
+        namespace_in_state=None,
     ):
         """Configure the validation information to be used globally across all roles.
 
@@ -79,9 +79,6 @@ class JWT(VaultApiBase):
         :type jwt_validation_pubkeys: str | unicode
         :param bound_issuer: in a JWT.
         :type bound_issuer: str | unicode
-        :param namespace_in_state: With this setting, the allowed redirect URL(s) in Vault and on the provider side
-            should not contain a namespace query parameter.
-        :type namespace_in_state: bool
         :param jwt_supported_algs: A list of supported signing algorithms. Defaults to [RS256].
         :type jwt_supported_algs: str | unicode
         :param default_role: The default role to use if none is provided during login.
@@ -90,6 +87,9 @@ class JWT(VaultApiBase):
         :type provider_config: map
         :param path: The "path" the method/backend was mounted on.
         :type path: str | unicode
+        :param namespace_in_state: With this setting, the allowed redirect URL(s) in Vault and on the provider side
+            should not contain a namespace query parameter.
+        :type namespace_in_state: bool
         :return: The response of the configure request.
         :rtype: requests.Response
         """
@@ -105,10 +105,10 @@ class JWT(VaultApiBase):
                 "jwks_ca_pem": jwks_ca_pem,
                 "jwt_validation_pubkeys": jwt_validation_pubkeys,
                 "bound_issuer": bound_issuer,
-                "namespace_in_state": namespace_in_state,
                 "jwt_supported_algs": jwt_supported_algs,
                 "default_role": default_role,
                 "provider_config": provider_config,
+                "namespace_in_state": namespace_in_state,
             }
         )
         api_path = utils.format_url(
