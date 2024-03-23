@@ -43,6 +43,7 @@ class JWT(VaultApiBase):
         default_role=None,
         provider_config=None,
         path=None,
+        namespace_in_state=None,
     ):
         """Configure the validation information to be used globally across all roles.
 
@@ -86,6 +87,9 @@ class JWT(VaultApiBase):
         :type provider_config: map
         :param path: The "path" the method/backend was mounted on.
         :type path: str | unicode
+        :param namespace_in_state: With this setting, the allowed redirect URL(s) in Vault and on the provider side
+            should not contain a namespace query parameter.
+        :type namespace_in_state: bool
         :return: The response of the configure request.
         :rtype: requests.Response
         """
@@ -104,6 +108,7 @@ class JWT(VaultApiBase):
                 "jwt_supported_algs": jwt_supported_algs,
                 "default_role": default_role,
                 "provider_config": provider_config,
+                "namespace_in_state": namespace_in_state,
             }
         )
         api_path = utils.format_url(
