@@ -5,7 +5,7 @@ import time
 
 from tests.utils import get_config_file_path, create_client, is_enterprise
 from tests.utils.server_manager import ServerManager
-import distutils.spawn
+import shutil
 from hvac import Client
 
 
@@ -23,7 +23,7 @@ class HvacIntegrationTestCase:
     def setUpClass(cls):
         """Use the ServerManager class to launch a vault server process."""
         config_paths = [get_config_file_path("vault-tls.hcl")]
-        if distutils.spawn.find_executable("consul") is None and cls.enable_vault_ha:
+        if shutil.which("consul") is None and cls.enable_vault_ha:
             logging.warning(
                 "Unable to run Vault in HA mode, consul binary not found in path."
             )
