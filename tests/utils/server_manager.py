@@ -7,7 +7,7 @@ import requests
 import hcl
 import typing as t
 
-import distutils.spawn
+import shutil
 from unittest import SkipTest
 from tests.utils import (
     get_config_file_path,
@@ -137,7 +137,7 @@ class ServerManager:
         self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
     ):
         """Launch the vault server process and wait until its online and ready."""
-        if distutils.spawn.find_executable("vault") is None:
+        if shutil.which("vault") is None:
             raise SkipTest("Vault executable not found")
 
         with PortGetter() as g:
@@ -225,7 +225,7 @@ class ServerManager:
     def start_consul(
         self,
     ) -> str:
-        if distutils.spawn.find_executable("consul") is None:
+        if shutil.which("consul") is None:
             raise SkipTest("Consul executable not found")
 
         with PortGetter() as g:
