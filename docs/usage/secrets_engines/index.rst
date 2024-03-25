@@ -10,6 +10,7 @@ Secrets Engines
    database
    gcp
    identity
+   ldap
    pki
    kv
    kv_v1
