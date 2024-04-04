@@ -49,6 +49,14 @@ class InvalidPath(VaultError):
     pass
 
 
+class UnsupportedOperation(VaultError):
+    pass
+
+
+class PreconditionFailed(VaultError):
+    pass
+
+
 class RateLimitExceeded(VaultError):
     pass
 
