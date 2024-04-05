@@ -26,9 +26,9 @@ class Aws(VaultApiBase):
         endpoint=None,
         iam_endpoint=None,
         sts_endpoint=None,
-        sts_region=None,
         iam_server_id_header_value=None,
         mount_point=AWS_DEFAULT_MOUNT_POINT,
+        sts_region=None,
     ):
         """Configure the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS API.
 
@@ -61,9 +61,6 @@ class Aws(VaultApiBase):
         :type iam_endpoint: str | unicode
         :param sts_endpoint: URL to override the default generated endpoint for making AWS STS API calls
         :type sts_endpoint: str | unicode
-        :param sts_region: Region to override the default region for making AWS STS API calls. Should only be set if 
-            sts_endpoint is set. If so, should be set to the region in which the custom sts_endpoint resides
-        :type sts_region: str | unicode
         :param iam_server_id_header_value: The value to require in the X-Vault-AWS-IAM-Server-ID header as part of
             GetCallerIdentity requests that are used in the iam auth method. If not set, then no value is required or
             validated. If set, clients must include an X-Vault-AWS-IAM-Server-ID header in the headers of login
@@ -73,6 +70,9 @@ class Aws(VaultApiBase):
         :type iam_server_id_header_value: str | unicode
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str | unicode
+        :param sts_region: Region to override the default region for making AWS STS API calls. Should only be set if
+            sts_endpoint is set. If so, should be set to the region in which the custom sts_endpoint resides
+        :type sts_region: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -85,8 +85,8 @@ class Aws(VaultApiBase):
                 "endpoint": endpoint,
                 "iam_endpoint": iam_endpoint,
                 "sts_endpoint": sts_endpoint,
-                "sts_region": sts_region,
                 "iam_server_id_header_value": iam_server_id_header_value,
+                "sts_region": sts_region,
             }
         )
         api_path = utils.format_url(
