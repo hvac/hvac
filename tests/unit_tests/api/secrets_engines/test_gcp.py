@@ -10,7 +10,7 @@ from hvac.exceptions import (
     ParamValidationError,
     InvalidRequest,
     InvalidPath,
-    UnexpectedError,
+    UnsupportedOperation,
     InternalServerError,
 )
 
@@ -268,7 +268,7 @@ class TestGcp(TestCase):
         [
             param(method="POST", expected_status_code=204),
             param(method="POST", expected_status_code=400, raises=InvalidRequest),
-            param(method="POST", expected_status_code=405, raises=UnexpectedError),
+            param(method="POST", expected_status_code=405, raises=UnsupportedOperation),
         ]
     )
     def test_rotate_roleset_account(
@@ -309,7 +309,7 @@ class TestGcp(TestCase):
         [
             param(method="POST", expected_status_code=204),
             param(method="POST", expected_status_code=400, raises=InvalidRequest),
-            param(method="POST", expected_status_code=405, raises=UnexpectedError),
+            param(method="POST", expected_status_code=405, raises=UnsupportedOperation),
         ]
     )
     def test_rotate_roleset_account_key(
@@ -382,7 +382,7 @@ class TestGcp(TestCase):
                 method="GET",
                 expected_status_code=405,
                 secret_type="service_account_key",
-                raises=UnexpectedError,
+                raises=UnsupportedOperation,
             ),
         ]
     )
@@ -435,7 +435,7 @@ class TestGcp(TestCase):
                 expected_response={"data": {"keys": ["roleset-01", "roleset-02"]}},
             ),
             param(method="LIST", expected_status_code=404, raises=InvalidPath),
-            param(method="LIST", expected_status_code=405, raises=UnexpectedError),
+            param(method="LIST", expected_status_code=405, raises=UnsupportedOperation),
         ]
     )
     def test_list_rolesets(
@@ -471,7 +471,9 @@ class TestGcp(TestCase):
         [
             param(method="DELETE", expected_status_code=204),
             param(method="DELETE", expected_status_code=404, raises=InvalidPath),
-            param(method="DELETE", expected_status_code=405, raises=UnexpectedError),
+            param(
+                method="DELETE", expected_status_code=405, raises=UnsupportedOperation
+            ),
         ]
     )
     def test_delete_roleset(
@@ -712,7 +714,7 @@ class TestGcp(TestCase):
             param(
                 method="POST",
                 expected_status_code=405,
-                raises=UnexpectedError,
+                raises=UnsupportedOperation,
                 expected_response={
                     "errors": ["cannot rotate key for non-access-token static account"]
                 },
@@ -789,7 +791,7 @@ class TestGcp(TestCase):
                 method="GET",
                 expected_status_code=405,
                 secret_type="service_account_key",
-                raises=UnexpectedError,
+                raises=UnsupportedOperation,
             ),
         ]
     )
@@ -846,7 +848,7 @@ class TestGcp(TestCase):
                 },
             ),
             param(method="LIST", expected_status_code=404, raises=InvalidPath),
-            param(method="LIST", expected_status_code=405, raises=UnexpectedError),
+            param(method="LIST", expected_status_code=405, raises=UnsupportedOperation),
         ]
     )
     def test_list_static_accounts(
@@ -883,7 +885,9 @@ class TestGcp(TestCase):
         [
             param(method="DELETE", expected_status_code=204),
             param(method="DELETE", expected_status_code=404, raises=InvalidPath),
-            param(method="DELETE", expected_status_code=405, raises=UnexpectedError),
+            param(
+                method="DELETE", expected_status_code=405, raises=UnsupportedOperation
+            ),
         ]
     )
     def test_delete_static_account(
@@ -1186,7 +1190,7 @@ class TestGcp(TestCase):
                 },
             ),
             param(method="LIST", expected_status_code=404, raises=InvalidPath),
-            param(method="LIST", expected_status_code=405, raises=UnexpectedError),
+            param(method="LIST", expected_status_code=405, raises=UnsupportedOperation),
         ]
     )
     def test_list_impersonated_accounts(
@@ -1225,7 +1229,9 @@ class TestGcp(TestCase):
         [
             param(method="DELETE", expected_status_code=204),
             param(method="DELETE", expected_status_code=404, raises=InvalidPath),
-            param(method="DELETE", expected_status_code=405, raises=UnexpectedError),
+            param(
+                method="DELETE", expected_status_code=405, raises=UnsupportedOperation
+            ),
         ]
     )
     def test_delete_impersonated_account(
