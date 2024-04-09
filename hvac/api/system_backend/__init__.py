@@ -16,6 +16,7 @@ from hvac.api.system_backend.policy import Policy
 from hvac.api.system_backend.quota import Quota
 from hvac.api.system_backend.raft import Raft
 from hvac.api.system_backend.seal import Seal
+from hvac.api.system_backend.tools import Tools
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 from hvac.api.system_backend.wrapping import Wrapping
 from hvac.api.vault_api_category import VaultApiCategory
@@ -36,6 +37,7 @@ __all__ = (
     "Quota",
     "Raft",
     "Seal",
+    "Tools",
     "SystemBackend",
     "SystemBackendMixin",
     "Wrapping",
@@ -62,6 +64,7 @@ class SystemBackend(
     Quota,
     Raft,
     Seal,
+    Tools,
     Wrapping,
 ):
     implemented_classes = [
@@ -80,6 +83,7 @@ class SystemBackend(
         Quota,
         Raft,
         Seal,
+        Tools,
         Wrapping,
     ]
     unimplemented_classes = []
