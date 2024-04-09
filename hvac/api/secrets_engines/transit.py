@@ -603,7 +603,7 @@ class Transit(VaultApiBase):
         )
 
     def generate_random_bytes(
-        self, n_bytes=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT
+        self, n_bytes=None, output_format=None, source="platform", mount_point=DEFAULT_MOUNT_POINT
     ):
         """Return high-quality random bytes of the specified length.
 
@@ -615,6 +615,10 @@ class Transit(VaultApiBase):
         :type n_bytes: int
         :param output_format: Specifies the output encoding. Valid options are hex or base64.
         :type output_format: str | unicode
+        :param source: Specifies the source of the requested bytes. platform, the default, 
+            sources bytes from the platform's entropy source. seal sources from entropy augmentation (enterprise only). 
+            all mixes bytes from all available sources.
+        :type source: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The JSON response of the request.
@@ -626,7 +630,7 @@ class Transit(VaultApiBase):
                 "format": output_format,
             }
         )
-        api_path = utils.format_url("/v1/{mount_point}/random", mount_point=mount_point)
+        api_path = utils.format_url("/v1/{mount_point}/random/{source}", mount_point=mount_point, source=source)
         return self._adapter.post(
             url=api_path,
             json=params,
