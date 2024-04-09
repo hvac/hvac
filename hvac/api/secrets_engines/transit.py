@@ -603,7 +603,7 @@ class Transit(VaultApiBase):
         )
 
     def generate_random_bytes(
-        self, n_bytes=None, output_format=None, source="platform", mount_point=DEFAULT_MOUNT_POINT
+        self, n_bytes=None, output_format=None, source="", mount_point=DEFAULT_MOUNT_POINT
     ):
         """Return high-quality random bytes of the specified length.
 
