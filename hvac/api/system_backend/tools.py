@@ -5,7 +5,7 @@ from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
 
 class Tools(SystemBackendMixin):
     def generate_random_bytes(
-        self, n_bytes=None, output_format=None, source=""
+        self, n_bytes=None, output_format=None, source=None
     ):
         """Return high-quality random bytes of the specified length.
 
@@ -30,7 +30,12 @@ class Tools(SystemBackendMixin):
                 "format": output_format,
             }
         )
-        api_path = utils.format_url("/v1/sys/tools/random/{source}", source=source)
+
+        if source is None:
+            api_path = "/v1/sys/tools/random"
+        else:
+            api_path = utils.format_url("/v1/sys/tools/random/{source}", source=source)
+
         return self._adapter.post(
             url=api_path,
             json=params,

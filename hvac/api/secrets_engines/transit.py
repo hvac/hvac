@@ -603,7 +603,7 @@ class Transit(VaultApiBase):
         )
 
     def generate_random_bytes(
-        self, n_bytes=None, output_format=None, source="", mount_point=DEFAULT_MOUNT_POINT
+        self, n_bytes=None, output_format=None, mount_point=DEFAULT_MOUNT_POINT, source=None
     ):
         """Return high-quality random bytes of the specified length.
 
@@ -630,7 +630,13 @@ class Transit(VaultApiBase):
                 "format": output_format,
             }
         )
-        api_path = utils.format_url("/v1/{mount_point}/random/{source}", mount_point=mount_point, source=source)
+
+        if source is None:
+            api_path = utils.format_url("/v1/{mount_point}/random", mount_point=mount_point)
+        else:
+            api_path = utils.format_url("/v1/{mount_point}/random/{source}", mount_point=mount_point, source=source)
+
+        api_path = utils.format_url(api_path)
         return self._adapter.post(
             url=api_path,
             json=params,
