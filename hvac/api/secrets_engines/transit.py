@@ -615,9 +615,9 @@ class Transit(VaultApiBase):
         :type n_bytes: int
         :param output_format: Specifies the output encoding. Valid options are hex or base64.
         :type output_format: str | unicode
-        :param source: Specifies the source of the requested bytes. platform, the default, 
-            sources bytes from the platform's entropy source. seal sources from entropy augmentation (enterprise only). 
-            all mixes bytes from all available sources.
+        :param source: Specifies the source of the requested bytes. ``platform``, the default, 
+            sources bytes from the platform's entropy source. ``seal`` sources from entropy augmentation (enterprise only). 
+            ``all`` mixes bytes from all available sources.
         :type source: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
