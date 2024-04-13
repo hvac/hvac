@@ -1,5 +1,5 @@
 import logging
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from parameterized import param, parameterized
 
@@ -226,6 +226,16 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
                 user_claim="sub",
             ),
         ]
+    )
+    # skipIf must come after @parameterized
+    @skipIf(
+        utils.vault_version_eq("1.16.1"),
+        (
+            "Known issue with JWT\n"
+            "https://developer.hashicorp.com/vault/docs/upgrading/upgrade-to-1.16.x#error-configuring-the-jwt-auth-method\n"
+            "https://github.com/hashicorp/vault-plugin-auth-jwt/issues/294#issuecomment-2046107870\n"
+            "https://github.com/hashicorp/vault-plugin-auth-jwt/pull/290\n"
+        ),
     )
     def test_jwt_login(self, label, role_name, allowed_redirect_uris, user_claim):
         issuer = self.client.url
