@@ -47,7 +47,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 Werkzeug = "^2.3.7"
 Authlib = "^1.0.1"
-black = "22.6.0"
+black = "24.3.0"
 Flask = "^2.2.5"
 Flask-SQLAlchemy = "^3.0.5"
 flake8 = "^5.0.0"
