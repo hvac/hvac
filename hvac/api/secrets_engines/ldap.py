@@ -23,8 +23,6 @@ class Ldap(VaultApiBase):
         userattr=None,
         upndomain=None,
         mount_point=DEFAULT_MOUNT_POINT,
-        *args,
-        **kwargs
     ):
         """Configure shared information for the ldap secrets engine.
 
