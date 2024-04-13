@@ -210,6 +210,47 @@ class TestLdap(TestCase):
         ]
     )
     @requests_mock.Mocker()
+    def test_generate_static_credentials(
+        self, test_label, mount_point, requests_mocker
+    ):
+        expected_status_code = 200
+        role_name = "hvac"
+        mock_response = {
+            "dn": "uid=hashicorp,ou=Users,dc=example,dc=com",
+            "last_vault_rotation": "2020-02-19T11:31:53.7812-05:00",
+            "password": "LTNfyn7pS7XEZIxEYQ2sEAWic02PEP7zSvIs0xMqIjaU0ORzLhKOKVmYLxL1Xkyv",
+            "last_password": "?@09AZSen9TzUwK7ZhafS7B0GuWGraQjfWEna5SwnmF/tVaKFqjXhhGV/Z0v/pBJ",
+            "rotation_period": 86400,
+            "ttl": 86072,
+            "username": "hashicorp",
+        }
+        mock_url = "http://localhost:8200/v1/{mount_point}/static-cred/{name}".format(
+            mount_point=mount_point,
+            name=role_name,
+        )
+        requests_mocker.register_uri(
+            method="GET",
+            url=mock_url,
+            status_code=expected_status_code,
+            json=mock_response,
+        )
+        ldap = Ldap(adapter=JSONAdapter())
+        response = ldap.generate_static_credentials(
+            name=role_name,
+            mount_point=mount_point,
+        )
+        self.assertEqual(
+            first=mock_response,
+            second=response,
+        )
+
+    @parameterized.expand(
+        [
+            ("default mount point", DEFAULT_MOUNT_POINT),
+            ("custom mount point", "other-ldap-tree"),
+        ]
+    )
+    @requests_mock.Mocker()
     def test_delete_static_role(self, test_label, mount_point, requests_mocker):
         expected_status_code = 204
         role_name = "hvac"
