@@ -109,8 +109,7 @@ Delete Static Role
 
 Remove the role configuration which allows the retrieval and rotation of an LDAP account. 
 
-The account is retained in Active Directory, but the password will be whatever Vault had rotated it to last. 
-To regain control, the password will need to be reset via Active Directory.
+Passwords are not rotated upon deletion of a static role. The password should be manually rotated prior to deleting the role or revoking access to the static role.
 
 Source reference: :py:meth:`hvac.api.secrets_engines.ldap.delete_static_role`
 

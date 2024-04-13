@@ -43,8 +43,7 @@ class Ldap(VaultApiBase):
         :type upndomain: str | unicode
         :param password_policy: – The name of the password policy to use to generate passwords.
         :type password_policy: str | unicode
-        :param schema: The LDAP schema to use when storing entry passwords. Valid schemas include openldap, ad, and racf.
-            integer number of seconds or Go duration format string.**
+        :param schema: The LDAP schema to use when storing entry passwords. Valid schemas include ``openldap``, ``ad``, and ``racf``.
         :type schema: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
@@ -122,7 +121,7 @@ class Ldap(VaultApiBase):
             This value is required on create and cannot be updated.
         :type username: str | unicode
         :param dn: Distinguished name of the existing LDAP entry to manage password rotation for (takes precedence over username).
-            Optional but cannot be modified after creation. The name of a pre-existing service account in Active Directory that maps to this role.
+            Optional but cannot be modified after creation.
         :type dn: str | unicode
         :param rotation_period: How often Vault should rotate the password.
             This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
