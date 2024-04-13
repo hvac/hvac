@@ -30,7 +30,7 @@ class TestLdap(TestCase):
         response = ldap.configure(
             binddn="cn=admin,dc=example,dc=com",
             bindpass="password",
-            url="ldaps://ldap.python-hvac.org",
+            url="ldaps://ldap.example.com",
             mount_point=mount_point,
             upndomain="example.com",
             password_policy=None,
@@ -79,7 +79,7 @@ class TestLdap(TestCase):
                 "tls_max_version": "tls12",
                 "tls_min_version": "tls12",
                 "upndomain": "",
-                "url": "ldaps://ldap.python-hvac.org",
+                "url": "ldaps://ldap.example.com",
                 "userattr": "",
                 "userdn": "",
             },
