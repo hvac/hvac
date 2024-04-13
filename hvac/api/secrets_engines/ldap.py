@@ -39,7 +39,7 @@ class Ldap(VaultApiBase):
         :type userdn: str | unicode
         :param upndomain: userPrincipalDomain used to construct the UPN string for the authenticating user.
         :type upndomain: str | unicode
-        :param password_policy: – The name of the password policy to use to generate passwords.
+        :param password_policy: The name of the password policy to use to generate passwords.
         :type password_policy: str | unicode
         :param schema: The LDAP schema to use when storing entry passwords. Valid schemas include ``openldap``, ``ad``, and ``racf``.
         :type schema: str | unicode
