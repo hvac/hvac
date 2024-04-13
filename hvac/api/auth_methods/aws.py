@@ -28,6 +28,7 @@ class Aws(VaultApiBase):
         sts_endpoint=None,
         iam_server_id_header_value=None,
         mount_point=AWS_DEFAULT_MOUNT_POINT,
+        sts_region=None,
     ):
         """Configure the credentials required to perform API calls to AWS as well as custom endpoints to talk to AWS API.
 
@@ -69,6 +70,9 @@ class Aws(VaultApiBase):
         :type iam_server_id_header_value: str | unicode
         :param mount_point: The path the AWS auth method was mounted on.
         :type mount_point: str | unicode
+        :param sts_region: Region to override the default region for making AWS STS API calls. Should only be set if
+            sts_endpoint is set. If so, should be set to the region in which the custom sts_endpoint resides
+        :type sts_region: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -82,6 +86,7 @@ class Aws(VaultApiBase):
                 "iam_endpoint": iam_endpoint,
                 "sts_endpoint": sts_endpoint,
                 "iam_server_id_header_value": iam_server_id_header_value,
+                "sts_region": sts_region,
             }
         )
         api_path = utils.format_url(

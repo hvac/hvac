@@ -1,4 +1,4 @@
-import distutils.spawn
+import shutil
 import logging
 from unittest import TestCase, SkipTest
 
@@ -17,7 +17,7 @@ class TestLdap(HvacIntegrationTestCase, TestCase):
     @classmethod
     def setUpClass(cls):
         # The mock LDAP server requires Java runtime
-        if not distutils.spawn.find_executable("java"):
+        if not shutil.which("java"):
             raise SkipTest("The mock LDAP server requires Java runtime")
 
         try:

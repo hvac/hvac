@@ -7,7 +7,7 @@ import requests
 import hcl
 import typing as t
 
-import distutils.spawn
+import shutil
 from unittest import SkipTest
 from tests.utils import (
     get_config_file_path,
@@ -17,6 +17,9 @@ from tests.utils import (
 )
 
 from hvac.v1 import Client
+
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +140,7 @@ class ServerManager:
         self, *, consul_config: dict = None, attempt=1, max_attempts=3, delay_s=1
     ):
         """Launch the vault server process and wait until its online and ready."""
-        if distutils.spawn.find_executable("vault") is None:
+        if shutil.which("vault") is None:
             raise SkipTest("Vault executable not found")
 
         with PortGetter() as g:
@@ -225,7 +228,7 @@ class ServerManager:
     def start_consul(
         self,
     ) -> str:
-        if distutils.spawn.find_executable("consul") is None:
+        if shutil.which("consul") is None:
             raise SkipTest("Consul executable not found")
 
         with PortGetter() as g:
@@ -377,5 +380,14 @@ class ServerManager:
         """Unseal the vault server process."""
         vault_addresses = self.get_active_vault_addresses()
         for vault_address in vault_addresses:
-            client = create_client(url=vault_address)
+            # At this point, the vault server may not be ready yet, resulting in "Connection refused"
+            # failures for requests. Let's retry multiple times before giving up.
+            adapter = HTTPAdapter(
+                max_retries=Retry(total=3, connect=3, backoff_factor=0.1)
+            )
+            session = requests.Session()
+            session.mount("http://", adapter)
+            session.mount("https://", adapter)
+
+            client = create_client(url=vault_address, session=session)
             client.sys.submit_unseal_keys(self.keys)

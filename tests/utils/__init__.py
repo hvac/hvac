@@ -80,7 +80,7 @@ def get_generate_root_otp():
     return test_otp
 
 
-def create_client(url, use_env=False, **kwargs):
+def create_client(url, use_env=False, session=None, **kwargs):
     """Small helper to instantiate a :py:class:`hvac.v1.Client` class with the appropriate parameters for the test env.
 
     :param url: Vault address to configure the client with.
@@ -105,10 +105,17 @@ def create_client(url, use_env=False, **kwargs):
                         **kwargs,
                     )
     else:
+        # Make sure self-signed certificates for testing will be accepted by either the default session
+        # or specific sessions used by individual tests
+        if session:
+            session.cert = (client_cert_path, client_key_path)
+            session.verify = server_cert_path
+
         client = Client(
             url=url,
             cert=(client_cert_path, client_key_path),
             verify=server_cert_path,
+            session=session,
             **kwargs,
         )
     return client

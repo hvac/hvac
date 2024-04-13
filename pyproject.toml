@@ -80,6 +80,10 @@ sphinx-rtd-theme = "^2"
 autodocsumm = "^0.2"
 docutils = "^0.20"
 jinja2 = "<3.2.0"
+# setuptools is not needed for building the docs in RTD,
+# but it is needed for running the doctests as an
+# undeclared dependency of m2r2.
+# https://github.com/CrossNox/m2r2/issues/63
 setuptools = "^69"
 
 
