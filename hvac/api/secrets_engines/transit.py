@@ -636,7 +636,6 @@ class Transit(VaultApiBase):
         else:
             api_path = utils.format_url("/v1/{mount_point}/random/{source}", mount_point=mount_point, source=source)
 
-        api_path = utils.format_url(api_path)
         return self._adapter.post(
             url=api_path,
             json=params,
