@@ -61,8 +61,6 @@ class Ldap(VaultApiBase):
             }
         )
 
-        params.update(kwargs)
-
         api_path = utils.format_url("/v1/{mount_point}/config", mount_point=mount_point)
         return self._adapter.post(
             url=api_path,
