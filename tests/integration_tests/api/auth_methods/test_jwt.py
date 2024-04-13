@@ -1,5 +1,5 @@
 import logging
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from parameterized import param, parameterized
 
@@ -217,6 +217,15 @@ class TestJWT(HvacIntegrationTestCase, TestCase):
             second=response.status_code,
         )
 
+    @skipIf(
+        utils.vault_version_eq("1.16.1"),
+        (
+            "Known issue with JWT\n"
+            "https://developer.hashicorp.com/vault/docs/upgrading/upgrade-to-1.16.x#error-configuring-the-jwt-auth-method\n"
+            "https://github.com/hashicorp/vault-plugin-auth-jwt/issues/294#issuecomment-2046107870\n"
+            "https://github.com/hashicorp/vault-plugin-auth-jwt/pull/290\n"
+        ),
+    )
     @parameterized.expand(
         [
             param(
