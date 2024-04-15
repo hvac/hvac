@@ -179,3 +179,18 @@ class ActiveDirectory(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         )
+
+    def rotate_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint triggers a force rotate LDAP password for the associated account
+
+        :param name: Specifies the name of the role to request credentials from.
+        :type name: str | unicode
+        :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url("/v1/{}/rotate-role/{}", mount_point, name)
+        return self._adapter.post(
+            url=api_path,
+        )
