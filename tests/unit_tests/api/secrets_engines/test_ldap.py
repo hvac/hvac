@@ -250,6 +250,34 @@ class TestLdap(TestCase):
             ("custom mount point", "other-ldap-tree"),
         ]
     )
+    def test_rotate_role_credentials(self, test_label, mount_point, requests_mocker):
+        expected_status_code = 204
+        role_name = "hvac"
+        mock_url = "http://localhost:8200/v1/{mount_point}/rotate-role/{name}".format(
+            mount_point=mount_point,
+            name=role_name,
+        )
+        requests_mocker.register_uri(
+            method="POST",
+            url=mock_url,
+            status_code=expected_status_code,
+        )
+        ldap = Ldap(adapter=JSONAdapter())
+        response = ldap.rotate_credentials(
+            name=role_name,
+            mount_point=mount_point,
+        )
+        self.assertEqual(
+            first=expected_status_code,
+            second=response.status_code,
+        )
+
+    @parameterized.expand(
+        [
+            ("default mount point", DEFAULT_MOUNT_POINT),
+            ("custom mount point", "other-ldap-tree"),
+        ]
+    )
     @requests_mock.Mocker()
     def test_delete_static_role(self, test_label, mount_point, requests_mocker):
         expected_status_code = 204
