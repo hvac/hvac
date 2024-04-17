@@ -250,7 +250,7 @@ class TestLdap(TestCase):
             ("custom mount point", "other-ldap-tree"),
         ]
     )
-    def test_rotate_role_credentials(self, test_label, mount_point, requests_mocker):
+    def test_rotate_credentials(self, test_label, mount_point, requests_mocker):
         expected_status_code = 204
         role_name = "hvac"
         mock_url = "http://localhost:8200/v1/{mount_point}/rotate-role/{name}".format(
