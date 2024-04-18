@@ -37,6 +37,10 @@ class TestLdap(TestCase):
             userattr=None,
             schema=None,
             userdn="ou=users,dc=example,dc=com",
+            connection_timeout="60s",
+            request_timeout="30s",
+            starttls=False,
+            insecure_tls=False,
         )
 
         self.assertEqual(
@@ -242,6 +246,35 @@ class TestLdap(TestCase):
         self.assertEqual(
             first=mock_response,
             second=response,
+        )
+
+    @parameterized.expand(
+        [
+            ("default mount point", DEFAULT_MOUNT_POINT),
+            ("custom mount point", "other-ldap-tree"),
+        ]
+    )
+    @requests_mock.Mocker()
+    def test_rotate_static_credentials(self, test_label, mount_point, requests_mocker):
+        expected_status_code = 204
+        role_name = "hvac"
+        mock_url = "http://localhost:8200/v1/{mount_point}/rotate-role/{name}".format(
+            mount_point=mount_point,
+            name=role_name,
+        )
+        requests_mocker.register_uri(
+            method="POST",
+            url=mock_url,
+            status_code=expected_status_code,
+        )
+        ldap = Ldap(adapter=JSONAdapter())
+        response = ldap.rotate_static_credentials(
+            name=role_name,
+            mount_point=mount_point,
+        )
+        self.assertEqual(
+            first=expected_status_code,
+            second=response.status_code,
         )
 
     @parameterized.expand(

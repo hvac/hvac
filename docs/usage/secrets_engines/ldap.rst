@@ -49,6 +49,23 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.read_config`
     config_response = client.secrets.ldap.read_config()
 
 
+Rotate Root
+---------------------------
+
+Rotate the password for the binddn entry used to manage LDAP. This generated password will only be known to Vault and will not be retrievable once rotated.
+
+Source reference: :py:meth:`hvac.api.secrets_engines.ldap.rotate_root`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    # Authenticate to Vault using client.auth.x
+
+    rotate_response = client.secrets.ldap.rotate_root()
+
+
 Create or Update Static Role
 ----------------------------
 
@@ -122,6 +139,7 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.delete_static_role`
 
     deletion_response = client.secrets.ldap.delete_static_role(name='sql-service-account')
 
+
 Generate Static Credentials
 ---------------------------
 
@@ -144,3 +162,20 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.generate_static_creden
         access=gen_creds_response['data']['current_password'],
         secret=gen_creds_response['data']['old_password'],
     ))
+
+
+Rotate Static Credentials
+---------------------------
+
+Manually rotate the password of an existing role.
+
+Source reference: :py:meth:`hvac.api.secrets_engines.ldap.rotate_static_credentials`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    # Authenticate to Vault using client.auth.x
+
+    rotate_response = client.secrets.ldap.rotate_static_credentials(name='hvac-role')

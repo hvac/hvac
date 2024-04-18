@@ -22,6 +22,13 @@ class Ldap(VaultApiBase):
         userdn=None,
         userattr=None,
         upndomain=None,
+        connection_timeout=None,
+        request_timeout=None,
+        starttls=None,
+        insecure_tls=None,
+        certificate=None,
+        client_tls_cert=None,
+        client_tls_key=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Configure shared information for the ldap secrets engine.
@@ -43,6 +50,20 @@ class Ldap(VaultApiBase):
         :type password_policy: str | unicode
         :param schema: The LDAP schema to use when storing entry passwords. Valid schemas include ``openldap``, ``ad``, and ``racf``.
         :type schema: str | unicode
+        :param connection_timeout: Timeout, in seconds, when attempting to connect to the LDAP server before trying the next URL in the configuration.
+        :type connection_timeout: int | str
+        :param request_timeout: Timeout, in seconds, for the connection when making requests against the server before returning back an error.
+        :type request_timeout: int | str
+        :param starttls: If true, issues a StartTLS command after establishing an unencrypted connection.
+        :type starttls: bool
+        :param insecure_tls: If true, skips LDAP server SSL certificate verification - insecure, use with caution!
+        :type insecure_tls: bool
+        :param certificate: CA certificate to use when verifying LDAP server certificate, must be x509 PEM encoded.
+        :type certificate: str | unicode
+        :param client_tls_cert: Client certificate to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_cert: str | unicode
+        :param client_tls_key: Client key to provide to the LDAP server, must be x509 PEM encoded.
+        :type client_tls_key: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -58,6 +79,13 @@ class Ldap(VaultApiBase):
                 "upndomain": upndomain,
                 "password_policy": password_policy,
                 "schema": schema,
+                "connection_timeout": connection_timeout,
+                "request_timeout": request_timeout,
+                "starttls": starttls,
+                "insecure_tls": insecure_tls,
+                "certificate": certificate,
+                "client_tls_cert": client_tls_cert,
+                "client_tls_key": client_tls_key,
             }
         )
 
@@ -123,7 +151,7 @@ class Ldap(VaultApiBase):
             This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
             If not provided, the default Vault rotation_period is used.
         :type rotation_period: str | unicode
-        :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
+        :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
@@ -141,7 +169,7 @@ class Ldap(VaultApiBase):
         If no role exists with that name, a 404 is returned.
         :param name: Specifies the name of the static role to query.
         :type name: str | unicode
-        :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
+        :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
@@ -166,7 +194,7 @@ class Ldap(VaultApiBase):
         Even if the role does not exist, this endpoint will still return a successful response.
         :param name: Specifies the name of the role to delete.
         :type name: str | unicode
-        :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
+        :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
@@ -182,12 +210,27 @@ class Ldap(VaultApiBase):
 
         :param name: Specifies the name of the static role to request credentials from.
         :type name: str | unicode
-        :param mount_point: Specifies the place where the secrets engine will be accessible (default: ad).
+        :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
         api_path = utils.format_url("/v1/{}/static-cred/{}", mount_point, name)
         return self._adapter.get(
+            url=api_path,
+        )
+
+    def rotate_static_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint rotates the password of an existing static role.
+
+        :param name: Specifies the name of the static role to rotate credentials for.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url("/v1/{}/rotate-role/{}", mount_point, name)
+        return self._adapter.post(
             url=api_path,
         )
