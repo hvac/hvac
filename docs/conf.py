@@ -16,9 +16,9 @@ copyright = "2018-2020, Ian Unruh, Jeffrey Hogan"
 author = "Ian Unruh, Jeffrey Hogan"
 
 # The short X.Y version
-version = "2.1.0"
+version = "2.2.0"
 # The full version, including alpha/beta/rc tags
-release = "2.1.0"
+release = "2.2.0"
 
 
 # -- General configuration ---------------------------------------------------
