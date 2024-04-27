@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.2.0
+
+### 📢 Deprecations / Announcements
+
+- Add new exception types for HTTP status 405 and 412 ([GH-1148](https://github.com/hvac/hvac/pull/1148))
+
+### 🚀 Features
+
+- LDAP secrets engine enhancements ([GH-1163](https://github.com/hvac/hvac/pull/1163))
+- LDAP secret engine support (#1032) ([GH-1033](https://github.com/hvac/hvac/pull/1033))
+- Add new exception types for HTTP status 405 and 412 ([GH-1148](https://github.com/hvac/hvac/pull/1148))
+- Add sts_region parameter to auth.aws.configure ([GH-1136](https://github.com/hvac/hvac/pull/1136))
+- Adding namespace_in_state to jwt ([GH-1144](https://github.com/hvac/hvac/pull/1144))
+- Add associated_data to encrypt/decrypt transit endpoints ([GH-1108](https://github.com/hvac/hvac/pull/1108))
+- aws auth - add support for `iam_metadata` and `ec2_metadata` params ([GH-1125](https://github.com/hvac/hvac/pull/1125))
+
+### 🧰 Miscellaneous
+
+- Bump idna from 3.6 to 3.7 ([GH-1160](https://github.com/hvac/hvac/pull/1160))
+- Bump jwcrypto from 1.5.1 to 1.5.6 ([GH-1158](https://github.com/hvac/hvac/pull/1158))
+- Bump cryptography from 41.0.7 to 42.0.4 ([GH-1157](https://github.com/hvac/hvac/pull/1157))
+- add Vault 1.16.x to CI matrix ([GH-1155](https://github.com/hvac/hvac/pull/1155))
+- Make integration tests more reliable ([GH-1153](https://github.com/hvac/hvac/pull/1153))
+- Replace distutils.spawn with shutil.which ([GH-1146](https://github.com/hvac/hvac/pull/1146))
+- Bump jinja2 from 3.0.3 to 3.1.3 ([GH-1131](https://github.com/hvac/hvac/pull/1131))
+- refactor: move identity DEFAULT_MOUNT_POINT to constants ([GH-1123](https://github.com/hvac/hvac/pull/1123))
+
 ## 2.1.0
 
 ### 🚀 Features
