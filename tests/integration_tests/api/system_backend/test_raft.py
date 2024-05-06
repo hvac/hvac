@@ -1,4 +1,3 @@
-import logging
 from unittest import TestCase, skipIf
 
 from tests import utils
@@ -21,16 +20,14 @@ class TestRaft(HvacIntegrationTestCase, TestCase):
             "file_prefix": "vault-raft-auto-snapshot",
         }
 
-        create_or_update_raft_auto_config_response = (
-            self.client.sys.create_or_update_raft_auto_snapshot_config(
-                name=raft_configs_dict["name"],
-                interval=raft_configs_dict["interval"],
-                storage_type=raft_configs_dict["storage_type"],
-                retain=raft_configs_dict["retain"],
-                local_max_space=raft_configs_dict["local_max_space"],
-                path_prefix=raft_configs_dict["path_prefix"],
-                file_prefix=raft_configs_dict["file_prefix"],
-            )
+        self.client.sys.create_or_update_raft_auto_snapshot_config(
+            name=raft_configs_dict["name"],
+            interval=raft_configs_dict["interval"],
+            storage_type=raft_configs_dict["storage_type"],
+            retain=raft_configs_dict["retain"],
+            local_max_space=raft_configs_dict["local_max_space"],
+            path_prefix=raft_configs_dict["path_prefix"],
+            file_prefix=raft_configs_dict["file_prefix"],
         )
 
         self.assertEqual(
