@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Raft methods module."""
+from hvac import adapters, utils
 from hvac.api.system_backend.system_backend_mixin import SystemBackendMixin
-from hvac import utils, adapters
 
 
 class Raft(SystemBackendMixin):
@@ -152,4 +152,102 @@ class Raft(SystemBackendMixin):
         return self._adapter.post(
             url=api_path,
             data=snapshot,
+        )
+
+    def read_raft_auto_snapshot_status(self, name):
+        """Read the status of the raft auto snapshot.
+
+        Supported methods:
+            GET: /sys/storage/raft/snapshot-auto/status/:name. Produces: 200 application/json
+
+        :param name: The name of the snapshot configuration.
+        :type name: str
+        :return: The response of the read_raft_auto_snapshot_status request.
+        :rtype: requests.Response
+        """
+        api_path = f"/v1/sys/storage/raft/snapshot-auto/status/{name}"
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def read_raft_auto_snapshot_config(self, name):
+        """Read the configuration of the raft auto snapshot.
+
+        Supported methods:
+            GET: /sys/storage/raft/snapshot-auto/config/:name. Produces: 200 application/json
+
+        :param name: The name of the snapshot configuration.
+        :type name: str
+        :return: The response of the read_raft_auto_snapshot_config request.
+        :rtype: requests.Response
+        """
+        api_path = f"/v1/sys/storage/raft/snapshot-auto/config/{name}"
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_raft_auto_snapshot_configs(self):
+        """List the configurations of the raft auto snapshot.
+
+        Supported methods:
+            LIST: /sys/storage/raft/snapshot-auto/config. Produces: 200 application/json
+
+        :return: The response of the list_raft_auto_snapshot_configs request.
+        :rtype: requests.Response
+        """
+        api_path = "/v1/sys/storage/raft/snapshot-auto/config"
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def create_or_update_raft_auto_snapshot_config(
+        self, name, interval, storage_type, retain=1, **kwargs
+    ):
+        """Create or update the configuration of the raft auto snapshot.
+
+        Supported methods:
+            POST: /sys/storage/raft/snapshot-auto/config/:name. Produces: 204 application/json
+
+        :param name: The name of the snapshot configuration.
+        :type name: str
+        :param interval: The interval at which snapshots should be taken.
+        :type interval: str
+        :param storage_type: The type of storage to use for the snapshot.
+        :type storage_type: str
+        :param retain: The number of snapshots to retain. Default is 1
+        :type retain: int
+        :param kwargs: Additional parameters to send in the request. Should be params specific to the storage type.
+        :type kwargs: dict
+        :return: The response of the create_or_update_raft_auto_snapshot_config request.
+        :rtype: requests.Response
+        """
+        params = utils.remove_nones(
+            {
+                "interval": interval,
+                "storage_type": storage_type,
+                "retain": retain,
+                **kwargs,
+            }
+        )
+
+        api_path = f"/v1/sys/storage/raft/snapshot-auto/config/{name}"
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def delete_raft_auto_snapshot_config(self, name):
+        """Delete the configuration of the raft auto snapshot.
+
+        Supported methods:
+            DELETE: /sys/storage/raft/snapshot-auto/config/:name. Produces: 204 application/json
+
+        :param name: The name of the snapshot configuration.
+        :type name: str
+        :return: The response of the delete_raft_auto_snapshot_config request.
+        :rtype: requests.Response
+        """
+        api_path = f"/v1/sys/storage/raft/snapshot-auto/config/{name}"
+        return self._adapter.delete(
+            url=api_path,
         )
