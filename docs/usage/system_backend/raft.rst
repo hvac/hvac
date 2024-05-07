@@ -47,3 +47,73 @@ Remove Raft Node
     client.sys.remove_raft_node(
         server_id='i-somenodeid',
     )
+
+Read Raft Auto-Snapshot Status
+------------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.read_raft_auto_snapshot_status`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.read_raft_auto_snapshot_status("my-local-auto-snapshot")
+
+Read Raft Auto-Snapshot Configuration
+-------------------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.read_raft_auto_snapshot_config`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.read_raft_auto_snapshot_config("my-local-auto-snapshot")
+
+List Raft Auto-Snapshot Configurations
+--------------------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.list_raft_auto_snapshot_configs`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.list_raft_auto_snapshot_configs()
+
+Create or Update Raft Auto-Snapshot Configuration
+-------------------------------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.create_or_update_raft_auto_snapshot_config`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.create_or_update_raft_auto_snapshot_config(
+        name="my-local-auto-snapshot",
+        interval="1d",
+        storage_type="local",
+        retain=5,
+        local_max_space="100000",
+        path_prefix="/opt/vault/backups",
+        file_prefix="vault-raft-auto-snapshot"
+    )
+
+Delete Raft Auto-Snapshot Configuration
+---------------------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.delete_raft_auto_snapshot_config`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.delete_raft_auto_snapshot_config(
+        name="my-local-auto-snapshot",
+    )
