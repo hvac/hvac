@@ -28,7 +28,7 @@ class Wrapping(SystemBackendMixin):
             json=params,
         )
 
-    def wrap(self, payload=dict(), ttl=60):
+    def wrap(self, payload=None, ttl=60):
         """Wraps a serializable dictionary inside a wrapping token.
 
         Supported methods:
@@ -41,6 +41,9 @@ class Wrapping(SystemBackendMixin):
         :return: The JSON response of the request.
         :rtype: dict
         """
+
+        if payload is None:
+            payload = {}
 
         api_path = "/v1/sys/wrapping/wrap"
         return self._adapter.post(
