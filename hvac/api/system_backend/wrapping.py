@@ -47,7 +47,5 @@ class Wrapping(SystemBackendMixin):
 
         api_path = "/v1/sys/wrapping/wrap"
         return self._adapter.post(
-            url=api_path,
-            json=payload,
-            headers={"X-Vault-Wrap-TTL": "{}".format(ttl)}
+            url=api_path, json=payload, headers={"X-Vault-Wrap-TTL": "{}".format(ttl)}
         )
