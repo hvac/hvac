@@ -8,14 +8,12 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
     TEST_AUTH_METHOD_TYPE = "approle"
     TEST_AUTH_METHOD_PATH = "test-approle"
 
-    def setUp(self):
-        super().setUp()
+    def test_unwrap(self):
         self.client.sys.enable_auth_method(
             method_type=self.TEST_AUTH_METHOD_TYPE,
             path=self.TEST_AUTH_METHOD_PATH,
         )
 
-    def test_unwrap(self):
         self.client.write(
             path=f"auth/{self.TEST_AUTH_METHOD_PATH}/role/testrole",
         )
@@ -31,3 +29,11 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
         logging.debug("unwrap_response: %s" % unwrap_response)
         self.assertIn(member="secret_id_accessor", container=unwrap_response["data"])
         self.assertIn(member="secret_id", container=unwrap_response["data"])
+
+    def test_wrap(self):
+        ttl = 180
+
+        wrap_response = self.client.sys.wrap(payload={"test": "test"}, ttl=ttl)
+        logging.debug("wrap_response: %s" % wrap_response)
+        self.assertIn("token", wrap_response["wrap_info"])
+        self.assertEqual(wrap_response["wrap_info"]["ttl"], ttl)
