@@ -1,6 +1,6 @@
 import logging
 from unittest import TestCase
-
+from parameterized import parameterized, param
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -30,10 +30,28 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
         self.assertIn(member="secret_id_accessor", container=unwrap_response["data"])
         self.assertIn(member="secret_id", container=unwrap_response["data"])
 
-    def test_wrap(self):
-        ttl = 180
-
-        wrap_response = self.client.sys.wrap(payload={"test": "test"}, ttl=ttl)
+    @parameterized.expand(
+        [
+            param(
+                "default params"
+            ),
+            param(
+                "test payload and default TTL",
+                payload={"test": "test"}
+            ),
+            param(
+                "default payload and TTL 120",
+                ttl=120
+            ),
+            param(
+                "test payload and TTL 120",
+                payload={"test": "test"},
+                ttl=120
+            )
+        ]
+    )
+    def test_wrap(self, label, payload=None, ttl=60):
+        wrap_response = self.client.sys.wrap(payload=payload, ttl=ttl)
         logging.debug("wrap_response: %s" % wrap_response)
         self.assertIn("token", wrap_response["wrap_info"])
         self.assertEqual(wrap_response["wrap_info"]["ttl"], ttl)
