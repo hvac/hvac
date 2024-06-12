@@ -32,22 +32,10 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            param(
-                "default params"
-            ),
-            param(
-                "test payload and default TTL",
-                payload={"test": "test"}
-            ),
-            param(
-                "default payload and TTL 120",
-                ttl=120
-            ),
-            param(
-                "test payload and TTL 120",
-                payload={"test": "test"},
-                ttl=120
-            )
+            param("default params"),
+            param("test payload and default TTL", payload={"test": "test"}),
+            param("default payload and TTL 120", ttl=120),
+            param("test payload and TTL 120", payload={"test": "test"}, ttl=120),
         ]
     )
     def test_wrap(self, label, payload=None, ttl=60):
