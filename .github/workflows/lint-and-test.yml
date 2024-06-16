@@ -168,7 +168,7 @@ jobs:
     - name: Upload unit tests coverage artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: coverage_reports
+        name: coverage_reports_${{ matrix.python-version }}
         path: reports/*.xml
         if-no-files-found: error
         retention-days: 1
@@ -251,7 +251,7 @@ jobs:
     - name: Upload integration tests coverage artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: coverage_reports
+        name: coverage_reports_${{ matrix.python-version }}_${{ matrix.vault-version }}
         path: reports/*.xml
         if-no-files-found: error
         retention-days: 1
