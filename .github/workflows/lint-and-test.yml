@@ -248,10 +248,17 @@ jobs:
           --cov-report=xml:reports/${COVFILE//[^A-Za-z0-9\-_\.]/_} \
           tests/integration_tests
 
+    - name: Set safe coverage report name
+      id: vv
+      env:
+        VV: ${{ matrix.vault-version }}
+      run: |
+        echo "VV=${VV//[*+]/}" >> "$GITHUB_OUTPUT"
+
     - name: Upload integration tests coverage artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: coverage_reports_${{ matrix.python-version }}_${{ matrix.vault-version }}
+        name: coverage_reports_${{ matrix.python-version }}_${{ steps.vv.outputs.VV }}
         path: reports/*.xml
         if-no-files-found: error
         retention-days: 1
