@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.3.0
+
+### 🚀 Features
+
+- Implement the /sys/wrapping/wrap endpoint ([GH-1172](https://github.com/hvac/hvac/pull/1172))
+- add support for Vault Raft auto-snapshot endpoints. ([GH-1169](https://github.com/hvac/hvac/pull/1169))
+
+### 🧰 Miscellaneous
+
+- Dependencies/security updates ([GH-1174](https://github.com/hvac/hvac/pull/1174))
+- update artifact actions to v4 ([GH-1173](https://github.com/hvac/hvac/pull/1173))
+
 ## 2.2.0
 
 ### 📢 Deprecations / Announcements
