@@ -283,13 +283,13 @@ class Raft(SystemBackendMixin):
 
     def update_raft_autopilot_config(
         self,
-        cleanup_dead_servers,
-        last_contact_threshold,
-        dead_server_last_contact_threshold,
-        max_trailing_logs,
-        min_quorum,
-        server_stabilization_time,
-        disable_upgrade_migration,
+        cleanup_dead_servers=None,
+        last_contact_threshold=None,
+        dead_server_last_contact_threshold=None,
+        max_trailing_logs=None,
+        min_quorum=None,
+        server_stabilization_time=None,
+        disable_upgrade_migration=None,
         **kwargs,
     ):
         """Create or update the configuration of the raft auto snapshot.
