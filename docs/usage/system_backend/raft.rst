@@ -131,7 +131,7 @@ Read Raft Cluster State
     client.sys.read_raft_cluster_state()
 
 Read Raft Autopilot Config
------------------------
+--------------------------
 
 :py:meth:`hvac.api.system_backend.Raft.read_raft_autopilot_config`
 
@@ -143,7 +143,7 @@ Read Raft Autopilot Config
     client.sys.read_raft_autopilot_config()
 
 Update Raft Autopilot Config
------------------------
+----------------------------
 
 :py:meth:`hvac.api.system_backend.Raft.update_raft_autopilot_config`
 
