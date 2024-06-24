@@ -229,21 +229,35 @@ class TestRaft(HvacIntegrationTestCase, TestCase):
             ),
         )
 
-    @skipIf(utils.vault_version_lt("1.8.0") or True, "Storage type 'Raft' required to use autopilot endpoint")
+    @skipIf(
+        utils.vault_version_lt("1.8.0") or True,
+        "Storage type 'Raft' required to use autopilot endpoint",
+    )
     def test_read_autopilot_cluster_status(self):
         self.assertIn(
             member="data",
             container=self.client.sys.read_raft_cluster_state(),
         )
 
-    @skipIf(utils.vault_version_lt("1.8.0") or True, "Storage type 'Raft' required to use autopilot endpoint")
+    @skipIf(
+        utils.vault_version_lt("1.8.0") or True,
+        "Storage type 'Raft' required to use autopilot endpoint",
+    )
     def test_read_autopilot_config(self):
         self.assertIn(
             member="data",
             container=self.client.sys.read_raft_autopilot_config(),
         )
 
-    @skipIf(utils.vault_version_lt("1.8.0") or True, "Storage type 'Raft' required to use autopilot endpoint")
+    @skipIf(
+        utils.vault_version_lt("1.8.0") or True,
+        "Storage type 'Raft' required to use autopilot endpoint",
+    )
     def test_update_autopilot_config(self):
-        self.client.sys.update_raft_autopilot_config(cleanup_dead_servers=True, min_quorum=3)
-        self.assertTrue(self.client.sys.read_raft_autopilot_config()["data"]["cleanup_dead_server"] == True)
+        self.client.sys.update_raft_autopilot_config(
+            cleanup_dead_servers=True, min_quorum=3
+        )
+        self.assertTrue(
+            self.client.sys.read_raft_autopilot_config()["data"]["cleanup_dead_server"]
+            == True
+        )
