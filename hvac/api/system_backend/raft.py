@@ -297,15 +297,18 @@ class Raft(SystemBackendMixin):
         Supported methods:
             POST: /sys/storage/raft/autopilot/configuration. Produces: 204 application/json
 
-        :param cleanup_dead_servers: Controls whether to remove dead servers from the Raft peer list periodically or when a new server joins. This requires that min_quorum is also set.
+        :param cleanup_dead_servers: Controls whether to remove dead servers from the Raft peer list periodically or when
+            a new server joins. This requires that min_quorum is also set.
         :type cleanup_dead_servers: bool
         :param last_contact_threshold: Limit on the amount of time a server can go without leader contact before being considered unhealthy.
         :type last_contact_threshold: string
-        :param dead_server_last_contact_threshold: Limit on the amount of time a server can go without leader contact before being considered failed. This takes effect only when cleanup_dead_servers is true. This can not be set to a value smaller than 1m.
+        :param dead_server_last_contact_threshold: Limit on the amount of time a server can go without leader contact
+            before being considered failed. This takes effect only when cleanup_dead_servers is true. This can not be set to a value smaller than 1m.
         :type dead_server_last_contact_threshold: string
         :param max_trailing_logs: Amount of entries in the Raft Log that a server can be behind before being considered unhealthy.
         :type max_trailing_logs: int
-        :param min_quorum: Minimum number of servers allowed in a cluster before autopilot can prune dead servers. This should at least be 3. Applicable only for voting nodes.
+        :param min_quorum: Minimum number of servers allowed in a cluster before autopilot can prune dead servers.
+            This should at least be 3. Applicable only for voting nodes.
         :type min_quorum: int
         :param server_stabilization_time: Minimum amount of time a server must be in a stable, healthy state before it can be added to the cluster.
         :type server_stabilization_time: string

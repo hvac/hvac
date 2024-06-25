@@ -259,5 +259,4 @@ class TestRaft(HvacIntegrationTestCase, TestCase):
         )
         self.assertTrue(
             self.client.sys.read_raft_autopilot_config()["data"]["cleanup_dead_server"]
-            == True
         )
