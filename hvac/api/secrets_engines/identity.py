@@ -1745,3 +1745,56 @@ class Identity(VaultApiBase):
         return self._adapter.delete(
             url=api_path,
         )
+
+    def read_oidc_provider(self, provider_name, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}",
+            mount_point=mount_point,
+            name=provider_name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+
+    def create_or_update_oidc_provider(
+        self,
+        provider_name,
+        allowed_client_ids:list[str],
+        issuer:str,
+        scopes_supported:list[str],
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """
+        """
+        params = utils.remove_nones(
+            {
+                "allowed_client_ids": allowed_client_ids,
+                "issuer": issuer,
+                "scopes_supported": scopes_supported,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}",
+            mount_point=mount_point,
+            name=provider_name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def delete_oidc_provider(self, provider_name, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}",
+            mount_point=mount_point,
+            name=provider_name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
+
