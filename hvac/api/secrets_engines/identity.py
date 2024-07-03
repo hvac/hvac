@@ -1642,7 +1642,17 @@ class Identity(VaultApiBase):
         )
 
     def read_oidc_client(self, client_name, mount_point=DEFAULT_MOUNT_POINT):
-        """
+        """Query an OpenID client/application by its name.
+
+        Supported methods:
+            GET: /{mount_point}/oidc/client/{name}. Produces: 200 application/json
+
+        :param client_name: Name of the client.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/client/{client}",
@@ -1664,7 +1674,36 @@ class Identity(VaultApiBase):
         key="default",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
-        """
+        """Create or Update an OpenID client/application.
+
+        Supported methods:
+            POST: /{mount_point}/oidc/client/{name}. Produces: 204 (empty body)
+
+        :param client_name: Name of the client.
+        :type name: str | unicode
+        :param assignments: A list of assignment resources associated with the client. Client assignments limit the Vault entities and
+        groups that are allowed to authenticate through the client. By default, no Vault entities are allowed.
+        To allow all Vault entities to authenticate through the client, supply the built-in `allow_all` assignment.
+        :type assignments: List[str | unicode]
+        :param redirect_uris: Redirection URI values used by the client. One of these values must exactly match the `redirect_uri` parameter
+        value used in each authentication request.
+        :type redirect_uris: List[str | unicode]
+        :param access_token_ttl: The time-to-live for access tokens obtained by the client. Accepts duration format strings.
+        :type access_token_ttl: str | unicode
+        :param client_type: The client type based on its ability to maintain confidentiality of credentials.
+        This cannot be modified after creation. The following list details the differences between confidential and
+        public clients in Vault: confidential, public
+        :type client_type: str | unicode
+        :param id_token_ttl: The time-to-live for ID tokens obtained by the client. Accepts duration format strings.
+        The value should be less than the `verification_ttl` on the key.
+        :type id_token_ttl: str | unicode
+        :param key: A reference to a named key resource. This key will be used to sign ID tokens for the client.
+        This cannot be modified after creation. If not supplied, defaults to the built-in default key.
+        :type key: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         params = utils.remove_nones(
             {
@@ -1687,6 +1726,18 @@ class Identity(VaultApiBase):
         )
 
     def delete_oidc_client(self, client_name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete an OpenID client/application.
+
+        Supported methods:
+            DELETE: /{mount_point}/oidc/client/{name}. Produces: 204 (empty body)
+
+        :param client_name: Name of the client.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/client/{client}",
             mount_point=mount_point,
@@ -1697,7 +1748,17 @@ class Identity(VaultApiBase):
         )
 
     def read_oidc_scope(self, scope_name, mount_point=DEFAULT_MOUNT_POINT):
-        """
+        """Query an OpenID scope by its name.
+
+        Supported methods:
+            GET: /{mount_point}/oidc/scope/{name}. Produces: 200 application/json
+
+        :param client_name: Name of the scope.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/scope/{name}",
@@ -1716,7 +1777,21 @@ class Identity(VaultApiBase):
         description="",
         mount_point=DEFAULT_MOUNT_POINT,
     ):
-        """
+        """Create or Update an OpenID scope.
+
+        Supported methods:
+            POST: /{mount_point}/oidc/scope/{name}. Produces: 204 (empty body)
+
+        :param client_name: Name of the client.
+        :type name: str | unicode
+        :param template: The JSON template string for the scope. This may be provided as escaped JSON or base64 encoded JSON.
+        :type template: str | unicode
+        :param description: A description of the scope.
+        :type description: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         params = utils.remove_nones(
             {
@@ -1735,7 +1810,17 @@ class Identity(VaultApiBase):
         )
 
     def delete_oidc_scope(self, scope_name, mount_point=DEFAULT_MOUNT_POINT):
-        """
+        """Delete an OpenID scope.
+
+        Supported methods:
+            DELETE: /{mount_point}/oidc/scope/{name}. Produces: 204 (empty body)
+
+        :param client_name: Name of the scope.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/scope/{name}",
@@ -1747,7 +1832,17 @@ class Identity(VaultApiBase):
         )
 
     def read_oidc_provider(self, provider_name, mount_point=DEFAULT_MOUNT_POINT):
-        """
+        """Query an OpenID provider by its name.
+
+        Supported methods:
+            GET: /{mount_point}/oidc/provider/{name}. Produces: 200 application/json
+
+        :param client_name: Name of the provider.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/provider/{name}",
@@ -1767,7 +1862,27 @@ class Identity(VaultApiBase):
         scopes_supported:list[str],
         mount_point=DEFAULT_MOUNT_POINT,
     ):
-        """
+        """Create or Update an OpenID provider.
+
+        Supported methods:
+            POST: /{mount_point}/oidc/provider/{name}. Produces: 200 application/json
+
+        :param client_name: Name of the provider.
+        :type name: str | unicode
+        :param allowed_client_ids: The client IDs that are permitted to use the provider. If empty, no clients are allowed.
+        If `"*"` is provided, all clients are allowed.
+        :type allowed_client_ids: List[str | unicode]
+        :param issuer: Specifies what will be used as the `scheme://host:port` component for the `iss` claim of ID tokens.
+        This defaults to a URL with Vault's `api_addr` as the `scheme://host:port` component and `/v1/:namespace/identity/oidc/provider/:name`
+        as the path component. If provided explicitly, it must point to a Vault instance that is network reachable by clients for
+        ID token validation.
+        :type issuer: str | unicode
+        :param scopes_supported: The scopes available for requesting on the provider.
+        :type scopes_supported: List[str | unicode]
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: requests.Response
         """
         params = utils.remove_nones(
             {
@@ -1787,7 +1902,17 @@ class Identity(VaultApiBase):
         )
 
     def delete_oidc_provider(self, provider_name, mount_point=DEFAULT_MOUNT_POINT):
-        """
+        """Delete an OpenID provider.
+
+        Supported methods:
+            DELETE: /{mount_point}/oidc/provider/{name}. Produces: 204 (empty body)
+
+        :param client_name: Name of the provider.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
         """
         api_path = utils.format_url(
             "/v1/{mount_point}/oidc/provider/{name}",
