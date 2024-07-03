@@ -1695,3 +1695,53 @@ class Identity(VaultApiBase):
         return self._adapter.delete(
             url=api_path,
         )
+
+    def read_oidc_scope(self, scope_name, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/scope/{name}",
+            mount_point=mount_point,
+            name=scope_name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+
+    def create_or_update_oidc_scope(
+        self,
+        scope_name,
+        template:str,
+        description="",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """
+        """
+        params = utils.remove_nones(
+            {
+                "description": description,
+                "template": template,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/scope/{name}",
+            mount_point=mount_point,
+            name=scope_name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def delete_oidc_scope(self, scope_name, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{name}",
+            mount_point=mount_point,
+            name=scope_name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
