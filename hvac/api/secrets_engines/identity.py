@@ -1640,3 +1640,58 @@ class Identity(VaultApiBase):
         return self._adapter.get(
             url=api_path,
         )
+
+    def read_oidc_client(self, client_name, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{client}",
+            mount_point=mount_point,
+            client=client_name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def create_or_update_oidc_client(
+        self,
+        client_name,
+        assignments:list[str],
+        redirect_uris:list[str],
+        access_token_ttl="24h",
+        client_type="confidential",
+        id_token_ttl="24h",
+        key="default",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """
+        """
+        params = utils.remove_nones(
+            {
+                "access_token_ttl": access_token_ttl,
+                "assignments": assignments,
+                "client_type": client_type,
+                "id_token_ttl": id_token_ttl,
+                "key": key,
+                "redirect_uris": redirect_uris,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{name}",
+            mount_point=mount_point,
+            name=client_name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def delete_oidc_client(self, client_name, mount_point=DEFAULT_MOUNT_POINT):
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{client}",
+            mount_point=mount_point,
+            client=client_name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
