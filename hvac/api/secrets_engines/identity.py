@@ -1738,7 +1738,7 @@ class Identity(VaultApiBase):
         """
         """
         api_path = utils.format_url(
-            "/v1/{mount_point}/oidc/client/{name}",
+            "/v1/{mount_point}/oidc/scope/{name}",
             mount_point=mount_point,
             name=scope_name,
         )
