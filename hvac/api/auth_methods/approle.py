@@ -496,7 +496,7 @@ class AppRole(VaultApiBase):
         :type use_token: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :return: The JSON response of the read_role_id request.
+        :return: The JSON response of the login request.
         :rtype: dict
         """
         params = {"role_id": role_id, "secret_id": secret_id}
