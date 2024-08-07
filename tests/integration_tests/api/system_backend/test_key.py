@@ -27,14 +27,14 @@ class TestKey(HvacIntegrationTestCase, TestCase):
             )
         logging.debug("last_generate_root_response: %s" % last_generate_root_response)
         self.assertFalse(self.client.sys.read_root_generation_progress()["started"])
-                
+
         new_root_token_response = self.client.sys.decode_token(
             otp=test_otp,
             encoded_token=last_generate_root_response["encoded_root_token"],
         )
-        
+
         new_root_token = new_root_token_response["data"]["token"]
-        
+
         logging.debug("new_root_token: %s" % new_root_token)
         token_lookup_resp = self.client.lookup_token(token=new_root_token)
         logging.debug("token_lookup_resp: %s" % token_lookup_resp)
