@@ -1,6 +1,5 @@
 """Collection of methods used by various hvac test cases."""
 import base64
-import json
 import logging
 import operator
 import os
