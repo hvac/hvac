@@ -324,13 +324,21 @@ class TestSystemBackend(HvacIntegrationTestCase, TestCase):
         logging.debug("last_generate_root_response: %s" % last_generate_root_response)
         self.assertFalse(self.client.generate_root_status["started"])
 
-        new_root_token_response = self.client.sys.decode_token(
-            otp=test_otp,
-            encoded_token=last_generate_root_response["encoded_root_token"],
-        )
+        # decode-token on >= 1.13
+        new_root_token = ""
+        if utils.vault_version_lt("1.13"):
+            new_root_token = utils.decode_generated_root_token(
+                encoded_token=last_generate_root_response["encoded_root_token"],
+                otp=test_otp,
+                url=self.client.url,
+            )
+        else:
+            new_root_token_response = self.client.sys.decode_token(
+                otp=test_otp,
+                encoded_token=last_generate_root_response["encoded_root_token"],
+            )
 
-        new_root_token = new_root_token_response["data"]["token"]
-
+            new_root_token = new_root_token_response["data"]["token"]
         logging.debug("new_root_token: %s" % new_root_token)
         token_lookup_resp = self.client.auth.token.lookup(token=new_root_token)
         logging.debug("token_lookup_resp: %s" % token_lookup_resp)

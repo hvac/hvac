@@ -1,5 +1,6 @@
 """Collection of methods used by various hvac test cases."""
 import base64
+import json
 import logging
 import operator
 import os
@@ -225,6 +226,52 @@ def get_config_file_path(*components):
         os.path.dirname(os.path.realpath(__file__)), "..", "config_files"
     )
     return os.path.join(os.path.abspath(relative_path), *components)
+
+
+def decode_generated_root_token(encoded_token, otp, url):
+    """Decode a newly generated root token via Vault CLI.
+
+    :param encoded_token: The token to decode.
+    :type encoded_token: str | unicode
+    :param otp: OTP code to use when decoding the token.
+    :type otp: str | unicode
+    :return: The decoded root token.
+    :rtype: str | unicode
+    """
+    command = ["vault"]
+    if vault_version_ge("0.9.6"):
+        # before Vault ~0.9.6, the generate-root command was the first positional argument
+        # afterwards, it was moved under the "operator" category
+        command.append("operator")
+
+    command.extend(
+        [
+            "generate-root",
+            "-address",
+            url,
+            "-tls-skip-verify",
+            "-decode",
+            encoded_token,
+            "-otp",
+            otp,
+        ]
+    )
+    process = subprocess.Popen(
+        **get_popen_kwargs(args=command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    )
+
+    stdout, stderr = process.communicate()
+    logging.debug('decode_generated_root_token stdout: "%s"' % str(stdout))
+    if stderr != "":
+        logging.error("decode_generated_root_token stderr: %s" % stderr)
+
+    try:
+        # On the off chance VAULT_FORMAT=json or such is set in the test environment:
+        new_token = json.loads(stdout)["token"]
+    except ValueError:
+        new_token = stdout.replace("Root token:", "")
+    new_token = new_token.strip()
+    return new_token
 
 
 def get_popen_kwargs(**popen_kwargs):
