@@ -155,6 +155,26 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 "success",
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
+                bound_service_account_namespace_selector="{\"matchLabels\":{\"vault-role\": \"test-role\"}}",
+            ),
+            param(
+                "only namespace is set",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+            ),
+            param(
+                "only namespace selector is set",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespace_selector="{\"matchLabels\":{\"vault-role\": \"test-role\"}}",
+            ),
+            param(
+                "namespace selector is not a string",
+                bound_service_account_namespace_selector={"matchLabels":{"vault-role": "test-role"}},
+                raises=exceptions.ParamValidationError,
+            ),
+            param(
+                "neither namespace nor selector is set",
+                raises=exceptions.InvalidRequest
             ),
             param(
                 "both bounds wildcard permitted",
@@ -181,6 +201,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         label,
         bound_service_account_names=None,
         bound_service_account_namespaces=None,
+        bound_service_account_namespace_selector=None,
         token_type=None,
         alias_name_source=None,
         raises=None,
@@ -193,6 +214,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                     name=role_name,
                     bound_service_account_names=bound_service_account_names,
                     bound_service_account_namespaces=bound_service_account_namespaces,
+                    bound_service_account_namespace_selector=bound_service_account_namespace_selector,
                     token_type=token_type,
                     alias_name_source=alias_name_source,
                     mount_point=self.TEST_MOUNT_POINT,
@@ -206,6 +228,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 name=role_name,
                 bound_service_account_names=bound_service_account_names,
                 bound_service_account_namespaces=bound_service_account_namespaces,
+                bound_service_account_namespace_selector=bound_service_account_namespace_selector,
                 token_type=token_type,
                 alias_name_source=alias_name_source,
                 mount_point=self.TEST_MOUNT_POINT,
@@ -236,8 +259,8 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             "name": role_name,
             "bound_service_account_names": ["vault-auth"],
             "bound_service_account_namespaces": ["default"],
+            "bound_service_account_namespace_selector": "{\"matchLabels\":{\"vault-role\": \"test-role\"}}",
         }
-        role_name = "test-role"
 
         if create_role_first:
             self.client.auth.kubernetes.create_role(
@@ -266,6 +289,10 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
             self.assertEqual(
                 first=read_role_response["bound_service_account_namespaces"],
                 second=expected_role_config["bound_service_account_namespaces"],
+            )
+            self.assertEqual(
+                first=read_role_response["bound_service_account_namespace_selector"],
+                second=expected_role_config["bound_service_account_namespace_selector"],
             )
 
     @parameterized.expand(
@@ -296,12 +323,14 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         roles_to_create = [f"hvac{str(n)}" for n in range(0, num_roles_to_create)]
         bound_service_account_names = ["vault-auth"]
         bound_service_account_namespaces = ["default"]
+        bound_service_account_namespace_selector = "{\"matchLabels\":{\"vault-role\": \"test-role\"}}"
         logging.debug("roles_to_create: %s" % roles_to_create)
         for role_to_create in roles_to_create:
             create_role_response = self.client.auth.kubernetes.create_role(
                 name=role_to_create,
                 bound_service_account_names=bound_service_account_names,
                 bound_service_account_namespaces=bound_service_account_namespaces,
+                bound_service_account_namespace_selector = bound_service_account_namespace_selector,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("create_role_response: %s" % create_role_response)
@@ -336,11 +365,13 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         role_name = "test-role"
         bound_service_account_names = ["vault-auth"]
         bound_service_account_namespaces = ["default"]
+        bound_service_account_namespace_selector = "{\"matchLabels\":{\"vault-role\": \"test-role\"}}"
         if configure_role_first:
             create_role_response = self.client.auth.kubernetes.create_role(
                 name=role_name,
                 bound_service_account_names=bound_service_account_names,
                 bound_service_account_namespaces=bound_service_account_namespaces,
+                bound_service_account_namespace_selector = bound_service_account_namespace_selector,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("create_role_response: %s" % create_role_response)
