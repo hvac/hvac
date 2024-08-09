@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 """Kubernetes methods module."""
-import json
 from hvac import utils
 from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
