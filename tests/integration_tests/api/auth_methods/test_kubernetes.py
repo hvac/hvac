@@ -317,7 +317,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         if write_config_first:
             self.client.auth.kubernetes.configure(
                 kubernetes_host="https://192.168.99.100:8443",
-                kubernetes_ca_cert="-----BEGIN CERTIFICATE-----\n.....\n-----END CERTIFICATE-----",
+                kubernetes_ca_cert="-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----",
                 mount_point=self.TEST_MOUNT_POINT,
             )
         roles_to_create = [f"hvac{str(n)}" for n in range(0, num_roles_to_create)]

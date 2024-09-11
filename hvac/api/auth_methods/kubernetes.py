@@ -114,7 +114,6 @@ class Kubernetes(VaultApiBase):
         name,
         bound_service_account_names,
         bound_service_account_namespaces=None,
-        bound_service_account_namespace_selector=None,
         ttl=None,
         max_ttl=None,
         period=None,
@@ -122,6 +121,7 @@ class Kubernetes(VaultApiBase):
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
         alias_name_source=None,
+        bound_service_account_namespace_selector=None,
     ):
         """Create a role in the method.
 
