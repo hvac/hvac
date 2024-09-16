@@ -15,7 +15,7 @@ Examples
 ````````
 
 .. testcode:: sys_custom_messages
-    :skipif: not test_utils.is_enterprise()
+    :skipif: test_utils.vault_version_lt('1.16.0') or not test_utils.is_enterprise()
 
     import hvac
     client = hvac.Client(url="https://127.0.0.1:8200")
@@ -33,7 +33,7 @@ Examples
 ````````
 
 .. testcode:: sys_custom_messages
-    :skipif: not test_utils.is_enterprise()
+    :skipif: test_utils.vault_version_lt('1.16.0') or not test_utils.is_enterprise()
 
     import hvac
     from datetime import datetime, timedelta, timezone
@@ -58,7 +58,7 @@ Examples
 ````````
 
 .. testcode:: sys_custom_messages
-    :skipif: not test_utils.is_enterprise()
+    :skipif: test_utils.vault_version_lt('1.16.0') or not test_utils.is_enterprise()
 
     import hvac
     client = hvac.Client(url="https://127.0.0.1:8200")
@@ -76,7 +76,7 @@ Examples
 ````````
 
 .. testcode:: sys_custom_messages
-    :skipif: not test_utils.is_enterprise()
+    :skipif: test_utils.vault_version_lt('1.16.0') or not test_utils.is_enterprise()
 
     import hvac
     client = hvac.Client(url="https://127.0.0.1:8200")
@@ -94,7 +94,7 @@ Examples
 ````````
 
 .. testcode:: sys_custom_messages
-    :skipif: not test_utils.is_enterprise()
+    :skipif: test_utils.vault_version_lt('1.16.0') or not test_utils.is_enterprise()
 
     import hvac
     from datetime import datetime, timezone, timedelta
