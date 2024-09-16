@@ -36,7 +36,7 @@ Examples
     :skipif: not test_utils.is_enterprise()
 
     import hvac
-    from datetime import datetime, timezone
+    from datetime import datetime, timedelta, timezone
 
     client = hvac.Client(url="https://127.0.0.1:8200")
 
