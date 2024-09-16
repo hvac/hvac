@@ -22,8 +22,8 @@ class TestCustomMessages(HvacIntegrationTestCase, TestCase):
         super().tearDown()
 
     @skipIf(
-        not utils.is_enterprise(),
-        "Custom messages only supported in Enterprise Vault",
+        not utils.vault_version_ge("1.16.0") or not utils.is_enterprise(),
+        "Custom messages only supported in Enterprise Vault version 1.16.0 or greater",
     )
     def test_create_custom_message(self):
         current_time = datetime.now(timezone.utc)
@@ -60,8 +60,8 @@ class TestCustomMessages(HvacIntegrationTestCase, TestCase):
         self.assertEqual(message_data["end_time"], read_response["data"]["end_time"])
 
     @skipIf(
-        not utils.is_enterprise(),
-        "Custom messages only supported in Enterprise Vault",
+        not utils.vault_version_ge("1.16.0") or not utils.is_enterprise(),
+        "Custom messages only supported in Enterprise Vault version 1.16.0 or greater",
     )
     def test_list_custom_messages(self):
         self.test_create_custom_message()
@@ -74,8 +74,8 @@ class TestCustomMessages(HvacIntegrationTestCase, TestCase):
         self.assertIn(self.custom_message_id, list_response["data"]["keys"])
 
     @skipIf(
-        not utils.is_enterprise(),
-        "Custom messages only supported in Enterprise Vault",
+        not utils.vault_version_ge("1.16.0") or not utils.is_enterprise(),
+        "Custom messages only supported in Enterprise Vault version 1.16.0 or greater",
     )
     def test_read_custom_message(self):
         self.test_create_custom_message()
@@ -87,8 +87,8 @@ class TestCustomMessages(HvacIntegrationTestCase, TestCase):
         self.assertEqual("Test Message", read_response["data"]["title"])
 
     @skipIf(
-        not utils.is_enterprise(),
-        "Custom messages only supported in Enterprise Vault",
+        not utils.vault_version_ge("1.16.0") or not utils.is_enterprise(),
+        "Custom messages only supported in Enterprise Vault version 1.16.0 or greater",
     )
     def test_update_custom_message(self):
         self.test_create_custom_message()
@@ -124,8 +124,8 @@ class TestCustomMessages(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        not utils.is_enterprise(),
-        "Custom messages only supported in Enterprise Vault",
+        not utils.vault_version_ge("1.16.0") or not utils.is_enterprise(),
+        "Custom messages only supported in Enterprise Vault version 1.16.0 or greater",
     )
     def test_delete_custom_message(self):
         self.test_create_custom_message()
