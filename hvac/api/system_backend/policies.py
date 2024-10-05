@@ -315,7 +315,6 @@ class Policies(SystemBackendMixin):
             url=api_path,
         )
 
-
     def generate_password(self, name):
         """Generate password from password policy.
 
@@ -327,7 +326,9 @@ class Policies(SystemBackendMixin):
         :return: The response of the request
         :rtype: dict
         """
-        api_path = utils.format_url("/v1/sys/policies/password/{name}/generate", name=name)
+        api_path = utils.format_url(
+            "/v1/sys/policies/password/{name}/generate", name=name
+        )
         return self._adapter.get(
             url=api_path,
         )
