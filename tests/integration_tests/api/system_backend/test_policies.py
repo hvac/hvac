@@ -528,12 +528,14 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
     def test_create_or_update_password_policy_and_read_password_policy(self):
         policy_name = "test-create-read-update-password-policy"
         policy_dict = {
-            "policy": "length = 20 rule \"charset\" { charset = \"abcde\" }",
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
         }
 
         # Create policy
-        create_or_update_policy_response = self.client.sys.create_or_update_password_policy(
-            name=policy_name, policy=policy_dict["policy"]
+        create_or_update_policy_response = (
+            self.client.sys.create_or_update_password_policy(
+                name=policy_name, policy=policy_dict["policy"]
+            )
         )
         logging.debug(
             "create_or_update_policy_response: %s" % create_or_update_policy_response
@@ -547,7 +549,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
     def test_list_password_policies(self):
         policy_name = "test-list-password-policies"
         policy_dict = {
-            "policy": "length = 20 rule \"charset\" { charset = \"abcde\" }",
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
         }
 
         # Create policy
@@ -556,7 +558,9 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
         )
 
         list_password_policies_response = self.client.sys.list_password_policies()
-        logging.debug("list_password_policies_response: %s" % list_password_policies_response)
+        logging.debug(
+            "list_password_policies_response: %s" % list_password_policies_response
+        )
 
         self.assertIn(
             member=policy_name,
@@ -566,7 +570,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
     def test_delete_password_policy(self):
         policy_name = "test-delete-password-policy"
         policy_dict = {
-            "policy": "length = 20 rule \"charset\" { charset = \"abcde\" }",
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
         }
 
         # Create policy
@@ -579,7 +583,9 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             name=policy_name,
         )
 
-        logging.debug("delete_password_policy_response: %s" % delete_password_policy_response)
+        logging.debug(
+            "delete_password_policy_response: %s" % delete_password_policy_response
+        )
 
         with self.assertRaises(exceptions.InvalidPath):
             self.client.sys.read_password_policy(
@@ -589,7 +595,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
     def test_generate_password(self):
         policy_name = "test-generate-password-policy"
         policy_dict = {
-            "policy": "length = 20 rule \"charset\" { charset = \"abcde\" }",
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
         }
 
         # Create policy
@@ -597,8 +603,10 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             name=policy_name, policy=policy_dict["policy"]
         )
 
-        generated_password = self.client.sys.generate_password(name=policy_name)['data']['password']
-        
+        generated_password = self.client.sys.generate_password(name=policy_name)[
+            "data"
+        ]["password"]
+
         # ensure length
         self.assertEqual(
             first=20,
@@ -606,7 +614,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
         )
 
         # ensure contents
-        acceptable = set('abcde')
+        acceptable = set("abcde")
         generated_set = set(generated_password)
         generated_is_subset = generated_set.issubset(acceptable)
         self.assertEqual(
