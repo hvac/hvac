@@ -102,13 +102,14 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
 
     @parameterized.expand(
         [
-            ("good request, no metadata", None, None, None),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m"),
-            ("bad metadata option", exceptions.ParamValidationError, "bad", None),
+            ("good request, no metadata", None, None, None, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m", None, None),
+            ("good request, good metadata and max num uses and ttl", None, {"a": "val1", "B": "two"}, None, 2, "5m"),
+            ("bad metadata option", exceptions.ParamValidationError, "bad", None, None, None),
         ]
     )
-    def test_generate_secret_id(self, test_label, raises, metadata, wrap_ttl):
+    def test_generate_secret_id(self, test_label, raises, metadata, wrap_ttl, num_uses, ttl):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.generate_secret_id(
@@ -116,6 +117,8 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                     metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
                     wrap_ttl=wrap_ttl,
+                    num_uses=num_uses,
+                    ttl=ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -127,6 +130,8 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
+                num_uses=num_uses,
+                ttl=ttl,
             )
             if wrap_ttl is not None:
                 assert "wrap_info" in response
@@ -138,16 +143,22 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 self.assertIn(
                     member="secret_id", container=response["data"], msg=response
                 )
+                if num_uses is not None:
+                    self.assertEqual(first=num_uses, second=response["data"]["secret_id_num_uses"])
+                if ttl is not None:
+                    # NOTE: hardcoded for now because of string formats
+                    self.assertEqual(first=300, second=response["data"]["secret_id_ttl"])
 
     @parameterized.expand(
         [
-            ("good request, no metadata", None, None, None),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300),
-            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m"),
-            ("bad metadata option", exceptions.ParamValidationError, "bad", None),
+            ("good request, no metadata", None, None, None, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, 300, None, None),
+            ("good request, good metadata", None, {"a": "val1", "B": "two"}, "5m", None, None),
+            ("good request, good metadata and max num uses and ttl", None, {"a": "val1", "B": "two"}, None, 2, "5m"),
+            ("bad metadata option", exceptions.ParamValidationError, "bad", None, None, None),
         ]
     )
-    def test_create_custom_secret_id(self, test_label, raises, metadata, wrap_ttl):
+    def test_create_custom_secret_id(self, test_label, raises, metadata, wrap_ttl, num_uses, ttl):
         if raises is not None:
             with self.assertRaises(raises) as cm:
                 self.client.auth.approle.create_custom_secret_id(
@@ -157,6 +168,8 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                     metadata=metadata,
                     mount_point=self.TEST_MOUNT_POINT,
                     wrap_ttl=wrap_ttl,
+                    num_uses=num_uses,
+                    ttl=ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -169,6 +182,8 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
+                num_uses=num_uses,
+                ttl=ttl,
             )
             if wrap_ttl is not None:
                 assert "wrap_info" in response
@@ -180,6 +195,11 @@ class TestAppRole(HvacIntegrationTestCase, TestCase):
                 self.assertEqual(
                     first=self.TEST_SECRET_ID, second=response["data"]["secret_id"]
                 )
+                if num_uses is not None:
+                    self.assertEqual(first=num_uses, second=response["data"]["secret_id_num_uses"])
+                if ttl is not None:
+                    # NOTE: hardcoded for now because of string formats
+                    self.assertEqual(first=300, second=response["data"]["secret_id_ttl"])
 
     def test_read_secret_id(self):
         secret_id_response = self._secret_id()
