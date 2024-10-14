@@ -237,10 +237,10 @@ class AppRole(VaultApiBase):
         metadata=None,
         cidr_list=None,
         token_bound_cidrs=None,
-        num_uses=None,
-        ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
         wrap_ttl=None,
+        num_uses=None,
+        ttl=None,
     ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
@@ -258,15 +258,15 @@ class AppRole(VaultApiBase):
         :type token_bound_cidrs: list
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param wrap_ttl: Returns the request as a response-wrapping token.
+            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
+        :type wrap_ttl: int | str
         :param num_uses: Maximum number of times a generated secret id may be used. A value of zero
             allows unlimited uses.
         :type num_uses: int
         :param ttl: Incremental lifetime for generated secret id. This can be specified
             as an integer number of seconds or as a duration value like "5m".
         :type ttl: str | unicode
-        :param wrap_ttl: Returns the request as a response-wrapping token.
-            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
-        :type wrap_ttl: int | str
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
@@ -318,10 +318,10 @@ class AppRole(VaultApiBase):
         metadata=None,
         cidr_list=None,
         token_bound_cidrs=None,
-        num_uses=None,
-        ttl=None,
         mount_point=DEFAULT_MOUNT_POINT,
         wrap_ttl=None,
+        num_uses=None,
+        ttl=None,
     ):
         """
         Generates and issues a new Secret ID on a role in the auth method.
@@ -339,17 +339,17 @@ class AppRole(VaultApiBase):
         :type cidr_list: list
         :param token_bound_cidrs: Blocks of IP addresses which can authenticate successfully.
         :type token_bound_cidrs: list
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param wrap_ttl: Returns the request as a response-wrapping token.
+            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
+        :type wrap_ttl: int | str
         :param num_uses: Maximum number of times a created secret id may be used. A value of zero
             allows unlimited uses.
         :type num_uses: int
         :param ttl: Incremental lifetime for created secret id. This can be specified
             as an integer number of seconds or as a duration value like "5m".
         :type ttl: str | unicode
-        :param mount_point: The "path" the method/backend was mounted on.
-        :type mount_point: str | unicode
-        :param wrap_ttl: Returns the request as a response-wrapping token.
-            Can be either an integer number of seconds or a string duration of seconds (`15s`), minutes (`20m`), or hours (`25h`).
-        :type wrap_ttl: int | str
         :return: The JSON response of the read_role_id request.
         :rtype: dict
         """
