@@ -274,7 +274,15 @@ class TestAppRole(TestCase):
     )
     @requests_mock.Mocker()
     def test_generate_secret_id(
-        self, test_label, mount_point, raises, metadata, wrap_ttl, num_uses, ttl, requests_mocker
+        self,
+        test_label,
+        mount_point,
+        raises,
+        metadata,
+        wrap_ttl,
+        num_uses,
+        ttl,
+        requests_mocker,
     ):
         expected_status_code = 200
         role_name = "testrole"
@@ -330,7 +338,7 @@ class TestAppRole(TestCase):
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
                 num_uses=num_uses,
-                ttl=ttl
+                ttl=ttl,
             )
 
             self.assertEqual(first=mock_response, second=response)
@@ -363,7 +371,7 @@ class TestAppRole(TestCase):
                 "bad metadata",
                 None,
                 None,
-                None
+                None,
             ),
             ("custom mount point", "approle-test", None, None, "5m", None, None),
             ("custom mount point", "approle-test", None, None, None, 1, 60),
@@ -371,7 +379,15 @@ class TestAppRole(TestCase):
     )
     @requests_mock.Mocker()
     def test_create_custom_secret_id(
-        self, test_label, mount_point, raises, metadata, wrap_ttl, num_uses, ttl, requests_mocker,
+        self,
+        test_label,
+        mount_point,
+        raises,
+        metadata,
+        wrap_ttl,
+        num_uses,
+        ttl,
+        requests_mocker,
     ):
         expected_status_code = 200
         role_name = "testrole"
@@ -429,7 +445,7 @@ class TestAppRole(TestCase):
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
                 num_uses=num_uses,
-                ttl=ttl
+                ttl=ttl,
             )
 
             self.assertEqual(first=mock_response, second=response)
