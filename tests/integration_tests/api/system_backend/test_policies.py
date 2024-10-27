@@ -525,6 +525,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
                 name=policy_dict["name"],
             )
 
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
     def test_create_or_update_password_policy_and_read_password_policy(self):
         policy_name = "test-create-read-update-password-policy"
         policy_dict = {
@@ -546,6 +547,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             second=self.client.sys.read_password_policy(policy_name)["data"],
         )
 
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
     def test_list_password_policies(self):
         policy_name = "test-list-password-policies"
         policy_dict = {
@@ -567,6 +569,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             container=list_password_policies_response["data"]["keys"],
         )
 
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
     def test_delete_password_policy(self):
         policy_name = "test-delete-password-policy"
         policy_dict = {
@@ -592,6 +595,7 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
                 name=policy_name,
             )
 
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
     def test_generate_password(self):
         policy_name = "test-generate-password-policy"
         policy_dict = {

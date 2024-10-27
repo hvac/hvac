@@ -257,7 +257,7 @@ class Policies(SystemBackendMixin):
 
         :param name: The name of the password policy to retrieve.
         :type name: str | unicode
-        :return: The response of the request
+        :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = utils.format_url("/v1/sys/policies/password/{name}", name=name)
@@ -323,7 +323,7 @@ class Policies(SystemBackendMixin):
 
         :param name: The name of the policy to generate a password from.
         :type name: str | unicode
-        :return: The response of the request
+        :return: The JSON response of the request.
         :rtype: dict
         """
         api_path = utils.format_url(
