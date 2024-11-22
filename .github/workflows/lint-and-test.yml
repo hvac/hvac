@@ -22,7 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
@@ -125,7 +124,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
@@ -182,12 +180,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.8"
+          - "3.13"
         vault-version:
           - "vault-enterprise=1.6.*+ent"
           - "vault-enterprise=1.7.*+ent"
-          - "vault=1.11.*"
-          - "vault=1.12.*"
           - "vault=1.13.*"
           - "vault=1.14.*"
           - "vault=1.15.*"
