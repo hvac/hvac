@@ -94,7 +94,7 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
             standby_status=use_standby_node
         )
         logging.debug("vault_addr being used: %s" % vault_addr)
-        client = create_client(url=vault_addr)
+        client = create_client(url=vault_addr, timeout=90) # tests prone to timeing out
 
         read_status_response = client.sys.read_health_status(
             method=method,
