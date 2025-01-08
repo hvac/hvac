@@ -1,8 +1,8 @@
 import logging
-from unittest import TestCase
+from unittest import TestCasem, skipIf
 
 from parameterized import parameterized, param
-from tests.utils import create_client
+from tests.utils import create_client, vault_version_lt
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
 
 
@@ -51,6 +51,10 @@ class TestHealth(HvacIntegrationTestCase, TestCase):
             ),
             param("GET method", method="GET"),
         ]
+    )
+    # https://developer.hashicorp.com/vault/docs/upgrading/upgrade-to-1.16.x#dangling-entity-alias-in-memory
+    @skipIf(
+        vault_version_lt("1.17.2"), reason="Bug with standby node, fix not backported"
     )
     def test_read_health_status(
         self,
