@@ -1,5 +1,5 @@
 import logging
-from unittest import TestCasem, skipIf
+from unittest import TestCase, skipIf
 
 from parameterized import parameterized, param
 from tests.utils import create_client, vault_version_lt
