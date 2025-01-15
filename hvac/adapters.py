@@ -28,6 +28,7 @@ class Adapter(metaclass=ABCMeta):
 
         return cls(
             base_uri=adapter.base_uri,
+            cluster_uri=adapter.cluster_uri,
             token=adapter.token,
             cert=adapter._kwargs.get("cert"),
             verify=adapter._kwargs.get("verify"),
@@ -44,6 +45,7 @@ class Adapter(metaclass=ABCMeta):
     def __init__(
         self,
         base_uri=DEFAULT_URL,
+        cluster_uri=[],
         token=None,
         cert=None,
         verify=True,
@@ -60,6 +62,8 @@ class Adapter(metaclass=ABCMeta):
 
         :param base_uri: Base URL for the Vault instance being addressed.
         :type base_uri: str
+        :param cluster_uri: List of URLs for the Vault cluster being addressed.
+        :type cluster_uri: list
         :param token: Authentication token to include in requests sent to Vault.
         :type token: str
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
@@ -101,6 +105,7 @@ class Adapter(metaclass=ABCMeta):
                 proxies = session.proxies
 
         self.base_uri = base_uri
+        self.cluster_uri = cluster_uri
         self.token = token
         self.namespace = namespace
         self.session = session

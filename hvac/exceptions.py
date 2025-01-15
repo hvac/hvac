@@ -83,3 +83,7 @@ class BadGateway(VaultError):
 
 class ParamValidationError(VaultError):
     pass
+
+
+class LeaderNotFoundError(Exception):
+    pass
