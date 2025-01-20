@@ -230,7 +230,7 @@ jobs:
           -o Dir::Etc::sourcelist="sources.list.d/hashicorp.list"
 
         sudo apt install \
-          consul=1.19.2 \
+          consul=1.19.2-1 \
           ${{ matrix.vault-version }} \
           ;
 
