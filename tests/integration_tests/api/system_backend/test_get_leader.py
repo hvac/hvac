@@ -16,10 +16,7 @@ class TestGetLeader(HvacIntegrationTestCase, TestCase):
         super().tearDown()
 
     def test_get_leader(
-        self,
-        use_standby_node=True,
-        seal_first=False,
-        ha_required=True
+        self, use_standby_node=True, seal_first=False, ha_required=True
     ):
         """Test the system backend class's "get_leader" method.
 
@@ -41,13 +38,9 @@ class TestGetLeader(HvacIntegrationTestCase, TestCase):
         # Set a fake Vault address to ensure that the client is forced to use the address we provide.
         fake_vault_addr = "https://does.not.exist:8200"
         # Grab a Vault node address for our desired standby status and create a one-off client configured for that address.
-        standby_vault_addr = self.get_vault_addr_by_standby_status(
-            standby_status=True
-        )
+        standby_vault_addr = self.get_vault_addr_by_standby_status(standby_status=True)
 
-        leader_vault_addr = self.get_vault_addr_by_standby_status(
-            standby_status=False
-        )
+        leader_vault_addr = self.get_vault_addr_by_standby_status(standby_status=False)
 
         cluster_url = [fake_vault_addr, standby_vault_addr, leader_vault_addr]
         client = create_client(url=standby_vault_addr, cluster_url=cluster_url)
