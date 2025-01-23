@@ -54,7 +54,7 @@ Get Leader
 Examples
 ````````
 
-.. testcode:: sys_get_leader
+.. code:: python
 
     import hvac
     client = hvac.Client(cluster_url=['https://127.0.0.1:8200', 'https://127.0.0.1:8202','https://127.0.0.1:8204'])
@@ -63,7 +63,5 @@ Examples
     print('Leader: %s' % leader)
 
 Example output:
-
-.. testoutput:: sys_get_leader
 
     Leader is: https://127.0.0.1:8200
