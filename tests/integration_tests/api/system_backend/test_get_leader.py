@@ -1,10 +1,7 @@
-import logging
 from unittest import TestCase
 
-from parameterized import parameterized, param
 from tests.utils import create_client
 from tests.utils.hvac_integration_test_case import HvacIntegrationTestCase
-from hvac import Client
 
 
 class TestGetLeader(HvacIntegrationTestCase, TestCase):
