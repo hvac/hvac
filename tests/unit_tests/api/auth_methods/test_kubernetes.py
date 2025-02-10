@@ -181,6 +181,7 @@ class TestKubernetes(TestCase):
                 "application1",
                 "*",
                 "some-namespace",
+                None,
                 "serviceaccount_uid",
             ),
             (
@@ -189,6 +190,16 @@ class TestKubernetes(TestCase):
                 "application2",
                 "some-service-account",
                 "*",
+                None,
+                "serviceaccount_name",
+            ),
+            (
+                "namespace selector",
+                "k8s",
+                "application2",
+                "some-service-account",
+                None,
+                "{\"matchLabels\":{\"some-label\": \"some-value\"}}",
                 "serviceaccount_name",
             ),
         ]
@@ -201,6 +212,7 @@ class TestKubernetes(TestCase):
         role_name,
         bound_service_account_names,
         bound_service_account_namespaces,
+        bound_service_account_namespace_selector,
         alias_name_source,
         requests_mocker,
     ):
@@ -220,6 +232,7 @@ class TestKubernetes(TestCase):
             name=role_name,
             bound_service_account_names=bound_service_account_names,
             bound_service_account_namespaces=bound_service_account_namespaces,
+            bound_service_account_namespace_selector=bound_service_account_namespace_selector,
             alias_name_source=alias_name_source,
         )
         if mount_point:
