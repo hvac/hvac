@@ -29,6 +29,7 @@ class Ldap(VaultApiBase):
         certificate=None,
         client_tls_cert=None,
         client_tls_key=None,
+        skip_import_rotation=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """Configure shared information for the ldap secrets engine.
@@ -64,6 +65,9 @@ class Ldap(VaultApiBase):
         :type client_tls_cert: str | unicode
         :param client_tls_key: Client key to provide to the LDAP server, must be x509 PEM encoded.
         :type client_tls_key: str | unicode
+        :param skip_import_rotation: If true, Vault will not rotate the pre-existing password of the associated LDAP entry. 
+            Note: This means that Vault will not be able to supply the password to GET requests until the password is rotated.
+        :type skip_import_rotation: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -86,6 +90,7 @@ class Ldap(VaultApiBase):
                 "certificate": certificate,
                 "client_tls_cert": client_tls_cert,
                 "client_tls_key": client_tls_key,
+                "skip_import_rotation": skip_import_rotation
             }
         )
 
@@ -135,6 +140,7 @@ class Ldap(VaultApiBase):
         username=None,
         dn=None,
         rotation_period=None,
+        skip_import_rotation=None,
         mount_point=DEFAULT_MOUNT_POINT,
     ):
         """This endpoint creates or updates the ldap static role definition.
@@ -151,6 +157,9 @@ class Ldap(VaultApiBase):
             This is provided as a string duration with a time suffix like "30s" or "1h" or as seconds.
             If not provided, the default Vault rotation_period is used.
         :type rotation_period: str | unicode
+        :param skip_import_rotation: If true, Vault will not rotate the pre-existing password of the associated LDAP entry. 
+            Note: This means that Vault will not be able to supply the password to GET requests until the password is rotated.
+        :type skip_import_rotation: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -158,7 +167,7 @@ class Ldap(VaultApiBase):
         """
         api_path = utils.format_url("/v1/{}/static-role/{}", mount_point, name)
         params = {"username": username, "rotation_period": rotation_period}
-        params.update(utils.remove_nones({"dn": dn}))
+        params.update(utils.remove_nones({"dn": dn, "skip_import_rotation": skip_import_rotation}))
         return self._adapter.post(
             url=api_path,
             json=params,
