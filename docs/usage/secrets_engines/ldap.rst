@@ -27,7 +27,8 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.configure`
         userdn='cn=Users,dn=domain,dn=fqdn',
         upndomain='domain.fqdn',
         userattr="cn",
-        schema="openldap"
+        schema="openldap",
+        skip_import_rotation=False
     )
     print(config_response)
 
@@ -84,7 +85,8 @@ Source reference: :py:meth:`hvac.api.secrets_engines.ldap.create_or_update_stati
         name='hvac-role',
         username='sql-service-account',
         dn='cn=sql-service-account,dc=petshop,dc=com',
-        rotation_period="60s")
+        rotation_period="60s",
+        skip_import_rotation=False)
 
 
 Read Static Role
