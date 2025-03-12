@@ -283,7 +283,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param versions: The versions to be deleted. The versioned data will not be deleted, but it will no longer be
             returned in normal get requests.
-        :type versions: list of int
+        :type versions: list[int]
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -318,7 +318,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param versions: The versions to undelete. The versions will be restored and their data will be returned on
             normal get requests.
-        :type versions: list of int
+        :type versions: list[int]
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
@@ -352,7 +352,7 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param versions: The versions to destroy. Their data will be
             permanently deleted.
-        :type versions: list of int
+        :type versions: list[int]
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
         :return: The response of the request.
