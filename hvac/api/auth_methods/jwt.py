@@ -406,11 +406,6 @@ class JWT(VaultApiBase):
         :return: The response of the _callback request.
         :rtype: requests.Response
         """
-        params = {
-            "state": state,
-            "nonce": nonce,
-            "code": code,
-        }
         api_path = utils.format_url(
             "/v1/auth/{path}/oidc/callback?state={state}&nonce={nonce}&code={code}",
             path=self.resolve_path(path),
@@ -420,7 +415,6 @@ class JWT(VaultApiBase):
         )
         return self._adapter.get(
             url=api_path,
-            json=params,
         )
 
     def jwt_login(self, role, jwt, use_token=True, path=None):
