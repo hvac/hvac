@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 import requests
 import requests.exceptions
 
-from hvac import utils
+from hvac import exceptions, utils
 from hvac.constants.client import DEFAULT_URL
 
 
@@ -90,6 +90,13 @@ class Adapter(metaclass=ABCMeta):
         if not session:
             session = requests.Session()
             session.cert, session.verify, session.proxies = cert, verify, proxies
+        elif not isinstance(session, requests.Session):
+            raise exceptions.ParamValidationError(
+                "unsupported session type argument provided {arg}, supported types: {supported_types}".format(
+                    arg=session,
+                    supported_types=requests.Session,
+                )
+            )
         # fix for issue 991 using session verify if set
         else:
             if session.verify:

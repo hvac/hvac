@@ -319,3 +319,10 @@ class TestAdapterVerify(TestCase):
             c = Client()
         assert c._adapter.session.proxies == proxies
         assert c._adapter.session
+
+    def test_session_object_validation(self):
+        s = {"hello": "world"}
+        with self.assertRaises(exceptions.ParamValidationError) as context:
+            c = Client(session=s)
+
+        self.assertTrue("unsupported session type argument provided" in str(context.exception))
