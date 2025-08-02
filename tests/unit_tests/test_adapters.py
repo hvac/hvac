@@ -325,4 +325,4 @@ class TestAdapterVerify(TestCase):
         with self.assertRaises(exceptions.ParamValidationError) as context:
             c = Client(session=s)
 
-        self.assertTrue("unsupported session type argument provided" in str(context.exception))
+        self.assertTrue("unsupported session object provided" in str(context.exception))
