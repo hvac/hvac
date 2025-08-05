@@ -91,7 +91,7 @@ class Adapter(metaclass=ABCMeta):
             session = requests.Session()
             session.cert, session.verify, session.proxies = cert, verify, proxies
         # fix for issue 991 using session verify if set
-        elif self.check_session_object(session):
+        elif hasattr(session, "adapters"):
             if session.verify:
                 # need to set the variable and not assign it to self so it is properly passed in kwargs
                 verify = session.verify
@@ -100,7 +100,9 @@ class Adapter(metaclass=ABCMeta):
             if session.proxies:
                 proxies = session.proxies
         else:
-            raise exceptions.ParamValidationError("A session object was provided but did not pass validation")
+            raise exceptions.ParamValidationError(
+                "A session object was provided but did not pass validation"
+            )
 
         self.base_uri = base_uri
         self.token = token
@@ -129,40 +131,6 @@ class Adapter(metaclass=ABCMeta):
         """
 
         return "/".join(map(lambda x: str(x).strip("/"), args))
-
-    @staticmethod
-    def check_session_object(session):
-        if not hasattr(session, 'close') or not callable(getattr(session, 'close')):
-            raise exceptions.ParamValidationError(
-                "unsupported session object provided {arg}, missing close function".format(
-                    arg=session,
-                )
-            )
-        if not hasattr(session, 'request') or not callable(getattr(session, 'request')):
-            raise exceptions.ParamValidationError(
-                "unsupported session object provided {arg}, missing request function".format(
-                    arg=session,
-                )
-            )
-        if not hasattr(session, 'cert'):
-            raise exceptions.ParamValidationError(
-                "unsupported session object provided {arg}, missing cert parameter".format(
-                    arg=session,
-                )
-            )
-        if not hasattr(session, 'proxies'):
-            raise exceptions.ParamValidationError(
-                "unsupported session object provided {arg}, missing proxies parameter".format(
-                    arg=session,
-                )
-            )
-        if not hasattr(session, 'verify'):
-            raise exceptions.ParamValidationError(
-                "unsupported session object provided {arg}, missing verify parameter".format(
-                    arg=session,
-                )
-            )
-        return True
 
     def close(self):
         """Close the underlying Requests session."""
