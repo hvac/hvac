@@ -182,6 +182,7 @@ class TestKubernetes(TestCase):
                 "*",
                 "some-namespace",
                 "serviceaccount_uid",
+                None,
             ),
             (
                 "custom mount point",
@@ -190,6 +191,16 @@ class TestKubernetes(TestCase):
                 "some-service-account",
                 "*",
                 "serviceaccount_name",
+                None,
+            ),
+            (
+                "with audience parameter",
+                None,
+                "application3",
+                "*",
+                "some-namespace",
+                "serviceaccount_uid",
+                "vault.example.com",
             ),
         ]
     )
@@ -202,6 +213,7 @@ class TestKubernetes(TestCase):
         bound_service_account_names,
         bound_service_account_namespaces,
         alias_name_source,
+        audience,
         requests_mocker,
     ):
         expected_status_code = 204
@@ -221,6 +233,7 @@ class TestKubernetes(TestCase):
             bound_service_account_names=bound_service_account_names,
             bound_service_account_namespaces=bound_service_account_namespaces,
             alias_name_source=alias_name_source,
+            audience=audience,
         )
         if mount_point:
             test_arguments["mount_point"] = mount_point
