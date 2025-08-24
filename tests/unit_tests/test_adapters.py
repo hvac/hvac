@@ -13,6 +13,7 @@ from hvac import adapters
 from tests import utils
 from hvac import Client
 import requests
+import niquests
 
 
 class TestAdapters:
@@ -323,6 +324,7 @@ class TestAdapterVerify(TestCase):
     @parameterized.expand(
         [
             param("Testing requests", session=requests.Session(), raises=None),
+            param("Testing niquests", session=niquests.Session(), raises=None),
             param(
                 "Testing invalid session",
                 session={"hello": "world"},
