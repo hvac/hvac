@@ -67,6 +67,7 @@ jwcrypto = "^1.5.0"
 typos = "^1.16.11"
 pytest-mock = "^3.11.1"
 pytest-xdist = "^3.3.1"
+niquests = "^3.15.2"
 
 [tool.poetry.group.docs]
 optional = true
