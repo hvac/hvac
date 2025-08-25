@@ -174,6 +174,24 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 alias_name_source="serviceaccount_name",
                 token_type="service",
             ),
+            param(
+                "token_no_default_policy",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                token_no_default_policy=True,
+            ),
+            param(
+                "token_num_uses",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                token_num_uses=1000,
+            ),
+            param(
+                "token_bound_cidrs",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                token_bound_cidrs=["192.168.99.100/32"],
+            ),
         ]
     )
     def test_create_role(
@@ -185,6 +203,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         alias_name_source=None,
         raises=None,
         exception_message="",
+        token_no_default_policy=None,
+        token_num_uses=None,
+        token_bound_cidrs=None,
     ):
         role_name = "test-role"
         if raises:
@@ -195,6 +216,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                     bound_service_account_namespaces=bound_service_account_namespaces,
                     token_type=token_type,
                     alias_name_source=alias_name_source,
+                    token_no_default_policy=token_no_default_policy,
+                    token_num_uses=token_num_uses,
+                    token_bound_cidrs=token_bound_cidrs,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -208,6 +232,9 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 bound_service_account_namespaces=bound_service_account_namespaces,
                 token_type=token_type,
                 alias_name_source=alias_name_source,
+                token_no_default_policy=token_no_default_policy,
+                token_num_uses=token_num_uses,
+                token_bound_cidrs=token_bound_cidrs,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("create_role_response: %s" % create_role_response)
