@@ -15,6 +15,7 @@ from hvac.api.secrets_engines.rabbitmq import RabbitMQ
 from hvac.api.secrets_engines.ssh import Ssh
 from hvac.api.secrets_engines.transform import Transform
 from hvac.api.secrets_engines.transit import Transit
+from hvac.api.secrets_engines.totp import Totp
 from hvac.api.vault_api_category import VaultApiCategory
 
 __all__ = (
@@ -30,6 +31,7 @@ __all__ = (
     "Pki",
     "Transform",
     "Transit",
+    "Totp",
     "SecretsEngines",
     "Database",
     "RabbitMQ",
@@ -51,6 +53,7 @@ class SecretsEngines(VaultApiCategory):
         Pki,
         Transform,
         Transit,
+        Totp,
         Database,
         Consul,
         RabbitMQ,
@@ -62,7 +65,6 @@ class SecretsEngines(VaultApiCategory):
         "GcpKms",
         "Nomad",
         "Ssh",
-        "TOTP",
         "Cassandra",
         "MongoDb",
         "Mssql",
