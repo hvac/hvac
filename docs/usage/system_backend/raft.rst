@@ -117,3 +117,47 @@ Delete Raft Auto-Snapshot Configuration
     client.sys.delete_raft_auto_snapshot_config(
         name="my-local-auto-snapshot",
     )
+
+Read Raft Cluster State
+-----------------------
+
+:py:meth:`hvac.api.system_backend.Raft.read_raft_cluster_state`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.read_raft_cluster_state()
+
+Read Raft Autopilot Config
+--------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.read_raft_autopilot_config`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.read_raft_autopilot_config()
+
+Update Raft Autopilot Config
+----------------------------
+
+:py:meth:`hvac.api.system_backend.Raft.update_raft_autopilot_config`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.sys.read_raft_cluster_state(
+        cleanup_dead_servers=False
+        last_contact_threshold="10s"
+        dead_server_last_contact_threshold="24h"
+        max_trailing_logs=1000
+        min_quorum=3
+        server_stabilization_time="10s"
+        disable_upgrade_migration=False
+    )
