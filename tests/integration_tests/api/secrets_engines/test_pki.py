@@ -729,6 +729,27 @@ class TestPki(HvacIntegrationTestCase, TestCase):
 
         self.assertIn("keys", pki_list_response["data"].keys())
 
+    # Set issuers
+    @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
+    def test_set_issuers(self):
+
+        pki_list_response = self.client.secrets.pki.list_issuers(
+            mount_point=self.TEST_MOUNT_POINT
+        )
+
+        logging.debug("pki_list_response: %s" % pki_list_response)
+
+        pki_set_response = self.client.secrets.pki.set_issuers(
+            {
+                'default': pki_list_response["data"]["keys"][0]
+            },
+            mount_point=self.TEST_MOUNT_POINT,
+        )
+
+        logging.debug("pki_set_response: %s" % pki_set_response)
+
+        self.assertIn("default", pki_set_response["data"].keys())
+
     # Update issuer
     @skipIf(utils.vault_version_lt("1.11.0"), reason="Support added in version 1.11.0.")
     def test_update_issuer(self):
