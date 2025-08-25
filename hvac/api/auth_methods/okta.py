@@ -297,7 +297,12 @@ class Okta(VaultApiBase):
         )
 
     def login(
-        self, username, password, use_token=True, mount_point=DEFAULT_MOUNT_POINT
+        self,
+        username,
+        password,
+        use_token=True,
+        mount_point=DEFAULT_MOUNT_POINT,
+        totp=None,
     ):
         """Login with the username and password.
 
@@ -313,6 +318,8 @@ class Okta(VaultApiBase):
         :type use_token: bool
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
+        :param totp: if provided, uses the value as the TOTP token for Okta.
+        :type totp: str | None
         :return: The response of the login request.
         :rtype: dict
         """
@@ -320,6 +327,8 @@ class Okta(VaultApiBase):
             "username": username,
             "password": password,
         }
+        if totp is not None:
+            params["totp"] = totp
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/login/{username}",
             mount_point=mount_point,
