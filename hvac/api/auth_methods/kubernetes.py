@@ -120,6 +120,7 @@ class Kubernetes(VaultApiBase):
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
         alias_name_source=None,
+        audience=None,
     ):
         """Create a role in the method.
 
@@ -158,6 +159,8 @@ class Kubernetes(VaultApiBase):
         :param alias_name_source: Configures how identity aliases are generated.
             Valid choices are: serviceaccount_uid, serviceaccount_name.
         :type alias_name_source: str | unicode
+        :param audience: Audience claim to verify in the JWT. Will be required in Vault 1.21+.
+        :type audience: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
         """
@@ -182,6 +185,8 @@ class Kubernetes(VaultApiBase):
         }
         if alias_name_source is not None:
             params["alias_name_source"] = alias_name_source
+        if audience is not None:
+            params["audience"] = audience
 
         params.update(
             utils.remove_nones(
