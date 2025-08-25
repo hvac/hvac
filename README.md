@@ -15,9 +15,6 @@
 Tested against the latest release, HEAD ref, and 3 previous minor versions (counting back from the latest release) of Vault.
 Current official support covers Vault v1.4.7 or later.
 
-> **NOTE:**  Support for EOL Python versions will be dropped at the end of 2022.  Starting in 2023, hvac will track
-> with the CPython EOL dates.
-
 ## Installation
 
 ```console
