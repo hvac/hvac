@@ -8,7 +8,7 @@ from hvac.utils import validate_list_of_strings_param, list_to_comma_delimited
 
 
 class AppRole(VaultApiBase):
-    """USERPASS Auth Method (API).
+    """AppRole Auth Method (API).
     Reference: https://www.vaultproject.io/api-docs/auth/approle/index.html
     """
 
