@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Kubernetes methods module."""
 from hvac import utils
+from hvac import exceptions
 from hvac.api.vault_api_base import VaultApiBase
 from hvac.utils import (
     validate_list_of_strings_param,
@@ -112,7 +113,7 @@ class Kubernetes(VaultApiBase):
         self,
         name,
         bound_service_account_names,
-        bound_service_account_namespaces,
+        bound_service_account_namespaces=None,
         ttl=None,
         max_ttl=None,
         period=None,
@@ -120,6 +121,7 @@ class Kubernetes(VaultApiBase):
         token_type="",
         mount_point=DEFAULT_MOUNT_POINT,
         alias_name_source=None,
+        bound_service_account_namespace_selector=None,
     ):
         """Create a role in the method.
 
@@ -138,6 +140,12 @@ class Kubernetes(VaultApiBase):
         :param bound_service_account_namespaces: List of namespaces allowed to access this role. If set to "*" all
             namespaces are allowed.
         :type bound_service_account_namespaces: list | str | unicode
+        :param bound_service_account_namespace_selector: A label selector for Kubernetes namespaces allowed to access this role.
+            Accepts either a JSON or YAML object. The value should be of type LabelSelector. 
+            Currently, label selectors with matchExpressions are not supported. 
+            To use label selectors, Vault must have permission to read namespaces on the Kubernetes cluster. 
+            If set with bound_service_account_namespaces, the conditions are 'OR'ed.
+        :type bound_service_account_namespace_selector: str | unicode
         :param ttl: The TTL period of tokens issued using this role in seconds.
         :type ttl: str | unicode
         :param max_ttl: The maximum allowed lifetime of tokens issued in seconds using this role.
@@ -161,9 +169,18 @@ class Kubernetes(VaultApiBase):
         :return: The response of the request.
         :rtype: requests.Response
         """
+        if bound_service_account_namespace_selector is not None and not isinstance(bound_service_account_namespace_selector, str):
+            error_msg = 'unsupported bound_service_account_namespace_selector argument provided "{arg}" ({arg_type}), required type: str"'
+            raise exceptions.ParamValidationError(
+                error_msg.format(
+                    arg=bound_service_account_namespace_selector,
+                    arg_type=type(bound_service_account_namespace_selector),
+                )
+            )
         list_of_strings_params = {
             "bound_service_account_names": bound_service_account_names,
             "bound_service_account_namespaces": bound_service_account_namespaces,
+            "bound_service_account_namespace_selector": bound_service_account_namespace_selector,
             "policies": policies,
         }
         for param_name, param_argument in list_of_strings_params.items():
@@ -176,10 +193,14 @@ class Kubernetes(VaultApiBase):
             "bound_service_account_names": comma_delimited_to_list(
                 bound_service_account_names
             ),
-            "bound_service_account_namespaces": comma_delimited_to_list(
-                bound_service_account_namespaces
-            ),
         }
+        
+        if bound_service_account_namespaces is not None:
+            params.update({"bound_service_account_namespaces": comma_delimited_to_list(
+                bound_service_account_namespaces
+            )})
+        if bound_service_account_namespace_selector:
+            params.update({"bound_service_account_namespace_selector": bound_service_account_namespace_selector})
         if alias_name_source is not None:
             params["alias_name_source"] = alias_name_source
 
