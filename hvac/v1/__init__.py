@@ -69,6 +69,7 @@ class Client:
     def __init__(
         self,
         url=None,
+        cluster_url=None,
         token=None,
         cert=None,
         verify=None,
@@ -84,6 +85,8 @@ class Client:
 
         :param url: Base URL for the Vault instance being addressed.
         :type url: str
+        :param cluster_url: List of Vault cluster URIs.
+        :type cluster_url: list
         :param token: Authentication token to include in requests sent to Vault.
         :type token: str
         :param cert: Certificates for use in requests sent to the Vault instance. This should be a tuple with the
@@ -112,6 +115,7 @@ class Client:
 
         token = token if token is not None else utils.get_token_from_env()
         url = url if url else os.getenv("VAULT_ADDR", DEFAULT_URL)
+        cluster_url = cluster_url if cluster_url else []
 
         if cert is None and VAULT_CLIENT_CERT:
             cert = (
@@ -135,6 +139,7 @@ class Client:
 
         self._adapter = adapter(
             base_uri=url,
+            cluster_uri=cluster_url,
             token=token,
             cert=cert,
             verify=verify,
@@ -175,6 +180,14 @@ class Client:
     @url.setter
     def url(self, url):
         self._adapter.base_uri = url
+
+    @property
+    def cluster_url(self):
+        return self._adapter.cluster_uri
+
+    @cluster_url.setter
+    def cluster_url(self, cluster_url):
+        self._adapter.cluster_uri = cluster_url
 
     @property
     def token(self):
