@@ -319,3 +319,27 @@ class TestAdapterVerify(TestCase):
             c = Client()
         assert c._adapter.session.proxies == proxies
         assert c._adapter.session
+
+    @parameterized.expand(
+        [
+            param("Testing requests", session=requests.Session(), raises=None),
+            param(
+                "Testing invalid session",
+                session={"hello": "world"},
+                raises=exceptions.ParamValidationError,
+            ),
+        ]
+    )
+    def test_session_object_validation(self, label, session, raises):
+        if raises is not None:
+            with self.assertRaises(raises) as context:
+                c = Client(session=session)
+
+            self.assertTrue(
+                "A session object was provided but did not pass validation"
+                in str(context.exception)
+            )
+
+        else:
+            c = Client(session=session)
+            assert c.session == session
