@@ -26,7 +26,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "name": "test-quota",
             "path": "test/*/",
             "rate": 100,
-            "type": "rate-limit",
         }
 
         # Create quota
@@ -67,7 +66,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "path": "test/*",
             "rate": 100,
             "role": "",
-            "type": "rate-limit",
         }
 
         # Create quota
@@ -97,6 +95,38 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             )
 
     @skipIf(
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
+        )
+    def test_create_lease_quota(self):
+        quota_dict = {
+            "name": "test-lease-quota",
+            "path": "test/*",
+            "max_leases": 100,
+            "role": "",
+        }
+
+        # Create quota
+        create_or_update_lease_quota_response = self.client.sys.create_or_update_lease_quota(
+            name=quota_dict["name"],
+            max_leases=quota_dict["max_leases"],
+            path=quota_dict["path"],
+        )
+        logging.debug(
+            "create_or_update_lease_quota_response: %s" % create_or_update_lease_quota_response
+        )
+
+        self.assertEqual(
+            first=quota_dict,
+            second=self.client.sys.read_lease_quota(quota_dict["name"])["data"],
+        )
+
+        with self.assertRaises(exceptions.InvalidRequest):
+            self.client.sys.create_or_update_lease_quota(
+                name="test-invalid-path", max_leases=200, path="/not-exist"
+            )
+
+    @skipIf(
         utils.vault_version_ge("1.12.0"),
         "Older versions of Vault return different JSON structure",
     )
@@ -107,7 +137,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "name": "test-quota",
             "path": "test/*/",
             "rate": 100,
-            "type": "rate-limit",
         }
 
         # Create quota
@@ -149,7 +178,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "path": "test/*",
             "rate": 100,
             "role": "",
-            "type": "rate-limit",
         }
 
         # Create quota
@@ -180,6 +208,37 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
+        )
+    def test_update_lease_quota(self):
+        quota_dict = {
+            "name": "test-lease-quota",
+            "path": "test/*",
+            "max_leases": 101,
+            "role": "",
+        }
+
+        # Create quota
+        self.client.sys.create_or_update_lease_quota(
+            name=quota_dict["name"],
+            max_leases=102,
+            path=quota_dict["path"],
+        )
+
+        # Update quota
+        self.client.sys.create_or_update_lease_quota(
+            name=quota_dict["name"],
+            max_leases=quota_dict["max_leases"],
+            path=quota_dict["path"],
+        )
+
+        self.assertEqual(
+            first=quota_dict,
+            second=self.client.sys.read_lease_quota(quota_dict["name"])["data"],
+        )
+
+    @skipIf(
         utils.vault_version_ge("1.12.0"),
         "Older versions of Vault return different JSON structure",
     )
@@ -190,7 +249,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "name": "test-quota",
             "path": "test/*/",
             "rate": 100,
-            "type": "rate-limit",
         }
 
         self.client.sys.create_or_update_quota(
@@ -228,7 +286,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "path": "test/*",
             "rate": 100,
             "role": "",
-            "type": "rate-limit",
         }
 
         self.client.sys.create_or_update_quota(
@@ -257,6 +314,35 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
     @skipIf(
         utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
+        )
+    def test_read_lease_quota(self):
+        quota_dict = {
+            "name": "test-quota",
+            "path": "test/*",
+            "max_leases": 100,
+            "role": "",
+        }
+
+        self.client.sys.create_or_update_lease_quota(
+            name=quota_dict["name"],
+            max_leases=quota_dict["max_leases"],
+            path=quota_dict["path"],
+        )
+
+        # Read the quota that was just created
+        read_lease_quota_response = self.client.sys.read_lease_quota(
+            name=quota_dict["name"],
+        )
+        logging.debug("read_lease_quota_response: %s" % read_lease_quota_response)
+
+        self.assertEqual(
+            first=quota_dict,
+            second=read_lease_quota_response["data"],
+        )
+
+    @skipIf(
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_list_quotas(self):
         quota_dict = {
@@ -266,7 +352,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "path": "test/*",
             "rate": 100,
             "role": "",
-            "type": "rate-limit",
         }
 
         self.client.sys.create_or_update_quota(
@@ -300,7 +385,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "name": "test-quota",
             "path": "test/*/",
             "rate": 100,
-            "type": "rate-limit",
         }
 
         self.client.sys.create_or_update_quota(
@@ -335,7 +419,6 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             "path": "test/*",
             "rate": 100,
             "role": "",
-            "type": "rate-limit",
         }
 
         self.client.sys.create_or_update_quota(
@@ -355,5 +438,35 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
 
         with self.assertRaises(exceptions.InvalidPath):
             self.client.sys.read_quota(
+                name=quota_dict["name"],
+            )
+
+    @skipIf(
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
+        "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
+        )
+    def test_delete_lease_quota(self):
+        quota_dict = {
+            "name": "test-quota",
+            "path": "test/*",
+            "max_leases": 100,
+            "role": "",
+        }
+
+        self.client.sys.create_or_update_lease_quota(
+            name=quota_dict["name"],
+            max_leases=quota_dict["max_leases"],
+            path=quota_dict["path"],
+        )
+
+        # Delete the quota that was just created
+        delete_lease_quota_response = self.client.sys.delete_lease_quota(
+            name=quota_dict["name"],
+        )
+
+        logging.debug("delete_lease_quota_response: %s" % delete_lease_quota_response)
+
+        with self.assertRaises(exceptions.InvalidPath):
+            self.client.sys.read_lease_quota(
                 name=quota_dict["name"],
             )
