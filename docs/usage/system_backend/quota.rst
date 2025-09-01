@@ -40,11 +40,14 @@ Create or Update Quota
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
-    # Create file quota
+    # Create rate quota
     client.sys.create_or_update_quota(name="quota1", rate=100.0)
 
     # Update quota that already exists
     client.sys.create_or_update_quota(name="quota1", rate=101.0)
+
+    # Create lease count quota, inheritable over the namespace
+    client.sys.create_or_update_lease_quota(name="quota2", max_leases=1000, path="mynamespace/", inheritable=True)
 
 List Quotas
 ---------------
@@ -80,3 +83,4 @@ Examples
     client = hvac.Client(url='https://127.0.0.1:8200')
     
     client.sys.delete_quota(name="quota1")
+    client.sys.delete_lease_quota(name="quota2")

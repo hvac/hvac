@@ -17,6 +17,20 @@ class Quota(SystemBackendMixin):
         api_path = utils.format_url(f"/v1/sys/quotas/rate-limit/{name}", name=name)
         return self._adapter.get(url=api_path)
 
+    def read_lease_quota(self, name):
+        """Read lease quota. Only works when calling on the root namespace.
+
+        Supported methods:
+            GET: /sys/quotas/lease-count/:name. Produces: 200 application/json
+
+        :param name: the name of the quota to look up.
+        :type name: str | unicode
+        :return: JSON response from API request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(f"/v1/sys/quotas/lease-count/{name}", name=name)
+        return self._adapter.get(url=api_path)
+
     def list_quotas(self):
         """Retrieve a list of quotas by name. Only works when calling on the root namespace.
 
@@ -39,7 +53,6 @@ class Quota(SystemBackendMixin):
         interval=None,
         block_interval=None,
         role=None,
-        rate_limit_type=None,
         inheritable=None,
     ):
         """Create quota if it doesn't exist or update if already created. Only works when calling on the root namespace.
@@ -59,8 +72,6 @@ class Quota(SystemBackendMixin):
         :type block_interval: str | unicode
         :param role: If quota is set on an auth mount path, restrict login requests that are made with a specified role.
         :type role: str | unicode
-        :param rate_limit_type: Type of rate limit quota. Can be lease-count or rate-limit.
-        :type rate_limit_type: str | unicode
         :param inheritable: If set to true on a path that is a namespace, quota will be applied to all child namespaces
         :type inheritable: bool
         :return: API status code from request.
@@ -75,7 +86,47 @@ class Quota(SystemBackendMixin):
                 "interval": interval,
                 "block_interval": block_interval,
                 "role": role,
-                "type": rate_limit_type,
+                "inheritable": inheritable,
+            }
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def create_or_update_lease_quota(
+            self,
+            name,
+            max_leases,
+            path=None,
+            role=None,
+            inheritable=None,
+    ):
+        """Create lease count quota if it doesn't exist or update if already created. Only works when calling on the root namespace.
+
+        Supported methods:
+            POST: /sys/quotas/lease-count. Produces: 204 (empty body)
+
+        :param name: The name of the quota to create or update.
+        :type name: str | unicode
+        :param path: Path of the mount or namespace to apply the quota.
+        :type path: str | unicode
+        :param max_leases: The maximum number of leases to be allowed. Must be positive.
+        :type max_leases: integer
+        :param role: If quota is set on an auth mount path, restrict login requests that are made with a specified role.
+        :type role: str | unicode
+        :param inheritable: If set to true on a path that is a namespace, quota will be applied to all child namespaces
+        :type inheritable: bool
+        :return: API status code from request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url("/v1/sys/quotas/lease-count/{name}", name=name)
+        params = utils.remove_nones(
+            {
+                "name": name,
+                "path": path,
+                "max_leases": max_leases,
+                "role": role,
                 "inheritable": inheritable,
             }
         )
@@ -96,6 +147,22 @@ class Quota(SystemBackendMixin):
         :rtype: requests.Response
         """
         api_path = utils.format_url(f"/v1/sys/quotas/rate-limit/{name}", name=name)
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def delete_lease_quota(self, name):
+        """Delete a given lease quota. Only works when calling on the root namespace.
+
+        Supported methods:
+            DELETE: /sys/quotas/lease-count. Produces: 204 (empty body)
+
+        :param name: Name of the quota to delete
+        :type name: str | unicode
+        :return: API status code from request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(f"/v1/sys/quotas/lease-count/{name}", name=name)
         return self._adapter.delete(
             url=api_path,
         )
