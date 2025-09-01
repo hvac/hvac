@@ -56,7 +56,7 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_create_quota(self):
@@ -138,7 +138,7 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_update_quota(self):
@@ -217,7 +217,7 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_read_quota(self):
@@ -255,7 +255,7 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
         )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_list_quotas(self):
@@ -324,7 +324,7 @@ class TestQuota(HvacIntegrationTestCase, TestCase):
             )
 
     @skipIf(
-        utils.vault_version_lt("1.12.0") or utils.vault_version_ge("1.15.0"),
+        utils.vault_version_lt("1.12.0") or (not utils.is_enterprise() and utils.vault_version_ge("1.15.0")),
         "Newer version of quota JSON changes path structure and adds role. Route only works on enterprise from 1.15 onwards",
     )
     def test_delete_quota(self):
