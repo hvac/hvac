@@ -4,6 +4,7 @@ import logging
 from hvac.api.system_backend.audit import Audit
 from hvac.api.system_backend.auth import Auth
 from hvac.api.system_backend.capabilities import Capabilities
+from hvac.api.system_backend.custom_messages import CustomMessages
 from hvac.api.system_backend.health import Health
 from hvac.api.system_backend.init import Init
 from hvac.api.system_backend.key import Key
@@ -24,6 +25,7 @@ __all__ = (
     "Audit",
     "Auth",
     "Capabilities",
+    "CustomMessages",
     "Health",
     "Init",
     "Key",
@@ -50,6 +52,7 @@ class SystemBackend(
     Audit,
     Auth,
     Capabilities,
+    CustomMessages,
     Health,
     Init,
     Key,
@@ -68,6 +71,7 @@ class SystemBackend(
         Audit,
         Auth,
         Capabilities,
+        CustomMessages,
         Health,
         Init,
         Key,

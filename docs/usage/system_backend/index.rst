@@ -6,6 +6,7 @@ System Backend
 
    audit
    auth
+   custom_messages
    health
    init
    key
