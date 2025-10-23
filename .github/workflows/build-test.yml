@@ -1,6 +1,8 @@
 name: Test build and installation
 
 on:
+  schedule:
+    - cron: '10 14 * * *'
   push:
     branches:
       - main
