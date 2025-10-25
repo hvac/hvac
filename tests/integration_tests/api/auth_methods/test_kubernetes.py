@@ -101,7 +101,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         else:
             configure_response = self.client.auth.kubernetes.configure(
                 kubernetes_host=kubernetes_host,
-                kubernetes_ca_cert=utils.load_config_file("ca-cert.pem"),
+                kubernetes_ca_cert="-----BEGIN CERTIFICATE-----\\n.....\\n-----END CERTIFICATE-----",
                 mount_point=self.TEST_MOUNT_POINT,
                 issuer="bob",
                 disable_local_ca_jwt=disable_local_ca_jwt,
