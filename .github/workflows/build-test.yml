@@ -1,6 +1,8 @@
 name: Test build and installation
 
 on:
+  schedule:
+    - cron: '10 14 * * *'
   push:
     branches:
       - main
@@ -20,6 +22,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
         os: [ubuntu-latest, macos-latest, windows-latest]
     defaults:
       run:
