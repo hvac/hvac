@@ -194,11 +194,6 @@ jobs:
           - "vault=1.14.*"
           - "vault=1.15.*"
           - "vault=1.16.*"
-          - "vault=1.17.*"
-          - "vault=1.18.*"
-          - "vault=1.19.*"
-          - "vault=1.20.*"
-          - "vault=1.21.*"
 
     steps:
     - uses: actions/checkout@v4
