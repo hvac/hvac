@@ -29,6 +29,8 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
+          - "3.14"
 
     steps:
     - uses: actions/checkout@v4
@@ -131,6 +133,8 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
+          - "3.14"
 
     steps:
     - uses: actions/checkout@v4
@@ -192,6 +196,11 @@ jobs:
           - "vault=1.14.*"
           - "vault=1.15.*"
           - "vault=1.16.*"
+          - "vault=1.17.*"
+          - "vault=1.18.*"
+          - "vault=1.19.*"
+          - "vault=1.20.*"
+          - "vault=1.21.*"
 
     steps:
     - uses: actions/checkout@v4
