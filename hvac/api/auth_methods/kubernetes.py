@@ -159,7 +159,7 @@ class Kubernetes(VaultApiBase):
         :param alias_name_source: Configures how identity aliases are generated.
             Valid choices are: serviceaccount_uid, serviceaccount_name.
         :type alias_name_source: str | unicode
-        :param audience: Audience claim to verify in the JWT. Will be required in Vault 1.21+.
+        :param audience: Audience claim to verify in the JWT. Required in Vault 1.21+.
         :type audience: str | unicode
         :return: The response of the request.
         :rtype: requests.Response
