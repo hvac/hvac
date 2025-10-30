@@ -52,7 +52,7 @@ Create or Update AppRole
     client.auth.approle.create_or_update_approle(
         role_name='some-role',
         token_policies=['some-policy'],
-        token_type='service,
+        token_type='service',
     )
 
 Read Role ID

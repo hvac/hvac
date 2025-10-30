@@ -7,7 +7,7 @@ DEFAULT_MOUNT_POINT = "consul"
 
 
 class Consul(VaultApiBase):
-    """Copnsul Secrets Engine (API).
+    """Consul Secrets Engine (API).
 
     Reference: https://www.vaultproject.io/api/secret/consul/index.html
     """
