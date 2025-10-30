@@ -48,7 +48,7 @@ jobs:
 
   pypi:
     needs: [build]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
     environment:
@@ -63,7 +63,7 @@ jobs:
 
       # `tree` not supported on slim
       - name: Show tree
-        run: ls -alhR
+        run: tree
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
