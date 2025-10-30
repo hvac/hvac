@@ -249,13 +249,15 @@ class TestAppRole(TestCase):
 
     @parameterized.expand(
         [
-            ("default mount point", DEFAULT_MOUNT_POINT, None, None, None),
+            ("default mount point", DEFAULT_MOUNT_POINT, None, None, None, None, None),
             (
                 "metadata as dict",
                 DEFAULT_MOUNT_POINT,
                 None,
                 {"a": "val1", "b": "two"},
                 300,
+                None,
+                None,
             ),
             (
                 "invalid metadata",
@@ -263,13 +265,24 @@ class TestAppRole(TestCase):
                 exceptions.ParamValidationError,
                 "bad metadata",
                 None,
+                None,
+                None,
             ),
-            ("custom mount point", "approle-test", None, None, "5m"),
+            ("custom mount point", "approle-test", None, None, "5m", None, None),
+            ("custom mount point", "approle-test", None, None, None, 1, 60),
         ]
     )
     @requests_mock.Mocker()
     def test_generate_secret_id(
-        self, test_label, mount_point, raises, metadata, wrap_ttl, requests_mocker
+        self,
+        test_label,
+        mount_point,
+        raises,
+        metadata,
+        wrap_ttl,
+        num_uses,
+        ttl,
+        requests_mocker,
     ):
         expected_status_code = 200
         role_name = "testrole"
@@ -279,6 +292,8 @@ class TestAppRole(TestCase):
             "data": {
                 "secret_id": "841771dc-11c9-bbc7-bcac-6a3945a69cd9",
                 "secret_id_accessor": "84896a0c-1347-aa90-a4f6-aca8b7558780",
+                "secret_id_num_users": 1,
+                "secret_id_ttl": 60,
             },
             "lease_duration": 0,
             "lease_id": "",
@@ -307,6 +322,8 @@ class TestAppRole(TestCase):
                     metadata=metadata,
                     mount_point=mount_point,
                     wrap_ttl=wrap_ttl,
+                    num_uses=num_uses,
+                    ttl=ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -320,6 +337,8 @@ class TestAppRole(TestCase):
                 mount_point=mount_point,
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
+                num_uses=num_uses,
+                ttl=ttl,
             )
 
             self.assertEqual(first=mock_response, second=response)
@@ -335,13 +354,15 @@ class TestAppRole(TestCase):
 
     @parameterized.expand(
         [
-            ("default mount point", DEFAULT_MOUNT_POINT, None, None, None),
+            ("default mount point", DEFAULT_MOUNT_POINT, None, None, None, None, None),
             (
                 "metadata as dict",
                 DEFAULT_MOUNT_POINT,
                 None,
                 {"a": "val1", "b": "two"},
                 300,
+                None,
+                None,
             ),
             (
                 "invalid metadata",
@@ -349,13 +370,24 @@ class TestAppRole(TestCase):
                 exceptions.ParamValidationError,
                 "bad metadata",
                 None,
+                None,
+                None,
             ),
-            ("custom mount point", "approle-test", None, None, "5m"),
+            ("custom mount point", "approle-test", None, None, "5m", None, None),
+            ("custom mount point", "approle-test", None, None, None, 1, 60),
         ]
     )
     @requests_mock.Mocker()
     def test_create_custom_secret_id(
-        self, test_label, mount_point, raises, metadata, wrap_ttl, requests_mocker
+        self,
+        test_label,
+        mount_point,
+        raises,
+        metadata,
+        wrap_ttl,
+        num_uses,
+        ttl,
+        requests_mocker,
     ):
         expected_status_code = 200
         role_name = "testrole"
@@ -366,6 +398,8 @@ class TestAppRole(TestCase):
             "data": {
                 "secret_id": secret_id,
                 "secret_id_accessor": "84896a0c-1347-aa90-a4f6-aca8b7558780",
+                "secret_id_num_users": 1,
+                "secret_id_ttl": 60,
             },
             "lease_duration": 0,
             "lease_id": "",
@@ -395,6 +429,8 @@ class TestAppRole(TestCase):
                     metadata=metadata,
                     mount_point=mount_point,
                     wrap_ttl=wrap_ttl,
+                    num_uses=num_uses,
+                    ttl=ttl,
                 )
             self.assertIn(
                 member="unsupported metadata argument", container=str(cm.exception)
@@ -408,6 +444,8 @@ class TestAppRole(TestCase):
                 mount_point=mount_point,
                 metadata=metadata,
                 wrap_ttl=wrap_ttl,
+                num_uses=num_uses,
+                ttl=ttl,
             )
 
             self.assertEqual(first=mock_response, second=response)
