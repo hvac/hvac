@@ -48,7 +48,7 @@ jobs:
 
   pypi:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       id-token: write
     environment:
@@ -69,7 +69,7 @@ jobs:
 
   asset:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: write
     steps:
