@@ -61,9 +61,9 @@ jobs:
           name: package
           path: dist
 
-      # Not supported on slim
-      # - name: Show tree
-      #   run: tree
+      # `tree` not supported on slim
+      - name: Show tree
+        run: ls -alhR
 
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -80,9 +80,9 @@ jobs:
           name: package
           path: dist
 
-      # Not supported on slim
-      # - name: Show tree
-      #   run: tree
+      # `tree` not supported on slim
+      - name: Show tree
+        run: ls -alhR
 
       - name: Add release asset
         uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0
