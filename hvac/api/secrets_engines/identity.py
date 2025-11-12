@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Identity secret engine module."""
+
 import logging
 
 from hvac import exceptions, utils
@@ -1638,5 +1639,277 @@ class Identity(VaultApiBase):
             mount_point=mount_point,
         )
         return self._adapter.get(
+            url=api_path,
+        )
+
+    def create_or_update_provider(
+        self,
+        name,
+        issuer=None,
+        allowed_client_ids=None,
+        scopes_supported=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Create or update an OIDC provider.
+
+        Supported methods:
+            POST: {mount_point}/oidc/provider/:name.
+
+        :param name: Name of the provider.
+        :type name: str | unicode
+        :param issuer: Specifies what will be used as the scheme://host:port component for the iss claim of ID tokens.
+            This defaults to a URL with Vault's api_addr as the scheme://host:port component
+            and /v1/:namespace/identity/oidc/provider/:name as the path component.
+            If provided explicitly, it must point to a Vault instance that is network reachable by clients for ID token validation.
+        :type issuer: str | unicode
+        :param allowed_client_ids: The client IDs that are permitted to use the provider.
+            If empty, no clients are allowed. If "*" is provided, all clients are allowed.
+        :type allowed_client_ids: list
+        :param scopes_supported: List of scopes that are supported by this provider.
+        :type scopes_supported: list
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The a dict or the response of the create_or_update_provider request. dict returned when messages
+            are included in the response body.
+        :rtype: requests.Response
+        """
+        params = utils.remove_nones(
+            {
+                "issuer": issuer,
+                "allowed_client_ids": allowed_client_ids,
+                "scopes_supported": scopes_supported,
+            }
+        )
+
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def list_providers(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List all configured OIDC providers.
+
+        Supported methods:
+            LIST: {mount_point}/oidc/provider.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the list_scopes request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider",
+            mount_point=mount_point,
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def read_provider_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """This endpoint queries the OIDC provider by its name.
+
+        Supported methods:
+            GET: {mount_point}/oidc/provider/:name.
+
+        :param name: Name of the provider.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the read_provider_by_name request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def read_provider_public_keys(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Query this path to retrieve the public portion of keys for an OIDC provider.
+        Clients can use them to validate the authenticity of an identity token.
+
+        Supported methods:
+            GET: /identity/oidc/provider/:name/.well-known/keys.
+
+        :param name: Name of the provider.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The list of active keys.
+        :rtype: list
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/provider/{name}/.well-known/keys",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def create_or_update_scope(
+        self, name, template=None, description=None, mount_point=DEFAULT_MOUNT_POINT
+    ):
+        """Create or update a scope.
+
+        Supported methods:
+            POST: {mount_point}/oidc/scope/:name.
+
+        :param name: Name of the scope. The openid scope name is reserved.
+        :type name: str | unicode
+        :param template: The template string to use for generating tokens. This may be in stringified JSON or
+            base64 format.
+        :type template: str | unicode
+        :param description: Description of the scope.
+        :type description: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the create_or_update_scope request.
+        :rtype: dict
+        """
+        params = utils.remove_nones(
+            {
+                "template": template,
+                "description": description,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/scope/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def list_scopes(self, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        This endpoint will list all configured scopes.
+
+        Supported methods:
+            LIST: {mount_point}/identity/oidc/scope.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the list_scopes request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/scope",
+            mount_point=mount_point,
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def create_or_update_client(
+        self,
+        name,
+        key="default",
+        redirect_uris=None,
+        assignments=None,
+        client_type="confidential",
+        id_token_ttl="24h",
+        access_token_ttl="24h",
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Create or update a client.
+
+        Supported methods:
+            POST: {mount_point}/oidc/client/:name.
+
+        :param name: Name of the client.
+        :type name: str | unicode
+        :param key: A reference to a named key resource. Defaults to "default".
+            This key will be used to sign ID tokens for the client. This cannot be modified after creation.
+        :type key: str | unicode
+        :param redirect_uris: Redirection URI values used by the client.
+            One of these values must exactly match the redirect_uri parameter value used in each authentication request.
+        :type redirect_uris: list
+        :param assigments: A list of assignment resources associated with the client.
+            Client assignments limit the Vault entities and groups that are allowed to authenticate through the client.
+            By default, no Vault entities are allowed.
+            To allow all Vault entities to authenticate through the client, supply the built-in allow_all assignment.
+        :type assigments: list
+        :param client_type: Type of the client. Allowed values are "confidential" (default) and "public".
+        :type client_type: str | unicode
+        :param id_token_ttl: TTL of the ID token. Can be specified as a number of seconds or as a time string like "30m" or "6h".
+            The value should be less than the verification_ttl on the key.
+        :type id_token_ttl: str | unicode
+        :param access_token_ttl: TTL of the access token. Can be specified as a number of seconds or as a time string like "30m" or "6h".
+        :type access_token_ttl: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return:  The response of the create_or_update_client request.
+        :rtype: dict
+        """
+        params = utils.remove_nones(
+            {
+                "key": key,
+                "redirect_uris": redirect_uris,
+                "assignments": assignments,
+                "client_type": client_type,
+                "id_token_ttl": id_token_ttl,
+                "access_token_ttl": access_token_ttl,
+            }
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_client_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Query a client by name.
+
+        Supported methods:
+            GET: {mount_point}/oidc/client/:name.
+
+        :param name: Name of the client.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return:  The response of the read_client_by_name request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_clients(self, mount_point=DEFAULT_MOUNT_POINT):
+        """
+        This endpoint will list all configured clients.
+
+        Supported methods:
+            LIST: {mount_point}/identity/oidc/client.
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the list_clients request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/oidc/client",
+            mount_point=mount_point,
+        )
+        return self._adapter.list(
             url=api_path,
         )

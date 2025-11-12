@@ -30,6 +30,24 @@ class TestWrapping(HvacIntegrationTestCase, TestCase):
         self.assertIn(member="secret_id_accessor", container=unwrap_response["data"])
         self.assertIn(member="secret_id", container=unwrap_response["data"])
 
+    def test_unwrap_token_with_token_as_login(self):
+        result = self.client.write(
+            path="auth/{path}/role/testrole/secret-id".format(
+                path=self.TEST_AUTH_METHOD_PATH
+            ),
+            wrap_ttl="10s",
+        )
+        self.assertIn("token", result["wrap_info"])
+        old_token = self.client.token
+        self.client.logout()
+        unwrap_response = self.client.sys.unwrap(
+            token=result["wrap_info"]["token"], use_token_to_authenticate=True
+        )
+        logging.debug("unwrap_response: %s" % unwrap_response)
+        self.assertIn(member="secret_id_accessor", container=unwrap_response["data"])
+        self.assertIn(member="secret_id", container=unwrap_response["data"])
+        self.client.token = old_token
+
     @parameterized.expand(
         [
             param("default params"),
