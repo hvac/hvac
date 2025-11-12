@@ -2232,3 +2232,221 @@ class TestIdentity(HvacIntegrationTestCase, TestCase):
             member="keys",
             container=response,
         )
+
+    def test_create_or_update_scope(self, label, name, template, description):
+        response = self.client.secrets.identity.create_or_update_scope(
+            name=name,
+            template=template,
+            description=description,
+        )
+        logging.debug("create_or_update_scope response: %s" % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_scope",
+                template="",
+                description="hvac scope",
+            ),
+        ]
+    )
+    def test_list_scopes(self, label, name, template, description):
+        create_or_update_scope_response = (
+            self.client.secrets.identity.create_or_update_scope(
+                name=name,
+                template=template,
+                description=description,
+            )
+        )
+        logging.debug(
+            "create_or_update_scope response: %s" % create_or_update_scope_response
+        )
+        response = self.client.secrets.identity.list_scopes()
+        logging.debug("list_scopes response: %s" % response)
+        self.assertIn(
+            member=name,
+            container=response["data"]["keys"],
+        )
+
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_provider",
+                issuer=None,
+                allowed_client_ids=[],
+                scopes_supported=[],
+            ),
+        ]
+    )
+    def test_create_or_update_provider(
+        self, label, name, issuer, allowed_client_ids, scopes_supported
+    ):
+        response = self.client.secrets.identity.create_or_update_provider(
+            name=name,
+            issuer=issuer,
+            allowed_client_ids=allowed_client_ids,
+            scopes_supported=scopes_supported,
+        )
+        logging.debug("create_or_update_provider response: %s" % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_provider_1",
+            ),
+        ]
+    )
+    def test_list_providers(self, label, name):
+        create_or_update_provider_response = (
+            self.client.secrets.identity.create_or_update_provider(
+                name=name,
+            )
+        )
+        logging.debug(
+            "create_or_update_provider response: %s"
+            % create_or_update_provider_response
+        )
+        response = self.client.secrets.identity.list_providers()
+        logging.debug("list_providers response: %s" % response)
+        self.assertIn(
+            member=name,
+            container=response["data"]["keys"],
+        )
+
+    # Test for def read_provider_by_name(self, name, mount_point=DEFAULT_MOUNT_POINT):
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_provider_2",
+                allowed_client_ids=["*"],
+            ),
+        ]
+    )
+    def test_read_provider_by_name(self, label, name, allowed_client_ids):
+        create_or_update_provider_response = (
+            self.client.secrets.identity.create_or_update_provider(
+                name=name,
+                allowed_client_ids=allowed_client_ids,
+            )
+        )
+        logging.debug(
+            "create_or_update_provider response: %s"
+            % create_or_update_provider_response
+        )
+        response = self.client.secrets.identity.read_provider_by_name(
+            name=name,
+        )
+        logging.debug("read_provider_by_name response: %s" % response)
+        self.assertEqual(
+            first=allowed_client_ids,
+            second=response["data"]["allowed_client_ids"],
+        )
+
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_client",
+                key="default",
+                redirect_uris=None,
+                assignments=None,
+                client_type="confidential",
+                id_token_ttl="24h",
+                access_token_ttl="24h",
+            ),
+        ]
+    )
+    def test_create_or_update_client(
+        self,
+        label,
+        name,
+        key,
+        redirect_uris,
+        assignments,
+        client_type,
+        id_token_ttl,
+        access_token_ttl,
+    ):
+        response = self.client.secrets.identity.create_or_update_client(
+            name=name,
+            key=key,
+            redirect_uris=redirect_uris,
+            assignments=assignments,
+            client_type=client_type,
+            id_token_ttl=id_token_ttl,
+            access_token_ttl=access_token_ttl,
+        )
+        logging.debug("create_or_update_client response: %s" % response)
+        self.assertEqual(
+            first=204,
+            second=response.status_code,
+        )
+
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_client_2",
+                client_type="confidential",
+                key="default",
+            ),
+        ]
+    )
+    def test_read_client_by_name(self, label, name, client_type, key):
+        create_or_update_client_response = (
+            self.client.secrets.identity.create_or_update_client(
+                name=name,
+            )
+        )
+        logging.debug(
+            "create_or_update_client response: %s" % create_or_update_client_response
+        )
+        response = self.client.secrets.identity.read_client_by_name(
+            name=name,
+        )
+        logging.debug("read_client_by_name response: %s" % response)
+        self.assertEqual(
+            first=client_type,
+            second=response["data"]["client_type"],
+        )
+        self.assertEqual(
+            first=key,
+            second=response["data"]["key"],
+        )
+
+    # Test for def list_clients(self, mount_point=DEFAULT_MOUNT_POINT)
+    @parameterized.expand(
+        [
+            param(
+                "success",
+                name="hvac_client",
+            ),
+        ]
+    )
+    def test_list_clients(self, label, name):
+        create_or_update_client_response = (
+            self.client.secrets.identity.create_or_update_client(
+                name=name,
+            )
+        )
+        logging.debug(
+            "create_or_update_client response: %s" % create_or_update_client_response
+        )
+        response = self.client.secrets.identity.list_clients()
+        logging.debug("list_clients response: %s" % response)
+        self.assertIn(
+            member=name,
+            container=response["data"]["keys"],
+        )
