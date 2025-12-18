@@ -13,6 +13,16 @@ ALLOWED_KEY_TYPES = [
     "rsa-2048",
     "rsa-3072",
     "rsa-4096",
+    "hmac",
+    "managed_key",
+    "aes128-cmac",
+    "aes192-cmac",
+    "aes256-cmac",
+    "ml-dsa",
+    "hybrid",
+    "slh-dsa",
+    "aes128-cbc",
+    "aes256-cbc",
 ]
 
 ALLOWED_EXPORT_KEY_TYPES = [

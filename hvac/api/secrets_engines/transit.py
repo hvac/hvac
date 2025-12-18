@@ -57,6 +57,16 @@ class Transit(VaultApiBase):
             * **rsa-2048**: RSA with bit size of 2048 (asymmetric)
             * **rsa-3072**: RSA with bit size of 3072 (asymmetric)
             * **rsa-4096**: RSA with bit size of 4096 (asymmetric)
+            * **hmac**: HMAC (HMAC generation, verification)
+            * **managed_key**: External key configured via the Managed Keys feature (enterprise only)
+            * **aes128-cmac**: AES-128 CMAC (CMAC generation, verification) ( enterprise only)
+            * **aes192-cmac**: AES-192 CMAC (CMAC generation, verification) ( enterprise only)
+            * **aes256-cmac**: AES-256 CMAC (CMAC generation, verification) ( enterprise only)
+            * **ml-dsa**: ML-DSA (asymmetric) (experimental) (enterprise only)
+            * **hybrid**: hybrid signatures combining a post-quantum algorithm and an elliptic curve algorithm (asymmetric) (experimental) (enterprise only)
+            * **slh-dsa**: SLH-DSA (asymmetric) (experimental)  (enterprise only)
+            * **aes128-cbc**: AES-128 in CBC mode (symmetric, supports derivation and convergent encryption) (enterprise only)
+            * **aes256-cbc**: AES-256 in CBC mode (symmetric, supports derivation and convergent encryption) (enterprise only)
         :type key_type: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
