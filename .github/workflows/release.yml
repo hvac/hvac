@@ -61,6 +61,7 @@ jobs:
           name: package
           path: dist
 
+      # `tree` not supported on slim
       - name: Show tree
         run: tree
 
@@ -69,7 +70,7 @@ jobs:
 
   asset:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: write
     steps:
@@ -79,8 +80,9 @@ jobs:
           name: package
           path: dist
 
+      # `tree` not supported on slim
       - name: Show tree
-        run: tree
+        run: ls -alhR
 
       - name: Add release asset
         uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0

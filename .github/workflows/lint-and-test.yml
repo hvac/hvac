@@ -1,6 +1,8 @@
 name: Lint and Test
 
 on:
+  schedule:
+    - cron: '10 14 * * *'
   push:
     branches:
       - main
@@ -27,6 +29,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
 
     steps:
     - uses: actions/checkout@v4
@@ -129,6 +132,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
 
     steps:
     - uses: actions/checkout@v4
@@ -265,10 +269,11 @@ jobs:
 
   upload-to-codecov:
     name: Upload to Codecov
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs:
       - unit-tests
       - integration-tests
+    if: ${{ github.event_name != 'schedule' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

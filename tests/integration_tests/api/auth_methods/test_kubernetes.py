@@ -191,6 +191,10 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 bound_service_account_names=["vault-auth"],
                 bound_service_account_namespaces=["default"],
                 token_bound_cidrs=["192.168.99.100/32"],
+                "with audience parameter",
+                bound_service_account_names=["vault-auth"],
+                bound_service_account_namespaces=["default"],
+                audience="vault.example.com",
             ),
         ]
     )
@@ -201,6 +205,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         bound_service_account_namespaces=None,
         token_type=None,
         alias_name_source=None,
+        audience=None,
         raises=None,
         exception_message="",
         token_no_default_policy=None,
@@ -219,6 +224,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                     token_no_default_policy=token_no_default_policy,
                     token_num_uses=token_num_uses,
                     token_bound_cidrs=token_bound_cidrs,
+                    audience=audience,
                     mount_point=self.TEST_MOUNT_POINT,
                 )
             self.assertIn(
@@ -235,6 +241,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 token_no_default_policy=token_no_default_policy,
                 token_num_uses=token_num_uses,
                 token_bound_cidrs=token_bound_cidrs,
+                audience=audience,
                 mount_point=self.TEST_MOUNT_POINT,
             )
             logging.debug("create_role_response: %s" % create_role_response)

@@ -11,7 +11,7 @@ Using TLS:
 
 .. doctest:: init
 
-    >>> client = hvac.Client(url='https://localhost:8200')
+    >>> client = hvac.Client(url='https://127.0.0.1:8200')
     >>> client.is_authenticated()
     True
 
@@ -21,7 +21,7 @@ Using TLS with client-side certificate authentication:
 .. doctest:: init
 
     >>> client = hvac.Client(
-    ...     url='https://localhost:8200',
+    ...     url='https://127.0.0.1:8200',
     ...     token=os.environ['VAULT_TOKEN'],
     ...     cert=(client_cert_path, client_key_path),
     ...     verify=server_cert_path,
@@ -30,12 +30,12 @@ Using TLS with client-side certificate authentication:
     True
 
 
-Using `Vault Enterprise namespace <https://www.vaultproject.io/docs/enterprise/namespaces/index.html>`_\ :
+Using `Vault Enterprise namespace <https://www.vaultproject.io/docs/enterprise/namespaces/index.html>`_ :
 
 .. doctest:: init
 
     >>> client = hvac.Client(
-    ...     url='https://localhost:8200',
+    ...     url='https://127.0.0.1:8200',
     ...     namespace=os.getenv('VAULT_NAMESPACE'),
     ... )
 
@@ -44,7 +44,7 @@ Using plaintext / HTTP (not recommended for anything other than development work
 
 .. doctest:: init
 
-    >>> client = hvac.Client(url='http://localhost:8200')
+    >>> client = hvac.Client(url='http://127.0.0.1:8200')
 
 Vault Cluster - Initialize and Seal/Unseal
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -193,7 +193,7 @@ LDAP Authentication Example
 
 .. doctest:: ldap
 
-   >>> client = hvac.Client(url='https://localhost:8200')
+   >>> client = hvac.Client(url='https://127.0.0.1:8200')
    >>> # LDAP, getpass -> user/password, bring in LDAP3 here for teststup?
    >>> login_response = client.auth.ldap.login(
    ...     username=os.environ['LDAP_USERNAME'],

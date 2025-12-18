@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.4.0
+
+### 🚀 Features
+
+- add audience param to kubernetes role creation ([GH-1224](https://github.com/hvac/hvac/pull/1224))
+
+### 📚 Documentation
+
+- docs: fix AppRole.login docstring ([GH-1182](https://github.com/hvac/hvac/pull/1182))
+
+### 🧰 Miscellaneous
+
+- Fix a typo in read_secret_version warning message ([GH-1219](https://github.com/hvac/hvac/pull/1219))
+- Pin consul version in CI ([GH-1210](https://github.com/hvac/hvac/pull/1210))
+
 ## 2.3.0
 
 ### 🚀 Features

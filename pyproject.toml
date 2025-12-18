@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hvac"
-version = "2.3.0"
+version = "2.4.0"
 description = "HashiCorp Vault API client"
 readme = "README.md"
 authors = [
@@ -62,7 +62,7 @@ python-ldap-test = "^0.3.1"
 requests-mock = "^1.9.3"
 semantic-version = "^2.10.0"
 packaging = "<24"
-greenlet = "^3.0.0"
+greenlet = "^3.1.1"
 jwcrypto = "^1.5.0"
 typos = "^1.16.11"
 pytest-mock = "^3.11.1"
