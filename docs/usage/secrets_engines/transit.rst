@@ -12,22 +12,6 @@ Transit
         backend_type='transit',
     )
 
-.. note:: The following helper method is used various of the examples included here.
-
-.. testcode:: transit_secret
-
-    import sys
-
-
-    def base64ify(bytes_or_str):
-        """Helper method to perform base64 encoding across Python 2.7 and Python 3.X"""
-        if isinstance(bytes_or_str, str):
-            input_bytes = bytes_or_str.encode('utf8')
-        else:
-            input_bytes = bytes_or_str
-
-        output_bytes = base64.urlsafe_b64encode(input_bytes)
-        return output_bytes.decode('ascii')
 
 Create Key
 ----------
@@ -204,7 +188,7 @@ Examples
 
     encrypt_data_response = client.secrets.transit.encrypt_data(
         name='hvac-key',
-        plaintext=base64ify('hi its me hvac'.encode()),
+        plaintext=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
     )
     ciphertext = encrypt_data_response['data']['ciphertext']
     print('Encrypted plaintext ciphertext is: {cipher}'.format(cipher=ciphertext))
@@ -335,11 +319,12 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
     hash_data_response = client.secrets.transit.hash_data(
-        hash_input=base64ify('hi its me hvac'),
+        hash_input=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
         algorithm='sha2-256',
     )
     sum = hash_data_response['data']['sum']
@@ -363,12 +348,13 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
     generate_hmac_response = client.secrets.transit.generate_hmac(
         name='hvac-key',
-        hash_input=base64ify('hi its me hvac'),
+        hash_input=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
         algorithm='sha2-256',
     )
     hmac = generate_hmac_response['data']
@@ -392,6 +378,7 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
@@ -406,7 +393,7 @@ Examples
 
     sign_data_response = client.secrets.transit.sign_data(
         name=key_name,
-        hash_input=base64ify('hi its me hvac'),
+        hash_input=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
     )
     signature = sign_data_response['data']['signature']
     print('Signature is: {signature}'.format(signature=signature))
@@ -429,12 +416,13 @@ Examples
 
 .. testcode:: transit_secret
 
+    import base64
     import hvac
     client = hvac.Client(url='https://127.0.0.1:8200')
 
     verify_signed_data_response = client.secrets.transit.verify_signed_data(
         name='hvac-signing-key',
-        hash_input=base64ify('hi its me hvac'),
+        hash_input=base64.urlsafe_b64encode('hi its me hvac'.encode()).decode('ascii'),
         signature=signature,
     )
     valid = verify_signed_data_response['data']['valid']
