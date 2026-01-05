@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import pytest
 import logging
+import time
 from unittest import TestCase
 from unittest import mock
 
@@ -10,6 +11,7 @@ from parameterized import parameterized, param
 from hvac.constants.client import DEFAULT_URL
 from hvac import exceptions
 from hvac import adapters
+from hvac.token_cache import TokenCache
 from tests import utils
 from hvac import Client
 import requests
@@ -319,3 +321,223 @@ class TestAdapterVerify(TestCase):
             c = Client()
         assert c._adapter.session.proxies == proxies
         assert c._adapter.session
+
+
+class TestCachingJSONAdapter:
+    """Unit tests for CachingJSONAdapter class."""
+
+    def test_init_default(self):
+        """Test CachingJSONAdapter initialization with defaults."""
+        adapter = adapters.CachingJSONAdapter()
+        assert adapter._token_cache is not None
+        assert isinstance(adapter._token_cache, TokenCache)
+        assert adapter._current_cache_key is None
+
+    def test_init_with_cache(self):
+        """Test CachingJSONAdapter initialization with provided cache."""
+        cache = TokenCache()
+        adapter = adapters.CachingJSONAdapter(token_cache=cache)
+        assert adapter._token_cache is cache
+
+    def test_login_caches_token(self, requests_mock):
+        """Test that login auto-generates cache key and caches the token."""
+        mock_response = {
+            "auth": {
+                "client_token": "s.test_token",
+                "accessor": "hmac-accessor",
+                "policies": ["default", "admin"],
+                "lease_duration": 3600,
+                "renewable": True,
+                "token_type": "service",
+            }
+        }
+        url = f"{DEFAULT_URL}/v1/auth/approle/login"
+        requests_mock.register_uri(method="POST", url=url, json=mock_response)
+
+        adapter = adapters.CachingJSONAdapter()
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+        response = adapter.login(
+            url="/v1/auth/approle/login", use_token=True, json=credentials
+        )
+
+        # Token should be set on adapter
+        assert adapter.token == "s.test_token"
+
+        # Cache key should be auto-generated
+        assert adapter._current_cache_key is not None
+
+        # Token should be cached with auto-generated key
+        cached_token = adapter._token_cache.get(adapter._current_cache_key)
+        assert cached_token == "s.test_token"
+
+        # Metadata should be cached
+        metadata = adapter._token_cache.get_metadata(adapter._current_cache_key)
+        assert metadata is not None
+        assert metadata["ttl"] == 3600
+        assert metadata["renewable"] is True
+        assert metadata["metadata"]["accessor"] == "hmac-accessor"
+
+    def test_cache_key_generation(self):
+        """Test that cache keys are generated deterministically."""
+        adapter = adapters.CachingJSONAdapter()
+
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+        key1 = adapter._generate_cache_key("/v1/auth/approle/login", json=credentials)
+        key2 = adapter._generate_cache_key("/v1/auth/approle/login", json=credentials)
+
+        # Same credentials should generate same key
+        assert key1 == key2
+        assert len(key1) == 64  # SHA256 hash length
+
+    def test_cache_key_different_credentials(self):
+        """Test that different credentials generate different cache keys."""
+        adapter = adapters.CachingJSONAdapter()
+
+        creds1 = {"role_id": "role1", "secret_id": "secret1"}
+        creds2 = {"role_id": "role2", "secret_id": "secret2"}
+
+        key1 = adapter._generate_cache_key("/v1/auth/approle/login", json=creds1)
+        key2 = adapter._generate_cache_key("/v1/auth/approle/login", json=creds2)
+
+        # Different credentials should generate different keys
+        assert key1 != key2
+
+    def test_cache_key_different_mount_points(self):
+        """Test that different mount points generate different cache keys."""
+        adapter = adapters.CachingJSONAdapter()
+
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+        key1 = adapter._generate_cache_key("/v1/auth/approle/login", json=credentials)
+        key2 = adapter._generate_cache_key("/v1/auth/approle2/login", json=credentials)
+
+        # Different mount points should generate different keys
+        assert key1 != key2
+
+    def test_cache_key_different_namespaces(self):
+        """Test that different namespaces generate different cache keys."""
+        adapter1 = adapters.CachingJSONAdapter(namespace="ns1")
+        adapter2 = adapters.CachingJSONAdapter(namespace="ns2")
+
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+        key1 = adapter1._generate_cache_key("/v1/auth/approle/login", json=credentials)
+        key2 = adapter2._generate_cache_key("/v1/auth/approle/login", json=credentials)
+
+        # Different namespaces should generate different keys
+        assert key1 != key2
+
+    def test_invalidate_cached_token(self, requests_mock):
+        """Test invalidating a cached token by credentials."""
+        mock_response = {
+            "auth": {
+                "client_token": "s.test_token",
+                "lease_duration": 3600,
+                "renewable": True,
+            }
+        }
+        url = f"{DEFAULT_URL}/v1/auth/approle/login"
+        requests_mock.register_uri(method="POST", url=url, json=mock_response)
+
+        adapter = adapters.CachingJSONAdapter()
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+
+        # Login to cache token
+        adapter.login(url="/v1/auth/approle/login", use_token=True, json=credentials)
+        assert adapter._token_cache.size() == 1
+
+        # Invalidate using same credentials
+        adapter.invalidate_cached_token("/v1/auth/approle/login", json=credentials)
+        assert adapter._token_cache.size() == 0
+
+    def test_clear_cache(self):
+        """Test clearing all cached tokens."""
+        cache = TokenCache()
+        cache.store(key="key1", token="s.token1", ttl=3600)
+        cache.store(key="key2", token="s.token2", ttl=3600)
+
+        adapter = adapters.CachingJSONAdapter(token_cache=cache)
+        assert cache.size() == 2
+
+        adapter.clear_cache()
+        assert cache.size() == 0
+
+    def test_cached_token_expiration(self, requests_mock):
+        """Test that expired cached tokens trigger re-authentication."""
+        mock_response = {
+            "auth": {
+                "client_token": "s.short_lived_token",
+                "lease_duration": 1,  # 1 second TTL
+                "renewable": False,
+            }
+        }
+        url = f"{DEFAULT_URL}/v1/auth/approle/login"
+        requests_mock.register_uri(method="POST", url=url, json=mock_response)
+
+        adapter = adapters.CachingJSONAdapter()
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+
+        # First login - caches token
+        adapter.login(url="/v1/auth/approle/login", use_token=True, json=credentials)
+        assert adapter.token == "s.short_lived_token"
+        assert adapter._token_cache.size() == 1
+
+        # Wait for expiration
+        time.sleep(1.1)
+
+        # Second login with same credentials - should detect expired cache and re-authenticate
+        response = adapter.login(url="/v1/auth/approle/login", use_token=True, json=credentials)
+
+        # Should have made a new request (not returned cached response)
+        assert requests_mock.call_count == 2
+
+    def test_shared_cache_across_adapters(self, requests_mock):
+        """Test that multiple adapters can share the same cache."""
+        shared_cache = TokenCache()
+
+        mock_response = {
+            "auth": {
+                "client_token": "s.shared_token",
+                "lease_duration": 3600,
+                "renewable": True,
+            }
+        }
+        url = f"{DEFAULT_URL}/v1/auth/approle/login"
+        requests_mock.register_uri(method="POST", url=url, json=mock_response)
+
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+
+        # First adapter logs in and caches token
+        adapter1 = adapters.CachingJSONAdapter(token_cache=shared_cache)
+        adapter1.login(url="/v1/auth/approle/login", use_token=True, json=credentials)
+
+        # Second adapter with same cache should retrieve cached token
+        adapter2 = adapters.CachingJSONAdapter(token_cache=shared_cache)
+        response = adapter2.login(url="/v1/auth/approle/login", use_token=True, json=credentials)
+
+        # Should have only made one actual HTTP request
+        assert requests_mock.call_count == 1
+
+        # Second adapter should have cached token
+        assert adapter2.token == "s.shared_token"
+
+    def test_login_use_token_false(self, requests_mock):
+        """Test login with use_token=False still caches token."""
+        mock_response = {
+            "auth": {
+                "client_token": "s.test_token",
+                "lease_duration": 3600,
+                "renewable": True,
+            }
+        }
+        url = f"{DEFAULT_URL}/v1/auth/approle/login"
+        requests_mock.register_uri(method="POST", url=url, json=mock_response)
+
+        adapter = adapters.CachingJSONAdapter()
+        credentials = {"role_id": "my-role", "secret_id": "my-secret"}
+        response = adapter.login(url="/v1/auth/approle/login", use_token=False, json=credentials)
+
+        # Token should NOT be set on adapter
+        assert adapter._base_token is None
+
+        # But token should still be cached for future use
+        cache_key = adapter._generate_cache_key("/v1/auth/approle/login", json=credentials)
+        assert adapter._token_cache.get(cache_key) == "s.test_token"
