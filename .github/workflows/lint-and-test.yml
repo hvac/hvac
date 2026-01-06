@@ -37,7 +37,7 @@ jobs:
         show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.4
+      uses: snok/install-poetry@v1.4.1
       with:
         version: 1.6.1
         virtualenvs-create: true
@@ -77,7 +77,7 @@ jobs:
         show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.4
+      uses: snok/install-poetry@v1.4.1
       with:
         version: 1.6.1
         virtualenvs-create: true
@@ -140,7 +140,7 @@ jobs:
         show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.4
+      uses: snok/install-poetry@v1.4.1
       with:
         version: 1.6.1
         virtualenvs-create: true
@@ -201,7 +201,7 @@ jobs:
         show-progress: false
 
     - name: Install Poetry
-      uses: snok/install-poetry@v1.3.4
+      uses: snok/install-poetry@v1.4.1
       with:
         version: 1.6.1
         virtualenvs-create: true
