@@ -798,6 +798,30 @@ class Pki(VaultApiBase):
             url=api_path,
         )
 
+    def set_issuers(self, params, mount_point=DEFAULT_MOUNT_POINT):
+        """Set issuers configuration.
+
+        Configure the default issuer.
+
+        Supported methods:
+
+            POST: /{mount_point}/config/issuers. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :param params: Dictionary with parameters.
+        :type params: dict
+        :return: The JSON response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/config/issuers", mount_point=mount_point
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params
+        )
+
     def update_issuer(
         self, issuer_ref, extra_params=None, mount_point=DEFAULT_MOUNT_POINT
     ):

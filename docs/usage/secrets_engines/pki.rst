@@ -427,6 +427,20 @@ List Issuers
         issuer_list_response = client.secrets.pki.list_issuers()
 
 
+Set Issuers
+-----------
+
+:py:meth:`hvac.api.secrets_engines.pki.set_issuers`
+
+.. code:: python
+
+	import hvac
+	client = hvac.Client()
+
+        issuer_set_response = client.secrets.pki.set_issuers({
+                'default': 'my_issuer'
+        })
+
 Update Issuer
 -------------
 
