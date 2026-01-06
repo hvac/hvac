@@ -23,6 +23,8 @@ class VaultError(Exception):
             401: Unauthorized,
             403: Forbidden,
             404: InvalidPath,
+            405: UnsupportedOperation,
+            412: PreconditionFailed,
             429: RateLimitExceeded,
             500: InternalServerError,
             501: VaultNotInitialized,

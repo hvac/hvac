@@ -96,7 +96,7 @@ class TestGcp(HvacIntegrationTestCase, TestCase):
             param(
                 "no existing config",
                 write_config_first=False,
-                raises=exceptions.UnexpectedError,
+                raises=exceptions.UnsupportedOperation,
             ),
         ]
     )
