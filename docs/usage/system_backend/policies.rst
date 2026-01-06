@@ -294,3 +294,91 @@ Examples
     import hvac
     client = hvac.Client(url="https://127.0.0.1:8200")
     client.sys.delete_egp_policy("test-egp-policy")
+
+List Password Policies
+----------------------
+
+.. automethod:: hvac.api.system_backend.Policies.list_password_policies
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_policies
+    :skipif: test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url="https://127.0.0.1:8200")
+    client.sys.list_password_policies()
+
+Read Password Policy
+--------------------
+
+.. automethod:: hvac.api.system_backend.Policies.read_password_policy
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_policies
+    :skipif: test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url="https://127.0.0.1:8200")
+    client.sys.read_password_policy("password_policy_name")
+
+Create or Update Password Policy
+--------------------------------
+
+.. automethod:: hvac.api.system_backend.Policies.create_or_update_password_policy
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_policies
+    :skipif: test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url="https://127.0.0.1:8200")
+
+    # create policy
+    policy_name = "test-password-policy"
+    policy = 'length = 20 rule "charset" { charset = "abcde" }'
+
+    self.client.sys.create_or_update_password_policy(
+        name=policy_name, policy=policy
+    )
+
+
+Delete Password Policy
+----------------------
+
+.. automethod:: hvac.api.system_backend.Policies.delete_password_policy
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_policies
+    :skipif: test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url="https://127.0.0.1:8200")
+    client.sys.delete_password_policy("password_policy_name")
+
+Generate Password
+-----------------
+
+.. automethod:: hvac.api.system_backend.Policies.generate_password
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_policies
+    :skipif: test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url="https://127.0.0.1:8200")
+    generated_password = client.sys.generate_password('password_policy_name')['data']['password']

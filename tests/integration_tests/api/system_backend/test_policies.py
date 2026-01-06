@@ -524,3 +524,104 @@ class TestPolicies(HvacIntegrationTestCase, TestCase):
             self.client.sys.read_egp_policy(
                 name=policy_dict["name"],
             )
+
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
+    def test_create_or_update_password_policy_and_read_password_policy(self):
+        policy_name = "test-create-read-update-password-policy"
+        policy_dict = {
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
+        }
+
+        # Create policy
+        create_or_update_policy_response = (
+            self.client.sys.create_or_update_password_policy(
+                name=policy_name, policy=policy_dict["policy"]
+            )
+        )
+        logging.debug(
+            "create_or_update_policy_response: %s" % create_or_update_policy_response
+        )
+
+        self.assertEqual(
+            first=policy_dict,
+            second=self.client.sys.read_password_policy(policy_name)["data"],
+        )
+
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
+    def test_list_password_policies(self):
+        policy_name = "test-list-password-policies"
+        policy_dict = {
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
+        }
+
+        # Create policy
+        self.client.sys.create_or_update_password_policy(
+            name=policy_name, policy=policy_dict["policy"]
+        )
+
+        list_password_policies_response = self.client.sys.list_password_policies()
+        logging.debug(
+            "list_password_policies_response: %s" % list_password_policies_response
+        )
+
+        self.assertIn(
+            member=policy_name,
+            container=list_password_policies_response["data"]["keys"],
+        )
+
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
+    def test_delete_password_policy(self):
+        policy_name = "test-delete-password-policy"
+        policy_dict = {
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
+        }
+
+        # Create policy
+        self.client.sys.create_or_update_password_policy(
+            name=policy_name, policy=policy_dict["policy"]
+        )
+
+        # Delete the policy that was just created
+        delete_password_policy_response = self.client.sys.delete_password_policy(
+            name=policy_name,
+        )
+
+        logging.debug(
+            "delete_password_policy_response: %s" % delete_password_policy_response
+        )
+
+        with self.assertRaises(exceptions.InvalidPath):
+            self.client.sys.read_password_policy(
+                name=policy_name,
+            )
+
+    @skipIf(utils.is_enterprise(), "Untested with Enterprise version")
+    def test_generate_password(self):
+        policy_name = "test-generate-password-policy"
+        policy_dict = {
+            "policy": 'length = 20 rule "charset" { charset = "abcde" }',
+        }
+
+        # Create policy
+        self.client.sys.create_or_update_password_policy(
+            name=policy_name, policy=policy_dict["policy"]
+        )
+
+        generated_password = self.client.sys.generate_password(name=policy_name)[
+            "data"
+        ]["password"]
+
+        # ensure length
+        self.assertEqual(
+            first=20,
+            second=len(generated_password),
+        )
+
+        # ensure contents
+        acceptable = set("abcde")
+        generated_set = set(generated_password)
+        generated_is_subset = generated_set.issubset(acceptable)
+        self.assertEqual(
+            first=True,
+            second=generated_is_subset,
+        )

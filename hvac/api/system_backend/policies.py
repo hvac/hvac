@@ -234,3 +234,101 @@ class Policies(SystemBackendMixin):
         return self._adapter.delete(
             url=api_path,
         )
+
+    def list_password_policies(self):
+        """List all configured password policies.
+
+        Supported methods:
+            GET: /sys/policies/password. Produces: 200 application/json
+
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = "/v1/sys/policies/password"
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def read_password_policy(self, name):
+        """Retrieve the policy body for the named password policy.
+
+        Supported methods:
+            GET: /sys/policies/password/{name}. Produces: 200 application/json
+
+        :param name: The name of the password policy to retrieve.
+        :type name: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url("/v1/sys/policies/password/{name}", name=name)
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def create_or_update_password_policy(self, name, policy, pretty_print=True):
+        """Add a new or update an existing password policy.
+
+        Once a policy is updated, it takes effect immediately to all secrets engines.
+
+        Supported methods:
+            PUT: /sys/policies/password/{name}. Produces: 204 (empty body)
+
+        :param name: Specifies the name of the policy to create.
+        :type name: str | unicode
+        :param policy: Specifies the policy to create or update.
+        :type policy: str | unicode | dict
+        :param pretty_print: If True, and provided a dict for the policy argument, send the policy JSON to Vault with
+            "pretty" formatting.
+        :type pretty_print: bool
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        if isinstance(policy, dict):
+            if pretty_print:
+                policy = json.dumps(policy, indent=4, sort_keys=True)
+            else:
+                policy = json.dumps(policy)
+        params = {
+            "policy": policy,
+        }
+        api_path = utils.format_url(f"/v1/sys/policies/password/{name}", name=name)
+        return self._adapter.put(
+            url=api_path,
+            json=params,
+        )
+
+    def delete_password_policy(self, name):
+        """Delete the password policy with the given name.
+
+        This will immediately affect all secrets engines associated with this policy. This does not check if any secret engines are using it prior to deletion
+
+        Supported methods:
+            DELETE: /sys/policies/password/{name}. Produces: 204 (empty body)
+
+        :param name: Specifies the name of the policy to delete.
+        :type name: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url("/v1/sys/policies/password/{name}", name=name)
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def generate_password(self, name):
+        """Generate password from password policy.
+
+        Supported methods:
+            GET: /sys/policies/password/{name}/generate. Produces: 200 application/json
+
+        :param name: The name of the policy to generate a password from.
+        :type name: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/sys/policies/password/{name}/generate", name=name
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
