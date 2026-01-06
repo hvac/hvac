@@ -35,7 +35,7 @@ class Audit(SystemBackendMixin):
         :type description: str | unicode
         :param options: Configuration options to pass to the audit device itself. This is
             dependent on the audit device type.
-        :type options: str | unicode
+        :type options: dict
         :param path: Specifies the path in which to enable the audit device. This is part of
             the request URL.
         :type path: str | unicode
