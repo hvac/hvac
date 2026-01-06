@@ -44,3 +44,24 @@ Examples
 
     client = hvac.Client(url='https://127.0.0.1:8200')
     client.sys.step_down()
+
+Get Leader
+------------------
+
+.. automethod:: hvac.api.system_backend.Leader.get_leader
+   :noindex:
+
+Examples
+````````
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client(cluster_url=['https://127.0.0.1:8200', 'https://127.0.0.1:8202','https://127.0.0.1:8204'])
+
+    leader = client.sys.get_leader()
+    print('Leader: %s' % leader)
+
+Example output:
+
+    Leader is: https://127.0.0.1:8200
