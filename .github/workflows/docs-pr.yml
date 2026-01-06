@@ -1,0 +1,171 @@
+# based on:
+# - https://github.com/ansible-community/github-docs-build/blob/main/.github/workflows/_shared-docs-build-pr.yml
+# - https://github.com/ansible-community/github-docs-build/blob/main/samples/pr-with-publish-to-gh-pages.yml
+---
+name: Docs PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+
+env:
+  GHP_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+  DOCS_BUILD_CMD: docs/build.sh
+  DOCS_BUILD_HTML: docs/_build/html
+  DOCS_BUILD_BASE: docs/_build/html_base
+  DOCS_BUILD_HEAD: docs/_build/html_head
+  DOCS_BUILD_ARTIFACT_NAME: hvac_docs
+  READ_THE_DOCS_BUILD: true
+
+jobs:
+  build-docs:
+    permissions:
+      contents: read
+    name: Build Docs
+    runs-on: ubuntu-20.04
+    outputs:
+      artifact-url: ${{ steps.build-head.outputs.artifact-url }}
+      artifact-name: ${{ steps.vars.outputs.artifact-name }}
+      changed: ${{ steps.build-base.outputs.hash != steps.build-head.outputs.hash }}
+      diff: ${{ steps.diff.outputs.diff }}
+      diff-truncated: ${{ steps.diff.outputs.truncated }}
+      diff-rendered: ${{ steps.diff.outputs.diff-rendered }}
+      diff-files: ${{ steps.diff.outputs.files-raw }}
+      diff-files-trimmed: ${{ steps.diff.outputs.files-trimmed }}
+      diff-files-rendered: ${{ steps.diff.outputs.files-rendered }}
+    steps:
+      - name: Variable setup
+        id: vars
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // set this as an output for other things
+            core.setOutput('artifact-name', process.env.DOCS_BUILD_ARTIFACT_NAME)
+
+            // The merge branch is what we want, but it doesn't exist
+            // on closed events. The merge SHA does exist though and
+            // should be correct. The merge SHA does not exist when a
+            // PR is first opened, and on subsequent updates it is
+            // tricky to use; used directly it is probably stale, and
+            // would need additional API calls to get the correct value.
+            // See also:
+            // - https://github.com/ansible-community/github-docs-build/issues/36
+
+            if ('${{ github.event.action }}' == 'closed') {
+                core.setOutput('pr-checkout-ref', '${{ github.event.pull_request.merge_commit_sha }}')
+            } else {
+                core.setOutput('pr-checkout-ref', 'refs/pull/${{ github.event.number }}/merge')
+            }
+
+      - name: Checkout BASE
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.3
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@v4
+        with:
+          # TODO(2.0.0): upgrade python version
+          python-version: '3.6'
+          cache: poetry
+
+      - name: Install dependencies
+        if: steps.python.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Build BASE
+        id: build-base
+        uses: ansible-community/github-docs-build/actions/ansible-docs-build-html@main
+        with:
+          build-script: ${{ github.workspace }}/${{ env.DOCS_BUILD_CMD }}
+          build-html: ${{ github.workspace}}/${{ env.DOCS_BUILD_HTML }}
+          copy-build: ${{ github.workspace }}/${{ env.DOCS_BUILD_BASE }}
+          artifact-upload: 'false'
+
+      - name: Checkout HEAD
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.vars.outputs.pr-checkout-ref }}
+
+      - name: Build HEAD
+        id: build-head
+        uses: ansible-community/github-docs-build/actions/ansible-docs-build-html@main
+        with:
+          build-script: ${{ github.workspace }}/${{ env.DOCS_BUILD_CMD }}
+          build-html: ${{ github.workspace}}/${{ env.DOCS_BUILD_HTML }}
+          copy-build: ${{ github.workspace }}/${{ env.DOCS_BUILD_HEAD }}
+          artifact-name: ${{ steps.vars.outputs.artifact-name }}
+
+      - name: Get a diff of the changes
+        if: steps.build-base.outputs.hash != steps.build-head.outputs.hash
+        id: diff
+        uses: ansible-community/github-docs-build/actions/ansible-docs-build-diff@main
+        with:
+          build-html-a: ${{ steps.build-base.outputs.build-html }}
+          build-html-b: ${{ steps.build-head.outputs.build-html }}
+          render-file-line: '> * `$<status>` [$<path_tail>](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr/${{ github.event.number }}/$<path_tail>)'
+
+  publish-docs-gh-pages:
+    # use to prevent running on forks
+    if: github.repository == 'hvac/hvac'
+    permissions:
+      contents: write
+    needs: [build-docs]
+    name: Publish PR Docs
+    uses: ansible-community/github-docs-build/.github/workflows/_shared-docs-build-publish-gh-pages.yml@main
+    with:
+      artifact-name: ${{ needs.build-docs.outputs.artifact-name }}
+      action: ${{ (github.event.action == 'closed' || needs.build-docs.outputs.changed != 'true') && 'teardown' || 'publish' }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  comment:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    needs: [publish-docs-gh-pages, build-docs]
+    name: PR comments
+    steps:
+      - name: PR comment
+        uses: ansible-community/github-docs-build/actions/ansible-docs-build-comment@main
+        with:
+          body-includes: '## Docs Build'
+          reactions: heart
+          action: ${{ needs.build-docs.outputs.changed != 'true' && 'remove' || '' }}
+          on-closed-action: remove
+          on-merged-body: |
+            ## Docs Build 📝
+
+            Thank you for contribution!✨
+
+            This PR has been merged and the docs are now incorporated into `main`:
+            ${{ env.GHP_BASE_URL }}/branch/main
+          body: |
+            ## Docs Build 📝
+
+            Thank you for contribution!✨
+
+            The docs for **this PR** have been published here:
+            ${{ env.GHP_BASE_URL }}/pr/${{ github.event.number }}
+
+            You can compare to the docs for the `main` branch here:
+            ${{ env.GHP_BASE_URL }}/branch/main
+
+            The docsite for **this PR** is also available for download as an artifact from this run:
+            ${{ needs.build-docs.outputs.artifact-url }}
+
+            File changes:
+
+            ${{ needs.build-docs.outputs.diff-files-rendered }}
+
+            ${{ needs.build-docs.outputs.diff-rendered }}
