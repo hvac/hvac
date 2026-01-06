@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 import requests
 import requests.exceptions
 
-from hvac import utils
+from hvac import exceptions, utils
 from hvac.constants.client import DEFAULT_URL
 
 
@@ -91,7 +91,7 @@ class Adapter(metaclass=ABCMeta):
             session = requests.Session()
             session.cert, session.verify, session.proxies = cert, verify, proxies
         # fix for issue 991 using session verify if set
-        else:
+        elif hasattr(session, "adapters"):
             if session.verify:
                 # need to set the variable and not assign it to self so it is properly passed in kwargs
                 verify = session.verify
@@ -99,6 +99,10 @@ class Adapter(metaclass=ABCMeta):
                 cert = session.cert
             if session.proxies:
                 proxies = session.proxies
+        else:
+            raise exceptions.ParamValidationError(
+                "A session object was provided but did not pass validation"
+            )
 
         self.base_uri = base_uri
         self.token = token

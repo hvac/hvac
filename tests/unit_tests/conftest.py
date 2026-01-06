@@ -2,13 +2,14 @@ import pytest
 
 from unittest import mock
 
+import requests
 from hvac.adapters import Adapter
 
 
 class MockAdapter(Adapter):
     def __init__(self, *args, **kwargs):
         if "session" not in kwargs:
-            kwargs["session"] = mock.MagicMock()
+            kwargs["session"] = mock.MagicMock(spec_set=requests.Session())
         super().__init__(*args, **kwargs)
 
     def request(self, *args, **kwargs):
