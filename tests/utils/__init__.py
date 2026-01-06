@@ -1,5 +1,4 @@
 """Collection of methods used by various hvac test cases."""
-import base64
 import json
 import logging
 import operator
@@ -284,23 +283,6 @@ def get_popen_kwargs(**popen_kwargs):
     """
     popen_kwargs["encoding"] = "utf-8"
     return popen_kwargs
-
-
-def base64ify(bytes_or_str):
-    """Helper method to perform base64 encoding
-
-    :param bytes_or_str:
-    :type bytes_or_str:
-    :return:
-    :rtype:
-    """
-    if isinstance(bytes_or_str, str):
-        input_bytes = bytes_or_str.encode("utf8")
-    else:
-        input_bytes = bytes_or_str
-
-    output_bytes = base64.urlsafe_b64encode(input_bytes)
-    return output_bytes.decode("ascii")
 
 
 def configure_pki(

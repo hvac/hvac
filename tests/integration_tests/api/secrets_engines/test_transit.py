@@ -1,3 +1,4 @@
+import base64
 import logging
 from unittest import TestCase
 from unittest import skipIf
@@ -265,7 +266,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         self, label, plaintext="hi itsame hvac", raises=False, exception_message=""
     ):
         key_name = "testkey"
-        plaintext = utils.base64ify(plaintext)
+        plaintext = base64.urlsafe_b64encode(plaintext.encode("utf8")).decode("ascii")
         create_key_response = self.client.secrets.transit.create_key(
             name=key_name,
             mount_point=self.TEST_MOUNT_POINT,
@@ -305,7 +306,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         self, label, plaintext="hi itsame hvac", raises=False, exception_message=""
     ):
         key_name = "testkey"
-        plaintext = utils.base64ify(plaintext)
+        plaintext = base64.urlsafe_b64encode(plaintext.encode("utf8")).decode("ascii")
         create_key_response = self.client.secrets.transit.create_key(
             name=key_name,
             mount_point=self.TEST_MOUNT_POINT,
@@ -352,7 +353,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         self, label, plaintext="hi itsame hvac", raises=False, exception_message=""
     ):
         key_name = "testkey"
-        plaintext = utils.base64ify(plaintext)
+        plaintext = base64.urlsafe_b64encode(plaintext.encode("utf8")).decode("ascii")
         create_key_response = self.client.secrets.transit.create_key(
             name=key_name,
             mount_point=self.TEST_MOUNT_POINT,
@@ -497,7 +498,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         raises=False,
         exception_message="",
     ):
-        hash_input = utils.base64ify(hash_input)
+        hash_input = base64.urlsafe_b64encode(hash_input.encode("utf8")).decode("ascii")
         if raises:
             with self.assertRaises(raises) as cm:
                 self.client.secrets.transit.hash_data(
@@ -544,7 +545,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         raises=False,
         exception_message="",
     ):
-        hash_input = utils.base64ify(hash_input)
+        hash_input = base64.urlsafe_b64encode(hash_input.encode("utf8")).decode("ascii")
         key_name = "testkey"
         create_key_response = self.client.secrets.transit.create_key(
             name=key_name,
@@ -637,7 +638,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         raises=False,
         exception_message="",
     ):
-        hash_input = utils.base64ify(hash_input)
+        hash_input = base64.urlsafe_b64encode(hash_input.encode("utf8")).decode("ascii")
         key_name = "testkey"
         key_type = "ed25519"
         create_key_response = self.client.secrets.transit.create_key(
@@ -736,7 +737,7 @@ class TestTransit(HvacIntegrationTestCase, TestCase):
         raises=False,
         exception_message="",
     ):
-        hash_input = utils.base64ify(hash_input)
+        hash_input = base64.urlsafe_b64encode(hash_input.encode("utf8")).decode("ascii")
         key_name = "testkey"
         key_type = "ed25519"
         create_key_response = self.client.secrets.transit.create_key(
