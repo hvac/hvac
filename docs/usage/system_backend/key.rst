@@ -105,6 +105,44 @@ Examples
         nonce=nonce,
     )
 
+Decode Encoded Root Token
+-------------------------
+
+.. automethod:: hvac.api.system_backend.Key.decode_token
+   :noindex:
+
+Examples
+````````
+
+.. testsetup:: sys_key_decode_root
+
+    from tests.utils import get_generate_root_otp
+    new_otp = get_generate_root_otp()
+    start_generate_root_response = client.sys.start_root_token_generation(
+        otp=new_otp,
+    )
+    nonce = start_generate_root_response['nonce']
+    keys = manager.keys
+
+.. testcode:: sys_key_decode_root
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.generate_root( key=keys[0],nonce=nonce,)
+    client.sys.generate_root( key=keys[1],nonce=nonce,)
+    response = client.sys.generate_root( key=keys[2],nonce=nonce,)
+
+    encoded_token = response["encoded_root_token"]
+
+    root_token_response = client.sys.decode_token(
+        otp=new_otp, 
+        encoded_token=encoded_token,
+    )
+
+    root_token = root_token_response['data']['token']
+
+
 
 Get Encryption Key Status
 -------------------------
