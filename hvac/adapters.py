@@ -4,11 +4,15 @@ HTTP Client Library Adapters
 """
 from abc import ABCMeta, abstractmethod
 
+import hashlib
+import json
+
 import requests
 import requests.exceptions
 
 from hvac import utils
 from hvac.constants.client import DEFAULT_URL
+from hvac.token_cache import TokenCache
 
 
 class Adapter(metaclass=ABCMeta):
@@ -417,3 +421,195 @@ class JSONAdapter(RawAdapter):
 
 # Retaining the legacy name
 Request = RawAdapter
+
+
+class CachingJSONAdapter(JSONAdapter):
+    """
+    The CachingJSONAdapter adapter class.
+    This adapter extends JSONAdapter with in-memory token caching capabilities.
+    Tokens are automatically cached based on a composite key of:
+    - Vault URL (base_uri)
+    - Namespace
+    - Auth method and mount point (from login URL)
+    - Credentials (role_id, secret_id, username, etc.)
+    """
+
+    def __init__(self, token_cache=None, *args, **kwargs):
+        """Create a new CachingJSONAdapter instance.
+
+        :param token_cache: Optional TokenCache instance. If None, a new cache is created.
+        :type token_cache: hvac.token_cache.TokenCache | None
+        :param args: Positional arguments to pass to JSONAdapter.
+        :param kwargs: Keyword arguments to pass to JSONAdapter.
+        """
+        self._token_cache = token_cache if token_cache is not None else TokenCache()
+        self._last_login_response = None
+        self._current_cache_key = None
+        # Initialize parent after setting our attributes
+        super().__init__(*args, **kwargs)
+
+    def _generate_cache_key(self, url, **kwargs):
+        """Generate a composite cache key from authentication parameters.
+
+        :param url: The authentication URL path.
+        :type url: str
+        :param kwargs: Request keyword arguments containing credentials.
+        :type kwargs: dict
+        :return: A SHA256 hash of all auth-relevant parameters.
+        :rtype: str
+        """
+        components = [
+            self.base_uri,           # Vault URL
+            self.namespace or "",    # Vault namespace (empty string if None)
+            url,                     # Full auth path (includes mount point)
+        ]
+
+        # Extract and sort credentials for deterministic hashing
+        credentials = {}
+
+        # Check for credentials in json parameter
+        if 'json' in kwargs and kwargs['json']:
+            credentials = kwargs['json']
+        # Check for credentials in data parameter
+        elif 'data' in kwargs and kwargs['data']:
+            credentials = kwargs['data']
+
+        # Sort credentials for deterministic key generation
+        if credentials:
+            # Convert to sorted JSON string for consistent hashing
+            cred_str = json.dumps(credentials, sort_keys=True)
+            components.append(cred_str)
+
+        # Create hash of all components
+        key_string = "|".join(str(c) for c in components)
+        return hashlib.sha256(key_string.encode()).hexdigest()
+
+    @property
+    def token(self):
+        """Get the current token, checking cache first if cache_key is set.
+
+        :return: The current token.
+        :rtype: str | None
+        """
+        # If current_cache_key is set, try to get token from cache first
+        if self._current_cache_key:
+            cached_token = self._token_cache.get(self._current_cache_key)
+            if cached_token is not None:
+                return cached_token
+
+        # Fall back to the internal _base_token attribute
+        return getattr(self, '_base_token', None)
+
+    @token.setter
+    def token(self, value):
+        """Set the current token and optionally cache it.
+
+        :param value: The token value to set.
+        :type value: str | None
+        """
+        # Store the token in our internal attribute
+        self._base_token = value
+
+        # If current_cache_key is set and we have login response metadata, cache the token
+        if self._current_cache_key and value and self._last_login_response:
+            auth_data = self._last_login_response.get("auth", {})
+            ttl = auth_data.get("lease_duration")
+            renewable = auth_data.get("renewable", False)
+            metadata = {
+                "accessor": auth_data.get("accessor"),
+                "policies": auth_data.get("policies", []),
+                "token_type": auth_data.get("token_type"),
+            }
+
+            self._token_cache.store(
+                key=self._current_cache_key,
+                token=value,
+                ttl=ttl,
+                renewable=renewable,
+                metadata=metadata,
+            )
+
+    def login(self, url, use_token=True, **kwargs):
+        """Perform a login request with caching support.
+
+        Automatically generates a cache key from the Vault URL, namespace,
+        auth path, and credentials. Checks cache first before making request.
+
+        :param url: Path to send the authentication request to.
+        :type url: str | unicode
+        :param use_token: if True, uses the token in the response received from the auth request.
+        :type use_token: bool
+        :param kwargs: Additional keyword arguments to include in the params sent with the request.
+        :type kwargs: dict
+        :return: The response of the auth request.
+        :rtype: dict | requests.Response
+        """
+        # Generate cache key from auth parameters
+        cache_key = self._generate_cache_key(url, **kwargs)
+
+        # Check if we have a valid cached token for these credentials
+        cached_token = self._token_cache.get(cache_key)
+        if cached_token is not None:
+            # Return cached token without making a request
+            if use_token:
+                self._base_token = cached_token
+                self._current_cache_key = cache_key
+
+            # Return a mock response with the cached token
+            # This maintains compatibility with code that checks the response
+            cached_metadata = self._token_cache.get_metadata(cache_key)
+            return {
+                "auth": {
+                    "client_token": cached_token,
+                    "lease_duration": cached_metadata.get("ttl") if cached_metadata else None,
+                    "renewable": cached_metadata.get("renewable", False) if cached_metadata else False,
+                }
+            }
+
+        # No valid cache - make the actual login request
+        self._current_cache_key = cache_key
+        response = super().login(url, use_token=False, **kwargs)
+
+        # Store response for token caching metadata
+        if isinstance(response, dict):
+            self._last_login_response = response
+
+            # Cache the token even if use_token=False
+            # This allows subsequent logins with same credentials to use cache
+            token = self.get_login_token(response)
+            if use_token:
+                self.token = token
+            else:
+                # Still cache even though we're not setting it on the adapter
+                auth_data = response.get("auth", {})
+                ttl = auth_data.get("lease_duration")
+                renewable = auth_data.get("renewable", False)
+                metadata = {
+                    "accessor": auth_data.get("accessor"),
+                    "policies": auth_data.get("policies", []),
+                    "token_type": auth_data.get("token_type"),
+                }
+                self._token_cache.store(
+                    key=cache_key,
+                    token=token,
+                    ttl=ttl,
+                    renewable=renewable,
+                    metadata=metadata,
+                )
+
+        return response
+
+    def invalidate_cached_token(self, url, **kwargs):
+        """Invalidate a cached token for specific credentials.
+
+        :param url: The authentication URL path.
+        :type url: str
+        :param kwargs: Request keyword arguments containing credentials (same as used for login).
+        :type kwargs: dict
+        """
+        cache_key = self._generate_cache_key(url, **kwargs)
+        self._token_cache.invalidate(cache_key)
+
+    def clear_cache(self):
+        """Clear all cached tokens."""
+        self._token_cache.clear()
