@@ -9,6 +9,7 @@ from hvac.api.system_backend.init import Init
 from hvac.api.system_backend.key import Key
 from hvac.api.system_backend.leader import Leader
 from hvac.api.system_backend.lease import Lease
+from hvac.api.system_backend.mfa import MFA
 from hvac.api.system_backend.mount import Mount
 from hvac.api.system_backend.namespace import Namespace
 from hvac.api.system_backend.policies import Policies
