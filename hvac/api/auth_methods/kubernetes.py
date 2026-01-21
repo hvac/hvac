@@ -118,6 +118,9 @@ class Kubernetes(VaultApiBase):
         period=None,
         policies=None,
         token_type="",
+        token_no_default_policy=None,
+        token_num_uses=None,
+        token_bound_cidrs=None,
         mount_point=DEFAULT_MOUNT_POINT,
         alias_name_source=None,
         audience=None,
@@ -154,6 +157,12 @@ class Kubernetes(VaultApiBase):
             additional possibilities: default-service and default-batch which specify the type to return unless the
             client requests a different type at generation time.
         :type token_type: str
+        :param token_no_default_policy: If true, the default policy will not be set on generated tokens; otherwise it will be added to the policies set on the role.
+        :type token_no_default_policy: bool
+        :param token_num_uses: The maximum number of times a token may be used.
+        :type token_num_uses: int
+        :param token_bound_cidrs: A list of CIDR blocks; if set, specifies the blocks of IP addresses which are allowed to use the generated token.
+        :type token_bound_cidrs: list | str | unicode
         :param mount_point: The "path" the kubernetes auth method was mounted on.
         :type mount_point: str | unicode
         :param alias_name_source: Configures how identity aliases are generated.
@@ -168,6 +177,7 @@ class Kubernetes(VaultApiBase):
             "bound_service_account_names": bound_service_account_names,
             "bound_service_account_namespaces": bound_service_account_namespaces,
             "policies": policies,
+            "token_bound_cidrs": token_bound_cidrs,
         }
         for param_name, param_argument in list_of_strings_params.items():
             validate_list_of_strings_param(
@@ -194,6 +204,8 @@ class Kubernetes(VaultApiBase):
                     "ttl": ttl,
                     "max_ttl": max_ttl,
                     "period": period,
+                    "token_no_default_policy": token_no_default_policy,
+                    "token_num_uses": token_num_uses,
                 }
             )
         )
@@ -202,6 +214,9 @@ class Kubernetes(VaultApiBase):
 
         if token_type:
             params["token_type"] = token_type
+
+        if token_bound_cidrs is not None:
+            params["token_bound_cidrs"] = comma_delimited_to_list(token_bound_cidrs)
 
         api_path = utils.format_url(
             "/v1/auth/{mount_point}/role/{name}", mount_point=mount_point, name=name

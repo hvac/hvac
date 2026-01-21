@@ -420,7 +420,8 @@ def validate_pem_format(param_name, param_argument):
         )
         raise exceptions.ParamValidationError(error_msg.format(param=param_name))
 
-
+    return True
+    
 def remove_nones(params):
     """Removes None values from optional arguments in a parameter dictionary.
 
