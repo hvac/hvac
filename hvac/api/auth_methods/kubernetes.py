@@ -26,6 +26,7 @@ class Kubernetes(VaultApiBase):
         issuer=None,
         mount_point=DEFAULT_MOUNT_POINT,
         disable_local_ca_jwt=False,
+        use_annotations_as_alias_metadata=False,
     ):
         """Configure the connection parameters for Kubernetes.
 
@@ -51,8 +52,11 @@ class Kubernetes(VaultApiBase):
         :type token_reviewer_jwt: str | unicode
         :param mount_point: The "path" the method/backend was mounted on.
         :type mount_point: str | unicode
-        :param disable_local_ca_jwt: Disable defaulting to the local CA cert and service account JWT
+        :param disable_local_ca_jwt: Disable defaulting to the local CA cert and service account JWT.
         :type disable_local_ca_jwt: bool
+        :param use_annotations_as_alias_metadata: Use annotations from the client token's associated service account
+            as alias metadata for the Vault entity.
+        :type use_annotations_as_alias_metadata: bool
         :return: The response of the configure_method request.
         :rtype: requests.Response
         """
@@ -70,6 +74,7 @@ class Kubernetes(VaultApiBase):
         params = {
             "kubernetes_host": kubernetes_host,
             "disable_local_ca_jwt": disable_local_ca_jwt,
+            "use_annotations_as_alias_metadata": use_annotations_as_alias_metadata,
         }
         params.update(
             utils.remove_nones(

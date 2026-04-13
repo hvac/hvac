@@ -78,6 +78,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
         pem_keys=None,
         issuer=None,
         disable_local_ca_jwt=False,
+        use_annotations_as_alias_metadata=False,
         raises=None,
         exception_message="",
     ):
@@ -96,6 +97,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                         pem_keys=pem_keys,
                         mount_point=self.TEST_MOUNT_POINT,
                         disable_local_ca_jwt=disable_local_ca_jwt,
+                        use_annotations_as_alias_metadata=use_annotations_as_alias_metadata,
                     )
                 self.assertIn(member=exception_message, container=str(cm.exception))
         else:
@@ -105,6 +107,7 @@ class TestKubernetes(HvacIntegrationTestCase, TestCase):
                 mount_point=self.TEST_MOUNT_POINT,
                 issuer="bob",
                 disable_local_ca_jwt=disable_local_ca_jwt,
+                use_annotations_as_alias_metadata=use_annotations_as_alias_metadata,
             )
             logging.debug("configure_response: %s" % configure_response)
             self.assertEqual(
