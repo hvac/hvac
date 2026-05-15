@@ -29,6 +29,7 @@ class TestAdapters:
         "ignore_exceptions",
         "strict_http",
         "request_header",
+        "env_headers",
     )
 
     INTERNAL_KWARGS = (
@@ -229,6 +230,70 @@ class TestRawAdapter:
                 assert e.value.text == text
                 assert e.value.json == json
                 assert e.value.errors == errors
+
+
+class TestEnvHeaders:
+    def test_no_env_var(self, monkeypatch):
+        monkeypatch.delenv("VAULT_HEADERS", raising=False)
+        adapter = adapters.RawAdapter()
+        assert adapter._env_headers == {}
+
+    def test_parses_and_merges(self, monkeypatch):
+        monkeypatch.setenv(
+            "VAULT_HEADERS", '{"X-Custom": "foo", "X-Other": "bar"}'
+        )
+        adapter = adapters.RawAdapter()
+        assert adapter._env_headers == {"X-Custom": "foo", "X-Other": "bar"}
+
+        with requests_mock.mock() as m:
+            m.register_uri("GET", f"{DEFAULT_URL}/v1/sys/health")
+            adapter.get(url="v1/sys/health")
+            sent = m.request_history[0].headers
+            assert sent["X-Custom"] == "foo"
+            assert sent["X-Other"] == "bar"
+
+    def test_disabled_skips_parsing(self, monkeypatch):
+        monkeypatch.setenv("VAULT_HEADERS", "not json")
+        adapter = adapters.RawAdapter(env_headers=False)
+        assert adapter._env_headers == {}
+
+    def test_invalid_json_raises(self, monkeypatch):
+        monkeypatch.setenv("VAULT_HEADERS", "not json")
+        with pytest.raises(
+            ValueError, match="could not unmarshal environment-supplied headers"
+        ):
+            adapters.RawAdapter()
+
+    def test_non_object_json_raises(self, monkeypatch):
+        monkeypatch.setenv("VAULT_HEADERS", '["not", "an", "object"]')
+        with pytest.raises(
+            ValueError, match="could not unmarshal environment-supplied headers"
+        ):
+            adapters.RawAdapter()
+
+    def test_non_string_value_raises(self, monkeypatch):
+        monkeypatch.setenv("VAULT_HEADERS", '{"X-Custom": 123}')
+        with pytest.raises(
+            ValueError, match="environment-supplied headers include non-string values"
+        ):
+            adapters.RawAdapter()
+
+    def test_x_vault_prefix_rejected(self, monkeypatch):
+        monkeypatch.setenv(
+            "VAULT_HEADERS",
+            '{"X-Vault-Token": "abc", "X-Vault-Namespace": "ns", "X-Ok": "ok"}',
+        )
+        with pytest.raises(ValueError) as exc_info:
+            adapters.RawAdapter()
+        msg = str(exc_info.value)
+        assert "X-Vault-Token" in msg
+        assert "X-Vault-Namespace" in msg
+        assert "internal usage only" in msg
+
+    def test_empty_env_var(self, monkeypatch):
+        monkeypatch.setenv("VAULT_HEADERS", "")
+        adapter = adapters.RawAdapter()
+        assert adapter._env_headers == {}
 
 
 class TestAdapterVerify(TestCase):

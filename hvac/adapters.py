@@ -2,6 +2,8 @@
 HTTP Client Library Adapters
 
 """
+import json
+import os
 from abc import ABCMeta, abstractmethod
 
 import requests
@@ -39,6 +41,7 @@ class Adapter(metaclass=ABCMeta):
             ignore_exceptions=adapter.ignore_exceptions,
             strict_http=adapter.strict_http,
             request_header=adapter.request_header,
+            env_headers=adapter.env_headers,
         )
 
     def __init__(
@@ -55,6 +58,7 @@ class Adapter(metaclass=ABCMeta):
         ignore_exceptions=False,
         strict_http=False,
         request_header=True,
+        env_headers=True,
     ):
         """Create a new request adapter instance.
 
@@ -86,6 +90,9 @@ class Adapter(metaclass=ABCMeta):
         :type strict_http: bool
         :param request_header: If true, add the X-Vault-Request header to all requests to protect against SSRF vulnerabilities.
         :type request_header: bool
+        :param env_headers: If true, parse the VAULT_HEADERS environment variable as JSON and merges its key/value
+            pairs into the headers of every request.
+        :type env_headers: bool
         """
         if not session:
             session = requests.Session()
@@ -108,6 +115,7 @@ class Adapter(metaclass=ABCMeta):
         self.ignore_exceptions = ignore_exceptions
         self.strict_http = strict_http
         self.request_header = request_header
+        self.env_headers = self._parse_env_headers() if env_headers else {}
 
         self._kwargs = {
             "cert": cert,
@@ -115,6 +123,45 @@ class Adapter(metaclass=ABCMeta):
             "timeout": timeout,
             "proxies": proxies,
         }
+
+    @staticmethod
+    def _parse_env_headers():
+        """Parse the VAULT_HEADERS environment variable as JSON and validate its contents.
+
+        :return: A dict of header name/value pairs to merge into outgoing requests.
+        :rtype: dict
+        """
+        env_headers = os.environ.get("VAULT_HEADERS")
+        if not env_headers:
+            return {}
+
+        try:
+            result = json.loads(env_headers)
+        except ValueError:
+            raise ValueError("could not unmarshal environment-supplied headers")
+
+        if not isinstance(result, dict):
+            raise ValueError("could not unmarshal environment-supplied headers")
+
+        forbidden_headers = []
+        headers = {}
+        for key, value in result.items():
+            if key.startswith("X-Vault-"):
+                forbidden_headers.append(key)
+                continue
+            if not isinstance(value, str):
+                raise ValueError(
+                    "environment-supplied headers include non-string values"
+                )
+            headers[key] = value
+
+        if forbidden_headers:
+            raise ValueError(
+                "failed to setup Headers[%s]: Header starting by 'X-Vault-' are for internal usage only"
+                % ", ".join(forbidden_headers)
+            )
+
+        return headers
 
     @staticmethod
     def urljoin(*args):
@@ -339,6 +386,9 @@ class RawAdapter(Adapter):
 
         if not headers:
             headers = {}
+
+        if self.env_headers:
+            headers.update(self.env_headers)
 
         if self.request_header:
             headers["X-Vault-Request"] = "true"
