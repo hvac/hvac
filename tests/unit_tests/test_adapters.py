@@ -99,7 +99,7 @@ class TestRequest(TestCase):
         }
         expected_status_code = 200
         mock_url = f"{DEFAULT_URL}/{test_path}"
-        requests_mocker.register_uri(method="LIST", url=mock_url, json=mock_response)
+        requests_mocker.register_uri(method="GET", url=mock_url, json=mock_response)
         adapter = adapters.RawAdapter()
         response = adapter.list(
             url=test_path,
@@ -109,6 +109,11 @@ class TestRequest(TestCase):
             second=response.status_code,
         )
         self.assertEqual(first=mock_response, second=response.json())
+        # A list operation must reach Vault as GET with list=true rather than the
+        # non-standard LIST verb, which proxies and gateways may reject.
+        list_request = requests_mocker.last_request
+        self.assertEqual(first="GET", second=list_request.method)
+        self.assertEqual(first=["true"], second=list_request.qs["list"])
 
 
 @pytest.fixture

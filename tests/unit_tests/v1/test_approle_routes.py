@@ -70,7 +70,7 @@ class TestApproleRoutes(TestCase):
             "approle" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
@@ -392,7 +392,7 @@ class TestApproleRoutes(TestCase):
             role_name,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,

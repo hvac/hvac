@@ -268,7 +268,7 @@ class TestAwsEc2Methods(TestCase):
             "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             json=mock_response,
             status_code=expected_status_code,
@@ -408,7 +408,7 @@ class TestAwsEc2Methods(TestCase):
             "aws" if mount_point is None else mount_point,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             json=mock_response,
             status_code=expected_status_code,

@@ -55,7 +55,9 @@ class Adapter(metaclass=ABCMeta):
         :param ignore_exceptions: If True, _always_ return the response object for a given request. I.e., don't raise an exception
             based on response status code, etc.
         :type ignore_exceptions: bool
-        :param strict_http: If True, use only standard HTTP verbs in request with additional params, otherwise process as is
+        :param strict_http: Deprecated and ignored. Standard HTTP verbs are now always used: LIST
+            requests are sent as ``GET`` with a ``list=true`` param regardless of this setting.
+            Retained so that existing callers passing it do not break.
         :type strict_http: bool
         :param request_header: If true, add the X-Vault-Request header to all requests to protect against SSRF vulnerabilities.
         :type request_header: bool
@@ -149,7 +151,7 @@ class Adapter(metaclass=ABCMeta):
         return self.request("delete", url, **kwargs)
 
     def list(self, url, **kwargs):
-        """Performs a LIST request.
+        """Performs a Vault list request, sent over the wire as ``GET`` with a ``list=true`` param.
 
         :param url: Partial URL path to send the request to. This will be joined to the end of the instance's base_uri
             attribute.
@@ -320,13 +322,12 @@ class RawAdapter(Adapter):
         _kwargs = self._kwargs.copy()
         _kwargs.update(kwargs)
 
-        if self.strict_http and method.lower() in ("list",):
-            # Entry point for standard HTTP substitution
-            params = _kwargs.get("params", {})
-            if method.lower() == "list":
-                method = "get"
-                params.update({"list": "true"})
-            _kwargs["params"] = params
+        if method.lower() == "list":
+            # Vault maps `GET ?list=true` and the non-standard LIST verb to the same
+            # operation, this code path requires a url with a query parameter so strict or not it
+            # needs to be converted to GET
+            method = "get"
+            _kwargs["params"] = {**dict(_kwargs.get("params") or {}), "list": "true"}
 
         response = self.session.request(
             method=method,

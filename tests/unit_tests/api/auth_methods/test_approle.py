@@ -81,7 +81,7 @@ class TestAppRole(TestCase):
             mount_point=mount_point
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
@@ -524,7 +524,7 @@ class TestAppRole(TestCase):
             mount_point=mount_point, role_name=role_name
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,

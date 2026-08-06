@@ -146,7 +146,7 @@ class TestLdap(TestCase):
             mount_point=mount_point,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
@@ -281,7 +281,7 @@ class TestLdap(TestCase):
             mount_point=mount_point,
         )
         requests_mocker.register_uri(
-            method="LIST",
+            method="GET",
             url=mock_url,
             status_code=expected_status_code,
             json=mock_response,
