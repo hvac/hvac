@@ -10,6 +10,11 @@ import requests.exceptions
 from hvac import utils
 from hvac.constants.client import DEFAULT_URL
 
+# Sentinel used to tell "verify was not passed" apart from an explicit
+# verify=True, so that an explicit verify= is not silently replaced by a
+# user-supplied session's default (a fresh requests.Session has verify=True).
+_VERIFY_UNSET = object()
+
 
 class Adapter(metaclass=ABCMeta):
     """Abstract base class used when constructing adapters for use with the Client class."""
@@ -46,7 +51,7 @@ class Adapter(metaclass=ABCMeta):
         base_uri=DEFAULT_URL,
         token=None,
         cert=None,
-        verify=True,
+        verify=_VERIFY_UNSET,
         timeout=30,
         proxies=None,
         allow_redirects=True,
@@ -89,11 +94,17 @@ class Adapter(metaclass=ABCMeta):
         """
         if not session:
             session = requests.Session()
+            if verify is _VERIFY_UNSET:
+                verify = True
             session.cert, session.verify, session.proxies = cert, verify, proxies
         # fix for issue 991 using session verify if set
         else:
-            if session.verify:
-                # need to set the variable and not assign it to self so it is properly passed in kwargs
+            # An explicit verify= must take precedence over the session's value.
+            # A fresh requests.Session always has verify=True, so only inherit the
+            # session's verify when the caller did not pass one; otherwise an
+            # explicit verify= (e.g. a CA bundle path, or False) would be silently
+            # replaced by the session default.
+            if verify is _VERIFY_UNSET:
                 verify = session.verify
             if session.cert:
                 cert = session.cert

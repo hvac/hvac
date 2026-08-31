@@ -270,6 +270,24 @@ class TestAdapterVerify(TestCase):
 
     @parameterized.expand(
         [
+            param(
+                "explicit CA bundle over session default",
+                verify=utils.get_config_file_path("client-cert.pem"),
+            ),
+            param("explicit verify False over session default", verify=False),
+        ]
+    )
+    def test_explicit_verify_overrides_session_default(self, label, verify):
+        # A user-supplied session has verify=True by default. An explicit verify=
+        # passed alongside the session must win, rather than being silently
+        # replaced by that default.
+        s = requests.Session()
+        assert s.verify is True
+        c = Client(session=s, verify=verify)
+        assert c._adapter._kwargs["verify"] == verify
+
+    @parameterized.expand(
+        [
             param("Testing default", cert=None, use_session=False),
             param("Testing default with session", cert=None, use_session=False),
             param(
