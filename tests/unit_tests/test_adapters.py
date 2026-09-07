@@ -229,6 +229,7 @@ class TestRawAdapter:
                 assert e.value.text == text
                 assert e.value.json == json
                 assert e.value.errors == errors
+                assert e.value.status_code == code
 
 
 class TestAdapterVerify(TestCase):

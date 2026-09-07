@@ -1,6 +1,13 @@
 class VaultError(Exception):
     def __init__(
-        self, message=None, errors=None, method=None, url=None, text=None, json=None
+        self,
+        message=None,
+        errors=None,
+        method=None,
+        url=None,
+        text=None,
+        json=None,
+        status_code=None,
     ):
         if errors:
             message = ", ".join(errors)
@@ -10,6 +17,7 @@ class VaultError(Exception):
         self.url = url
         self.text = text
         self.json = json
+        self.status_code = status_code
 
         super().__init__(message)
 
@@ -30,6 +38,7 @@ class VaultError(Exception):
             503: VaultDown,
         }
 
+        kwargs.setdefault("status_code", status_code)
         return _STATUS_EXCEPTION_MAP.get(status_code, UnexpectedError)(*args, **kwargs)
 
 
