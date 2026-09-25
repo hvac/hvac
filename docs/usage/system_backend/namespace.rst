@@ -60,6 +60,42 @@ Example output:
     {"request_id":"<redacted>","lease_id":"","renewable":false,"lease_duration":0,"data":{"key_info":{"testns/":{"id":"ekiUn","path":"testns/"}},"keys":["testns/"]},"wrap_info":null,"warnings":null,"auth":null}
 
 
+Read Namespace
+--------------
+
+.. automethod:: hvac.api.system_backend.Namespace.read_namespace
+   :noindex:
+
+Examples
+````````
+
+.. testcode:: sys_namespace
+    :skipif: not test_utils.is_enterprise()
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.read_namespace(path='testns')
+
+Patch Namespace
+---------------
+
+.. automethod:: hvac.api.system_backend.Namespace.patch_namespace
+   :noindex:
+
+Examples
+````````
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client(url='https://127.0.0.1:8200')
+
+    client.sys.patch_namespace(
+        path='testns',
+        custom_metadata={'env': 'production'},
+    )
+
 Delete Namespace
 ----------------
 
