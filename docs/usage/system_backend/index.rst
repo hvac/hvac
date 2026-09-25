@@ -11,6 +11,7 @@ System Backend
    key
    leader
    lease
+   license
    mount
    namespace
    policies

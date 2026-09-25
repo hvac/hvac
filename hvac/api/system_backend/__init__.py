@@ -1,4 +1,5 @@
 """Collection of Vault system backend API endpoint classes."""
+
 import logging
 
 from hvac.api.system_backend.audit import Audit
@@ -9,6 +10,7 @@ from hvac.api.system_backend.init import Init
 from hvac.api.system_backend.key import Key
 from hvac.api.system_backend.leader import Leader
 from hvac.api.system_backend.lease import Lease
+from hvac.api.system_backend.license import License
 from hvac.api.system_backend.mount import Mount
 from hvac.api.system_backend.namespace import Namespace
 from hvac.api.system_backend.policies import Policies
@@ -29,6 +31,7 @@ __all__ = (
     "Key",
     "Leader",
     "Lease",
+    "License",
     "Mount",
     "Namespace",
     "Policies",
@@ -55,6 +58,7 @@ class SystemBackend(
     Key,
     Leader,
     Lease,
+    License,
     Mount,
     Namespace,
     Policies,
@@ -73,6 +77,7 @@ class SystemBackend(
         Key,
         Leader,
         Lease,
+        License,
         Mount,
         Namespace,
         Policies,
