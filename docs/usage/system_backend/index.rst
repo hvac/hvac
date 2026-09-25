@@ -6,6 +6,7 @@ System Backend
 
    audit
    auth
+   control_group
    health
    init
    key
