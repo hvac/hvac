@@ -291,7 +291,7 @@ class Client:
         :rtype:
         """
         try:
-            payload = {"list": True}
+            payload = {"list": "true"}
             return self._adapter.get(f"/v1/{path}", params=payload)
         except exceptions.InvalidPath:
             return None
