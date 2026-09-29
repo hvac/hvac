@@ -100,6 +100,21 @@ class TestKv2:
                 else:
                     assert w.assert_not_called
 
+    def test_list_secrets_exclude_deleted(self):
+        mock_adapter = MagicMock()
+        kv = KvV2(adapter=mock_adapter)
+
+        kv.list_secrets(
+            path="example",
+            mount_point="secret",
+            exclude_deleted=True,
+        )
+
+        mock_adapter.list.assert_called_once_with(
+            url="/v1/secret/metadata/example",
+            params={"exclude_deleted": True},
+        )
+
     @pytest.mark.parametrize(
         ("json", "recoverable"),
         [

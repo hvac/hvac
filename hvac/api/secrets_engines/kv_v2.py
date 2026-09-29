@@ -374,7 +374,9 @@ class KvV2(VaultApiBase):
             json=params,
         )
 
-    def list_secrets(self, path, mount_point=DEFAULT_MOUNT_POINT):
+    def list_secrets(
+        self, path, mount_point=DEFAULT_MOUNT_POINT, exclude_deleted=False
+    ):
         """Return a list of key names at the specified location.
 
         Folders are suffixed with /. The input must be a folder; list on a file will not return a value. Note that no
@@ -389,6 +391,8 @@ class KvV2(VaultApiBase):
         :type path: str | unicode
         :param mount_point: The "path" the secret engine was mounted on.
         :type mount_point: str | unicode
+        :param exclude_deleted: If true, only return non-deleted entries.
+        :type exclude_deleted: bool
         :return: The JSON response of the request.
         :rtype: dict
         """
@@ -397,6 +401,7 @@ class KvV2(VaultApiBase):
         )
         return self._adapter.list(
             url=api_path,
+            params={"exclude_deleted": exclude_deleted},
         )
 
     def read_secret_metadata(self, path, mount_point=DEFAULT_MOUNT_POINT):
