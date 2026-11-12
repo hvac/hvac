@@ -405,3 +405,153 @@ class Aws(VaultApiBase):
                 url=api_path,
                 params=params,
             )
+
+    def create_or_update_static_role(
+        self,
+        name,
+        username,
+        rotation_period,
+        assume_role_arn=None,
+        assume_role_session_name=None,
+        external_id=None,
+        mount_point=DEFAULT_MOUNT_POINT,
+    ):
+        """Create or update a static role.
+
+        Static roles are a 1-to-1 mapping with an existing AWS IAM user, which will be adopted and managed by Vault.
+        Vault creates a new access key for the user when the role is configured and rotates it on the given period.
+
+        Supported methods:
+            POST: /{mount_point}/static-roles/{name}. Produces: 200 application/json
+
+        :param name: The name of the static role. This is part of the request URL.
+        :type name: str | unicode
+        :param username: The username of the IAM user to be managed.
+        :type username: str | unicode
+        :param rotation_period: How often Vault rotates the access key of the IAM user. Accepts time suffixed
+            strings ("24h") or an integer number of seconds. The minimum is 1 minute.
+        :type rotation_period: str | unicode | int
+        :param assume_role_arn: The ARN of the IAM role Vault assumes to manage a user in another AWS account.
+            Requires assume_role_session_name. Vault Enterprise only.
+        :type assume_role_arn: str | unicode
+        :param assume_role_session_name: The session name to use when assuming assume_role_arn.
+            Requires assume_role_arn. Vault Enterprise only.
+        :type assume_role_session_name: str | unicode
+        :param external_id: The external ID to use when assuming assume_role_arn, if the IAM role requires one.
+            Vault Enterprise only.
+        :type external_id: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        params = {
+            "username": username,
+            "rotation_period": rotation_period,
+        }
+        params.update(
+            utils.remove_nones(
+                {
+                    "assume_role_arn": assume_role_arn,
+                    "assume_role_session_name": assume_role_session_name,
+                    "external_id": external_id,
+                }
+            )
+        )
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.post(
+            url=api_path,
+            json=params,
+        )
+
+    def read_static_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Query an existing static role by the given name.
+
+        If the static role does not exist, a 404 is returned.
+
+        Supported methods:
+            GET: /{mount_point}/static-roles/{name}. Produces: 200 application/json
+
+        :param name: The name of the static role to read. This is part of the request URL.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )
+
+    def list_static_roles(self, mount_point=DEFAULT_MOUNT_POINT):
+        """List all existing static roles in the secrets engine.
+
+        Supported methods:
+            LIST: /{mount_point}/static-roles. Produces: 200 application/json
+
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles", mount_point=mount_point
+        )
+        return self._adapter.list(
+            url=api_path,
+        )
+
+    def delete_static_role(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Delete an existing static role by the given name.
+
+        The IAM user itself is not deleted, since it was created outside of Vault, and must be cleaned up manually.
+
+        Supported methods:
+            DELETE: /{mount_point}/static-roles/{name}. Produces: 204 (empty body)
+
+        :param name: The name of the static role to delete. This is part of the request URL.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The response of the request.
+        :rtype: requests.Response
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-roles/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.delete(
+            url=api_path,
+        )
+
+    def get_static_credentials(self, name, mount_point=DEFAULT_MOUNT_POINT):
+        """Get the current credentials of the IAM user managed by the named static role.
+
+        Supported methods:
+            GET: /{mount_point}/static-creds/{name}. Produces: 200 application/json
+
+        :param name: The name of the static role. This is part of the request URL.
+        :type name: str | unicode
+        :param mount_point: The "path" the method/backend was mounted on.
+        :type mount_point: str | unicode
+        :return: The JSON response of the request.
+        :rtype: dict
+        """
+        api_path = utils.format_url(
+            "/v1/{mount_point}/static-creds/{name}",
+            mount_point=mount_point,
+            name=name,
+        )
+        return self._adapter.get(
+            url=api_path,
+        )

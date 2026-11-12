@@ -188,3 +188,87 @@ Source reference: :py:meth:`hvac.api.secrets_engines.Aws.generate_credentials`
         access=gen_creds_response['data']['access_key'],
         secret=gen_creds_response['data']['secret_key'],
     ))
+
+Create or Update Static Role
+----------------------------
+
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.create_or_update_static_role`
+
+Static roles map a Vault role to an existing IAM user. Vault adopts the user and rotates its access key on the given period.
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.aws.create_or_update_static_role(
+        name='hvac-static-role',
+        username='hvac-user',
+        rotation_period='24h',
+    )
+
+Read Static Role
+----------------
+
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.read_static_role`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    read_static_role_response = client.secrets.aws.read_static_role(
+        name='hvac-static-role',
+    )
+    print('IAM user managed by the static role: {username}'.format(
+        username=read_static_role_response['data']['username'],
+    ))
+
+List Static Roles
+-----------------
+
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.list_static_roles`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    list_static_roles_response = client.secrets.aws.list_static_roles()
+    print('AWS secrets engine static roles: {roles}'.format(
+        roles=', '.join(list_static_roles_response['data']['keys']),
+    ))
+
+Delete Static Role
+------------------
+
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.delete_static_role`
+
+Deleting a static role does not delete the IAM user, which has to be cleaned up manually.
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    client.secrets.aws.delete_static_role(
+        name='hvac-static-role',
+    )
+
+Get Static Credentials
+----------------------
+
+Source reference: :py:meth:`hvac.api.secrets_engines.Aws.get_static_credentials`
+
+.. code:: python
+
+    import hvac
+    client = hvac.Client()
+
+    static_creds_response = client.secrets.aws.get_static_credentials(
+        name='hvac-static-role',
+    )
+    print('Current access key: {access}, next rotation: {expiration}'.format(
+        access=static_creds_response['data']['access_key'],
+        expiration=static_creds_response['data']['expiration'],
+    ))
